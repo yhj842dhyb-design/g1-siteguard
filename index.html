@@ -554,7 +554,8 @@
   /* ---------- Modal ---------- */
   .modal-backdrop{
     position:fixed; inset:0; background:rgba(6,10,16,.72); display:flex; align-items:center; justify-content:center;
-    padding:24px; z-index:50;
+    padding:24px; z-index:10050; /* above .app.is-fullscreen's z-index:9999 — this backdrop lives outside
+    #app in the DOM, so without this it renders hidden behind a fullscreen canvas (the "מסך מלא" bug) */
   }
   .modal-backdrop[hidden]{ display:none; }
   .modal{
@@ -632,7 +633,7 @@
   .modal.client-view .price-line{ display:none; }
 
   /* ---------- Professional sketch / print view ---------- */
-  .sketch-backdrop{ z-index:200; padding:0; }
+  .sketch-backdrop{ z-index:10200; padding:0; } /* stays above .app.is-fullscreen too, same reason as .modal-backdrop */
   .sketch-sheet{
     background:#fff; color:var(--ink-on-paper); width:100%; height:100%; max-height:none;
     border-radius:0; display:flex; flex-direction:column; overflow:hidden;
@@ -819,7 +820,7 @@
     content:''; position:absolute; top:2px; left:2px; width:8px; height:8px;
     border-radius:50%; background:var(--accent-2); border:2px solid var(--panel);
   }
-  .mobile-panel-backdrop{ position:fixed; inset:0; background:rgba(6,10,16,.55); z-index:130; }
+  .mobile-panel-backdrop{ position:fixed; inset:0; background:rgba(6,10,16,.55); z-index:10130; } /* above .app.is-fullscreen — same reason as .modal-backdrop */
   .mobile-panel-backdrop[hidden]{ display:none; }
   /* Dragging a room/device with pointer events (used everywhere on the canvas) must not
      also trigger the browser's native touch-scroll/pan on the same gesture. */
@@ -864,7 +865,7 @@
     .toolbar-group{ flex-wrap:nowrap; }
     .tb-status{ white-space:nowrap; }
     .palette, .inspector{
-      position:fixed; top:0; bottom:0; width:86vw; max-width:340px; z-index:140;
+      position:fixed; top:0; bottom:0; width:86vw; max-width:340px; z-index:10140; /* above .app.is-fullscreen — same reason as .modal-backdrop */
       box-shadow:0 0 28px rgba(6,10,16,0.35); transition:transform .22s ease;
       padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
     }
