@@ -2699,6 +2699,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return e;
   }
 
+  // Real iPhone Safari testing (after moving this app off claude.ai, where WebKit could finally be
+  // tested directly) showed Hebrew SVG <text> labels STILL rendering word-order-reversed even with
+  // this app's two previous fixes (.room-label's own direction:rtl;unicode-bidi:plaintext from
+  // before this project, and removing direction from the <svg> root in the session before this
+  // one). That rules out both: this isn't inheritance from an ancestor and it isn't the <svg>
+  // root's own direction — it's that this WebKit's SVG <text> renderer doesn't reliably run the
+  // Unicode Bidi Algorithm from CSS properties (direction/unicode-bidi) at all, no matter where
+  // they're declared. CSS can't fix a renderer that isn't consulting it.
+  // The fix moves the fix out of CSS entirely and into the TEXT ITSELF: wrapping a string in the
+  // Unicode Right-to-Left Isolate characters (U+2067 … U+2069) is plain text data, resolved by the
+  // same bidi reordering every browser already applies to render mixed-direction text correctly —
+  // the actual characters sent to the text shaper, not a style hint a buggy renderer can ignore.
+  // Every call site that sets textContent on a Hebrew-bearing SVG <text> (.room-label, .fence-len,
+  // .device-tag) should route through this instead of assigning the string directly.
+  function rtlIsolate(s){ return '⁧' + s + '⁩'; }
+
   var RESIZE_HANDLES = [
     { id:'nw', dx:0,   dy:0,   cur:'cur-nwse' },
     { id:'n',  dx:0.5, dy:0,   cur:'cur-ns' },
@@ -2775,7 +2791,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       var fontSize = Math.max(13, Math.min(19, Math.round(wpx/9)));
       var label = el('text', { x:r.x+wpx-10, y:r.y+fontSize+8, class:'room-label' + (r.label ? '' : ' placeholder'), 'font-size':fontSize });
-      label.textContent = r.label || 'לחצו פעמיים לשם החדר';
+      label.textContent = rtlIsolate(r.label || 'לחצו פעמיים לשם החדר');
       g.appendChild(label);
       if (hpx > 30) {
         var dim = el('text', { x:r.x+10, y:r.y+hpx-9, class:'room-dim' });
@@ -3031,7 +3047,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       var lmx = (f.x1+f.x2)/2 + nx*13, lmy = (f.y1+f.y2)/2 + ny*13;
       var lenLbl = el('text', { x:lmx, y:lmy, 'text-anchor':'middle', class:'fence-len' });
-      lenLbl.textContent = p2m(len).toFixed(1) + ' מ׳' + (f.type==='gate' ? ' · שער' : '');
+      lenLbl.textContent = rtlIsolate(p2m(len).toFixed(1) + ' מ׳' + (f.type==='gate' ? ' · שער' : ''));
       g.appendChild(lenLbl);
 
       if (isSel) {
@@ -3216,7 +3232,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       g.appendChild(icon);
 
       var tagLbl = el('text', { x:0, y:25, 'text-anchor':'middle', class:'device-tag' });
-      tagLbl.textContent = deviceTagLabel(d.type, tags[d.id], typeTotals[d.type]);
+      tagLbl.textContent = rtlIsolate(deviceTagLabel(d.type, tags[d.id], typeTotals[d.type]));
       g.appendChild(tagLbl);
 
       if (def.rotatable) {
