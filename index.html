@@ -2699,21 +2699,54 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return e;
   }
 
-  // Real iPhone Safari testing (after moving this app off claude.ai, where WebKit could finally be
-  // tested directly) showed Hebrew SVG <text> labels STILL rendering word-order-reversed even with
-  // this app's two previous fixes (.room-label's own direction:rtl;unicode-bidi:plaintext from
-  // before this project, and removing direction from the <svg> root in the session before this
-  // one). That rules out both: this isn't inheritance from an ancestor and it isn't the <svg>
-  // root's own direction — it's that this WebKit's SVG <text> renderer doesn't reliably run the
-  // Unicode Bidi Algorithm from CSS properties (direction/unicode-bidi) at all, no matter where
-  // they're declared. CSS can't fix a renderer that isn't consulting it.
-  // The fix moves the fix out of CSS entirely and into the TEXT ITSELF: wrapping a string in the
-  // Unicode Right-to-Left Isolate characters (U+2067 … U+2069) is plain text data, resolved by the
-  // same bidi reordering every browser already applies to render mixed-direction text correctly —
-  // the actual characters sent to the text shaper, not a style hint a buggy renderer can ignore.
-  // Every call site that sets textContent on a Hebrew-bearing SVG <text> (.room-label, .fence-len,
-  // .device-tag) should route through this instead of assigning the string directly.
-  function rtlIsolate(s){ return '⁧' + s + '⁩'; }
+  // Real iPhone Safari testing (possible only after moving this app off claude.ai, which wrapped
+  // every earlier test in its own viewer) proved TWO prior fixes wrong in a row: .room-label's own
+  // direction:rtl;unicode-bidi:plaintext (from before this project), and removing direction from
+  // the <svg> root entirely (an earlier session), and THEN Unicode RLI/PDI isolate characters
+  // (U+2067…U+2069, the previous version of this function) — Hebrew SVG <text> kept coming out
+  // word-order-reversed through all three. Every one of those fixes assumes the renderer runs SOME
+  // bidi algorithm that CSS or Unicode control characters can steer. The reversed .room-dim output
+  // next to it (an explicitly direction:ltr numeric string like "2.8 × 3.2 מ׳", which should need no
+  // reordering either way) is the tell: this WebKit's SVG <text> renderer isn't consulting bidi at
+  // all, for either direction — it just paints each character's glyph in raw logical (DOM) string
+  // order, left to right, always. A renderer that never looks at bidi can't be steered by it; CSS
+  // and invisible formatting characters are both silently ignored.
+  // Rather than assume that diagnosis, PROVE it once at startup: render two distinct Hebrew letters
+  // into a hidden probe <text> and ask the SVG DOM itself (getStartPositionOfChar — part of the SVG
+  // text API since SVG 1.1, supported everywhere including this WebKit) where each character
+  // actually painted. Correct bidi rendering draws the FIRST logical character furthest right
+  // (larger x, since RTL reading starts from the right); the raw-logical-order bug draws it
+  // furthest left instead. This is an empirical measurement of THIS engine's real behavior, not a
+  // browser/version guess, so it stays correct if a future WebKit release fixes the underlying bug.
+  var NEEDS_MANUAL_BIDI_REVERSAL = (function(){
+    try {
+      var plan = document.getElementById('plan');
+      var probe = el('text', { x:0, y:0, style:'opacity:0' });
+      probe.textContent = 'אב'; // two distinct Hebrew letters — no digits/punctuation to confuse it
+      plan.appendChild(probe);
+      var firstCharX = probe.getStartPositionOfChar(0).x;
+      var secondCharX = probe.getStartPositionOfChar(1).x;
+      plan.removeChild(probe);
+      return firstCharX < secondCharX; // true only on the raw-logical-order (buggy) renderer
+    } catch (e) {
+      return false; // probe itself unsupported/failed — fall back to the old (CSS-only) behavior
+    }
+  })();
+
+  // On a correctly-bidi SVG renderer, wrapping in Unicode Right-to-Left Isolate characters
+  // (U+2067…U+2069) is the spec-correct way to mark a run as RTL independent of CSS — kept as the
+  // default. On the engine the probe above just caught painting raw logical order with no bidi
+  // step at all, isolate characters do nothing (there's no bidi algorithm left to steer), so instead
+  // the string's character order is manually reversed so that THIS renderer's left-to-right raw
+  // paint lines up with correct right-to-left reading. Digit/decimal runs (room numbers, "2.8") are
+  // re-reversed back to their own normal order afterward — exactly like real bidi text keeps
+  // embedded numbers reading left-to-right inside an RTL phrase — so "חדר ילדים 1" still ends in a
+  // normal "1", not a mirrored one.
+  function rtlIsolate(s){
+    if (!NEEDS_MANUAL_BIDI_REVERSAL) return '⁧' + s + '⁩';
+    var reversed = s.split('').reverse().join('');
+    return reversed.replace(/[0-9.]+/g, function(run){ return run.split('').reverse().join(''); });
+  }
 
   var RESIZE_HANDLES = [
     { id:'nw', dx:0,   dy:0,   cur:'cur-nwse' },
