@@ -1,3 +1,13 @@
+<meta charset="utf-8">
+<!-- CRITICAL for mobile: without this, a phone browser renders the page in a fake ~980px
+     "desktop" viewport and shrinks everything to fit — none of the @media mobile-layout
+     rules below ever activate, the slide-in palette/inspector drawers and mobile toolbar
+     never appear, and every touch target ends up tiny. This one tag is the difference
+     between "unusable on a phone" and the mobile layout actually engaging. Published
+     through the Artifact tool this is redundant with the wrapper's own viewport meta
+     (harmless duplicate); opened directly as a file (GitHub Pages, a shared .html copy)
+     it's the ONLY source of a correct mobile viewport, since nothing else supplies one. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>G1 SiteGuard</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -299,14 +309,52 @@
   .tb-cta:hover{ box-shadow:0 0 0 1px var(--accent), 0 3px 14px rgba(201,131,47,0.5); }
   .btn-warn-subtle{ color:var(--danger); border-color:rgba(184,56,42,0.3); background:rgba(184,56,42,0.05); }
   .btn-warn-subtle:hover{ background:rgba(184,56,42,0.12); }
-  .canvas-scroll{ flex:1 1 auto; overflow:auto; position:relative; background:
+  /* The app chrome around it is RTL (Hebrew), but the plan itself is a standard Cartesian
+     drawing — north-up, X growing to the right, just like a map or any CAD canvas — and
+     browsers give an RTL `overflow:auto` element an entirely different (and, across engines,
+     inconsistently implemented) scrollLeft convention: 0 sits at the right/"start" edge and
+     goes NEGATIVE as the view moves left, instead of the universal 0-at-left/increases-
+     rightward convention every pan/zoom formula (ours included) is written against. That
+     mismatch is what made one-finger panning and the pinch-zoom anchor both feel like they
+     were fighting the user's fingers. Isolating the scrollable canvas as `direction:ltr` is
+     the standard fix for embedding a map/canvas-like widget inside an RTL app: it decouples
+     the drawing's own coordinate space from the surrounding UI's reading direction, so
+     scrollLeft behaves predictably and our zoom-anchor math (zoomAroundClientPoint, below)
+     is correct. `justify-content:flex-end` keeps the plan visually anchored to the right
+     edge when it's narrower than the viewport (unchanged from before — direction:ltr alone
+     would have flipped that to the left via flex-start). */
+  .canvas-scroll{ flex:1 1 auto; overflow:auto; position:relative; direction:ltr; background:
       radial-gradient(circle at 1px 1px, rgba(24,35,53,0.07) 1px, transparent 0) 0 0/22px 22px, var(--bg); }
-  .canvas-stage{ display:flex; align-items:flex-start; justify-content:flex-start; padding:26px; min-width:100%; min-height:100%; }
+  .canvas-stage{ display:flex; align-items:flex-start; justify-content:flex-end; padding:26px; min-width:100%; min-height:100%; }
   #plan{
     background:var(--paper);
     border-radius:var(--radius-m);
     box-shadow:0 14px 34px rgba(24,35,53,0.14), 0 2px 8px rgba(24,35,53,0.08);
-    transform-origin:top right;
+    /* Top-left, to match the standard (now direction:ltr) scrollLeft/scrollTop convention:
+       scaling grows the box down-and-right from a fixed top-left corner, so a plan-space
+       point's on-screen position is always (point * zoom - scrollOffset), independent of
+       zoom level. zoomAroundClientPoint() below relies on exactly this. */
+    transform-origin:top left;
+    /* IMPORTANT — do NOT put `direction:rtl` (or any direction) on this element.
+       #plan *is* the <svg> root (see the <svg id="plan"> tag below), not just a wrapping div.
+       An earlier version of this fix set direction:rtl here, reasoning that direction is "purely
+       a text/bidi property" with no effect on SVG geometry — true in the spec, but real iPhone
+       Safari has a long-standing WebKit bug where a `direction` declared on the <svg> ROOT
+       ELEMENT itself (not on a <text> or a wrapping HTML element) bleeds into how the renderer
+       lays out glyph runs for descendant text, mirroring/reordering characters — exactly the
+       "letters came out backwards" report, and only on real Safari, since Chromium (the only
+       engine this sandbox can run automated tests against) implements the spec correctly and
+       never showed the bug. This never happened before this session because the whole chain
+       (body → .canvas-scroll → #plan) was uniformly direction:rtl with no declared boundary
+       AT the <svg> tag; .canvas-scroll's direction:ltr switch (needed for correct scrollLeft/
+       zoom math, see above) made #plan the first element where a direction had to be declared,
+       and declaring it ON THE SVG ROOT is exactly what real Safari mishandles.
+       The fix: leave #plan with NO direction at all, and instead declare direction + unicode-
+       bidi explicitly on every individual <text> class that draws Hebrew (.room-label,
+       .fence-len, .device-tag — see each below). That is both correct per spec (direction is a
+       text property, so belongs on the text, not the SVG viewport) and avoids this Safari bug,
+       since none of those elements is the <svg> root. .room-dim is deliberately left LTR (it
+       draws "4.0 × 3.2 מ׳"-style numeric strings) and is unaffected either way. */
   }
   .room-rect{ stroke:var(--paper-line-strong); stroke-width:1.5; cursor:grab; }
   .room-rect.yard{ stroke-dasharray:7 5; stroke:#8a9e78; }
@@ -335,9 +383,25 @@
   .resize-handle.cur-nesw{ cursor:nesw-resize; }
   .resize-handle.cur-ns{ cursor:ns-resize; }
   .resize-handle.cur-ew{ cursor:ew-resize; }
-  .room-delete{ cursor:pointer; }
-  .room-delete circle{ fill:var(--danger); }
-  .room-delete text{ fill:#fff; font-size:11px; font-weight:700; text-anchor:middle; dominant-baseline:central; pointer-events:none; font-family:var(--font-body); }
+  /* The visible resize dot stays small and precise (good for a mouse); the actual hit area is
+     a separate, much bigger invisible circle drawn on top of it — see renderRooms()/
+     renderFences(). It needs its own cursor-by-direction rule since it doesn't share the
+     .resize-handle class (that class also carries the visible dot's fill/stroke, which the
+     hit circle must NOT inherit — it has to stay transparent). */
+  .resize-handle-hit{ cursor:default; }
+  .resize-handle-hit.cur-nwse{ cursor:nwse-resize; }
+  .resize-handle-hit.cur-nesw{ cursor:nesw-resize; }
+  .resize-handle-hit.cur-ns{ cursor:ns-resize; }
+  .resize-handle-hit.cur-ew{ cursor:ew-resize; }
+  .resize-handle-hit.cur-move{ cursor:move; }
+  /* Both the delete (✕) and resize (⤢) round badges share this layout: a small visible disc
+     (the FIRST circle) plus a second, larger transparent circle stacked on top purely to
+     enlarge the touch target without enlarging the visible button — so only :first-child
+     gets a fill, never a blanket "every circle in here" rule. */
+  .room-delete, .room-resize-btn{ cursor:pointer; }
+  .room-delete circle:first-child{ fill:var(--danger); }
+  .room-resize-btn circle:first-child{ fill:var(--accent-2); }
+  .room-delete text, .room-resize-btn text{ fill:#fff; font-size:11px; font-weight:700; text-anchor:middle; dominant-baseline:central; pointer-events:none; font-family:var(--font-body); }
   #plan.draw-mode{ cursor:crosshair; }
   .draw-preview{ fill:rgba(47,143,130,0.12); stroke:var(--accent-2); stroke-width:2; stroke-dasharray:5 4; pointer-events:none; }
 
@@ -353,6 +417,10 @@
   .device-tag{
     font-family:var(--font-mono); font-weight:700; font-size:8.5px; fill:#5a5340;
     paint-order:stroke fill; stroke:#ffffff; stroke-width:3px; stroke-linejoin:round; pointer-events:none;
+    /* Many device codes are Hebrew abbreviations ("מגע", "עשן", "גדר", "וילון-פ"...) — same
+       mobile-Safari SVG-text bidi fix as .room-label (direction:rtl alone isn't reliable there
+       without unicode-bidi:plaintext too). */
+    direction:rtl; unicode-bidi:plaintext;
   }
   .rotate-guide{ stroke:var(--accent-2); opacity:.4; stroke-width:1.2; stroke-dasharray:2 3; pointer-events:none; }
   .rotate-handle-hit{ cursor:grab; }
@@ -371,6 +439,21 @@
   .rec-cone{ fill:var(--accent-3); opacity:.10; pointer-events:none; stroke:var(--accent-3); stroke-width:.6; stroke-dasharray:2 2; }
   .rec-cable-ghost{ fill:none; stroke:var(--accent-3); stroke-width:1.3; stroke-dasharray:4 3; opacity:.55; pointer-events:none; }
   @keyframes recPulse{ 0%,100%{ opacity:.85; r:16; } 50%{ opacity:.25; r:20; } }
+  /* A ghost marker's title+reason used to live ONLY in a native SVG <title> hover tooltip —
+     invisible on touch, where there's no hover, so a mobile agent had no way to know what a
+     marker on the canvas was or why it was suggested before tapping it added the device sight
+     unseen. Tapping a ghost now opens this small card instead of adding immediately: same
+     title+reason the recommendations LIST already shows, plus an explicit add/dismiss choice —
+     works identically for a mouse click too, so there's one consistent behavior everywhere
+     instead of a desktop-only hover shortcut. */
+  .rec-popover{
+    position:fixed; z-index:620; max-width:250px; background:var(--panel-2); border:1px solid var(--line);
+    border-right:3px solid var(--accent-3); border-radius:var(--radius-s); padding:10px 11px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.18); font-family:var(--font-body);
+  }
+  .rec-popover b{ display:block; font-size:12.5px; margin-bottom:3px; color:var(--ink-on-dark); }
+  .rec-popover span{ display:block; color:var(--ink-dim); font-size:11.5px; line-height:1.5; margin-bottom:9px; }
+  .rec-popover .rec-popover-actions{ display:flex; gap:7px; justify-content:flex-end; }
   .opening-jamb{ stroke:var(--ink-on-paper); stroke-width:3; pointer-events:none; }
   .door-leaf{ stroke:var(--ink-on-paper); stroke-width:1.6; pointer-events:none; }
   .door-leaf.door_int{ stroke:#8a8471; stroke-dasharray:3 2; }
@@ -401,6 +484,9 @@
   .fence-len{
     font-family:var(--font-mono); font-weight:600; font-size:9px; fill:#5a5340;
     paint-order:stroke fill; stroke:#ffffff; stroke-width:3.5px; stroke-linejoin:round; pointer-events:none;
+    /* A gate's length label appends the Hebrew word "שער" (e.g. "2.5 מ׳ · שער") — same
+       mobile-Safari SVG-text bidi fix as .room-label. */
+    direction:rtl; unicode-bidi:plaintext;
   }
 
   .drop-ok #plan{ outline:2px dashed var(--accent-2); outline-offset:3px; }
@@ -754,7 +840,34 @@
   }
   .np-choice:hover{ border-color:var(--accent-2); }
   .np-choice.active{ background:var(--accent-2); border-color:var(--accent-2); color:#fff; }
+  /* `position:fixed;inset:0` here was a no-op on its own: .app is already height:100% with
+     no page scroll around it (see body{height:100%} / overflow:hidden up top), so this class
+     changed nothing the agent could actually see — confirmed as the "fullscreen button does
+     nothing" complaint. The native Fullscreen API call below it is best-effort only (blocked
+     inside an embedded preview, unsupported in several mobile Safari/PWA contexts, and a no-op
+     anyway once the app is already running installed with no browser chrome to hide), so the
+     real, always-working effect has to come from CSS: hide the header and the desktop side
+     panels, and collapse the canvas toolbar down to just what's still useful while precisely
+     drawing — the view controls (this same button, now reading "יציאה ממסך מלא", plus zoom
+     and gesture help), the floor switcher if this is a multi-floor house, and the mobile
+     palette/inspector drawer buttons (so adding a device or checking a room's properties still
+     works without leaving fullscreen) — freeing the rest of the toolbar's and panels' space for
+     the drawing itself. */
   .app.is-fullscreen{ position:fixed; inset:0; z-index:9999; background:var(--bg); }
+  .app.is-fullscreen .topbar{ display:none; }
+  /* :not(.mobile-open) is the fix for a real bug: the palette/inspector drawers are supposed to
+     stay reachable in fullscreen via the 🧰 אביזרים / 📋 מאפיינים buttons right below (that's the
+     whole point of those buttons staying visible here, and of .palette/.inspector's z-index:10140
+     being explicitly set higher than .app.is-fullscreen's 9999 — see the mobile-drawer CSS below).
+     An earlier version of this rule hid EVERY .panel unconditionally, including one a viewer had
+     just opened with .mobile-open — display:none always wins over a sibling rule no matter its
+     z-index, so tapping either button dimmed the backdrop but the drawer itself never appeared.
+     Excluding .mobile-open here is what lets openMobilePanel()'s class toggle actually show it. */
+  .app.is-fullscreen .panel:not(.mobile-open){ display:none; }
+  .app.is-fullscreen .canvas-toolbar > *{ display:none; }
+  .app.is-fullscreen .canvas-toolbar > .mobile-only-btn{ display:inline-flex; }
+  .app.is-fullscreen .canvas-toolbar > #floorTabs:not([hidden]){ display:flex; }
+  .app.is-fullscreen .canvas-toolbar > .toolbar-group[aria-label="תצוגה"]{ display:flex; }
   @media print{
     .app{ display:none !important; }
     .modal-backdrop{ position:static; background:none; padding:0; }
@@ -825,7 +938,7 @@
   /* Dragging a room/device with pointer events (used everywhere on the canvas) must not
      also trigger the browser's native touch-scroll/pan on the same gesture. */
   #plan .room-rect, #plan .item-g, #plan .fence-hit, #plan .resize-handle,
-  #plan .rotate-handle-hit, #plan .room-delete{ touch-action:none; }
+  #plan .rotate-handle-hit, #plan .room-delete, #plan .room-resize-btn, #plan .resize-handle-hit{ touch-action:none; }
 
   /* tablet: shrink side panels, and let the customer/address fields wrap onto their
      own full-width row instead of disappearing, so they stay editable on any device */
@@ -1097,6 +1210,7 @@
             <span class="num" id="zoomLabel" style="font-size:11.5px;color:var(--ink-dim);min-width:38px;text-align:center;display:inline-block">100%</span>
             <button class="btn btn-ghost btn-sm" id="zoomIn" aria-label="הגדל תצוגה">＋</button>
           </div>
+          <button class="btn btn-ghost btn-sm" id="btnGestureHelp" title="איך לנווט, להגדיל ולערוך בשרטוט" aria-label="עזרה בניווט בשרטוט">🖐️ עזרה בניווט</button>
         </div>
 
         <div class="toolbar-sep"></div>
@@ -1116,6 +1230,12 @@
           <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none">
           <button class="btn btn-ghost btn-sm" id="btnLoadSample">📄 טען דוגמה</button>
           <button class="btn btn-warn-subtle btn-sm" id="btnClear">🗑️ נקה שרטוט</button>
+          <!-- Hidden until JS decides installation actually applies here (see the install-prompt
+               block near the end of the script): a real install affordance on Android/Chrome once
+               the browser's own beforeinstallprompt fires, or manual iOS instructions on an iPhone/
+               iPad, since iOS Safari never fires that event at all. Never shown when the page is
+               already running installed, or on a desktop browser that supports neither path. -->
+          <button type="button" class="btn btn-accent3 btn-sm" id="btnInstallApp" title="התקנת G1 SiteGuard כאפליקציה עם אייקון במסך הבית — עובד גם ללא חיבור לאינטרנט" hidden>📲 התקנת אפליקציה</button>
         </div>
       </div>
       <div class="canvas-scroll" id="canvasScroll">
@@ -1450,6 +1570,33 @@
         <p class="sketch-footnote">שרטוט זה הופק ע״י G1 SiteGuard לצרכי תכנון והתקנה בלבד; המידות מבוססות על נתוני השטח שהוזנו ויש לאמת אותן בשטח בפועל טרם ביצוע תשתיות.</p>
       </aside>
     </div>
+  </div>
+</div>
+
+<!-- iOS "Add to Home Screen" instructions — shown instead of a real native prompt, since iOS
+     Safari never fires beforeinstallprompt the way Android/Chrome does; this is the only install
+     path available there, so the button falls back to walking the agent through it by hand. -->
+<div class="modal-backdrop" id="installBackdrop" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>📲 התקנת האפליקציה</h2>
+      <button class="modal-close" id="installClose" aria-label="סגור">✕</button>
+    </div>
+    <div class="modal-body" id="installBody"></div>
+  </div>
+</div>
+
+<!-- Gesture/navigation help — a short, always-available reference for how to pan, zoom, select
+     and edit on the sketch canvas, aimed squarely at the "it's not intuitive on a phone"
+     feedback: rather than a one-time coach-mark the agent might miss or dismiss by accident,
+     this is a normal toolbar button they can reopen any time they forget a gesture. -->
+<div class="modal-backdrop" id="gestureHelpBackdrop" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🖐️ עזרה בניווט בשרטוט</h2>
+      <button class="modal-close" id="gestureHelpClose" aria-label="סגור">✕</button>
+    </div>
+    <div class="modal-body" id="gestureHelpBody"></div>
   </div>
 </div>
 
@@ -2592,6 +2739,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   function renderRooms(){
     roomsLayer.innerHTML = '';
+    var __ts = planEffScale(); // computed once for the whole pass — see the note on touchHitTransform
     visibleRooms().forEach(function(r){
       var isSel = selected && selected.kind==='room' && selected.id===r.id;
       var wpx = m2p(r.w), hpx = m2p(r.h);
@@ -2636,16 +2784,67 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
 
       if (isSel && roomEditId === r.id) {
+        // Cap every corner/edge handle's hit radius to half the spacing between adjacent handles
+        // (e.g. 'nw' to 'n' is wpx/2 apart) so enlarging them can never make two neighbors eat
+        // each other's tap on a small room.
+        var adjHandleCap = touchHitCapPx(0.5 * Math.min(wpx, hpx), __ts);
         RESIZE_HANDLES.forEach(function(h){
           var hx = r.x + wpx*h.dx, hy = r.y + hpx*h.dy;
-          var handle = el('circle', { cx:hx, cy:hy, r:6, class:'resize-handle ' + h.cur });
-          handle.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); ev.preventDefault(); startResizeRoom(ev, r, h.id); });
+          // The visible handle stays a small, precise 6px dot (desktop cursor-driven resize
+          // wants a tight target), but the actual pointer hit-area is a much bigger invisible
+          // circle on top — a 12px dot is far under any touch-target guideline, and relying on
+          // a tiny circle is exactly the kind of "fiddly on a phone" friction this fixes.
+          var handleCap = adjHandleCap;
+          if (h.id === 'ne') {
+            // The delete badge (still shown whenever the room is selected, edit mode or not) sits
+            // almost exactly at this same corner — keep this one handle from growing into it.
+            handleCap = Math.min(handleCap, touchHitCapPx(3, __ts));
+          }
+          var handle = el('circle', { cx:hx, cy:hy, r:6, class:'resize-handle ' + h.cur, 'pointer-events':'none' });
+          var handleHit = el('circle', { cx:hx, cy:hy, r:16, class:'resize-handle-hit ' + h.cur, fill:'transparent', style:touchHitTransform(16, __ts, handleCap) });
+          handleHit.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); ev.preventDefault(); startResizeRoom(ev, r, h.id); });
           g.appendChild(handle);
+          g.appendChild(handleHit);
         });
       }
+      // A plain tap only selects the room — resizing needs "corner-edit" mode (roomEditId),
+      // normally reached by a double-tap/double-click. That gesture is invisible and easy to
+      // miss, especially on a phone where it can compete with the browser's own double-tap-to-
+      // zoom — so a selected-but-not-yet-editing room also gets an explicit, discoverable
+      // "ערוך מידות" button right next to the delete button, doing exactly what the double-tap
+      // does. The double-tap itself keeps working too, as a shortcut for anyone who knows it.
+      if (isSel && roomEditId !== r.id) {
+        // Anchor stays exactly where it always was (26 units from the delete badge) — an earlier
+        // version of this fix instead PUSHED this badge further from the delete badge to make
+        // room for both full-size hit circles, which on a small room shoved it right over the
+        // room's own selection tap and caused a real regression (selecting a room jumped straight
+        // into edit mode). Capping the radius instead of moving the badge keeps it exactly where
+        // an agent already expects it.
+        var resizeBadge = el('g', { class:'room-resize-btn', transform:'translate(' + (r.x+wpx-28) + ',' + (r.y+2) + ')' });
+        resizeBadge.appendChild(el('circle', { cx:0, cy:0, r:9 }));
+        resizeBadge.appendChild(el('circle', { cx:0, cy:0, r:16, fill:'transparent', style:touchHitTransform(16, __ts, touchHitCapPx(26, __ts)) }));
+        var resizeTxt = el('text', { x:0, y:1 }); resizeTxt.textContent = '⤢';
+        resizeBadge.appendChild(resizeTxt);
+        var resizeTitle = document.createElementNS(svgns, 'title');
+        resizeTitle.textContent = 'עריכת מידות החדר — חשיפת נקודות גרירה בפינות ובצלעות';
+        resizeBadge.appendChild(resizeTitle);
+        resizeBadge.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
+        resizeBadge.addEventListener('click', function(ev){
+          ev.stopPropagation();
+          roomEditId = r.id;
+          render();
+          revealProps();
+        });
+        g.appendChild(resizeBadge);
+      }
       if (isSel) {
+        // Capped against whichever neighbor is actually showing right now: the resize badge when
+        // not yet editing (26 units away), or the 'ne' corner handle once editing (3 units away,
+        // since this badge sits almost exactly on that corner).
+        var delCap = roomEditId === r.id ? touchHitCapPx(3, __ts) : touchHitCapPx(26, __ts);
         var delBadge = el('g', { class:'room-delete', transform:'translate(' + (r.x+wpx-2) + ',' + (r.y+2) + ')' });
         delBadge.appendChild(el('circle', { cx:0, cy:0, r:9 }));
+        delBadge.appendChild(el('circle', { cx:0, cy:0, r:16, fill:'transparent', style:touchHitTransform(16, __ts, delCap) }));
         var delTxt = el('text', { x:0, y:1 }); delTxt.textContent = '✕';
         delBadge.appendChild(delTxt);
         delBadge.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
@@ -2795,6 +2994,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // with a distinct look for gates, draggable endpoints, and an on-drawing length label.
   function renderFences(){
     fencesLayer.innerHTML = '';
+    var __ts = planEffScale(); // computed once for the whole pass — see the note on touchHitTransform
     visibleFences().forEach(function(f){
       var isSel = selected && selected.kind==='fence' && selected.id===f.id;
       var dx = f.x2-f.x1, dy = f.y2-f.y1;
@@ -2835,14 +3035,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       g.appendChild(lenLbl);
 
       if (isSel) {
+        // The two endpoint handles and the midpoint delete badge are each len/2 apart — cap all
+        // three hit circles against that shared distance so a short fence segment can't make them
+        // overlap and steal each other's tap.
+        var fenceCap = touchHitCapPx(len / 2, __ts);
         [[f.x1,f.y1,'a'],[f.x2,f.y2,'b']].forEach(function(p){
-          var handle = el('circle', { cx:p[0], cy:p[1], r:6, class:'resize-handle cur-move' });
-          handle.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); ev.preventDefault(); startResizeFence(ev, f, p[2]); });
+          // Same small-visible-dot + big-invisible-hit-circle split as the room resize
+          // handles — a fence endpoint is exactly the kind of small target that's hard to
+          // grab precisely with a fingertip.
+          var handle = el('circle', { cx:p[0], cy:p[1], r:6, class:'resize-handle cur-move', 'pointer-events':'none' });
+          var handleHit = el('circle', { cx:p[0], cy:p[1], r:16, class:'resize-handle-hit cur-move', fill:'transparent', style:touchHitTransform(16, __ts, fenceCap) });
+          handleHit.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); ev.preventDefault(); startResizeFence(ev, f, p[2]); });
           g.appendChild(handle);
+          g.appendChild(handleHit);
         });
         var dmx = (f.x1+f.x2)/2, dmy = (f.y1+f.y2)/2;
         var delBadge = el('g', { class:'room-delete', transform:'translate(' + dmx + ',' + dmy + ')' });
         delBadge.appendChild(el('circle', { cx:0, cy:0, r:9 }));
+        delBadge.appendChild(el('circle', { cx:0, cy:0, r:16, fill:'transparent', style:touchHitTransform(16, __ts, fenceCap) }));
         var delTxt = el('text', { x:0, y:1 }); delTxt.textContent = '✕';
         delBadge.appendChild(delTxt);
         delBadge.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
@@ -2953,6 +3163,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   function renderDevices(){
     devicesLayer.innerHTML = '';
+    var __ts = planEffScale(); // computed once for the whole pass — see the note on touchHitTransform
     // Tags/totals are computed across the WHOLE house (every floor), not just the visible
     // one — so e.g. "PIR-3" always refers to the same physical unit no matter which floor
     // is currently on screen, matching the single consolidated BOM.
@@ -3015,7 +3226,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         }
         var rx = handleDist * Math.cos((d.rot-90)*Math.PI/180);
         var ry = handleDist * Math.sin((d.rot-90)*Math.PI/180);
-        var rhHit = el('circle', { cx:rx, cy:ry, r:11, fill:'transparent', class:'rotate-handle-hit' });
+        var rhHit = el('circle', { cx:rx, cy:ry, r:16, fill:'transparent', class:'rotate-handle-hit', style:touchHitTransform(16, __ts) });
         rhHit.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); startRotateDevice(ev, d); });
         g.appendChild(rhHit);
         var rh = el('g', { transform:'translate(' + rx.toFixed(1) + ',' + ry.toFixed(1) + ')', class:'rotate-handle', style:'pointer-events:none' });
@@ -3590,6 +3801,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
 
     // ---- perimeter fence / gate coverage ----
+    // A property with more than one uncovered run/gate produces several of these — and
+    // without a distinguishing label they render as visually IDENTICAL cards (same title,
+    // same reason text). An agent who just clicked "+ הוסף" on one then sees another card
+    // that reads exactly the same and reasonably assumes it's the one they just handled —
+    // that's the "the add option is still there" confusion. Numbering each run/gate (shared
+    // between a gate's sensor and its camera suggestion, so "שער 1" ties both together)
+    // makes every card text-distinct while still visible, so a fully-handled one is
+    // unambiguously gone and a different one is unambiguously a different one.
+    var fenceSegNum = 0, fenceGateNum = 0;
     (restrictToDoorAndPir ? [] : fences).forEach(function(f){
       var gateRadius = m2p(4), runRadius = m2p(6), camRadius = m2p(10);
       var sensorRadius = f.type === 'gate' ? gateRadius : runRadius;
@@ -3598,16 +3818,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (hasSensor || hasCamCov) return;
       var midX = (f.x1+f.x2)/2, midY = (f.y1+f.y2)/2;
       if (f.type === 'gate'){
-        push('fence_sensor', midX, midY, 0, 'critical', 'גלאי גדר — שער',
+        fenceGateNum++;
+        push('fence_sensor', midX, midY, 0, 'critical', 'גלאי גדר — שער ' + fenceGateNum,
           'שער בגדר ההיקפית ללא כיסוי — מוצע גלאי גדר/קרן שבירה במרכז השער. הגדר וההיקף משרתים את הנכס כולו ואינם תלויי-קומה.', true);
         var dx = f.x2-f.x1, dy = f.y2-f.y1, len = Math.hypot(dx,dy) || 1;
         var nx = -dy/len, ny = dx/len;
         var camPt = { x: midX + nx*m2p(3), y: midY + ny*m2p(3) };
         var farPt = { x: midX - nx*m2p(3), y: midY - ny*m2p(3) };
-        push('cam_out', camPt.x, camPt.y, aimRot(camPt, farPt), camSev('warning'), 'מצלמת חוץ — שער',
+        push('cam_out', camPt.x, camPt.y, aimRot(camPt, farPt), camSev('warning'), 'מצלמת חוץ — שער ' + fenceGateNum,
           'מומלץ כיסוי מצלמה נוסף על השער לזיהוי כניסה/יציאת רכבים ואנשים.', true);
       } else {
-        push('fence_sensor', midX, midY, 0, 'warning', 'גלאי גדר — מקטע',
+        fenceSegNum++;
+        push('fence_sensor', midX, midY, 0, 'warning', 'גלאי גדר — מקטע ' + fenceSegNum,
           'מקטע גדר ללא כיסוי גלאי גדר או מצלמה בקרבתו — מוצע גלאי גדר/קרן שבירה במרכז המקטע. הגדר וההיקף משרתים את הנכס כולו ואינם תלויי-קומה.', true);
       }
     });
@@ -3823,13 +4045,84 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       g.appendChild(icon);
       g.appendChild(el('circle', { cx:9, cy:-9, r:6, class:'rec-plus-ring' }));
       g.appendChild(el('path', { d:'M9,-12 L9,-6 M6,-9 L12,-9', style:'stroke:var(--accent-3);stroke-width:1.6;stroke-linecap:round' }));
+      // A modest invisible hit-area on top of the small visible badge — same "bigger tap target,
+      // untouched visual size" idea used for the room/fence/device handles, kept un-capped here
+      // (unlike those) since ghost markers are placed by the recommendation engine with real
+      // spacing between them, not jammed into a fixed small layout the way a room's own corner
+      // handles are.
+      g.appendChild(el('circle', { cx:0, cy:0, r:20, fill:'transparent' }));
       var titleEl = document.createElementNS(svgns, 'title');
-      titleEl.textContent = r.title + ' — ' + r.reason + ' (לחצו להוספה)';
+      titleEl.textContent = r.title + ' — ' + r.reason + ' (לחצו לפרטים ולהוספה)';
       g.appendChild(titleEl);
-      g.addEventListener('click', function(ev){ if (suppressNextSvgClick) { return; } ev.stopPropagation(); acceptRecommendation(r.recId); });
+      // Used to add the device the instant it was tapped — meaning the ONLY place an agent could
+      // learn what a marker even was, or why it was suggested, was this very <title> tooltip,
+      // which never shows on touch (no hover state there). A tap now opens a small card with the
+      // same title+reason the recommendations list already shows, plus an explicit add/dismiss —
+      // same behavior for mouse and touch alike, instead of a desktop-only hover shortcut hiding
+      // the explanation specifically where a phone agent needed it most.
+      g.addEventListener('click', function(ev){ if (suppressNextSvgClick) { return; } ev.stopPropagation(); showRecPopover(r, g); });
       layer.appendChild(g);
     });
   }
+
+  // Plain fixed-position HTML card (not part of the SVG, so renderRecsGhosts()'s innerHTML reset
+  // never touches it) shown when a recommendation ghost marker is tapped. Lazily created on first
+  // use rather than living in the static markup, since nothing else needs to know about it.
+  var recPopoverEl = null;
+  function recPopover(){
+    if (!recPopoverEl) {
+      recPopoverEl = document.createElement('div');
+      recPopoverEl.className = 'rec-popover';
+      recPopoverEl.hidden = true;
+      // Clicks inside the card (the add/dismiss buttons) must not bubble to the window-level
+      // listener below, which treats any outside tap/scroll as "dismiss".
+      recPopoverEl.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
+      recPopoverEl.addEventListener('click', function(ev){ ev.stopPropagation(); });
+      document.body.appendChild(recPopoverEl);
+    }
+    return recPopoverEl;
+  }
+  function hideRecPopover(){
+    if (recPopoverEl) { recPopoverEl.hidden = true; recPopoverEl.innerHTML = ''; }
+  }
+  function showRecPopover(r, anchorEl){
+    var pop = recPopover();
+    pop.innerHTML = '';
+    var titleEl = document.createElement('b'); titleEl.textContent = r.title;
+    var reasonEl = document.createElement('span'); reasonEl.textContent = r.reason;
+    var actions = document.createElement('div'); actions.className = 'rec-popover-actions';
+    var addBtn = document.createElement('button');
+    addBtn.type = 'button'; addBtn.className = 'btn btn-accent3 btn-sm';
+    addBtn.textContent = '+ הוסף';
+    addBtn.addEventListener('click', function(ev){ ev.stopPropagation(); hideRecPopover(); acceptRecommendation(r.recId); });
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button'; closeBtn.className = 'btn btn-ghost btn-sm';
+    closeBtn.textContent = 'סגירה';
+    closeBtn.addEventListener('click', function(ev){ ev.stopPropagation(); hideRecPopover(); });
+    actions.appendChild(addBtn); actions.appendChild(closeBtn);
+    pop.appendChild(titleEl); pop.appendChild(reasonEl); pop.appendChild(actions);
+    pop.hidden = false;
+    var anchorRect = anchorEl.getBoundingClientRect();
+    // Measure the card itself only AFTER it has real content and is unhidden — its size depends
+    // on the (variable-length) title/reason text, so it can't be known up front.
+    var margin = 8;
+    var popRect = pop.getBoundingClientRect();
+    var left = anchorRect.left + anchorRect.width / 2 - popRect.width / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - popRect.width - margin));
+    var top = anchorRect.top - popRect.height - 10;
+    if (top < margin) top = anchorRect.bottom + 10; // not enough room above -> flip below
+    top = Math.min(top, window.innerHeight - popRect.height - margin);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  }
+  // Any tap/click outside the card (the canvas, a toolbar button, scrolling the panel) dismisses
+  // it — the same "tap away to close" behavior as the mobile palette/inspector drawers already
+  // use elsewhere in this app. Capture phase so it runs even when the canvas's own click handlers
+  // below call stopPropagation() on themselves.
+  document.addEventListener('pointerdown', function(ev){
+    if (recPopoverEl && !recPopoverEl.hidden && !recPopoverEl.contains(ev.target)) hideRecPopover();
+  }, true);
+  window.addEventListener('scroll', function(){ hideRecPopover(); }, true);
 
   var potentialScore = null;
   function refreshRecommendations(){
@@ -3951,6 +4244,50 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     refreshRecommendations();
   }
 
+  // A lighter re-render for the HOT path of an active drag/resize/rotate — called on every
+  // single pointermove tick while a finger or mouse is down. The full render() above also
+  // reruns runGuidance()/computeChecksAndScore() (a ~180-line whole-plan security-score scan)
+  // and, whenever the recommendations panel is open, refreshRecommendations() (which calls
+  // computeRecommendations(), a further ~300-line whole-plan analysis, TWICE per call — once
+  // for the real recommendation list, once more just to preview the score if they were all
+  // accepted). Doing that on every pixel of movement was the actual cause of "moving/resizing
+  // a room feels too fast" — it's not a speed bug at all, it's dropped frames: the device
+  // can't keep up, the browser coalesces the backlog of pointermove events, and the room
+  // visibly jumps ahead in bursts instead of tracking the finger smoothly. This keeps only the
+  // cheap per-tick work — redrawing the moved/resized element and the few things that visibly
+  // depend on it moving in real time (attached openings, cables, the live width/height in the
+  // properties panel) — and the move handlers below call the full render() once at drag END
+  // (in their up() handler) so the security score, BOM and recommendations are still exactly
+  // correct the moment the agent lets go, just not recomputed 60 times a second while dragging.
+  function renderLive(){
+    applyFloorViewBox();
+    renderRooms();
+    renderFurniture();
+    renderFences();
+    renderOpenings();
+    renderDevices();
+    renderCables();
+    renderProps();
+  }
+
+  // On top of trimming renderLive()'s own work, cap it to at most one call per animation
+  // frame. A touchmove stream can fire well above the screen's refresh rate (and pointermove
+  // likewise under a fast mouse), so without this, several ticks' worth of renderLive() calls
+  // could still pile up faster than the browser can paint — the position data itself (r.x, r.y,
+  // ...) is already updated synchronously by the caller before this is scheduled, so whichever
+  // frame actually gets to run always paints the LATEST position; nothing is ever lost, only
+  // redundant in-between paints are skipped. flushScheduledRenderLive() is for the up()
+  // handlers: it cancels any paint still pending so the drag-end render() below always runs
+  // last and is never clobbered by a stale queued frame.
+  var liveRenderHandle = null;
+  function scheduleRenderLive(){
+    if (liveRenderHandle) return;
+    liveRenderHandle = requestAnimationFrame(function(){ liveRenderHandle = null; renderLive(); });
+  }
+  function flushScheduledRenderLive(){
+    if (liveRenderHandle){ cancelAnimationFrame(liveRenderHandle); liveRenderHandle = null; }
+  }
+
   /* ============================= drag / resize / rotate ============================= */
   function svgPoint(ev){
     var pt = svg.createSVGPoint();
@@ -4023,11 +4360,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       r.x = Math.max(0, ox + (p.x - p0.x));
       r.y = Math.max(0, oy + (p.y - p0.y));
       applyOpeningAttachments(attachments, r);
-      render();
+      scheduleRenderLive();
     }
     function up(){
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
+      flushScheduledRenderLive();
+      render(); // full re-render once, now that the drag is actually over — see renderLive()
       // A plain tap or a completed drag just leaves the room selected — see the note above
       // selectItem(). Only a genuine double-tap (same room, within the window below, no
       // movement in between) is a deliberate "let me edit this" gesture, so only that one
@@ -4073,9 +4412,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       r.w = p2m(right - left);
       r.h = p2m(bottom - top);
       applyOpeningAttachments(attachments, r);
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4087,9 +4426,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function move(e){
       var p = svgPoint(e);
       o.x = p.x; o.y = p.y;
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4104,9 +4443,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var p = svgPoint(e);
       var ddx = p.x-p0.x, ddy = p.y-p0.y;
       f.x1 = ox1+ddx; f.y1 = oy1+ddy; f.x2 = ox2+ddx; f.y2 = oy2+ddy;
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4117,9 +4456,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function move(e){
       var p = svgPoint(e);
       if (end === 'a') { f.x1 = p.x; f.y1 = p.y; } else { f.x2 = p.x; f.y2 = p.y; }
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4131,9 +4470,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function move(e){
       var p = svgPoint(e);
       d.x = p.x; d.y = p.y;
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4143,9 +4482,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var p = svgPoint(e);
       var ang = Math.atan2(p.y - d.y, p.x - d.x) * 180/Math.PI + 90;
       d.rot = Math.round(ang / 5) * 5;
-      render();
+      scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); }
+    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4291,6 +4630,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function selectItem(kind, id){
     if (roomEditId && !(kind === 'room' && id === roomEditId)) roomEditId = null;
     selected = kind ? { kind:kind, id:id } : null;
+    hideRecPopover();
     render();
   }
   function revealProps(){
@@ -5004,13 +5344,184 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     placeAtPoint(type, svgPoint(ev));
   });
 
+  /* ============================= touch-target scale compensation ============================= */
+  // Raising the hit-circle radius (16 units) and the zoom cap (below) still wasn't enough on its
+  // own: the <svg id="plan"> always carries a FIXED viewBox ("0 off 1000 680") no matter how wide
+  // its on-screen box actually is, so on a narrow phone the whole plan is already compressed by
+  // (svg's rendered CSS width / 1000) before `zoom` ever factors in — on a typical phone that's
+  // roughly a 0.3x squeeze, which alone was eating almost all of the radius bump. Rather than
+  // only hoping an agent zooms in far enough to compensate, every precision touch target (resize
+  // handles, the room/fence delete badge, the room resize badge, the device rotate handle) now
+  // carries its OWN inverse-scale correction, computed from the plan's current real-world
+  // compression, so its on-screen size stays pinned at TOUCH_HIT_PX regardless of zoom level or
+  // screen width — the visible dot/badge is untouched and can stay small and unobtrusive; only
+  // the invisible hit area underneath is kept finger-sized. Standard pattern (iOS HIG explicitly
+  // recommends exactly this: a small visible control padded by a larger invisible tap area).
+  var PLAN_VIEWBOX_W = 1000; // must match the "1000" in applyFloorViewBox()'s viewBox string
+  var TOUCH_HIT_PX = 22; // desired on-screen RADIUS in CSS px -> 44px diameter (WCAG/HIG minimum)
+  function planEffScale(){
+    var r = svg.getBoundingClientRect();
+    return (r && r.width > 0) ? (r.width / PLAN_VIEWBOX_W) : 1;
+  }
+  // `baseR` is the hit-circle's own r="" attribute (16 for all of them today). Returns a CSS
+  // transform string that cancels the plan's current compression so the circle lands at a
+  // TOUCH_HIT_PX radius on screen, scaling around its own center (fill-box) so it never shifts
+  // position. `scale`, when passed, is a planEffScale() value the caller already computed this
+  // render pass — always prefer that over recomputing here. planEffScale() forces a synchronous
+  // layout read (getBoundingClientRect), and calling it once per hit-circle (up to ~10+ per room,
+  // across every room in the house) measurably slowed render() down. Each render function now
+  // reads the scale ONCE up front and threads it through instead.
+  //
+  // `capPx`, when passed, is the largest radius that's actually safe for THIS target's nearest
+  // neighbor (see touchHitCapPx below). A first attempt at this fix pinned every target to the
+  // full 44px ideal unconditionally, which on a small room made the resize-room and delete-room
+  // badges' enlarged hit circles swallow each other — and, once one was shoved aside to dodge
+  // that, swallow the room's own selection tap instead (a real regression, caught in testing).
+  // Capping by actual available space keeps every target from eating its neighbor's tap, at the
+  // cost of a smaller-than-ideal (but still far better than the original ~5px) hit area on tiny
+  // rooms/fences.
+  function touchHitTransform(baseR, scale, capPx){
+    var s = (typeof scale === 'number') ? scale : planEffScale();
+    var desired = (typeof capPx === 'number') ? Math.min(TOUCH_HIT_PX, capPx) : TOUCH_HIT_PX;
+    var k = s > 0 ? (desired / (baseR * s)) : 1;
+    return 'transform-box:fill-box;transform-origin:center;transform:scale(' + k.toFixed(4) + ')';
+  }
+  // Returns the largest on-screen RADIUS (px) that two touch targets `gapUnits` apart (in the
+  // plan's own fixed SVG units, at the given effective scale) can each have without their hit
+  // circles overlapping — half the actual on-screen distance between their two anchor points,
+  // minus a small margin, floored so it's never reduced to uselessly small.
+  function touchHitCapPx(gapUnits, scale){
+    var s = (typeof scale === 'number') ? scale : planEffScale();
+    var gapPx = gapUnits * s;
+    // No lower floor here beyond a tiny epsilon: a floor like "never under 10px" sounds safe but
+    // isn't — if the real on-screen gap is only, say, 9px, two 10px-radius circles (20px apart)
+    // would overlap anyway, recreating the exact bug this is meant to prevent. On a genuinely
+    // cramped room/fence this degrades toward the original small hit size rather than guess-fixing
+    // a size that can't actually fit both neighbors.
+    return Math.max(1, (gapPx - 4) / 2);
+  }
+  // Re-applies the correction to every hit target whenever zoom changes (the +/- buttons AND the
+  // pinch gesture's touchmove, which can fire many times a second). An earlier version of this
+  // just restyled whatever hit-circles were already in the DOM with a flat touchHitTransform(16)
+  // and no cap — cheap, but it UNDID the per-neighbor overlap caps computed above on every single
+  // zoom tick, silently reopening the exact "adjacent hit circles swallow each other" bug at
+  // zoom levels where the naive size doesn't yet clear the cap. Re-running the three render
+  // functions that actually own this logic (instead of re-deriving it here a second time) is the
+  // only way to keep the two in sync. This is no more expensive than what render() already does on
+  // every pointermove while dragging a room, so it's an accepted cost during a pinch gesture too —
+  // the heavier guidance/BOM/recommendations passes in the full render() are skipped since zoom
+  // never changes their output.
+  function syncTouchHitScale(){
+    renderRooms();
+    renderFences();
+    renderDevices();
+  }
+
   /* ============================= zoom ============================= */
+  // The max was 2x (200%) until this round — fine for a mouse, but on a phone every handle,
+  // badge and button drawn in the plan's own coordinate space (PPM=40 px/m) only gets
+  // genuinely comfortable to grab with a fingertip once the agent has zoomed in a fair way —
+  // 2x wasn't always enough room to get there. Raised to 3x; the +/- buttons and pinch below
+  // share this same cap so neither path can disagree with the other.
+  var ZOOM_MIN = 0.5, ZOOM_MAX = 3;
   function applyZoom(){
     svg.style.transform = 'scale(' + zoom + ')';
     document.getElementById('zoomLabel').textContent = Math.round(zoom*100) + '%';
+    syncTouchHitScale();
+    // A recommendation popover's position was computed from its marker's on-screen rect at the
+    // moment it opened — zooming moves that marker, so just close it rather than leave it
+    // floating over the wrong spot (tapping the marker again reopens it in the right place).
+    hideRecPopover();
   }
-  document.getElementById('zoomIn').onclick = function(){ zoom = Math.min(2, zoom+0.15); applyZoom(); };
-  document.getElementById('zoomOut').onclick = function(){ zoom = Math.max(0.5, zoom-0.15); applyZoom(); };
+  document.getElementById('zoomIn').onclick = function(){ zoom = Math.min(ZOOM_MAX, zoom+0.15); applyZoom(); };
+  document.getElementById('zoomOut').onclick = function(){ zoom = Math.max(ZOOM_MIN, zoom-0.15); applyZoom(); };
+
+  /* ============================= pinch-to-zoom (touch) ============================= */
+  // A phone/tablet agent has no scroll wheel and the +/- buttons alone mean a lot of tapping
+  // to reach a workable zoom level before, say, dragging a room's corner precisely — pinching
+  // the plan directly is the gesture every touch user already expects for this. It drives the
+  // exact same `zoom` variable and cap as the +/- buttons, so the label and clamping never
+  // disagree between the two. Only engages once a SECOND finger actually joins — a plain
+  // one-finger touch is left completely alone, so the native one-finger pan (.canvas-scroll's
+  // own overflow:auto scrolling) keeps working exactly as before; only a genuine two-finger
+  // gesture calls preventDefault, so it doesn't fight the browser's own page-level pinch-zoom.
+  var canvasScrollEl = document.getElementById('canvasScroll');
+  var pinchStartDist = null, pinchStartZoom = 1;
+  function touchDist(touches){
+    var dx = touches[0].clientX - touches[1].clientX;
+    var dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+  function touchMid(touches){
+    return { x: (touches[0].clientX + touches[1].clientX) / 2, y: (touches[0].clientY + touches[1].clientY) / 2 };
+  }
+  // The actual fix for "zooming opens to the opposite side of where my fingers are": the old
+  // code only ever changed `zoom` and let the browser keep whatever scroll position it already
+  // had, so the plan visibly slid out from under the fingers toward #plan's fixed transform-
+  // origin corner instead of staying anchored to the pinch gesture. This keeps whatever plan-
+  // space point currently sits under (clientX, clientY) glued to that same screen position
+  // after the zoom change, by solving for the new scrollLeft/scrollTop directly — the standard
+  // "zoom to a point" formula, recomputed fresh on every call so it also tracks a drifting
+  // midpoint (two fingers moving sideways while pinching pans the view, same as the real
+  // gesture implies) without needing to cache anything from gesture start except the zoom
+  // ratio's own baseline. Depends on canvasScroll's scrollLeft/scrollTop following the
+  // standard 0-at-top-left convention — see the direction:ltr comment on .canvas-scroll above.
+  function zoomAroundClientPoint(newZoom, clientX, clientY){
+    newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newZoom));
+    var rect = canvasScrollEl.getBoundingClientRect();
+    var planX = (canvasScrollEl.scrollLeft + (clientX - rect.left)) / zoom;
+    var planY = (canvasScrollEl.scrollTop + (clientY - rect.top)) / zoom;
+    zoom = newZoom;
+    applyZoom();
+    canvasScrollEl.scrollLeft = planX * zoom - (clientX - rect.left);
+    canvasScrollEl.scrollTop = planY * zoom - (clientY - rect.top);
+  }
+  canvasScrollEl.addEventListener('touchstart', function(ev){
+    if (ev.touches.length === 2){
+      pinchStartDist = touchDist(ev.touches);
+      pinchStartZoom = zoom;
+    }
+  }, { passive: true });
+  canvasScrollEl.addEventListener('touchmove', function(ev){
+    if (ev.touches.length === 2 && pinchStartDist){
+      ev.preventDefault();
+      var ratio = touchDist(ev.touches) / pinchStartDist;
+      var mid = touchMid(ev.touches);
+      zoomAroundClientPoint(pinchStartZoom * ratio, mid.x, mid.y);
+    }
+  }, { passive: false });
+  canvasScrollEl.addEventListener('touchend', function(ev){ if (ev.touches.length < 2) pinchStartDist = null; });
+  canvasScrollEl.addEventListener('touchcancel', function(){ pinchStartDist = null; });
+
+  /* ============================= gesture help ============================= */
+  // A plain reference, reachable any time, for how the canvas actually responds to touch —
+  // written up after feedback that the sketch wasn't intuitive on a phone. Static content
+  // (no per-state logic needed), so it's built once rather than rebuilt on every open.
+  (function(){
+    var btn = document.getElementById('btnGestureHelp');
+    var backdrop = document.getElementById('gestureHelpBackdrop');
+    var closeBtn = document.getElementById('gestureHelpClose');
+    var body = document.getElementById('gestureHelpBody');
+    if (!btn || !backdrop || !closeBtn || !body) return;
+    function row(icon, title, desc){
+      return '<div style="display:flex;gap:12px;align-items:flex-start">' +
+        '<div style="font-size:20px;line-height:1;min-width:26px;text-align:center">' + icon + '</div>' +
+        '<div><b style="font-size:13px">' + title + '</b><div style="font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:2px">' + desc + '</div></div>' +
+      '</div>';
+    }
+    body.innerHTML =
+      '<div style="display:flex;flex-direction:column;gap:16px">' +
+        row('☝️', 'גרירה באצבע אחת על שטח ריק', 'מזיזה את התצוגה על השרטוט (פאן) — שימושי אחרי הגדלה, כשחלק מהמבנה יוצא מהמסך.') +
+        row('🤏', 'צביטה בשתי אצבעות', 'מגדילה או מקטינה את התצוגה (זום), בדיוק סביב הנקודה שבין האצבעות — אפשר גם עם כפתורי ＋ / － בסרגל העליון.') +
+        row('👆', 'הקשה על חדר/אביזר', 'בוחרת אותו ומציגה מעליו כפתור "⤢" לשינוי גודל/מיקום מדויק וכפתור "✕" למחיקה.') +
+        row('✋', 'גרירה על חדר או אביזר שנבחר', 'מזיזה אותו למקום אחר על השרטוט.') +
+        row('🔄', 'ידית הסיבוב ליד אביזר', 'גוררים אותה בעיגול כדי לסובב את האביזר לכיוון הרצוי (לדוגמה כיוון גלאי).') +
+        row('📐', 'הקשה על "ערוך מידות" (⤢)', 'חושפת 4 נקודות אחיזה בפינות החדר — גוררים אותן כדי לשנות את מידות החדר.') +
+      '</div>';
+    btn.onclick = function(){ backdrop.hidden = false; };
+    closeBtn.onclick = function(){ backdrop.hidden = true; };
+    backdrop.addEventListener('click', function(ev){ if (ev.target === backdrop) backdrop.hidden = true; });
+  })();
 
   /* ============================= fullscreen ============================= */
   // A CSS-based "maximize" (position:fixed over the whole viewport) is the reliable
@@ -6689,4 +7200,77 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       navigator.serviceWorker.register('sw.js').catch(function(){ /* offline install unavailable here — app still works online */ });
     });
   }
+
+  // Explicit "install app" button — without this, installing was only possible if an agent
+  // happened to already know their browser's own menu has an "Install app" / "Add to Home
+  // Screen" option buried in it, which almost nobody goes looking for. Two real paths exist and
+  // they're fundamentally different: Android/Chrome fires a `beforeinstallprompt` event this page
+  // can hook to show a REAL native install dialog; iOS Safari never fires that event at all — the
+  // ONLY way to install there is Share button -> "הוספה למסך הבית", so the button instead opens a
+  // short walkthrough of those manual taps. Hidden entirely wherever neither path applies (desktop
+  // Firefox, a browser that doesn't support installing this kind of app) or the page is already
+  // running installed.
+  (function(){
+    var btn = document.getElementById('btnInstallApp');
+    var backdrop = document.getElementById('installBackdrop');
+    var closeBtn = document.getElementById('installClose');
+    var body = document.getElementById('installBody');
+    if (!btn || !backdrop || !closeBtn || !body) return;
+
+    function isStandalone(){
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true; // iOS's own (non-standard) flag for an installed PWA
+    }
+    function isIOS(){
+      // iPadOS 13+ reports as "MacIntel" in the UA string, indistinguishable from a real Mac
+      // except that an actual Mac has no touch points at all.
+      return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    if (isStandalone()) return; // already installed — nothing to offer
+
+    var deferredPrompt = null;
+    if (isIOS()) {
+      // No event to wait for on iOS — the manual path is always available, so show the button
+      // immediately rather than leaving an agent on an iPhone with no way to discover it at all.
+      btn.hidden = false;
+    }
+    window.addEventListener('beforeinstallprompt', function(ev){
+      ev.preventDefault(); // suppress the browser's own mini-banner — this button replaces it
+      deferredPrompt = ev;
+      btn.hidden = false;
+    });
+    window.addEventListener('appinstalled', function(){
+      btn.hidden = true;
+      deferredPrompt = null;
+    });
+
+    body.innerHTML =
+      '<p style="font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin:0 0 16px">' +
+      'ב-iPhone/iPad, ההתקנה נעשית ישירות דרך Safari — שלושה צעדים:' +
+      '</p>' +
+      '<ol style="margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:14px">' +
+        '<li style="font-size:13px;line-height:1.6"><b>לחצו על כפתור השיתוף</b> בסרגל הכלים של Safari (הריבוע עם החץ כלפי מעלה ⬆︎) — בדרך כלל בתחתית המסך.</li>' +
+        '<li style="font-size:13px;line-height:1.6">בתפריט שנפתח, גללו ובחרו <b>״הוספה למסך הבית״</b> (Add to Home Screen).</li>' +
+        '<li style="font-size:13px;line-height:1.6">אשרו בלחיצה על <b>״הוספה״</b> בפינה — האייקון של G1 SiteGuard יופיע במסך הבית, נפתח כמו אפליקציה רגילה וללא צורך בחיבור לאינטרנט.</li>' +
+      '</ol>' +
+      '<p style="font-size:12px;color:var(--ink-dim);line-height:1.6;margin:16px 0 0;padding:9px 12px;background:var(--panel);border-radius:8px;border-inline-start:3px solid var(--accent-3)">' +
+      'שימו לב: אפשרות זו חייבת להיפתח מתוך Safari עצמו (לא מתוך Chrome או אפליקציית מייל/הודעות) כדי שתופיע בתפריט השיתוף.' +
+      '</p>';
+
+    btn.addEventListener('click', function(){
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(choice){
+          if (choice.outcome === 'accepted') btn.hidden = true;
+          deferredPrompt = null;
+        });
+      } else {
+        backdrop.hidden = false;
+      }
+    });
+    closeBtn.onclick = function(){ backdrop.hidden = true; };
+    backdrop.addEventListener('click', function(ev){ if (ev.target === backdrop) backdrop.hidden = true; });
+  })();
 </script>
