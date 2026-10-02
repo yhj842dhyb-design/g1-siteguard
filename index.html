@@ -238,6 +238,34 @@
   .room-preset-btn:hover{ border-color:var(--accent-2); background:var(--panel-3); }
   .room-preset-btn small{ display:block; color:var(--ink-dim); font-weight:500; font-size:10.5px; }
   .room-preset-swatch{ width:24px; height:18px; border:2px solid var(--ink-dim); border-radius:3px; flex:0 0 auto; }
+  /* The pool preset is the one swatch that needs to actually read as water at a glance rather
+     than just as a differently-sized box (which is all the other presets need, since their
+     shape is just their room's footprint proportions) — a light-blue fill with two ripple
+     lines, instead of a plain outline, is the smallest change that still reads as "pool". */
+  .room-preset-swatch.pool-swatch{ border-color:#2f7fa6; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#dff1fa; }
+  .room-preset-swatch.pool-swatch svg{ display:block; }
+
+  /* Room-preset sub-menu: a short stack of collapsed group headers (one per project kind,
+     plus "בסיסי"/"שטחי חוץ" shared by every kind) instead of one long flat button list — see
+     the comment above the markup. Deliberately plainer than the top-level .cat-group headers
+     (no accent dot, smaller type) so the nesting reads as a second, lighter menu level. */
+  .room-subgroup{ margin-bottom:4px; }
+  .room-subgroup:last-child{ margin-bottom:0; }
+  .room-subgroup[hidden]{ display:none; }
+  .room-subgroup-title{
+    display:flex; align-items:center; gap:7px; width:100%; background:transparent; border:0;
+    padding:7px 2px; cursor:pointer; font-size:11.5px; font-weight:700; color:var(--ink-dim);
+    font-family:var(--font-body); text-align:right; border-bottom:1px solid var(--line);
+  }
+  .room-subgroup-title:hover{ color:var(--ink-on-dark); }
+  .room-subgroup-title .rsg-label{ flex:1; }
+  .room-subgroup-title .rsg-chevron{ display:flex; flex:0 0 auto; transition:transform .2s; }
+  .room-subgroup.open .room-subgroup-title .rsg-chevron{ transform:rotate(180deg); }
+  .room-subgroup-title .rsg-count{
+    background:var(--panel-2); border-radius:10px; padding:1px 7px; font-size:10px; font-weight:700;
+    color:var(--ink-dim); flex:0 0 auto;
+  }
+  .room-subgroup-body{ padding:8px 0 2px; }
 
   /* "צייר חדר לפי מידה" / "מתיחת גדר היקפית" live in the same category as the room
      presets above them (drawing/marking the structure itself), separated by a thin
@@ -1096,13 +1124,96 @@
         <div class="cat-group" style="--cat-accent:var(--ink-dim)">
           <button type="button" class="cat-title" data-cat-toggle><span class="cat-dot"></span><span class="cat-title-label">מבנה — חדרים ואזורים</span><span class="cat-badge"></span><span class="cat-chevron"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
           <div class="cat-body"><div class="cat-body-inner">
-        <div class="room-presets">
-          <button class="room-preset-btn" data-label="חדר הורים" data-type="room" data-w="4" data-h="3.6"><span class="room-preset-swatch"></span><span>חדר הורים<small>4.0 × 3.6 מ׳</small></span></button>
-          <button class="room-preset-btn" data-label="חדר ילדים" data-type="room" data-w="2.8" data-h="3.2"><span class="room-preset-swatch"></span><span>חדר ילדים<small>2.8 × 3.2 מ׳</small></span></button>
-          <button class="room-preset-btn" data-label="מטבח" data-type="room" data-w="3.2" data-h="3.2"><span class="room-preset-swatch"></span><span>מטבח<small>3.2 × 3.2 מ׳</small></span></button>
-          <button class="room-preset-btn" data-label="סלון" data-type="room" data-w="5.5" data-h="4.5"><span class="room-preset-swatch" style="width:28px;height:22px"></span><span>סלון<small>5.5 × 4.5 מ׳</small></span></button>
-          <button class="room-preset-btn" data-label="אמבטיה" data-type="room" data-w="2" data-h="1.8"><span class="room-preset-swatch" style="width:18px;height:14px"></span><span>אמבטיה<small>2.0 × 1.8 מ׳</small></span></button>
-          <button class="room-preset-btn" data-label="מרפסת" data-type="yard" data-w="4" data-h="1.5"><span class="room-preset-swatch" style="width:30px;height:10px;background:#eef4ea;border-style:dashed"></span><span>מרפסת<small>4.0 × 1.5 מ׳</small></span></button>
+        <!-- Room presets, as a sub-menu of collapsed groups rather than one long flat list:
+             the guiding questions on the opening screen already auto-build the standard rooms
+             for whatever kind of project was picked, so this list is now mainly for ADDING to
+             that (an extra room the template didn't cover) rather than building from zero —
+             a short set of collapsed group headers reads far lighter than a wall of buttons.
+             Each group only appears when it's actually relevant to the current project (see
+             data-kinds + updateRoomPresetGroupsForKind()); "שרטוט ריק" (blank) shows every
+             group, since nothing about the project is known yet. -->
+        <div class="room-subgroup" data-kinds="all">
+          <button type="button" class="room-subgroup-title" data-rsg-toggle>
+            <span class="rsg-chevron"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="rsg-label">בסיסי — כל סוג נכס</span>
+            <span class="rsg-count"></span>
+          </button>
+          <div class="room-subgroup-body" hidden>
+            <div class="room-presets">
+              <button class="room-preset-btn" data-label="חדר כללי" data-type="room" data-w="3.5" data-h="3.5"><span class="room-preset-swatch"></span><span>חדר כללי<small>3.5 × 3.5 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="מסדרון" data-type="room" data-w="3" data-h="1.3"><span class="room-preset-swatch" style="width:28px;height:10px"></span><span>מסדרון<small>3.0 × 1.3 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="מחסן" data-type="room" data-w="2" data-h="2"><span class="room-preset-swatch" style="width:16px;height:16px"></span><span>מחסן<small>2.0 × 2.0 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="שירותים" data-type="room" data-w="1.6" data-h="1.6"><span class="room-preset-swatch" style="width:14px;height:14px"></span><span>שירותים<small>1.6 × 1.6 מ׳</small></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="room-subgroup" data-kinds="house,apartment,blank">
+          <button type="button" class="room-subgroup-title" data-rsg-toggle>
+            <span class="rsg-chevron"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="rsg-label">חדרי מגורים — בית/דירה</span>
+            <span class="rsg-count"></span>
+          </button>
+          <div class="room-subgroup-body" hidden>
+            <div class="room-presets">
+              <button class="room-preset-btn" data-label="חדר הורים" data-type="room" data-w="4" data-h="3.6"><span class="room-preset-swatch"></span><span>חדר הורים<small>4.0 × 3.6 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="חדר ילדים" data-type="room" data-w="2.8" data-h="3.2"><span class="room-preset-swatch"></span><span>חדר ילדים<small>2.8 × 3.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="מטבח" data-type="room" data-w="3.2" data-h="3.2"><span class="room-preset-swatch"></span><span>מטבח<small>3.2 × 3.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="סלון" data-type="room" data-w="5.5" data-h="4.5"><span class="room-preset-swatch" style="width:28px;height:22px"></span><span>סלון<small>5.5 × 4.5 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="אמבטיה" data-type="room" data-w="2" data-h="1.8"><span class="room-preset-swatch" style="width:18px;height:14px"></span><span>אמבטיה<small>2.0 × 1.8 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="ממ&quot;ד" data-type="room" data-w="2.2" data-h="2.2"><span class="room-preset-swatch"></span><span>ממ"ד<small>2.2 × 2.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="בריכת שחייה" data-type="yard" data-w="6" data-h="3" title="רלוונטי בעיקר לבית פרטי, דירת גן או פנטהאוז">
+                <span class="room-preset-swatch pool-swatch"><svg viewBox="0 0 20 14" width="20" height="14" aria-hidden="true">
+                  <path d="M1 5c1.8 1.9 3.6 1.9 5.4 0s3.6-1.9 5.4 0 3.6 1.9 5.4 0" fill="none" stroke="#2f7fa6" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M1 9.5c1.8 1.9 3.6 1.9 5.4 0s3.6-1.9 5.4 0 3.6 1.9 5.4 0" fill="none" stroke="#5a9bc4" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
+                </svg></span>
+                <span>בריכת שחייה<small>6.0 × 3.0 מ׳ · בית פרטי / דירת גן / פנטהאוז</small></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="room-subgroup" data-kinds="store,blank">
+          <button type="button" class="room-subgroup-title" data-rsg-toggle>
+            <span class="rsg-chevron"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="rsg-label">חנות ועסק</span>
+            <span class="rsg-count"></span>
+          </button>
+          <div class="room-subgroup-body" hidden>
+            <div class="room-presets">
+              <button class="room-preset-btn" data-label="חלל מכירה" data-type="room" data-w="6" data-h="5"><span class="room-preset-swatch" style="width:28px;height:22px"></span><span>חלל מכירה<small>6.0 × 5.0 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="דלפק קופה" data-type="room" data-w="2" data-h="1.2"><span class="room-preset-swatch" style="width:20px;height:10px"></span><span>דלפק קופה<small>2.0 × 1.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="מחסן סחורה" data-type="room" data-w="3" data-h="3"><span class="room-preset-swatch"></span><span>מחסן סחורה<small>3.0 × 3.0 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="משרד אחורי" data-type="room" data-w="2.5" data-h="2.5"><span class="room-preset-swatch"></span><span>משרד אחורי<small>2.5 × 2.5 מ׳</small></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="room-subgroup" data-kinds="clinic,blank">
+          <button type="button" class="room-subgroup-title" data-rsg-toggle>
+            <span class="rsg-chevron"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="rsg-label">מרפאה ומשרדים</span>
+            <span class="rsg-count"></span>
+          </button>
+          <div class="room-subgroup-body" hidden>
+            <div class="room-presets">
+              <button class="room-preset-btn" data-label="חדר טיפולים" data-type="room" data-w="3" data-h="3.2"><span class="room-preset-swatch"></span><span>חדר טיפולים<small>3.0 × 3.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="קבלה והמתנה" data-type="room" data-w="4" data-h="3"><span class="room-preset-swatch" style="width:26px;height:20px"></span><span>קבלה והמתנה<small>4.0 × 3.0 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="חדר ציוד / מעבדה" data-type="room" data-w="2.5" data-h="2.5"><span class="room-preset-swatch"></span><span>חדר ציוד / מעבדה<small>2.5 × 2.5 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="משרד" data-type="room" data-w="3" data-h="2.8"><span class="room-preset-swatch"></span><span>משרד<small>3.0 × 2.8 מ׳</small></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="room-subgroup" data-kinds="all">
+          <button type="button" class="room-subgroup-title" data-rsg-toggle>
+            <span class="rsg-chevron"><svg viewBox="0 0 24 24" width="12" height="12"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="rsg-label">שטחי חוץ</span>
+            <span class="rsg-count"></span>
+          </button>
+          <div class="room-subgroup-body" hidden>
+            <div class="room-presets">
+              <button class="room-preset-btn" data-label="מרפסת" data-type="yard" data-w="4" data-h="1.5"><span class="room-preset-swatch" style="width:30px;height:10px;background:#eef4ea;border-style:dashed"></span><span>מרפסת<small>4.0 × 1.5 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="חצר" data-type="yard" data-w="5" data-h="5"><span class="room-preset-swatch" style="width:26px;height:26px;background:#eef4ea;border-style:dashed"></span><span>חצר<small>5.0 × 5.0 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="חניה" data-type="yard" data-w="5" data-h="3"><span class="room-preset-swatch" style="width:28px;height:16px;background:#eef4ea;border-style:dashed"></span><span>חניה<small>5.0 × 3.0 מ׳</small></span></button>
+            </div>
+          </div>
         </div>
         <div class="structure-tools">
           <button class="btn btn-ghost btn-sm" id="btnDrawRoom" title="גררו על השרטוט כדי לצייר חדר במידה חופשית">✛ צייר חדר לפי מידה</button>
@@ -4302,6 +4413,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       pirItem.draggable = !pirLocked;
       pirItem.title = pirLocked ? 'יש חיית מחמד בנכס — יש להשתמש בגלאי נפח מתעלם מחיות (PIR-P) במקום' : '';
     }
+    updateRoomPresetGroupsForKind();
+  }
+  // Shows/hides each room-preset sub-menu group (see the markup comment above .room-presets)
+  // according to the current project kind — a group whose data-kinds doesn't list the current
+  // kind (or "all") simply isn't relevant right now and disappears rather than cluttering the
+  // list; "שרטוט ריק" (blank) matches every group, since nothing about the project is known
+  // yet. Collapsed/open state is untouched here — a group the agent already opened stays open
+  // even if it's momentarily hidden by a kind change, so re-picking that kind doesn't surprise
+  // them by re-collapsing it.
+  function updateRoomPresetGroupsForKind(){
+    var kind = state.kind || 'house';
+    document.querySelectorAll('.room-subgroup').forEach(function(group){
+      var kinds = (group.dataset.kinds || '').split(',');
+      group.hidden = (kinds.indexOf('all') === -1 && kinds.indexOf(kind) === -1);
+    });
   }
 
   // Pans the SVG's own viewBox into whichever floor is active (see the FLOOR_Y_STRIDE
@@ -5480,7 +5606,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     btn.addEventListener('click', function(){
       var w = parseFloat(btn.dataset.w), h = parseFloat(btn.dataset.h);
       var off = (roomCascade++ % 5) * 24;
-      var r = addRoom({ x:40+off, y:40+off, w:w, h:h, label: btn.dataset.label, type: btn.dataset.type });
+      // A preset is placed at a fixed corner rather than wherever the agent clicked (that's
+      // the whole point of a one-click preset), so — unlike free-draw/device placement, which
+      // derive their position from svgPoint() and land in the right floor's slice of the
+      // shared coordinate space automatically (see the FLOOR_Y_STRIDE/withFloor() comment) —
+      // this fixed corner has to be shifted into the CURRENT floor's slice by hand. Without
+      // this, clicking a preset on any floor above the ground floor still added the room (the
+      // count went up) but drew it inside floor 0's window, off the edge of whatever floor the
+      // agent was actually looking at — reading as "nothing happened" / "can't add rooms".
+      var floorOff = (state.activeFloor||0) * FLOOR_Y_STRIDE;
+      var r = addRoom({ x:40+off, y:40+off+floorOff, w:w, h:h, label: btn.dataset.label, type: btn.dataset.type });
       selectItem('room', r.id);
     });
   });
@@ -5623,6 +5758,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // opens whichever one they actually need rather than one being pre-opened for them.
     btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', function(){ setOpen(!group.classList.contains('open')); });
+  });
+
+  // Room-preset sub-menu groups (inside "מבנה — חדרים ואזורים") are a second, lighter
+  // accordion level nested one further in — see the markup comment above .room-presets and
+  // updateRoomPresetGroupsForKind() for the kind-based show/hide. A plain hidden-attribute
+  // toggle (no height animation) is enough at this depth and keeps it independent of the
+  // top-level .cat-group max-height mechanics above, whichever one is mid-transition.
+  document.querySelectorAll('.room-subgroup').forEach(function(group){
+    var btn = group.querySelector('.room-subgroup-title');
+    var body = group.querySelector('.room-subgroup-body');
+    var countEl = group.querySelector('.rsg-count');
+    if (countEl) countEl.textContent = group.querySelectorAll('.room-preset-btn').length;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function(){
+      var open = body.hidden;
+      body.hidden = !open;
+      group.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
   });
 
   document.getElementById('canvasHintCancel').addEventListener('click', disarmPalette);
@@ -5878,7 +6032,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var sel = document.getElementById('fKind');
     if (sel) sel.value = (state.kind === 'apartment' || state.kind === 'store' || state.kind === 'clinic') ? state.kind : 'house';
   }
-  document.getElementById('fKind').addEventListener('change', function(){ state.kind = this.value; });
+  document.getElementById('fKind').addEventListener('change', function(){ state.kind = this.value; updatePaletteAvailability(); });
 
   function clearProject(){ disarmPalette(); state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 }; selected=null; roomEditId=null; resetRecommendationsView(); syncKindSelect(); render(); }
   armConfirm(document.getElementById('btnClear'), 'נקה שרטוט', 'לאשר ניקוי? לחצו שוב', clearProject);
