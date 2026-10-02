@@ -426,6 +426,22 @@
   .rotate-handle-hit{ cursor:grab; }
   .rotate-handle-hit:active{ cursor:grabbing; }
 
+  /* ---- room move/resize: smart alignment guides + live dimension readout, same idea as the
+     "smart guides" in SketchUp/Figma/AutoCAD's dynamic input — while dragging a room, a thin
+     dashed line snaps into view the instant an edge/center lines up with another room (or the
+     fine background grid), and a small floating badge shows the exact size/position in real
+     numbers right next to the pointer, so the agent never has to let go and squint at the
+     static label to see what they actually landed on. --accent-4 (the rose/magenta already in
+     the palette) is used here specifically because no device category or UI chrome uses it,
+     so a guide line never gets confused with "this is a selected/active device" feedback. */
+  .snap-guide{ stroke:var(--accent-4); stroke-width:1.4; stroke-dasharray:6 4; pointer-events:none; opacity:.9; }
+  .drag-tooltip{ pointer-events:none; }
+  .drag-tooltip rect{ fill:var(--accent-4-ink); stroke:var(--accent-4); stroke-width:1; rx:6; ry:6; }
+  .drag-tooltip text{
+    fill:#fff; font-family:var(--font-mono); font-weight:700; font-size:12px;
+    text-anchor:middle; dominant-baseline:central; direction:ltr;
+  }
+
   /* ---- "המלצות מיגון" ghost suggestions — a planning overlay, distinct on sight from
      real placed equipment: dashed outline, no fill badge, pulsing halo, plus-shaped
      accept control. Stripped out of the printed sketch (see buildSketch()). ---- */
@@ -1099,8 +1115,8 @@
           <div class="cat-body"><div class="cat-body-inner">
         <div class="palette-grid">
           <div class="pal-item" draggable="true" data-type="hub"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>רכזת</span></div>
-          <div class="pal-item" draggable="true" data-type="keypad"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="8" r="1"/><circle cx="14.5" cy="8" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="14.5" cy="12" r="1"/></svg><span>מקלדת</span></div>
-          <div class="pal-item" draggable="true" data-type="pir"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg><span>גלאי נפח PIR</span></div>
+          <div class="pal-item" draggable="true" data-type="keypad"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="8" r="1"/><circle cx="14.5" cy="8" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="14.5" cy="12" r="1"/></svg><span>לוח מקשים</span></div>
+          <div class="pal-item" draggable="true" data-type="pir"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg><span>גלאי נפח א.א. פאסיבי</span></div>
           <div class="pal-item" id="palPirPet" draggable="true" data-type="pir_pet" title="מומלץ/נדרש כשיש חיית מחמד בנכס"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="1.5" fill="currentColor"/><path d="M7 18.5 L17 18.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/></svg><span>PIR מתעלם מחיות</span></div>
           <div class="pal-item" draggable="true" data-type="contact"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="6" height="4" fill="currentColor"/><rect x="15" y="10" width="6" height="4" fill="currentColor"/></svg><span>גלאי מגע דלת/חלון</span></div>
           <div class="pal-item" draggable="true" data-type="glassbreak"><svg viewBox="0 0 24 24"><path d="M12 2 L14 9 L21 10 L15 14 L17 21 L12 17 L7 21 L9 14 L3 10 L10 9 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>גלאי שבירת זכוכית</span></div>
@@ -1110,7 +1126,7 @@
           <div class="pal-item" draggable="true" data-type="flood"><svg viewBox="0 0 24 24"><path d="M12 1.5 C12 1.5 4.5 12 4.5 16.5 A7.5 7.5 0 0 0 19.5 16.5 C19.5 12 12 1.5 12 1.5 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>גלאי הצפה</span></div>
           <div class="pal-item" draggable="true" data-type="siren_in"><svg viewBox="0 0 24 24"><path d="M6 18 a6 6 0 0 1 12 0 Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 18 v3" stroke="currentColor" stroke-width="2"/></svg><span>סירנה פנימית</span></div>
           <div class="pal-item" draggable="true" data-type="siren_out"><svg viewBox="0 0 24 24"><path d="M6 18 a6 6 0 0 1 12 0 Z" fill="currentColor"/><path d="M12 18 v3" stroke="currentColor" stroke-width="2"/></svg><span>סירנה חיצונית</span></div>
-          <div class="pal-item" draggable="true" data-type="fence_sensor"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20 V11 M9 20 V11 M15 20 V11 M21 20 V11 M2 11 H22" stroke="currentColor" stroke-width="1.8"/></svg><span>גלאי גדר / קרן שבירה</span></div>
+          <div class="pal-item" draggable="true" data-type="fence_sensor"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20 V11 M9 20 V11 M15 20 V11 M21 20 V11 M2 11 H22" stroke="currentColor" stroke-width="1.8"/></svg><span>גלאי קרן</span></div>
           <div class="pal-item" id="palSafeSensor" draggable="true" data-type="safe_sensor" title="זמין כשסומן שיש כספת בנכס"><svg viewBox="0 0 24 24"><rect x="3" y="1.5" width="18" height="21" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="9.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9.5" r="1" fill="currentColor"/><rect x="16.5" y="15" width="3" height="5.5" rx="1" fill="currentColor"/></svg><span>גלאי כספת</span></div>
         </div>
           </div></div>
@@ -1120,12 +1136,12 @@
           <button type="button" class="cat-title" data-cat-toggle><span class="cat-dot"></span><span class="cat-title-label">מצלמות (CCTV)</span><span class="cat-badge"></span><span class="cat-chevron"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
           <div class="cat-body"><div class="cat-body-inner">
         <div class="palette-grid">
-          <div class="pal-item" draggable="true" data-type="cam_in"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>מצלמת פנים</span></div>
+          <div class="pal-item" draggable="true" data-type="cam_in"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>מצלמה פנימית</span></div>
           <div class="pal-item" draggable="true" data-type="cam_out"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="currentColor"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="currentColor"/></svg><span>מצלמת חוץ</span></div>
-          <div class="pal-item" draggable="true" data-type="cam_in_analytics" title="מצלמת פנים עם אנליטיקה חכמה (זיהוי אדם, קו חוצה, אזור מוגדר)"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5.5" y="11" width="6" height="3.6" rx=".6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.6 1.2"/><circle cx="8.5" cy="12.8" r=".9" fill="currentColor"/></svg><span>מצלמת אנליטיקה פנימית</span></div>
+          <div class="pal-item" draggable="true" data-type="cam_in_analytics" title="מצלמה פנימית עם אנליטיקה חכמה (זיהוי אדם, קו חוצה, אזור מוגדר)"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5.5" y="11" width="6" height="3.6" rx=".6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.6 1.2"/><circle cx="8.5" cy="12.8" r=".9" fill="currentColor"/></svg><span>מצלמת אנליטיקה פנימית</span></div>
           <div class="pal-item" draggable="true" data-type="cam_out_analytics" title="מצלמת חוץ עם אנליטיקה חכמה (זיהוי אדם/רכב, קו חוצה, אזור מוגדר)"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="currentColor"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="currentColor"/><rect x="5.5" y="11" width="6" height="3.6" rx=".6" fill="none" stroke="#fff" stroke-width="1.1" stroke-dasharray="1.6 1.2"/><circle cx="8.5" cy="12.8" r=".9" fill="#fff"/></svg><span>מצלמת אנליטיקה חיצונית</span></div>
           <div class="pal-item" draggable="true" data-type="cam_lpr" title="מצלמת זיהוי לוחית רישוי (LPR) — PAL, סלולרית, חשמל בלבד"><svg viewBox="0 0 24 24"><rect x="3" y="9" width="12" height="7" rx="1.5" fill="currentColor"/><path d="M15 11 L21 8 V17 L15 14 Z" fill="currentColor"/><rect x="5" y="17.3" width="8" height="3.4" rx=".6" fill="none" stroke="currentColor" stroke-width="1.1"/></svg><span>מצלמת LPR<br><small style="color:var(--ink-dim);font-weight:500">זיהוי לוחית רישוי</small></span></div>
-          <div class="pal-item" draggable="true" data-type="nvr"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="12" r="1.2" fill="currentColor"/><rect x="11" y="10.5" width="7" height="3" fill="currentColor" opacity=".5"/></svg><span>NVR / הקלטה</span></div>
+          <div class="pal-item" draggable="true" data-type="nvr"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="12" r="1.2" fill="currentColor"/><rect x="11" y="10.5" width="7" height="3" fill="currentColor" opacity=".5"/></svg><span>מערכת הקלטה</span></div>
           <div class="pal-item" draggable="true" data-type="comm_cabinet"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 8h14M5 14h14" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="5.3" r="0.9" fill="currentColor"/><circle cx="8" cy="11.3" r="0.9" fill="currentColor"/><circle cx="8" cy="17.3" r="0.9" fill="currentColor"/></svg><span>ארון תקשורת 6U</span></div>
           <div class="pal-item" draggable="true" data-type="ups"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 6.5 L8 13.5 L11 13.5 L10.5 17.5 L16 10 L12.7 10 Z" fill="currentColor"/></svg><span>אל-פסק (UPS)</span></div>
         </div>
@@ -1181,7 +1197,7 @@
           </div></div>
         </div>
 
-        <p class="hint">גררו חדר מוכן או אביזר אל השרטוט, או — נוח יותר במסך מגע — הקישו על הפריט (הוא יודגש) ואז הקישו על מיקום בשרטוט כדי להניח אותו שם; הקישו על הפריט שוב לביטול. השתמשו ב“צייר חדר לפי מידה” בקטגוריית “מבנה — חדרים ואזורים” כדי לשרטט חדר במידה מדויקת. לחצו על פריט כדי לערוך/לסובב אותו, גררו את נקודות האחיזה בזוויות/באמצע הקירות כדי לשנות מידה, ומחקו עם ✕ על הפריט הנבחר או מקש Delete. השתמשו ב“מתיחת גדר היקפית” באותה קטגוריה כדי למתוח קווי גדר לאורך גבול המגרש — ניתן לסמן מקטע כשער ולהוסיף עליו גלאי גדר/קרן שבירה.</p>
+        <p class="hint">גררו חדר מוכן או אביזר אל השרטוט, או — נוח יותר במסך מגע — הקישו על הפריט (הוא יודגש) ואז הקישו על מיקום בשרטוט כדי להניח אותו שם; הקישו על הפריט שוב לביטול. השתמשו ב“צייר חדר לפי מידה” בקטגוריית “מבנה — חדרים ואזורים” כדי לשרטט חדר במידה מדויקת. לחצו על פריט כדי לערוך/לסובב אותו, גררו את נקודות האחיזה בזוויות/באמצע הקירות כדי לשנות מידה, ומחקו עם ✕ על הפריט הנבחר או מקש Delete. השתמשו ב“מתיחת גדר היקפית” באותה קטגוריה כדי למתוח קווי גדר לאורך גבול המגרש — ניתן לסמן מקטע כשער ולהוסיף עליו גלאי קרן.</p>
       </div>
     </aside>
 
@@ -1295,6 +1311,11 @@
             <g id="cablesLayer"></g>
             <g id="openingsLayer"></g>
             <g id="devicesLayer"></g>
+            <!-- Topmost overlay: live alignment-guide lines and the floating size/position
+                 tooltip shown only while actively dragging/resizing a room (see startDragRoom/
+                 startResizeRoom) — pointer-events:none so it never steals the drag itself. -->
+            <g id="snapGuidesLayer" style="pointer-events:none"></g>
+            <g id="dragTooltipLayer" style="pointer-events:none"></g>
             <g id="recsLayer"></g>
             <g id="compassRose" transform="translate(922,606)" pointer-events="none" aria-label="מצפן כיווני עולם">
               <circle r="34" fill="var(--paper)" stroke="var(--paper-line-strong)" stroke-width="1.5" opacity="0.94"/>
@@ -2169,6 +2190,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var openingsLayer = document.getElementById('openingsLayer');
   var devicesLayer = document.getElementById('devicesLayer');
   var cablesLayer = document.getElementById('cablesLayer');
+  var snapGuidesLayer = document.getElementById('snapGuidesLayer');
+  var dragTooltipLayer = document.getElementById('dragTooltipLayer');
 
   var OPENING_DEFS = {
     door_main:  { label:'דלת כניסה ראשית', exterior:true,  kind:'door', w:0.9 },
@@ -2180,8 +2203,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   var DEVICE_DEFS = {
     hub:          { label:'רכזת',                 cat:'alarm',    color:'var(--accent)',    anchor:'hub' },
-    keypad:       { label:'מקלדת',                cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
-    pir:          { label:'גלאי נפח PIR',          cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:110, range:8 },
+    keypad:       { label:'לוח מקשים',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
+    pir:          { label:'גלאי נפח א.א. פאסיבי',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:110, range:8 },
     pir_pet:      { label:'גלאי נפח מתעלם מחיות',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:100, range:8 },
     contact:      { label:'גלאי מגע דלת/חלון',      cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     glassbreak:   { label:'גלאי שבירת זכוכית',      cat:'alarm',    color:'var(--accent)',    cable:'alarm', radius:7 },
@@ -2195,9 +2218,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // wireless, matching the alarmWireless skip in the cabling calc — never a dedicated
     // 220V mains line, so it stays cable:'alarm' like siren_in, not cable:'power'.
     siren_out:    { label:'סירנה חיצונית',         cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
-    fence_sensor: { label:'גלאי גדר / קרן שבירה',   cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
+    fence_sensor: { label:'גלאי קרן',               cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     safe_sensor:  { label:'גלאי כספת',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
-    cam_in:       { label:'מצלמת פנים',            cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:70, range:5.5 },
+    cam_in:       { label:'מצלמה פנימית',          cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:70, range:5.5 },
     cam_out:      { label:'מצלמת חוץ',             cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:80, range:8 },
     cam_in_analytics:  { label:'מצלמת אנליטיקה פנימית',  cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:70, range:5.5 },
     cam_out_analytics: { label:'מצלמת אנליטיקה חיצונית', cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:80, range:8 },
@@ -2206,7 +2229,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // (no cat6/PoE run, no NVR channel used), only to mains power, hence cable:'power' and
     // its exclusion from cameraChannelCount()/NVR sizing below.
     cam_lpr:      { label:'מצלמת LPR (זיהוי לוחית רישוי) PAL', cat:'camera', color:'var(--accent-2)', cable:'power', rotatable:true, fov:30, range:15 },
-    nvr:          { label:'NVR / הקלטה',           cat:'camera',   color:'var(--accent-2)',  anchor:'nvr' },
+    nvr:          { label:'מערכת הקלטה',           cat:'camera',   color:'var(--accent-2)',  anchor:'nvr' },
     comm_cabinet: { label:'ארון תקשורת 6U',         cat:'camera',   color:'var(--accent-2)' },
     ups:          { label:'אל-פסק (UPS)',          cat:'camera',   color:'var(--accent-2)' },
     intercom_ext: { label:'אינטרקום — יחידת חוץ',   cat:'intercom', color:'var(--accent-3)',  cable:'intercom', rotatable:true, fov:60, range:2 },
@@ -2243,7 +2266,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var TIPS = {
     room:       'חלל סגור בבית/בעסק — גררו לצייר במידה חופשית, או ערכו רוחב/עומק בפאנל המאפיינים. ניתן לתייג לפי שימוש (סלון, מטבח, חדר ערך וכו׳).',
     yard:       'שטח חוץ (חצר, חניה, גישה להולכי רגל) — משמש להצבת מצלמות/סירנה חיצוניות ולתכנון קו ההגנה ההיקפי של המגרש.',
-    door_main:  'הכניסה הראשית — נקודת הייחוס למקלדת, אינטרקום ומצלמת כניסה. חובה שתהיה מוגנת בגלאי מגע.',
+    door_main:  'הכניסה הראשית — נקודת הייחוס ללוח מקשים, אינטרקום ומצלמת כניסה. חובה שתהיה מוגנת בגלאי מגע.',
     door_ext:   'דלת חיצונית נוספת (צד/אחורית) — נקודת חדירה נפוצה; נדרש גלאי מגע ורצוי כיסוי מצלמה.',
     door_int:   'דלת פנימית בין חדרים — אינה חושפת את המתחם כלפי חוץ, ולרוב אינה דורשת הגנה ישירה.',
     window:     'חלון רגיל — פתח חיצוני; נדרש גלאי מגע, או כיסוי גלאי שבירת זכוכית / מצלמה בטווח.',
@@ -2260,7 +2283,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     flood:      'גלאי הצפה (מים) — התקנה בגובה הרצפה ליד מקורות מים אפשריים: דוד שמש, מדיח כלים, מכונת כביסה, כיור או מונה מים.',
     siren_in:   'אזעקה קולית פנימית — מרתיעה ומכוונת חדירה בתוך המבנה.',
     siren_out:  'על קיר חיצוני גבוה וגלוי לרחוב — הרתעה חזותית וקולית; ניזונה מכבל הגידים של מערכת האזעקה (או מסוללה פנימית אם המערכת אלחוטית) — אינה דורשת כבל חשמל 220V נפרד.',
-    fence_sensor:'קרן שבירה / גלאי רטט על קטע גדר — למקם בעדיפות על שערים ומקטעים נמוכים/נגישים; טווח קרנות טיפוסי כ-20–60 מ׳ בין משדר למקלט.',
+    fence_sensor:'גלאי קרן (קרן שבירה) על קטע גדר — למקם בעדיפות על שערים ומקטעים נמוכים/נגישים; טווח טיפוסי כ-20–60 מ׳ בין משדר למקלט.',
     safe_sensor:'גלאי רטט/פתיחה ייעודי לכספת — מזהה ניסיון הזזה, קידוח או פתיחה של הכספת עצמה, בנוסף להגנה ההיקפית של החדר; מותקן בדרך כלל צמוד לדופן הכספת או בתוכה.',
     cam_in:     'מכסה מעברים ופתחים פנימיים מרכזיים; להימנע מכיוון ישיר מול חלון/תאורה חזקה.',
     cam_out:    'מכסה כניסות, חניה והיקף חיצוני; מומלץ חפיפה של 10–20% בין מצלמות סמוכות למניעת אזורים עיוורים.',
@@ -2283,7 +2306,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ap_in:      'אקסס פוינט Wi-Fi פנימי — להתקנה בתקרה/קיר במרכז השטח המכוסה, הרחק ממתכת/בטון מזוין החוסמים אות.',
     ap_out:     'אקסס פוינט Wi-Fi חיצוני עמיד למזג אוויר — לכיסוי חצר, חניה או שטח פתוח; מחווט חזרה לסוויץ׳.',
     fence:      'מקטע גדר היקפית — קו הגבול הפיזי של המגרש; ניתן למתוח כמה מקטעים ברצף כדי לעטוף את כל היקף החלקה.',
-    gate:       'שער בגדר ההיקפית (הולכי רגל/רכב) — נקודת חדירה סבירה בהיקף; רצוי גלאי גדר/קרן שבירה ו/או כיסוי מצלמה.',
+    gate:       'שער בגדר ההיקפית (הולכי רגל/רכב) — נקודת חדירה סבירה בהיקף; רצוי גלאי קרן ו/או כיסוי מצלמה.',
     smart_lock:   'מנעול חשמלי (סמארט-לוק) — נעילה/פתיחה מהאפליקציה, קוד או טביעת אצבע; מותקן על הדלת הראשית בדרך כלל בנוסף לגלאי המגע, לא במקומו.',
     smart_shutter:'מתג/בקר תריסים חכם — שליטה על הגלילה (פתיחה/סגירה, לו״ז) מהאפליקציה; מוחלף בדרך כלל בקופסת ההפעלה הקיימת של מנוע התריס.',
     smart_switch: 'מתג חשמל/תאורה חכם — שליטה מהאפליקציה ותזמון; מוחלף במקום מתג הקיר הרגיל, ללא צורך בכבל נוסף מעבר לחיווט הקיים.',
@@ -2510,7 +2533,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     hub:'HUB', keypad:'KP', pir:'PIR', pir_pet:'PIR-P', contact:'מגע', glassbreak:'זכו׳',
     curtain_in:'וילון-פ', curtain_out:'וילון-ח', smoke:'עשן', flood:'הצפה',
     siren_in:'סי-פ', siren_out:'סי-ח', cam_in:'מצ-פ', cam_out:'מצ-ח', cam_in_analytics:'אנל-פ', cam_out_analytics:'אנל-ח', cam_lpr:'LPR', nvr:'NVR', comm_cabinet:'ארון',
-    intercom_ext:'אינ-ח', intercom_int:'אינ-פ', intercom_pal:'אינ-P', spider_ctrl:'PAL', spider_ctrl_2relay:'PAL-2', fence_sensor:'גדר', safe_sensor:'כספת',
+    intercom_ext:'אינ-ח', intercom_int:'אינ-פ', intercom_pal:'אינ-P', spider_ctrl:'PAL', spider_ctrl_2relay:'PAL-2', fence_sensor:'קרן', safe_sensor:'כספת',
     ups:'UPS', amplifier:'מגבר', speaker_in:'רמק-פ', speaker_out:'רמק-ח',
     switch:'SW', net_point:'נק-ר', ap_in:'AP-פ', ap_out:'AP-ח',
     smart_lock:'מנעול', smart_shutter:'תריס', smart_switch:'מתג-ח', smart_cam:'מצ-S', smart_water_heater:'דוד'
@@ -3809,8 +3832,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var keypadNear = devices.some(function(d){ return d.type==='keypad' && dist(d.x,d.y,o.x,o.y) <= m2p(4); });
       if (!keypadNear){
         var kp = suggestPointNearOpening(o, 0.5, 0.5);
-        push('keypad', kp.x, kp.y, 0, 'warning', 'מקלדת — כניסה ראשית',
-          'אין מקלדת בטווח סביר מהכניסה הראשית — מוצע מיקום צמוד מבפנים, מוסתר מקו הראייה מבחוץ.');
+        push('keypad', kp.x, kp.y, 0, 'warning', 'לוח מקשים — כניסה ראשית',
+          'אין לוח מקשים בטווח סביר מהכניסה הראשית — מוצע מיקום צמוד מבפנים, מוסתר מקו הראייה מבחוץ.');
       }
       var camNear = devices.some(function(d){ return isOutCamType(d.type) && dist(d.x,d.y,o.x,o.y) <= m2p(9); });
       if (!camNear){
@@ -3845,42 +3868,39 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var nvrRoom = hubRoom || findRoomNearPoint(interiorRooms, nvrAnchor) || interiorRooms[0];
       nvrPoint = roomFarCornerFrom(nvrRoom, nvrAnchor, 0.4);
       if (hubPoint && dist(nvrPoint.x,nvrPoint.y,hubPoint.x,hubPoint.y) < m2p(0.6)) nvrPoint.x += m2p(0.6);
-      push('nvr', nvrPoint.x, nvrPoint.y, 0, 'critical', 'יחידת NVR',
+      push('nvr', nvrPoint.x, nvrPoint.y, 0, 'critical', 'מערכת הקלטה',
         'קיימות/מוצעות מצלמות אך לא הוגדרה יחידת הקלטה — זו גם נקודת העוגן לחישוב כבילת ה-Cat6. יחידה אחת מרכזת את מצלמות כל הקומות.', true);
     }
 
     // ---- perimeter fence / gate coverage ----
-    // A property with more than one uncovered run/gate produces several of these — and
+    // A property with more than one uncovered gate produces several of these — and
     // without a distinguishing label they render as visually IDENTICAL cards (same title,
     // same reason text). An agent who just clicked "+ הוסף" on one then sees another card
     // that reads exactly the same and reasonably assumes it's the one they just handled —
-    // that's the "the add option is still there" confusion. Numbering each run/gate (shared
-    // between a gate's sensor and its camera suggestion, so "שער 1" ties both together)
-    // makes every card text-distinct while still visible, so a fully-handled one is
-    // unambiguously gone and a different one is unambiguously a different one.
-    var fenceSegNum = 0, fenceGateNum = 0;
+    // that's the "the add option is still there" confusion. Numbering each gate makes every
+    // card text-distinct while still visible, so a fully-handled one is unambiguously gone
+    // and a different one is unambiguously a different one.
+    //
+    // גלאי קרן (fence_sensor) is intentionally NOT auto-suggested here — only a camera is.
+    // The beam detector remains a normal accessory the agent can place manually from the
+    // palette (e.g. on a plain fence run, or on a gate instead of/alongside a camera); the
+    // auto-recommendation engine just no longer pushes it on its own. A manually-placed
+    // fence_sensor still counts as "covered" below so it isn't doubled up with a camera ask.
+    var fenceGateNum = 0;
     (restrictToDoorAndPir ? [] : fences).forEach(function(f){
-      var gateRadius = m2p(4), runRadius = m2p(6), camRadius = m2p(10);
-      var sensorRadius = f.type === 'gate' ? gateRadius : runRadius;
-      var hasSensor = devices.some(function(d){ return d.type==='fence_sensor' && distToSegment(d.x,d.y,f.x1,f.y1,f.x2,f.y2) <= sensorRadius; });
+      if (f.type !== 'gate') return;
+      var gateRadius = m2p(4), camRadius = m2p(10);
+      var hasSensor = devices.some(function(d){ return d.type==='fence_sensor' && distToSegment(d.x,d.y,f.x1,f.y1,f.x2,f.y2) <= gateRadius; });
       var hasCamCov = devices.some(function(d){ return isOutCamType(d.type) && distToSegment(d.x,d.y,f.x1,f.y1,f.x2,f.y2) <= camRadius; });
       if (hasSensor || hasCamCov) return;
       var midX = (f.x1+f.x2)/2, midY = (f.y1+f.y2)/2;
-      if (f.type === 'gate'){
-        fenceGateNum++;
-        push('fence_sensor', midX, midY, 0, 'critical', 'גלאי גדר — שער ' + fenceGateNum,
-          'שער בגדר ההיקפית ללא כיסוי — מוצע גלאי גדר/קרן שבירה במרכז השער. הגדר וההיקף משרתים את הנכס כולו ואינם תלויי-קומה.', true);
-        var dx = f.x2-f.x1, dy = f.y2-f.y1, len = Math.hypot(dx,dy) || 1;
-        var nx = -dy/len, ny = dx/len;
-        var camPt = { x: midX + nx*m2p(3), y: midY + ny*m2p(3) };
-        var farPt = { x: midX - nx*m2p(3), y: midY - ny*m2p(3) };
-        push('cam_out', camPt.x, camPt.y, aimRot(camPt, farPt), camSev('warning'), 'מצלמת חוץ — שער ' + fenceGateNum,
-          'מומלץ כיסוי מצלמה נוסף על השער לזיהוי כניסה/יציאת רכבים ואנשים.', true);
-      } else {
-        fenceSegNum++;
-        push('fence_sensor', midX, midY, 0, 'warning', 'גלאי גדר — מקטע ' + fenceSegNum,
-          'מקטע גדר ללא כיסוי גלאי גדר או מצלמה בקרבתו — מוצע גלאי גדר/קרן שבירה במרכז המקטע. הגדר וההיקף משרתים את הנכס כולו ואינם תלויי-קומה.', true);
-      }
+      fenceGateNum++;
+      var dx = f.x2-f.x1, dy = f.y2-f.y1, len = Math.hypot(dx,dy) || 1;
+      var nx = -dy/len, ny = dx/len;
+      var camPt = { x: midX + nx*m2p(3), y: midY + ny*m2p(3) };
+      var farPt = { x: midX - nx*m2p(3), y: midY - ny*m2p(3) };
+      push('cam_out', camPt.x, camPt.y, aimRot(camPt, farPt), camSev('warning'), 'מצלמת חוץ — שער ' + fenceGateNum,
+        'מומלץ כיסוי מצלמה נוסף על השער לזיהוי כניסה/יציאת רכבים ואנשים.', true);
     });
 
     // ---- cabling impact estimate — same formula/anchors as the real BOM, falling back to
@@ -4395,25 +4415,162 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
   }
 
+  /* ---- room move/resize: smart snapping + live feedback -----------------------------------
+     Researched against how dedicated floor-plan/CAD tools (SketchUp, AutoCAD's dynamic input,
+     MagicPlan/Apple Measure on mobile, and Figma/Sketch's "smart guides" for the alignment
+     half of the idea) make dragging precise WITHOUT forcing the agent to type numbers:
+       1. Alignment snapping — while moving/resizing a room, its edges/center magnetically lock
+          onto another room's matching edge/center the instant they're close, with a visible
+          dashed guide line confirming what it locked onto (exactly the Figma/Sketch pattern).
+          Resizing also snaps to an EQUAL width/height match with another room — the single
+          most common thing an agent actually wants ("make this bedroom the same width as that
+          one") and otherwise nearly impossible to hit by eye/finger alone.
+       2. Grid snapping — failing an alignment match, the edge locks to the nearest 10cm grid
+          line instead of landing on an arbitrary sub-centimeter pixel value. 10cm (not the
+          0.5m the background squares are drawn at) because it still rounds every result to a
+          clean, professionally-quotable number while staying loose enough not to fight genuine
+          in-between placements.
+       3. A live dimension/position readout that follows the pointer — the room's own on-canvas
+          label is small and often sits right under the dragging finger; a floating badge next
+          to the pointer is the "dynamic input" AutoCAD/SketchUp pattern, so the agent always
+          sees the exact number they're about to let go of.
+     No modifier key / toggle is used to disable snapping (unlike desktop CAD's Shift/Alt) —
+     this is a touch-first app with no reliable modifier key on a phone, so instead the magnetic
+     threshold is kept small (see SNAP_SCREEN_PX) and converted through the plan's CURRENT
+     on-screen scale (planEffScale(), the same helper the touch-target sizing already uses) so
+     it feels equally "sticky" whether the agent is zoomed in tight or viewing the whole house —
+     a fixed plan-unit tolerance would feel loose when zoomed in and jumpy when zoomed out. */
+  var SNAP_GRID_M = 0.1;      // fine grid snap step, in meters — finer than the visible 0.5m squares
+  var SNAP_SCREEN_PX = 10;    // magnetic catch radius, in real on-screen CSS px, at any zoom level
+  function snapTolerancePx(){
+    var s = planEffScale();
+    return s > 0 ? (SNAP_SCREEN_PX / s) : SNAP_SCREEN_PX;
+  }
+  // Snaps a single edge coordinate (plan units) against explicit alignment candidates first
+  // (whichever is closest, if within tolerance), falling back to the fine grid. Returns the
+  // value to use plus `guide` (the plan-unit coordinate to draw a guide line through), which
+  // is only set for an alignment match — a grid snap draws no guide line since the background
+  // grid itself already shows it visually.
+  function snapEdge(raw, alignCandidates, tol){
+    var best = null, bestAbs = tol;
+    (alignCandidates||[]).forEach(function(c){
+      var d = Math.abs(raw - c);
+      if (d <= bestAbs){ bestAbs = d; best = c; }
+    });
+    if (best !== null) return { value:best, guide:best };
+    var step = m2p(SNAP_GRID_M);
+    var g = Math.round(raw/step) * step;
+    if (Math.abs(raw-g) <= tol) return { value:g, guide:null };
+    return { value:raw, guide:null };
+  }
+  // Whole-room move snapping: the moving room's left/center/right can each lock onto any other
+  // room's left/center/right (independently for X and Y), picking whichever single candidate
+  // is closest within tolerance — the standard "smart guides" algorithm. Falls back to the fine
+  // grid per-axis when no alignment candidate is close enough.
+  function snapRoomMove(rawX, rawY, wpx, hpx, otherRooms, tol){
+    var xOffsets = [0, wpx/2, wpx], yOffsets = [0, hpx/2, hpx];
+    var bestX = null, bestXAbs = tol, guideX = null;
+    var bestY = null, bestYAbs = tol, guideY = null;
+    otherRooms.forEach(function(o){
+      var ow = m2p(o.w), oh = m2p(o.h);
+      var oxs = [o.x, o.x+ow/2, o.x+ow], oys = [o.y, o.y+oh/2, o.y+oh];
+      xOffsets.forEach(function(xo){
+        oxs.forEach(function(ocx){
+          var d = ocx - (rawX + xo);
+          if (Math.abs(d) <= bestXAbs){ bestXAbs = Math.abs(d); bestX = rawX + d; guideX = ocx; }
+        });
+      });
+      yOffsets.forEach(function(yo){
+        oys.forEach(function(ocy){
+          var d = ocy - (rawY + yo);
+          if (Math.abs(d) <= bestYAbs){ bestYAbs = Math.abs(d); bestY = rawY + d; guideY = ocy; }
+        });
+      });
+    });
+    if (bestX === null){
+      var step = m2p(SNAP_GRID_M), gx = Math.round(rawX/step)*step;
+      if (Math.abs(rawX-gx) <= tol) bestX = gx;
+    }
+    if (bestY === null){
+      var step2 = m2p(SNAP_GRID_M), gy = Math.round(rawY/step2)*step2;
+      if (Math.abs(rawY-gy) <= tol) bestY = gy;
+    }
+    return { x: bestX!==null?bestX:rawX, y: bestY!==null?bestY:rawY, guideX:guideX, guideY:guideY };
+  }
+  function clearSnapGuides(){ snapGuidesLayer.innerHTML = ''; }
+  function showSnapGuides(guideX, guideY){
+    clearSnapGuides();
+    var floorOff = (state.activeFloor||0) * FLOOR_Y_STRIDE;
+    if (guideX !== null && guideX !== undefined){
+      snapGuidesLayer.appendChild(el('line', { x1:guideX, y1:floorOff-20, x2:guideX, y2:floorOff+700, class:'snap-guide' }));
+    }
+    if (guideY !== null && guideY !== undefined){
+      snapGuidesLayer.appendChild(el('line', { x1:-20, y1:guideY, x2:1020, y2:guideY, class:'snap-guide' }));
+    }
+  }
+  // Floating badge that tracks the pointer during a room move/resize, showing the exact live
+  // number (size in meters, or the room's name + size while just moving) — built once and
+  // reused (text/position updated in place) rather than rebuilt every pointermove tick.
+  var dragTooltipEls = null;
+  function buildDragTooltip(){
+    var g = el('g', { class:'drag-tooltip', style:'display:none' });
+    var rect = el('rect', { x:0, y:0, width:10, height:10 });
+    var text = el('text', { x:0, y:0 });
+    g.appendChild(rect); g.appendChild(text);
+    dragTooltipLayer.appendChild(g);
+    dragTooltipEls = { group:g, rect:rect, text:text };
+  }
+  function showDragTooltip(xPlan, yPlan, label){
+    if (!dragTooltipEls) buildDragTooltip();
+    dragTooltipEls.group.style.display = '';
+    dragTooltipEls.text.textContent = label;
+    var padX = 8, padY = 5, lift = 22; // lift: keeps the badge above a fingertip, not under it
+    var bbox;
+    try { bbox = dragTooltipEls.text.getBBox(); } catch(e) { bbox = { width:60, height:14 }; }
+    var w = bbox.width + padX*2, h = bbox.height + padY*2;
+    dragTooltipEls.rect.setAttribute('x', -w/2);
+    dragTooltipEls.rect.setAttribute('y', -h - lift);
+    dragTooltipEls.rect.setAttribute('width', w);
+    dragTooltipEls.rect.setAttribute('height', h);
+    dragTooltipEls.text.setAttribute('x', 0);
+    dragTooltipEls.text.setAttribute('y', -h/2 - lift);
+    dragTooltipEls.group.setAttribute('transform', 'translate(' + xPlan.toFixed(1) + ',' + yPlan.toFixed(1) + ')');
+  }
+  function hideDragTooltip(){ if (dragTooltipEls) dragTooltipEls.group.style.display = 'none'; }
+
   function startDragRoom(ev, r){
     if (drawMode) return;
     ev.preventDefault();
     selectItem('room', r.id);
     var p0 = svgPoint(ev);
     var ox = r.x, oy = r.y;
+    var wpx = m2p(r.w), hpx = m2p(r.h);
     var moved = false;
     var attachments = computeOpeningAttachments(r);
+    var otherRooms = visibleRooms().filter(function(o){ return o.id !== r.id; });
     function move(e){
       var p = svgPoint(e);
       if (Math.abs(p.x - p0.x) > 3 || Math.abs(p.y - p0.y) > 3) moved = true;
-      r.x = Math.max(0, ox + (p.x - p0.x));
-      r.y = Math.max(0, oy + (p.y - p0.y));
+      var rawX = Math.max(0, ox + (p.x - p0.x));
+      var rawY = Math.max(0, oy + (p.y - p0.y));
+      var snap = snapRoomMove(rawX, rawY, wpx, hpx, otherRooms, snapTolerancePx());
+      r.x = snap.x; r.y = snap.y;
       applyOpeningAttachments(attachments, r);
+      if (moved){
+        showSnapGuides(snap.guideX, snap.guideY);
+        // Live "how far did I actually move it" readout — the room's own on-canvas label is
+        // often hidden right under the dragging finger, so this follows the room instead.
+        var dxM = p2m(r.x - ox), dyM = p2m(r.y - oy);
+        showDragTooltip(r.x + wpx/2, r.y,
+          'Δ ' + (dxM>=0?'+':'') + dxM.toFixed(2) + ', ' + (dyM>=0?'+':'') + dyM.toFixed(2) + ' מ׳');
+      }
       scheduleRenderLive();
     }
     function up(){
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
+      clearSnapGuides();
+      hideDragTooltip();
       flushScheduledRenderLive();
       render(); // full re-render once, now that the drag is actually over — see renderLive()
       // A plain tap or a completed drag just leaves the room selected — see the note above
@@ -4450,20 +4607,64 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var hasN = handleId.indexOf('n') > -1, hasS = handleId.indexOf('s') > -1;
     var hasE = handleId.indexOf('e') > -1, hasW = handleId.indexOf('w') > -1;
     var attachments = computeOpeningAttachments(r);
+    var otherRooms = visibleRooms().filter(function(o){ return o.id !== r.id; });
     function move(e){
       var p = svgPoint(e);
+      var tol = snapTolerancePx();
       var left = left0, right = right0, top = top0, bottom = bottom0;
-      if (hasW) left = Math.min(p.x, right0 - minPx);
-      if (hasE) right = Math.max(p.x, left0 + minPx);
-      if (hasN) top = Math.min(p.y, bottom0 - minPx);
-      if (hasS) bottom = Math.max(p.y, top0 + minPx);
+      var guideX = null, guideY = null;
+      // Each active edge snaps independently against: the matching edge of every other room
+      // (plain alignment) and the edge position that would make THIS room's resulting width/
+      // height exactly equal another room's (the "equal width/height" match) — falling back to
+      // the fine grid when nothing else is close enough. See the big comment above snapEdge().
+      if (hasW){
+        var candL = [];
+        otherRooms.forEach(function(o){ var ow=m2p(o.w); candL.push(o.x, o.x+ow, right0-ow); });
+        var sL = snapEdge(Math.min(p.x, right0 - minPx), candL, tol);
+        left = Math.min(sL.value, right0 - minPx);
+        guideX = sL.guide;
+      }
+      if (hasE){
+        var candR = [];
+        otherRooms.forEach(function(o){ var ow=m2p(o.w); candR.push(o.x, o.x+ow, left0+ow); });
+        var sR = snapEdge(Math.max(p.x, left0 + minPx), candR, tol);
+        right = Math.max(sR.value, left0 + minPx);
+        guideX = sR.guide;
+      }
+      if (hasN){
+        var candT = [];
+        otherRooms.forEach(function(o){ var oh=m2p(o.h); candT.push(o.y, o.y+oh, bottom0-oh); });
+        var sT = snapEdge(Math.min(p.y, bottom0 - minPx), candT, tol);
+        top = Math.min(sT.value, bottom0 - minPx);
+        guideY = sT.guide;
+      }
+      if (hasS){
+        var candB = [];
+        otherRooms.forEach(function(o){ var oh=m2p(o.h); candB.push(o.y, o.y+oh, top0+oh); });
+        var sB = snapEdge(Math.max(p.y, top0 + minPx), candB, tol);
+        bottom = Math.max(sB.value, top0 + minPx);
+        guideY = sB.guide;
+      }
       r.x = left; r.y = top;
       r.w = p2m(right - left);
       r.h = p2m(bottom - top);
       applyOpeningAttachments(attachments, r);
+      showSnapGuides(guideX, guideY);
+      // Live size readout right at the handle being dragged — same numeric-only, direction:ltr
+      // format as the room's own static .room-dim label (proven safe on real Safari; see the
+      // CSS note above .drag-tooltip), so a freshly-reintroduced Hebrew string can't reopen the
+      // SVG-text bidi bug this app spent three rounds fixing elsewhere.
+      showDragTooltip(p.x, p.y, r.w.toFixed(2) + ' × ' + r.h.toFixed(2) + ' מ׳');
       scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
+    function up(){
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      clearSnapGuides();
+      hideDragTooltip();
+      flushScheduledRenderLive();
+      render();
+    }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -4913,8 +5114,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var keypadNear = mainDoors.some(function(o){ return devices.some(function(d){ return d.type==='keypad' && dist(d.x,d.y,o.x,o.y) <= m2p(4); }); });
       checks.push({
         sev: keypadNear?'ok':'warning', weight:2, cat:'alarm',
-        text: keypadNear ? 'מקלדת ממוקמת בטווח סביר מהכניסה הראשית' : 'אין מקלדת בטווח סביר מהכניסה הראשית',
-        fix: 'הוסיפו מקלדת (KP) בטווח של עד 4 מ׳ מהכניסה הראשית'
+        text: keypadNear ? 'לוח מקשים ממוקם בטווח סביר מהכניסה הראשית' : 'אין לוח מקשים בטווח סביר מהכניסה הראשית',
+        fix: 'הוסיפו לוח מקשים (KP) בטווח של עד 4 מ׳ מהכניסה הראשית'
       });
 
       var camNear = mainDoors.some(function(o){ return devices.some(function(d){ return isOutCamType(d.type) && dist(d.x,d.y,o.x,o.y) <= m2p(9); }); });
@@ -4945,8 +5146,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var hasNvr = devices.some(function(d){ return d.type==='nvr'; });
     if (hasCam && !restrictToDoorAndPir) checks.push({
       sev: hasNvr?'ok':'critical', weight:3, cat:'camera',
-      text: hasNvr ? 'הוגדר מיקום ליחידת ההקלטה (NVR)' : 'יש מצלמות אך לא הוגדר מיקום ליחידת הקלטה (NVR)',
-      fix: 'הוסיפו יחידת הקלטה (NVR) לחיבור המצלמות — זו גם נקודת העוגן לחישוב כבילת ה-Cat6'
+      text: hasNvr ? 'הוגדר מיקום למערכת ההקלטה (NVR)' : 'יש מצלמות אך לא הוגדר מיקום למערכת הקלטה (NVR)',
+      fix: 'הוסיפו מערכת הקלטה (NVR) לחיבור המצלמות — זו גם נקודת העוגן לחישוב כבילת ה-Cat6'
     });
 
     // R: perimeter fence — every gate needs coverage, and every run benefits from
@@ -4965,14 +5166,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (f.type === 'gate') {
         checks.push({
           sev: covered ? 'ok' : 'critical', weight:3, cat:'structure',
-          text: covered ? 'שער בגדר ההיקפית מכוסה (גלאי גדר/מצלמה)' : 'שער בגדר ההיקפית ללא כיסוי גלאי גדר או מצלמה',
-          fix: 'הוסיפו גלאי גדר/קרן שבירה (גדר) על השער, או מצלמת חוץ בטווח סביר ממנו'
+          text: covered ? 'שער בגדר ההיקפית מכוסה (גלאי קרן/מצלמה)' : 'שער בגדר ההיקפית ללא כיסוי גלאי קרן או מצלמה',
+          fix: 'הוסיפו גלאי קרן (גדר) על השער, או מצלמת חוץ בטווח סביר ממנו'
         });
       } else {
         checks.push({
           sev: covered ? 'ok' : 'warning', weight:1, cat:'structure',
-          text: covered ? 'מקטע גדר מכוסה בגלאי גדר/מצלמה' : 'מקטע גדר ללא כיסוי גלאי גדר או מצלמה בקרבתו',
-          fix: 'שקלו הוספת גלאי גדר/קרן שבירה (גדר) לאורך המקטע, בעדיפות למקטעים נמוכים או נגישים מהרחוב'
+          text: covered ? 'מקטע גדר מכוסה בגלאי קרן/מצלמה' : 'מקטע גדר ללא כיסוי גלאי קרן או מצלמה בקרבתו',
+          fix: 'שקלו הוספת גלאי קרן (גדר) לאורך המקטע, בעדיפות למקטעים נמוכים או נגישים מהרחוב'
         });
       }
     });
@@ -5063,7 +5264,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   // NVR units are sold in fixed channel-count tiers. Given the actual number of camera-type
   // devices in the project, pick the smallest tier that accommodates them (with room to add
-  // at least one more camera later where possible), and build a label like "NVR / הקלטה (8 ערוצים)".
+  // at least one more camera later where possible), and build a label like "מערכת הקלטה (8 ערוצים)".
   var NVR_CHANNEL_TIERS = [4, 8, 16, 32];
   function cameraChannelCount(counts){
     counts = counts || {};
