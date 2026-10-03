@@ -877,6 +877,10 @@
   .share-note.warn{ color:#7a4a0c; background:#fff5e2; border-color:#f1d49b; }
   .share-copy-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .share-copy-row .share-btn{ flex:1; min-height:40px; font-size:12.5px; }
+  /* Hebrew-lettered terms list (א. ב. ג. ד.) on the quote / PDF */
+  .q-terms{ margin:0; padding:0; list-style:none; }
+  .q-terms li{ margin:0 0 4px; }
+  .q-terms li b{ color:var(--ink-on-paper); margin-inline-end:4px; }
   .send-ok{
     background:#eaf3ef; border:1px solid #bcdccf; color:#1f5c4c; border-radius:var(--radius-s);
     padding:12px 14px; font-size:13px; margin-top:16px; display:none; align-items:center; gap:8px;
@@ -1189,6 +1193,9 @@
   .qp-section .qp-chip{ color:var(--ink-on-dark); border-color:var(--line); background:var(--panel-2); min-height:34px; font-size:12px; }
   .qp-section .qp-chip.rec{ border-color:#00AAE7; background:rgba(0,170,231,.14); }
   .qp-section .qp-chip.add{ border-style:dashed; }
+  .qp-add{ margin-top:10px; padding:10px; border-radius:10px; background:var(--panel-2); border:1px solid var(--line); }
+  .qp-add-title{ display:block; font-size:12px; margin-bottom:7px; }
+  .qp-section .qp-chip.type.active{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
   .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
   .canvas-toast span{
     background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600; padding:8px 16px;
@@ -4578,10 +4585,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return false;
   }
   // Which target indices a camera {x,y,rot,fov,range(px)} really sees (range + FOV + walls).
-  function camSeesTargets(cam, targets, segs){
+  function camSeesTargets(cam, targets, segs, opts){
     var aim = (cam.rot || 0) * Math.PI/180, ax = Math.sin(aim), ay = -Math.cos(aim);
-    var ox = cam.x + ax*2, oy = cam.y + ay*2;
-    var cosHalf = Math.cos((Math.min(cam.fov, 359) / 2 + 1) * Math.PI/180), r2 = cam.range * cam.range;
+    var nudge = (opts && opts.nudge != null) ? opts.nudge : 2, tol = (opts && opts.tol != null) ? opts.tol : 1;
+    var ox = cam.x + ax*nudge, oy = cam.y + ay*nudge;
+    var cosHalf = Math.cos((Math.min(cam.fov, 359) / 2 + tol) * Math.PI/180), r2 = cam.range * cam.range;
     var out = [];
     for (var i = 0; i < targets.length; i++){
       var p = targets[i], vx = p.x - ox, vy = p.y - oy, d2 = vx*vx + vy*vy;
@@ -6306,7 +6314,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     for (var y = b.y1 + step/2; y < b.y2; y += step) for (var x = b.x1 + step/2; x < b.x2; x += step) pts.push({ x:x, y:y });
     if (!pts.length || !def.fov) return 0;
     var segs = wallSegsForRooms(walledRoomsOnFloor(r.floor || 0));
-    var seen = camSeesTargets({ x:m.x, y:m.y, rot:m.rot, fov:def.fov, range:m2p(def.range) }, pts, segs).length;
+    // no origin nudge and a few degrees' grace: points right along the device's own walls count
+    var seen = camSeesTargets({ x:m.x, y:m.y, rot:m.rot, fov:def.fov, range:m2p(def.range) }, pts, segs, { nudge:0, tol:3 }).length;
     return Math.round(seen / pts.length * 100);
   }
   function quickPlaceOptions(type, r){
@@ -6371,11 +6380,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     clearTimeout(flashDevice._t);
     flashDevice._t = setTimeout(function(){ flashState = { id:null, until:0 }; }, 2700);
   }
+  // Bring a device into view on the plan (after a quick placement from the side panel).
+  function scrollDeviceIntoView(d){
+    try {
+      var sc = document.getElementById('canvasScroll'), ctm = svg.getScreenCTM();
+      if (!sc || !ctm) return;
+      var pt = svg.createSVGPoint(); pt.x = d.x; pt.y = d.y;
+      var sp = pt.matrixTransform(ctm), r = sc.getBoundingClientRect(), m = 60;
+      if (sp.x < r.left + m || sp.x > r.right - m) sc.scrollLeft += sp.x - (r.left + r.width/2);
+      if (sp.y < r.top + m || sp.y > r.bottom - m) sc.scrollTop += sp.y - (r.top + r.height/2);
+    } catch(e) {}
+  }
   function applyQuickPlace(d, opt){
     d.x = opt.x; d.y = opt.y; d.rot = opt.rot;
     selected = { kind:'device', id:d.id };
     flashDevice(d.id);
+    // on a phone the side panel covers the plan — close it so the coverage flash is seen
+    if (isMobileLayout()) closeMobilePanels();
+    canvasQuickDismissed = null;
     render();
+    scrollDeviceIntoView(d);
     showCanvasToast('✓ ' + DEVICE_DEFS[d.type].label + ' — ' + opt.label + ' · מכסה כ-' + opt.pct + '% מהחדר' + (opt.note ? ' (' + opt.note + ')' : ''), !!opt.note);
   }
   function quickAddInRoom(type, r){
@@ -6420,24 +6444,38 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         html += '<div class="qp-dev" data-dev="' + d.id + '"><b>' + escapeHtml(DEVICE_DEFS[d.type].label) + ' (' + (DEVICE_CODE[d.type] || '') + '-' + tags[d.id] + ')</b><div class="qp-wrap">' +
           opts.map(function(o){ return qpChipHtml(o, isAtOption(d, o) ? 'active' : ''); }).join('') + '</div></div>';
       });
-    } else {
-      html += '<p>אין עדיין גלאי או מצלמה בחדר — הוספה מהירה במיקום המומלץ:</p>';
     }
-    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'cam_in'];
-    if (info.windows.length) addTypes.push('curtain_in');
-    html += '<div class="qp-wrap" style="margin-top:4px">' + addTypes.map(function(t){
-      return '<button type="button" class="qp-chip add" data-qadd="' + t + '">➕ ' + escapeHtml(DEVICE_DEFS[t].label) + '</button>';
-    }).join('') + '</div></div>';
+    // Add straight from the room box: pick the device, then the position — it is placed,
+    // aimed, and its coverage flashes on the plan.
+    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam'];
+    var addType = roomAddType[r.id] && addTypes.indexOf(roomAddType[r.id]) > -1 ? roomAddType[r.id] : addTypes[0];
+    var addOpts = quickPlaceOptions(addType, r);
+    html += '<div class="qp-add"><b class="qp-add-title">➕ הוספת גלאי / מצלמה לחדר</b>' +
+      '<div class="qp-wrap qp-types">' + addTypes.map(function(t){
+        return '<button type="button" class="qp-chip type' + (t === addType ? ' active' : '') + '" data-qtype="' + t + '">' + escapeHtml(DEVICE_DEFS[t].label) + '</button>';
+      }).join('') + '</div>' +
+      '<p style="margin:8px 0 6px">מיקום עבור ' + escapeHtml(DEVICE_DEFS[addType].label) + ' (אחוז = כיסוי החדר):</p>' +
+      '<div class="qp-wrap qp-add-pos">' + addOpts.map(function(o){ return qpChipHtml(o, 'add'); }).join('') + '</div></div>';
+    html += '</div>';
     return { html:html, bind:function(box){
       devs.forEach(function(d){ var row = box.querySelector('.qp-dev[data-dev="' + d.id + '"]'); if (row) bindQpChips(row, d, devOpts[d.id]); });
-      Array.prototype.forEach.call(box.querySelectorAll('.qp-chip[data-qadd]'), function(btn){
-        btn.addEventListener('click', function(){ quickAddInRoom(btn.dataset.qadd, r); });
+      Array.prototype.forEach.call(box.querySelectorAll('.qp-chip[data-qtype]'), function(btn){
+        btn.addEventListener('click', function(){ roomAddType[r.id] = btn.dataset.qtype; renderProps(); });
+      });
+      Array.prototype.forEach.call(box.querySelectorAll('.qp-add-pos .qp-chip[data-qp]'), function(btn){
+        btn.addEventListener('click', function(){
+          var o = addOpts.filter(function(x){ return x.key === btn.dataset.qp; })[0];
+          if (!o) return;
+          var d = addDevice({ type:addType, x:o.x, y:o.y, rot:o.rot, floor:r.floor || 0 });
+          applyQuickPlace(d, o);
+        });
       });
     }};
   }
   // Floating bar over the plan (phones especially): the same quick positions for the selected
   // detector/camera, without opening the side panel.
   var canvasQuickDismissed = null;
+  var roomAddType = {};
   function updateCanvasQuick(){
     var bar = document.getElementById('canvasQuick');
     if (!bar) return;
@@ -8904,8 +8942,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var now = new Date();
     var dateStr = now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('qNotes').innerHTML =
-      '<p style="margin:0 0 6px">הצעת מחיר זו תקפה לשבעה ימים מיום הוצאתה (הופקה בתאריך ' + dateStr + ').</p>' +
-      '<p style="margin:0">כבילת המערכת תימדד ותחושב בפועל בסיום ההתקנה, ותחויב בהתאם לביצוע בפועל.</p>';
+      '<div style="font-weight:700;color:var(--ink-on-paper);margin:0 0 6px">הערות ותנאים:</div>' +
+      '<ol class="q-terms">' +
+      '<li><b>א.</b> הצעת המחיר תקפה ל-7 ימים מיום הוצאתה (הופקה בתאריך ' + dateStr + ').</li>' +
+      '<li><b>ב.</b> אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.</li>' +
+      '<li><b>ג.</b> הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.</li>' +
+      '<li><b>ד.</b> ט.ל.ח.</li>' +
+      '</ol>';
 
     var sigLines = [];
     if (agentInfo.name) sigLines.push('<div style="font-weight:700;font-size:13px">' + escapeHtml(agentInfo.name) + '</div>');
@@ -9512,7 +9555,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     lines.push('');
     var terms = document.getElementById('qPaymentTerms').value.trim();
     if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
-    lines.push('ההצעה תקפה לשבעה ימים מיום הוצאתה. כבילת המערכת תימדד ותחושב בפועל בסיום ההתקנה ותחויב בהתאם.');
+    lines.push('ההצעה תקפה ל-7 ימים מיום הוצאתה. אומדן הכבילה משוער — כמות החיווט תימדד בסיום ההתקנה ותחושב לפיה. הציוד נשאר רכוש G1 עד לפירעון התשלום המלא. ט.ל.ח.');
     if (wa) lines.push('קובץ ההצעה המלא (PDF) נשלח כאן בצ׳אט.');
     lines.push('');
     lines.push('בברכה,');
