@@ -522,6 +522,11 @@
   .fov-cone.smart{ fill:url(#pCovSmart); stroke:#2c7a41; }
   .glass-radius{ fill:none; stroke:var(--accent); opacity:.35; stroke-width:1; stroke-dasharray:2 3; pointer-events:none; }
   .glass-radius.network{ stroke:var(--accent-5); }
+  .device-place{
+    font-family:var(--font-body); font-weight:600; font-size:7.5px; fill:#00739e;
+    paint-order:stroke fill; stroke:#ffffff; stroke-width:3px; stroke-linejoin:round; pointer-events:none;
+    direction:rtl; unicode-bidi:plaintext;
+  }
   .device-tag{
     font-family:var(--font-mono); font-weight:700; font-size:8.5px; fill:#5a5340;
     paint-order:stroke fill; stroke:#ffffff; stroke-width:3px; stroke-linejoin:round; pointer-events:none;
@@ -1162,6 +1167,10 @@
     display:flex; align-items:center; gap:8px; text-align:center;
   }
   .canvas-hint[hidden]{ display:none; }
+  .app-version{ font-size:10.5px; color:var(--ink-dim); text-align:center; padding:6px 4px 2px; border-top:1px dashed var(--line); margin-top:4px; font-family:var(--font-mono); }
+  .update-banner{ position:fixed; z-index:10400; left:50%; transform:translateX(-50%); top:calc(10px + env(safe-area-inset-top,0px));
+    display:flex; align-items:center; gap:10px; background:#00AAE7; color:#fff; padding:10px 14px; border-radius:999px; font:600 13px var(--font-body); box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:calc(100% - 24px); }
+  .update-banner button{ background:#fff; color:#006c94; border:0; border-radius:999px; padding:6px 12px; font:700 12.5px var(--font-body); cursor:pointer; }
   .canvas-hint button.finish{ width:auto; padding:0 12px; border-radius:999px; font-weight:700; background:#00AAE7; color:#fff; }
   /* quick-place bar: floats over the bottom of the plan while a detector/camera is selected */
   .canvas-quick{
@@ -1195,6 +1204,7 @@
   .qp-section .qp-chip.add{ border-style:dashed; }
   .qp-add{ margin-top:10px; padding:10px; border-radius:10px; background:var(--panel-2); border:1px solid var(--line); }
   .qp-add-title{ display:block; font-size:12px; margin-bottom:7px; }
+  .qp-full{ margin:8px 0 0 !important; color:var(--accent-2-text) !important; font-weight:600; }
   .qp-section .qp-chip.type.active{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
   .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
   .canvas-toast span{
@@ -1611,6 +1621,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
+              <div class="app-version" id="appVersion">גרסה 79</div>
             </div>
           </div>
         </div>
@@ -4076,6 +4087,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var tagLbl = el('text', { x:0, y:25, 'text-anchor':'middle', class:'device-tag' });
       tagLbl.textContent = rtlIsolate(deviceTagLabel(d.type, tags[d.id], typeTotals[d.type]));
       g.appendChild(tagLbl);
+      if (d.placement && d.placementAt === placementKey(d)) {
+        var plLbl = el('text', { x:0, y:35, 'text-anchor':'middle', class:'device-place' });
+        plLbl.textContent = rtlIsolate(d.placement);
+        g.appendChild(plLbl);
+      }
 
       if (def.rotatable) {
         var handleDist = isSel ? 26 : 20;
@@ -5667,6 +5683,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function render(){
     applyFloorViewBox();
+    refreshAllPlacementNotes();
     renderRooms();
     renderFurniture();
     renderFences();
@@ -6096,6 +6113,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // Dragged into a corner (or onto a building corner) → seat it there and re-aim along the
       // corner's bisector. Only for a real drag into a corner — a plain tap, or dropping it in
       // the middle of a wall/room, leaves the agent's own position and rotation alone.
+      var dragLimit = Math.hypot(d.x - startX, d.y - startY) > m2p(0.3) ? roomLimitBlock(d.type, { x:d.x, y:d.y }, d.id) : null;
+      var fromRoom = roomContainingPoint({ x:startX, y:startY }), toRoom = roomContainingPoint({ x:d.x, y:d.y });
+      if (dragLimit && fromRoom !== toRoom) { d.x = startX; d.y = startY; showCanvasToast(dragLimit, true); render(); return; }
+      // dropped close to one of the room's ready positions → seat it exactly there (with note)
+      if (Math.hypot(d.x - startX, d.y - startY) > m2p(0.3) && QP_TYPES[d.type] && toRoom) {
+        var dOpt = quickPlaceOptions(d.type, toRoom).filter(function(o){ return dist(o.x, o.y, d.x, d.y) <= m2p(0.7); })
+          .sort(function(a, c){ return dist(a.x, a.y, d.x, d.y) - dist(c.x, c.y, d.x, d.y); })[0];
+        if (dOpt) { applyQuickPlace(d, dOpt); return; }
+      }
       if (Math.hypot(d.x - startX, d.y - startY) > m2p(0.3)) {
         var m = smartMountForDevice(d.type, { x:d.x, y:d.y }, { cornerReach:m2p(0.8) });
         if (m && (m.how === 'corner' || m.how === 'facade-corner' || m.how === 'yard-corner')) {
@@ -6143,8 +6169,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ev.preventDefault();
     ev.stopPropagation();
     var placedItem = placeAtPoint(armedType, svgPoint(ev));
-    if (placedItem && REPEAT_PLACE_TYPES[armedType]) { armedCount++; updateArmHint(); updateCanvasQuick(); }
-    else disarmPalette();
+    if (REPEAT_PLACE_TYPES[armedType]) { if (placedItem) { armedCount++; updateArmHint(); updateCanvasQuick(); } }
+    else if (placedItem || !DEVICE_DEFS[armedType]) disarmPalette();
     suppressNextSvgClick = true;
     setTimeout(function(){ suppressNextSvgClick = false; }, 400);
   }, true);
@@ -6364,6 +6390,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
                  opp === 'left' ? { x:b.x1 + wi, y:cy, rot:dirRot(1, 0) } : { x:b.x2 - wi, y:cy, rot:dirRot(-1, 0) };
         add('oppwall', 'מרכז הקיר מול הדלת', wc);
       }
+      // a long narrow space (corridor, long hall): mount on an end wall looking down its length —
+      // a corner's 45° diagonal would hit the opposite wall after a metre or two
+      var rw = b.x2 - b.x1, rh = b.y2 - b.y1, wi2 = m2p(0.2);
+      if (Math.max(rw, rh) >= 2.2 * Math.min(rw, rh)){
+        if (rw >= rh){
+          add('end-w', 'קצה מערבי — לאורך החלל', { x:b.x1 + wi2, y:(b.y1 + b.y2)/2, rot:dirRot(1, 0) });
+          add('end-e', 'קצה מזרחי — לאורך החלל', { x:b.x2 - wi2, y:(b.y1 + b.y2)/2, rot:dirRot(-1, 0) });
+        } else {
+          add('end-n', 'קצה צפוני — לאורך החלל', { x:(b.x1 + b.x2)/2, y:b.y1 + wi2, rot:dirRot(0, 1) });
+          add('end-s', 'קצה דרומי — לאורך החלל', { x:(b.x1 + b.x2)/2, y:b.y2 - wi2, rot:dirRot(0, -1) });
+        }
+      }
       corners.forEach(function(c, i){ if (opts.length < 4) add('corner-' + i, CORNER_COMPASS[i], cornerOpt(c)); });
     }
     opts.forEach(function(o){ o.pct = roomCoveragePct(type, r, o); });
@@ -6371,7 +6409,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var cand = opts.filter(function(o){ return !o.note; });
     var best = (cand.length ? cand : opts).reduce(function(a, o){ return !a || o.pct > a.pct + 2 ? o : a; }, null);
     if (best) best.rec = true;
-    return opts.slice(0, 5);
+    // keep the recommended one even when the list is long
+    var out = opts.slice(0, 6);
+    if (best && out.indexOf(best) < 0) out[out.length - 1] = best;
+    return out;
   }
   // Flash a device's coverage + mount point for a moment (see .fov-cone.flash / .dev-flash-ring).
   var flashState = { id:null, until:0 };
@@ -6393,6 +6434,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function applyQuickPlace(d, opt){
     d.x = opt.x; d.y = opt.y; d.rot = opt.rot;
+    d.placement = opt.label.replace(/\s*\(.*\)$/, ''); d.placementAt = placementKey(d);
     selected = { kind:'device', id:d.id };
     flashDevice(d.id);
     // on a phone the side panel covers the plan — close it so the coverage flash is seen
@@ -6406,6 +6448,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var opts = quickPlaceOptions(type, r);
     var opt = opts.filter(function(o){ return o.rec; })[0] || opts[0];
     if (!opt) return;
+    var lim = roomLimitBlock(type, opt); if (lim) { showCanvasToast(lim, true); return; }
     var d = addDevice({ type:type, x:opt.x, y:opt.y, rot:opt.rot, floor:r.floor || 0 });
     applyQuickPlace(d, opt);
   }
@@ -6450,12 +6493,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam'];
     var addType = roomAddType[r.id] && addTypes.indexOf(roomAddType[r.id]) > -1 ? roomAddType[r.id] : addTypes[0];
     var addOpts = quickPlaceOptions(addType, r);
+    var addFam = ROOM_FAMILY[addType], addCap = addFam ? roomFamilyCapacity(addFam, r) : 99;
+    var addHave = addFam ? devicesOfFamilyInRoom(addFam, r).length : 0;
+    var addFull = addHave >= addCap ? ('בחדר כבר ' + (addCap === 1 ? 'מותקן ' + ROOM_FAMILY_LABEL[addFam] + ' — חדר בגודל הזה מכוסה באחד. אפשר להזיז אותו למיקום אחר למעלה.' : 'מותקנים ' + addHave + ' ' + ROOM_FAMILY_LABEL[addFam] + ' — המקסימום הנדרש לחלל הזה.')) : '';
     html += '<div class="qp-add"><b class="qp-add-title">➕ הוספת גלאי / מצלמה לחדר</b>' +
       '<div class="qp-wrap qp-types">' + addTypes.map(function(t){
         return '<button type="button" class="qp-chip type' + (t === addType ? ' active' : '') + '" data-qtype="' + t + '">' + escapeHtml(DEVICE_DEFS[t].label) + '</button>';
       }).join('') + '</div>' +
-      '<p style="margin:8px 0 6px">מיקום עבור ' + escapeHtml(DEVICE_DEFS[addType].label) + ' (אחוז = כיסוי החדר):</p>' +
-      '<div class="qp-wrap qp-add-pos">' + addOpts.map(function(o){ return qpChipHtml(o, 'add'); }).join('') + '</div></div>';
+      (addFull
+        ? '<p class="qp-full">✓ ' + escapeHtml(addFull) + '</p>'
+        : '<p style="margin:8px 0 6px">מיקום עבור ' + escapeHtml(DEVICE_DEFS[addType].label) + ' (אחוז = כיסוי החדר)' + (addCap > 1 ? ' — חלל גדול: עד ' + addCap + ' יחידות' : '') + ':</p>' +
+          '<div class="qp-wrap qp-add-pos">' + addOpts.map(function(o){ return qpChipHtml(o, 'add'); }).join('') + '</div>') + '</div>';
     html += '</div>';
     return { html:html, bind:function(box){
       devs.forEach(function(d){ var row = box.querySelector('.qp-dev[data-dev="' + d.id + '"]'); if (row) bindQpChips(row, d, devOpts[d.id]); });
@@ -6466,12 +6514,66 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         btn.addEventListener('click', function(){
           var o = addOpts.filter(function(x){ return x.key === btn.dataset.qp; })[0];
           if (!o) return;
+          var lim = roomLimitBlock(addType, o); if (lim) { showCanvasToast(lim, true); return; }
           var d = addDevice({ type:addType, x:o.x, y:o.y, rot:o.rot, floor:r.floor || 0 });
           applyQuickPlace(d, o);
         });
       });
     }};
   }
+  /* ---------- placement note ("פינה מול הדלת") kept on the device ----------
+     Whenever a detector/camera sits exactly on one of its room's ready positions — placed by a
+     quick-place button, a recommendation, or dragged/tapped into that corner — the position's
+     name is stored on the device (saved with the project) and printed under its tag on the plan
+     and the sketch. Moving it anywhere else clears the note. */
+  function placementKey(d){ return Math.round(d.x) + ',' + Math.round(d.y) + ',' + Math.round(((d.rot % 360) + 360) % 360); }
+  function refreshPlacementNote(d){
+    if (!QP_TYPES[d.type]) return;
+    var key = placementKey(d);
+    if (d.placementAt === key) return;
+    var r = roomOfDevice(d), opts = r ? quickPlaceOptions(d.type, r) : [];
+    var m = opts.filter(function(o){ return isAtOption(d, o); })[0];
+    d.placement = m ? m.label.replace(/\s*\(.*\)$/, '') : null;
+    d.placementAt = key;
+  }
+  function refreshAllPlacementNotes(){ visibleDevices().forEach(refreshPlacementNote); }
+
+  /* ---------- one detector of a kind per room (more only in a large space) ----------
+     A normal room needs exactly one volumetric detector / one indoor camera / one glass-break /
+     one smoke detector — a second one is waste. A long corridor, a big living room, an empty
+     hall or a sales floor can need more: capacity follows the space's real size (volumetric
+     detectors no more than ~9 m apart and ~45 m² each, cameras ~7 m / 35 m², smoke ~40 m²).
+     Curtain detectors: one per wall that has windows. */
+  var ROOM_FAMILY = { pir:'vol', pir_pet:'vol', cam_in:'cam', cam_in_analytics:'cam', smart_cam:'cam', glassbreak:'glass', smoke:'smoke', curtain_in:'curtain' };
+  var ROOM_FAMILY_LABEL = { vol:'גלאי נפח', cam:'מצלמה פנימית', glass:'גלאי שבירת זכוכית', smoke:'גלאי עשן', curtain:'גלאי וילון' };
+  function roomFamilyCapacity(fam, r){
+    var w = r.w, h = r.h, area = w * h, long = Math.max(w, h);
+    if (fam === 'vol') return Math.min(4, Math.max(1, Math.ceil(long / 9), Math.ceil(area / 45)));
+    if (fam === 'cam') return Math.min(4, Math.max(1, Math.ceil(long / 7.5), Math.ceil(area / 35)));
+    if (fam === 'smoke') return Math.min(4, Math.max(1, Math.ceil(area / 40), Math.ceil(long / 10)));
+    if (fam === 'glass') return Math.min(3, Math.max(1, Math.ceil(long / 9)));
+    if (fam === 'curtain'){
+      var info = roomOpeningsInfo(r), walls = {};
+      info.windows.forEach(function(o){ walls[roomWallOf(o, info.b).key] = 1; });
+      return Math.max(1, Object.keys(walls).length);
+    }
+    return 99;
+  }
+  function devicesOfFamilyInRoom(fam, r, exceptId){
+    var b = roomBBoxPx(r);
+    return state.devices.filter(function(d){ return d.id !== exceptId && ROOM_FAMILY[d.type] === fam && (d.floor || 0) === (r.floor || 0) && d.x >= b.x1 && d.x <= b.x2 && d.y >= b.y1 && d.y <= b.y2; });
+  }
+  // null when allowed, otherwise the reason to show.
+  function roomLimitBlock(type, p, exceptId){
+    var fam = ROOM_FAMILY[type];
+    if (!fam) return null;
+    var r = roomContainingPoint(p);
+    if (!r) return null;
+    var cap = roomFamilyCapacity(fam, r), have = devicesOfFamilyInRoom(fam, r, exceptId).length;
+    if (have < cap) return null;
+    return 'ב"' + (r.label || 'חדר') + '" כבר ' + (cap === 1 ? 'מותקן ' + ROOM_FAMILY_LABEL[fam] + ' — חדר בגודל הזה מכוסה באחד בלבד.' : 'מותקנים ' + have + ' ' + ROOM_FAMILY_LABEL[fam] + ' — המקסימום הנדרש לחלל בגודל הזה.') + ' כדי לשנות מיקום, הזיזו את הקיים או השתמשו במיקום המהיר.';
+  }
+
   // Floating bar over the plan (phones especially): the same quick positions for the selected
   // detector/camera, without opening the side panel.
   var canvasQuickDismissed = null;
@@ -6555,6 +6657,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var devQP = deviceQuickPlaceHtml(d);
       box.innerHTML =
         '<div class="prop-card"><div class="prop-title" style="color:' + dd.color + '">' + dd.label + '</div>' +
+        (d.placement ? '<p style="font-size:12px;margin:-4px 0 8px"><b>מיקום:</b> ' + escapeHtml(d.placement) + (roomOfDevice(d) ? ' — "' + escapeHtml(roomOfDevice(d).label || 'חדר') + '"' : '') + '</p>' : '') +
         devQP.html +
         (dd.rotatable ?
           '<div class="field"><label>כיוון צפייה — לכל הכיוונים</label>' +
@@ -7545,6 +7648,49 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var far = roomFarCornerFrom(room, p, 0.35);
     return aimRot(p, far);
   }
+  // Professional mount point for a device tapped/dropped at p inside a room:
+  //  • volumetric / curtain / indoor camera: the room's ready positions — the one the tap was
+  //    clearly aimed at (within ~0.7 m), otherwise the recommended one (★); in a large space that
+  //    takes more than one, the free position farthest from the units already there;
+  //  • smoke detector: centre of the ceiling;  • glass-break: wall facing the main window;
+  //  • door/window contact: on the nearest opening of that room.
+  function professionalSnap(type, p){
+    var r = roomContainingPoint(p);
+    if (!r) return null;
+    var b = roomBBoxPx(r), cx = (b.x1 + b.x2)/2, cy = (b.y1 + b.y2)/2;
+    if (QP_TYPES[type]){
+      var opts = quickPlaceOptions(type, r);
+      if (!opts.length) return null;
+      var fam = ROOM_FAMILY[type];
+      var others = fam ? devicesOfFamilyInRoom(fam, r) : [];
+      var free = opts.filter(function(o){ return !others.some(function(d){ return dist(d.x, d.y, o.x, o.y) < m2p(1.2); }); });
+      if (!free.length) free = opts;
+      var near = free.slice().sort(function(a, c){ return dist(a.x, a.y, p.x, p.y) - dist(c.x, c.y, p.x, p.y); })[0];
+      var pick;
+      if (near && dist(near.x, near.y, p.x, p.y) <= m2p(0.7)) pick = near;
+      else if (others.length) pick = free.slice().sort(function(a, c){
+          var da = Math.min.apply(null, others.map(function(d){ return dist(d.x, d.y, a.x, a.y); }));
+          var dc = Math.min.apply(null, others.map(function(d){ return dist(d.x, d.y, c.x, c.y); }));
+          return dc - da || c.pct - a.pct; })[0];
+      else pick = free.filter(function(o){ return o.rec; })[0] || free.slice().sort(function(a, c){ return c.pct - a.pct; })[0];
+      return { x:pick.x, y:pick.y, rot:pick.rot, label:pick.label.replace(/\s*\(.*\)$/, ''), pct:pick.pct, note:pick.note };
+    }
+    if (type === 'smoke') return { x:cx, y:cy, rot:0, label:'מרכז התקרה' };
+    var info = roomOpeningsInfo(r);
+    if (type === 'glassbreak'){
+      if (!info.mainWin) return { x:cx, y:cy, rot:0, label:'מרכז התקרה' };
+      var w = roomWallOf(info.mainWin, b), ins = m2p(0.25);
+      var opp = { top:{ x:info.mainWin.x, y:b.y2 - ins }, bottom:{ x:info.mainWin.x, y:b.y1 + ins }, left:{ x:b.x2 - ins, y:info.mainWin.y }, right:{ x:b.x1 + ins, y:info.mainWin.y } }[w.key];
+      return { x:opp.x, y:opp.y, rot:0, label:'קיר מול החלון' };
+    }
+    if (type === 'contact'){
+      var ops = info.doors.concat(info.windows).sort(function(a, c){ return dist(a.x, a.y, p.x, p.y) - dist(c.x, c.y, p.x, p.y); });
+      if (!ops.length) return null;
+      var o = ops[0], at = suggestPointNearOpening(o, 0.15, 0);
+      return { x:at.x, y:at.y, rot:0, label:'על ' + OPENING_DEFS[o.type].label };
+    }
+    return null;
+  }
   function placeAtPoint(type, p){
     if (OPENING_DEFS[type]) {
       var o = addOpening({ type:type, x:p.x, y:p.y });
@@ -7552,6 +7698,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       return o;
     } else if (DEVICE_DEFS[type]) {
       if (singletonPlaced(type)) { showCanvasToast(singletonMsg(type), true); return null; }
+      var limitMsg = roomLimitBlock(type, p);
+      if (limitMsg) { showCanvasToast(limitMsg, true); return null; }
+      // A finger tap is never precise: inside a room, a detector/camera goes straight to its
+      // professional position in that room (see professionalSnap), with the same note + flash
+      // as the quick-place buttons.
+      var prof = professionalSnap(type, p);
+      if (prof) {
+        var pd = addDevice({ type:type, x:prof.x, y:prof.y, rot:prof.rot });
+        if (prof.label) { pd.placement = prof.label; pd.placementAt = placementKey(pd); }
+        selected = { kind:'device', id:pd.id };
+        flashDevice(pd.id);
+        render();
+        showCanvasToast('✓ ' + DEVICE_DEFS[type].label + ' — ' + prof.label + (prof.pct != null ? ' · מכסה כ-' + prof.pct + '% מהחדר' : '') + (prof.note ? ' (' + prof.note + ')' : ''), !!prof.note);
+        return pd;
+      }
       var rot = type.indexOf('out')>-1 ? 180 : 0, x = p.x, y = p.y;
       if (ROOM_FIT_FOV_TYPES.indexOf(type) > -1) {
         var room = roomContainingPoint(p);
@@ -10034,8 +10195,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // the app and its PDF-export libraries so, once opened here at least once, "Add to Home
   // Screen" keeps working with zero signal from then on.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    var swLoadedAt = Date.now(), hadController = !!navigator.serviceWorker.controller;
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('sw.js').catch(function(){ /* offline install unavailable here — app still works online */ });
+      // updateViaCache:'none' + an update check every time the app comes back to the
+      // foreground, so an installed phone app picks up a new version right away.
+      navigator.serviceWorker.register('sw.js', { updateViaCache:'none' }).then(function(reg){
+        reg.update().catch(function(){});
+        document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') reg.update().catch(function(){}); });
+      }).catch(function(){ /* offline install unavailable here — app still works online */ });
+    });
+    // A newer version just took over: reload straight away if the agent has only just opened
+    // the app; otherwise offer a one-tap refresh (nothing is reloaded under their hands).
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if (!hadController) { hadController = true; return; } // first install, same version
+      if (Date.now() - swLoadedAt < 8000) { location.reload(); return; }
+      if (document.getElementById('updateBanner')) return;
+      var b = document.createElement('div');
+      b.className = 'update-banner'; b.id = 'updateBanner';
+      b.innerHTML = '<span>גרסה חדשה של האפליקציה זמינה</span><button type="button">רענון</button>';
+      b.querySelector('button').onclick = function(){ location.reload(); };
+      document.body.appendChild(b);
     });
   }
 
