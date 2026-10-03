@@ -548,6 +548,16 @@
   .rec-ghost .rec-plus-ring{ fill:#ffffff; stroke:var(--accent-3); stroke-width:1.4; }
   .rec-ghost:hover .rec-badge{ fill:rgba(133,119,196,0.22); }
   .rec-cone{ fill:var(--accent-3); opacity:.10; pointer-events:none; stroke:var(--accent-3); stroke-width:.6; stroke-dasharray:2 2; }
+  .perim-summary{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--line, rgba(127,127,127,.3)); line-height:1.6; }
+  .perim-legend{ display:flex; flex-wrap:wrap; gap:4px 12px; align-items:center; margin-top:4px; font-size:11.5px; color:var(--ink-dim); }
+  .perim-legend .sw{ display:inline-block; width:11px; height:11px; border-radius:2px; margin-inline-end:4px; vertical-align:-1px; }
+  .perim-legend .sw.closing{ background:rgba(245,165,36,.35); border:1px dashed #f5a524; }
+  .perim-legend .sw.open{ background:rgba(229,72,77,.35); border:1px solid #e5484d; }
+  .perim-gaps{ pointer-events:none; }
+  .perim-gap{ stroke-width:.5; }
+  .perim-gap.open{ fill:#e5484d; fill-opacity:.22; stroke:#e5484d; stroke-opacity:.35; }
+  .perim-gap.closing{ fill:#f5a524; fill-opacity:.10; stroke:none; }
+  .perim-gap.must{ stroke-width:1.4; fill-opacity:.35; stroke-opacity:.9; stroke-dasharray:none; }
   .rec-cable-ghost{ fill:none; stroke:var(--accent-3); stroke-width:1.3; stroke-dasharray:4 3; opacity:.55; pointer-events:none; }
   @keyframes recPulse{ 0%,100%{ opacity:.85; r:16; } 50%{ opacity:.25; r:20; } }
   /* A ghost marker's title+reason used to live ONLY in a native SVG <title> hover tooltip —
@@ -791,6 +801,7 @@
   .quote-hero{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
   .quote-hero h3{ font-family:var(--font-display); margin:0 0 4px; font-size:20px; }
   .quote-hero p{ margin:0; color:#6b6455; font-size:13px; }
+  .quote-hero > div{ flex:1 1 280px; min-width:0; }
   /* The client-facing quote is the one document that leaves the building, so — unlike the
      rest of the app, which keeps its own working-canvas palette because that palette also
      color-codes device categories on the plan — its letterhead and a few accent numbers use
@@ -799,6 +810,60 @@
   #modalBackdrop .section-title{ color:#101113; border-bottom:2px solid #00AAE7; padding-bottom:4px; display:inline-block; }
   #modalBackdrop .total-line .amt{ color:#00AAE7; }
   #modalBackdrop #btnConfirmSend{ background:#00AAE7; border-color:#00AAE7; color:#ffffff; }
+  /* customer contact inputs (agent) + printed details (client view / PDF) */
+  .q-contact{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:8px 10px; margin-top:12px; max-width:640px; }
+  .q-field{ display:flex; flex-direction:column; gap:3px; font-size:11px; color:var(--ink-dim); font-weight:600; }
+  .q-field input, .q-field select{
+    background:#fff; border:1px solid var(--paper-line); color:var(--ink-on-paper); border-radius:var(--radius-s);
+    padding:8px 10px; font-size:13px; font-family:var(--font-body); min-height:38px; width:100%; box-sizing:border-box;
+  }
+  .q-field input.invalid{ border-color:#d9534f; background:#fff6f5; }
+  .q-id-pair{ display:flex; gap:6px; }
+  .q-id-pair select{ flex:0 0 auto; width:auto; }
+  .q-id-pair input{ flex:1; min-width:0; direction:ltr; text-align:right; }
+  #qCustomerPhone, #qCustomerEmail{ direction:ltr; text-align:right; }
+  .q-contact-warn{ grid-column:1 / -1; font-size:11.5px; color:#a5432f; font-weight:500; line-height:1.5; }
+  .q-customer-details{ display:none; margin-top:8px; font-size:12.5px; color:var(--ink-on-paper); line-height:1.7; }
+  .q-customer-details b{ font-weight:600; color:var(--ink-dim); }
+  .q-customer-details .ltr{ direction:ltr; unicode-bidi:isolate; }
+  .modal.client-view .q-contact{ display:none; }
+  .modal.client-view .q-customer-details:not([hidden]){ display:block; }
+  body.pdf-export .q-contact{ display:none !important; }
+
+  /* send / share sheet */
+  .share-sheet-backdrop{ position:fixed; inset:0; z-index:10300; background:rgba(6,10,16,.55); display:flex; align-items:flex-end; justify-content:center; padding:0; }
+  .share-sheet{
+    background:#fbfaf6; color:var(--ink-on-paper); width:min(560px, 100%); max-height:92vh; overflow:auto;
+    border-radius:18px 18px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.28);
+    padding:16px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width:700px){ .share-sheet-backdrop{ align-items:center; padding:24px; } .share-sheet{ border-radius:16px; } }
+  .share-sheet-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .share-sheet-head h3{ margin:0; font-family:var(--font-display); font-size:16px; }
+  .share-sheet-head p{ margin:3px 0 0; font-size:12px; color:var(--ink-dim); line-height:1.5; }
+  .share-sheet-body{ display:flex; flex-direction:column; gap:10px; }
+  .share-card{ border:1px solid var(--paper-line); background:#fff; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .share-card h4{ margin:0; font-size:13.5px; display:flex; align-items:center; gap:8px; }
+  .share-card p{ margin:0; font-size:11.5px; color:var(--ink-dim); line-height:1.55; }
+  .share-steps{ display:flex; flex-direction:column; gap:7px; }
+  .share-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px; min-height:46px; padding:10px 14px;
+    border-radius:10px; border:1px solid var(--paper-line); background:#f4f2ea; color:var(--ink-on-paper);
+    font:600 14px var(--font-body); text-decoration:none; cursor:pointer; text-align:center;
+  }
+  .share-btn:focus-visible{ outline:2px solid #00AAE7; outline-offset:2px; }
+  .share-btn[disabled], .share-btn.disabled{ opacity:.45; pointer-events:none; }
+  .share-btn .step{ display:inline-flex; width:20px; height:20px; border-radius:50%; align-items:center; justify-content:center; font-size:11px; background:rgba(0,0,0,.12); }
+  .share-btn.wa{ background:#25D366; border-color:#1fb457; color:#06280f; }
+  .share-btn.wa-2{ background:#e9fbf0; border-color:#9fe3b8; color:#0d5a2a; }
+  .share-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; }
+  .share-btn.primary{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .share-btn.done{ box-shadow:inset 0 0 0 2px rgba(0,0,0,.18); }
+  .share-btn.done::after{ content:'✓'; font-weight:800; }
+  .share-note{ font-size:11.5px; color:#1f5c4c; background:#eaf3ef; border:1px solid #bcdccf; border-radius:8px; padding:7px 10px; line-height:1.5; }
+  .share-note.warn{ color:#7a4a0c; background:#fff5e2; border-color:#f1d49b; }
+  .share-copy-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .share-copy-row .share-btn{ flex:1; min-height:40px; font-size:12.5px; }
   .send-ok{
     background:#eaf3ef; border:1px solid #bcdccf; color:#1f5c4c; border-radius:var(--radius-s);
     padding:12px 14px; font-size:13px; margin-top:16px; display:none; align-items:center; gap:8px;
@@ -842,6 +907,19 @@
      item names/quantities and the bottom-line subtotal/VAT/total, no unit pricing. */
   .modal.client-view .price-col,
   .modal.client-view .price-line{ display:none; }
+  /* What the customer receives (on screen in client view, and in the saved PDF): no agent
+     instructions, only the monitoring services actually chosen (none → no monitoring section),
+     no checkboxes, and the VAT rate as plain text rather than an input box. */
+  .modal .client-only{ display:none; }
+  .modal.client-view .client-only{ display:block; }
+  .modal.client-view .agent-hint,
+  .modal.client-view #qMonitorTable tr.mon-off,
+  .modal.client-view #qMonSection.mon-empty,
+  .modal.client-view .qMonCheck{ display:none; }
+  .modal.client-view .agent-inline{ display:none; }
+  .modal.client-view .agent-hint{ display:none !important; }
+  .modal.client-view #qPaymentTermsDisplay{ margin:12px 0 8px !important; }
+  body.pdf-export #modeBadge{ display:none !important; }
 
   /* ---------- Professional sketch / print view ---------- */
   .sketch-backdrop{ z-index:10200; padding:0; } /* stays above .app.is-fullscreen too, same reason as .modal-backdrop */
@@ -939,6 +1017,12 @@
   .legend-row .guide-field.use b{ color:var(--accent-3-text); }
   .legend-row .guide-field.range b{ color:var(--accent-text); }
   .legend-row .guide-field.install b{ color:var(--accent-2-text); }
+  .legend-row .guide-field.infra{ background:rgba(214,158,46,.10); border-radius:4px; padding:2px 6px; margin-inline-start:-6px; }
+  .legend-row .guide-field.infra b{ color:#9a6a12; }
+  .infra-block{ margin-top:14px; }
+  .infra-table{ width:100%; margin-top:6px; font-size:11.5px; }
+  .infra-table .infra-total td{ border-top:1.5px solid currentColor; }
+  .infra-note{ font-size:10.5px !important; margin-top:6px !important; color:#8a8170 !important; }
 
   /* new-project template picker */
   .np-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
@@ -1779,12 +1863,32 @@
           <h3 id="qCustomer">—</h3>
           <p id="qAddress">—</p>
           <div class="q-number-badge" id="qNumberBadge">מספר הצעה יוקצה בעת השליחה/ההדפסה</div>
-          <input type="email" id="qCustomerEmail" placeholder="אימייל הלקוח (לשליחה באאוטלוק)" style="margin-top:8px;width:min(280px,100%);background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
+          <!-- Customer contact details: the agent fills them in here (hidden in the client view /
+               PDF), and whatever is filled in is printed on the quote as plain text below. The
+               mobile number also powers "send on WhatsApp" straight to the customer's chat. -->
+          <div class="q-contact" id="qContactInputs">
+            <label class="q-field"><span>טלפון נייד</span>
+              <input type="tel" id="qCustomerPhone" inputmode="tel" autocomplete="off" placeholder="050-0000000"></label>
+            <label class="q-field"><span>אימייל</span>
+              <input type="email" id="qCustomerEmail" inputmode="email" autocomplete="off" placeholder="name@example.com"></label>
+            <div class="q-field q-field-id"><span>מספר מזהה</span>
+              <div class="q-id-pair">
+                <select id="qCustomerIdType" aria-label="סוג מזהה">
+                  <option value="tz">ת״ז</option>
+                  <option value="osek">עוסק מורשה</option>
+                  <option value="hp">ח.פ (חברה)</option>
+                </select>
+                <input type="text" id="qCustomerId" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="9 ספרות" aria-label="מספר מזהה">
+              </div>
+            </div>
+            <div class="q-contact-warn" id="qContactWarn" hidden></div>
+          </div>
+          <div class="q-customer-details" id="qCustomerDetails" hidden></div>
         </div>
       </div>
 
       <div class="section-title">התקנה חד-פעמית — אביזרים מוצעים</div>
-      <p style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">מחירי היחידה ריקים בכוונה — הסוכן משלים אותם לפי הצעת המחיר הרלוונטית ללקוח.</p>
+      <p class="agent-hint" style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">מחירי היחידה ריקים בכוונה — הסוכן משלים אותם לפי הצעת המחיר הרלוונטית ללקוח.</p>
       <table class="bom" id="qEquipTable"><thead><tr><th>אביזר</th><th class="num">כמות</th><th class="num price-col">מחיר יח׳ (₪)</th><th class="num price-col">סה״כ (₪)</th></tr></thead><tbody></tbody></table>
 
       <div class="section-title" style="margin-top:16px">כבילה נדרשת</div>
@@ -1818,24 +1922,27 @@
 
       <div class="rate-row" style="margin-top:6px"><span>סה״כ ציוד והתקנה (לפני מע״מ)</span><span class="num" id="qSubtotal">₪0</span></div>
       <div class="rate-row" id="qDiscountAmountRow" hidden><span>הנחה</span><span class="num" id="qDiscountAmt">-₪0</span></div>
-      <div class="rate-row"><span>מע״מ (%)</span><span><input type="number" id="qVatRate" value="18" min="0" max="100" style="width:56px;text-align:center"> — <span class="num" id="qVatAmt">₪0</span></span></div>
+      <div class="rate-row"><span>מע״מ (<span id="qVatPctLabel">18</span>%)</span><span><span class="agent-inline"><input type="number" id="qVatRate" value="18" min="0" max="100" style="width:56px;text-align:center"> — </span><span class="num" id="qVatAmt">₪0</span></span></div>
       <div class="total-line"><span>סה״כ התקנה לתשלום (כולל מע״מ)</span><span class="amt num" id="qTotal">₪0</span></div>
 
       <!-- Payment terms: agent writes free text (how/when the customer pays); the textarea
            itself is agent-only (price-line), and qPaymentTermsDisplay renders it as plain text
            for the client-facing quote/PDF/email — hidden entirely whenever the field is empty. -->
-      <div class="section-title" style="margin-top:20px">תנאי תשלום</div>
+      <div class="section-title agent-hint" style="margin-top:20px">תנאי תשלום</div>
       <div class="price-line" style="margin:-4px 0 8px">
         <textarea id="qPaymentTerms" rows="2" placeholder="לדוגמה: 50% מקדמה בחתימה על ההזמנה, יתרה בסיום ההתקנה. תשלום בהעברה בנקאית / כרטיס אשראי / צ׳קים." style="width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:8px 10px;font-size:12px;font-family:var(--font-body);resize:vertical"></textarea>
       </div>
       <p id="qPaymentTermsDisplay" style="font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin:-4px 0 8px" hidden></p>
 
+      <div id="qMonSection">
       <div class="section-title" style="margin-top:24px">חיבור למוקד מבצעי — תשלום חודשי</div>
-      <p style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">סמנו את השירותים הרלוונטיים והשלימו מחיר חודשי לכל אחד — התשלום מבוצע בהוראת קבע בכרטיס אשראי, בנפרד מעלות ההתקנה החד-פעמית.</p>
+      <p class="agent-hint" style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">סמנו את השירותים הרלוונטיים והשלימו מחיר חודשי לכל אחד — התשלום מבוצע בהוראת קבע בכרטיס אשראי, בנפרד מעלות ההתקנה החד-פעמית.</p>
+      <p class="client-only" style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">התשלום החודשי מבוצע בהוראת קבע בכרטיס אשראי, בנפרד מעלות ההתקנה החד-פעמית.</p>
       <table class="bom" id="qMonitorTable"><thead><tr><th>שירות</th><th class="num price-col">מחיר חודשי (₪)</th></tr></thead><tbody></tbody></table>
       <div class="rate-row" style="margin-top:10px"><span>סה״כ חודשי (לפני מע״מ)</span><span class="num" id="qMonSubtotal">₪0</span></div>
       <div class="rate-row"><span>מע״מ על המוקד</span><span class="num" id="qMonVatAmt">₪0</span></div>
       <div class="total-line"><span>סה״כ חודשי בהוראת קבע (כולל מע״מ)</span><span class="amt num" id="qMonTotal">₪0</span></div>
+      </div>
 
       <div id="qNotes" style="margin-top:22px;font-size:11.5px;color:var(--ink-dim);line-height:1.8;border-top:1px dashed var(--paper-line);padding-top:14px"></div>
 
@@ -1844,10 +1951,27 @@
       <div class="send-ok" id="sendOk">✓ <span id="sendOkText"></span></div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" id="btnPrint">הדפס / שמור כ-PDF</button>
       <button class="btn btn-ghost" id="btnToggleClientView">🏷️ הצעת מחיר ללקוח (ריכוז כללי)</button>
-      <button class="btn btn-primary" id="btnConfirmSend">📧 שלח באאוטלוק</button>
+      <button class="btn btn-ghost" id="btnPrint">💾 שמירת ההצעה כ-PDF</button>
+      <button class="btn btn-primary" id="btnConfirmSend">📤 שליחה ללקוח (וואטסאפ / מייל)</button>
     </div>
+  </div>
+</div>
+
+<!-- Send / share sheet: opens once the PDF is ready. Every send action here is its own tap, so
+     the phone's share sheet (WhatsApp, Outlook, Mail, "Save to Files") can open with the finished
+     file attached — something a page can only do directly inside a tap, not after the moment it
+     takes to render the PDF. -->
+<div class="share-sheet-backdrop" id="shareSheetBackdrop" hidden>
+  <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareSheetTitle">
+    <div class="share-sheet-head">
+      <div>
+        <h3 id="shareSheetTitle">מכינים את קובץ ה-PDF…</h3>
+        <p id="shareSheetSub"></p>
+      </div>
+      <button class="modal-close" id="shareSheetClose" aria-label="סגור">✕</button>
+    </div>
+    <div class="share-sheet-body" id="shareSheetBody"></div>
   </div>
 </div>
 
@@ -1865,7 +1989,7 @@
       <div class="sketch-head-actions">
         <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
         <button class="btn btn-ghost btn-sm" id="btnSketchEmail">📧 שלח באאוטלוק</button>
-        <button class="btn btn-ghost btn-sm" id="btnSketchPrint">הדפס / שמור כ-PDF</button>
+        <button class="btn btn-ghost btn-sm" id="btnSketchPrint">💾 שמירה כ-PDF</button>
         <button class="modal-close" id="sketchClose" aria-label="סגור">✕</button>
       </div>
     </div>
@@ -1884,6 +2008,10 @@
         <div class="sketch-section">
           <h4>סיכום כבילה נדרשת (כולל רזרבה)</h4>
           <table class="bom" id="sketchCableTable"><thead><tr><th>סוג כבל</th><th class="num">מ״א</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="sketch-section" id="sketchInfraSection" hidden>
+          <h4>תשתית חשמל ותקשורת להכנה</h4>
+          <div id="sketchInfraInfo"></div>
         </div>
         <div class="sketch-section" id="sketchFenceSection" hidden>
           <h4>גדר והיקף (מידע כללי)</h4>
@@ -2525,9 +2653,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     fence_sensor: { label:'גלאי קרן',               cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     safe_sensor:  { label:'גלאי כספת',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     cam_in:       { label:'מצלמה פנימית',          cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:90, range:5.5 },
-    cam_out:      { label:'מצלמת חוץ',             cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:90, range:8 },
+    cam_out:      { label:'מצלמת חוץ',             cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:90, range:12 },
     cam_in_analytics:  { label:'מצלמת אנליטיקה פנימית',  cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:90, range:5.5 },
-    cam_out_analytics: { label:'מצלמת אנליטיקה חיצונית', cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:90, range:8 },
+    cam_out_analytics: { label:'מצלמת אנליטיקה חיצונית', cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:90, range:12 },
     // PAL LPR camera: a standalone license-plate-recognition camera that works over the
     // cellular network like the rest of the PAL lineup — it is NOT wired to the NVR/switch
     // (no cat6/PoE run, no NVR channel used), only to mains power, hence cable:'power' and
@@ -2701,8 +2829,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     },
     cam_out: {
       use: 'כיסוי כניסות, חניה והיקף חיצוני של הנכס, לרוב בשילוב תאורת IR לצילום לילה.',
-      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-90 מעלות (משתנה לפי דגם ותנאי תאורה) — בהתקנה בפינת המבנה, מכוונת ב-45° לאורך החזית.',
-      install: 'בגובה כ-2.5–3 מ׳ מחוץ לטווח יד, עם הגנה מגשם ישיר; מומלץ חפיפה של 10–20% בין מצלמות סמוכות למניעת אזורים עיוורים.'
+      range: 'טווח זיהוי (Recognition לפי DORI) כ-12 מ׳ בזווית צילום כ-90 מעלות, לפי נתוני יצרן למצלמת 4MP בעדשת 2.8 מ״מ (זיהוי פנים ברור — Identification — עד כ-6 מ׳; גילוי תנועה למרחק רב יותר). משתנה לפי דגם ותנאי תאורה — בהתקנה בפינת המבנה, מכוונת ב-45° לאורך החזית.',
+      install: 'בגובה כ-2.5–3 מ׳ מחוץ לטווח יד, עם הגנה מגשם ישיר; מומלץ חפיפה של 10–20% בין מצלמות סמוכות כך שנוצר רצף מצלמות סביב המבנה, ללא אזורים עיוורים (למשל בין החצר לחזית הסלון).'
     },
     cam_in_analytics: {
       use: 'מצלמה פנימית עם מנוע אנליטיקה מובנה (זיהוי אדם, חציית קו, כניסה לאזור מוגדר) — מפחיתה משמעותית התראות שווא לעומת מצלמה רגילה ומאפשרת התרעה חכמה בזמן אמת.',
@@ -2711,7 +2839,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     },
     cam_out_analytics: {
       use: 'מצלמה חיצונית עם אנליטיקה מובנית (זיהוי אדם/רכב, חציית קו, אזור מוגדר) — מסננת תנועת בעלי חיים/צמחייה ורוח, ומאפשרת התרעה חכמה ומדויקת יותר מהתראת תנועה רגילה.',
-      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-90 מעלות; לדיוק אנליטי מיטבי מומלץ למקד את אזור/קו הזיהוי בתוך הטווח האפקטיבי ולא בקצוות התמונה.',
+      range: 'טווח זיהוי אפקטיבי כ-12 מ׳ בזווית צילום כ-90 מעלות (4MP, עדשת 2.8 מ״מ); לדיוק אנליטי מיטבי מומלץ למקד את אזור/קו הזיהוי בתוך הטווח האפקטיבי ולא בקצוות התמונה.',
       install: 'בגובה כ-2.5–3 מ׳ מחוץ לטווח יד, עם הגנה מגשם ישיר; לאחר ההתקנה יש להגדיר את קווי/אזורי האנליטיקה דרך האפליקציה או ה-NVR בהתאם לפריסת השטח בפועל.'
     },
     cam_lpr: {
@@ -2820,6 +2948,65 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       install: 'מוחלף במקום מפסק הדוד הקיים בלוח החשמל או בנקודת ההפעלה שלו — התקנה על ידי חשמלאי מוסמך בלבד (עומס חשמלי גבוה).'
     }
   };
+
+  /* Site infrastructure each device needs at its mounting point — what the electrician has to
+     prepare before the installer arrives. Cameras and the recorder need BOTH a power point and
+     a network point. If the project has a communication cabinet, the core equipment (NVR,
+     switch, UPS) lives in it, so instead the cabinet needs at least 3 power outlets and 2
+     network points (more when more network-consuming devices are installed). PAL devices
+     (gate controller, PAL intercom, PAL LPR camera) have a built-in cellular module: power
+     only, no network point. */
+  var INFRA_REQ = {
+    cam_in:            { power:1, net:1, text:'מחייבת נקודת חשמל ונקודת רשת (Cat6) במיקום ההתקנה.' },
+    cam_out:           { power:1, net:1, text:'מחייבת נקודת חשמל ונקודת רשת (Cat6) במיקום ההתקנה.' },
+    cam_in_analytics:  { power:1, net:1, text:'מחייבת נקודת חשמל ונקודת רשת (Cat6) במיקום ההתקנה.' },
+    cam_out_analytics: { power:1, net:1, text:'מחייבת נקודת חשמל ונקודת רשת (Cat6) במיקום ההתקנה.' },
+    nvr:               { power:1, net:1, cabinet:true, text:'מחייבת נקודת חשמל ונקודת רשת (חיבור לנתב). כשיש ארון תקשורת — ה-NVR מותקן בו, ולחילופין הארון הוא שנדרש לנקודות (ראו ארון תקשורת).' },
+    comm_cabinet:      { power:3, net:2, text:'לפחות 3 שקעי חשמל ו-2 נקודות תקשורת — יותר נקודות תקשורת בהתאם לכמות האביזרים צורכי הרשת המותקנים בו (NVR, סוויץ׳ וכד׳).' },
+    switch:            { power:1, net:1, cabinet:true, text:'נקודת חשמל ונקודת רשת (חיבור לנתב). כשיש ארון תקשורת — מותקן בו.' },
+    ups:               { power:1, net:0, cabinet:true, text:'שקע חשמל ייעודי. כשיש ארון תקשורת — מותקן בו.' },
+    ap_in:             { power:0, net:1, text:'נקודת רשת (מוזנת PoE מהסוויץ׳) — ללא שקע חשמל נפרד.' },
+    ap_out:            { power:0, net:1, text:'נקודת רשת (מוזנת PoE מהסוויץ׳) — ללא שקע חשמל נפרד.' },
+    intercom_pal:      { power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
+    spider_ctrl:       { power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
+    spider_ctrl_2relay:{ power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
+    cam_lpr:           { power:1, net:0, text:'נקודת חשמל בלבד — אינה מחייבת נקודת רשת (מודול סלולרי מובנה, ללא חיבור ל-NVR).' },
+    smart_cam:         { power:1, net:0, text:'נקודת חשמל (או סוללה לפי הדגם) וקליטת Wi-Fi טובה — ללא נקודת רשת.' }
+  };
+  // Totals for the current project: power/network points the site must provide.
+  function computeInfraRequirements(deviceList){
+    deviceList = deviceList || state.devices;
+    var hasCabinet = deviceList.some(function(d){ return d.type === 'comm_cabinet'; });
+    var lines = {}, power = 0, net = 0, inCabinetNet = 0;
+    deviceList.forEach(function(d){
+      var req = INFRA_REQ[d.type];
+      if (!req) return;
+      if (hasCabinet && req.cabinet){ inCabinetNet += req.net; return; }
+      if (d.type === 'comm_cabinet') return;
+      lines[d.type] = (lines[d.type] || 0) + 1;
+      power += req.power; net += req.net;
+    });
+    var cab = null;
+    if (hasCabinet){
+      var cabCount = deviceList.filter(function(d){ return d.type === 'comm_cabinet'; }).length;
+      cab = { count:cabCount, power:3 * cabCount, net:Math.max(2 * cabCount, inCabinetNet) };
+      power += cab.power; net += cab.net;
+    }
+    return { lines:lines, cabinet:cab, power:power, net:net };
+  }
+  function infraSummaryHtml(){
+    var R = computeInfraRequirements();
+    var types = Object.keys(R.lines);
+    if (!types.length && !R.cabinet) return '';
+    var rows = types.map(function(t){
+      var q = INFRA_REQ[t], n = R.lines[t];
+      return '<tr><td>' + DEVICE_DEFS[t].label + ' ×' + n + '</td><td class="num">' + (q.power * n || '—') + '</td><td class="num">' + (q.net * n || '—') + '</td></tr>';
+    });
+    if (R.cabinet) rows.push('<tr><td>ארון תקשורת (כולל NVR/סוויץ׳/UPS שבתוכו)</td><td class="num">' + R.cabinet.power + '</td><td class="num">' + R.cabinet.net + '</td></tr>');
+    return '<table class="bom infra-table"><thead><tr><th>אביזר</th><th class="num">נק׳ חשמל</th><th class="num">נק׳ רשת</th></tr></thead><tbody>' + rows.join('') +
+      '<tr class="infra-total"><td><b>סה״כ להכנה באתר</b></td><td class="num"><b>' + R.power + '</b></td><td class="num"><b>' + R.net + '</b></td></tr></tbody></table>' +
+      '<p class="infra-note">בקר PAL, אינטרקום PAL ומצלמת LPR של PAL — חשמל בלבד (מודול סלולרי מובנה), ללא נקודת רשת.</p>';
+  }
 
   var LEGEND_SECTIONS = [
     { title:'מבנה — חדרים ואזורים', dot:'var(--ink-dim)', types:['room','yard'] },
@@ -4077,6 +4264,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var recsVisible = false;
   var currentRecs = [];
   var currentRecsCabling = null;
+  var currentPerimeter = null;
 
   function suggestPointNearOpening(o, inwardM, tangentM){
     var wo = computeWallOrientation(o);
@@ -4286,6 +4474,256 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     'yard-corner':'✓ הוצבה בפינת החצר, מכוונת באלכסון לכיסוי כל השטח'
   };
 
+  /* ---------- perimeter camera chain ("רצף מצלמות היקפי") ----------
+     Practice distilled from manufacturer and integrator design guides (Hikvision / Dahua
+     camera-placement and DORI guidance, Risco / Pima / Honeywell layered-intrusion design):
+       • Think in ZONES, not camera counts — entry points first (doors, gates), then the
+         perimeter ring around the building, then high-value outdoor areas (pool, parking).
+       • Every camera's view should touch the next one's with ~10–20% overlap, so a person
+         walking around the house is handed from camera to camera with no "dead strip" in
+         between (e.g. the strip between the garden and the living-room facade).
+       • Corner/facade mounting at 2.5–3 m, aimed 45° along the wall, gives each camera a full
+         facade plus its approach; four corners in a "pinwheel" cover a simple house.
+       • Don't over-equip: a typical house closes its ring with ~4–6 outdoor cameras (larger
+         plots 6–8). A 4MP / 2.8 mm (~100°) camera recognises a person to ~8–10 m, so the
+         design range used here is the camera's own range in DEVICE_DEFS (8 m outdoors).
+     The model below samples the outdoor area of the ground floor on a 1 m grid — a band
+     around the building plus any garden/yard drawn — and evaluates true line of sight (walls
+     block). A greedy set-cover then adds the camera position that closes the most uncovered
+     ground, seeded with every camera already placed or already recommended, and stops as soon
+     as the doors are covered and the ring is ~92% closed, or the next camera would add too
+     little — so it closes the gaps without piling on cameras. */
+  var PERIM_CELL_M = 1.0, PERIM_BAND_M = 3.5, PERIM_TARGET_PCT = 92;
+  var PERIM_MAX_CAMS = { house:8, store:4, clinic:4, apartment:3 };
+  function wallSegsForRooms(list){
+    var segs = [];
+    list.forEach(function(r){
+      var b = roomBBoxPx(r);
+      segs.push([b.x1,b.y1,b.x2,b.y1], [b.x2,b.y1,b.x2,b.y2], [b.x2,b.y2,b.x1,b.y2], [b.x1,b.y2,b.x1,b.y1]);
+    });
+    return segs;
+  }
+  function segBlocked(ax, ay, bx, by, segs){
+    var dx = bx - ax, dy = by - ay;
+    for (var i = 0; i < segs.length; i++){
+      var s = segs[i], ex = s[2]-s[0], ey = s[3]-s[1];
+      var den = dx*ey - dy*ex;
+      if (Math.abs(den) < 1e-9) continue;
+      var wx = s[0]-ax, wy = s[1]-ay;
+      var t = (wx*ey - wy*ex) / den, u = (wx*dy - wy*dx) / den;
+      if (t > 1e-4 && t < 1 - 1e-4 && u >= -1e-6 && u <= 1 + 1e-6) return true;
+    }
+    return false;
+  }
+  // Which target indices a camera {x,y,rot,fov,range(px)} really sees (range + FOV + walls).
+  function camSeesTargets(cam, targets, segs){
+    var aim = (cam.rot || 0) * Math.PI/180, ax = Math.sin(aim), ay = -Math.cos(aim);
+    var ox = cam.x + ax*2, oy = cam.y + ay*2;
+    var cosHalf = Math.cos((Math.min(cam.fov, 359) / 2 + 1) * Math.PI/180), r2 = cam.range * cam.range;
+    var out = [];
+    for (var i = 0; i < targets.length; i++){
+      var p = targets[i], vx = p.x - ox, vy = p.y - oy, d2 = vx*vx + vy*vy;
+      if (d2 > r2) continue;
+      var d = Math.sqrt(d2);
+      if (d > 1 && (vx*ax + vy*ay) / d < cosHalf) continue;
+      if (segBlocked(ox, oy, p.x, p.y, segs)) continue;
+      out.push(i);
+    }
+    return out;
+  }
+  function perimeterApplies(){
+    var kind = state.kind || 'house';
+    return !(kind === 'apartment' && state.floorType === 'middle');
+  }
+  function onGround(item){ return !usesMultiFloor() || (item.floor || 0) === 0; }
+  // Ground-floor outdoor model: targets (grid cells to watch, door approach points as "must")
+  // and wall segments. withCandidates also builds the mount positions the optimizer may pick.
+  function perimeterModel(withCandidates){
+    if (!perimeterApplies()) return null;
+    var kind = state.kind || 'house';
+    var bldg = state.rooms.filter(function(r){ return r.type !== 'yard' && onGround(r); });
+    if (!bldg.length) return null;
+    var yards = state.rooms.filter(function(r){ return r.type === 'yard' && onGround(r); });
+    var aptMode = kind === 'apartment';
+    if (aptMode && !yards.length) return null; // an apartment only watches its own garden/terrace
+    var segs = wallSegsForRooms(bldg);
+    var bx1 = Infinity, by1 = Infinity, bx2 = -Infinity, by2 = -Infinity;
+    bldg.forEach(function(r){ var b = roomBBoxPx(r); bx1 = Math.min(bx1, b.x1); by1 = Math.min(by1, b.y1); bx2 = Math.max(bx2, b.x2); by2 = Math.max(by2, b.y2); });
+    var band = m2p(PERIM_BAND_M);
+    var gx1 = bx1 - band, gy1 = by1 - band, gx2 = bx2 + band, gy2 = by2 + band;
+    if (aptMode) { gx1 = Infinity; gy1 = Infinity; gx2 = -Infinity; gy2 = -Infinity; }
+    yards.forEach(function(r){ var b = roomBBoxPx(r); gx1 = Math.min(gx1, b.x1); gy1 = Math.min(gy1, b.y1); gx2 = Math.max(gx2, b.x2); gy2 = Math.max(gy2, b.y2); });
+    // a drawn fence is the property line: nothing beyond it needs watching
+    var lot = null;
+    var fences = (state.fences || []).filter(onGround);
+    if (fences.length && !aptMode){
+      lot = { x1:bx1, y1:by1, x2:bx2, y2:by2 };
+      fences.forEach(function(f){ lot.x1 = Math.min(lot.x1, f.x1, f.x2); lot.y1 = Math.min(lot.y1, f.y1, f.y2); lot.x2 = Math.max(lot.x2, f.x1, f.x2); lot.y2 = Math.max(lot.y2, f.y1, f.y2); });
+      var lm = m2p(0.1); lot.x1 -= lm; lot.y1 -= lm; lot.x2 += lm; lot.y2 += lm;
+    }
+    function inYard(p){ return yards.some(function(r){ var b = roomBBoxPx(r); return p.x >= b.x1 && p.x <= b.x2 && p.y >= b.y1 && p.y <= b.y2; }); }
+    function bldgDist(p){
+      var m = Infinity;
+      bldg.forEach(function(r){ var b = roomBBoxPx(r); m = Math.min(m, Math.hypot(Math.max(b.x1 - p.x, 0, p.x - b.x2), Math.max(b.y1 - p.y, 0, p.y - b.y2))); });
+      return m;
+    }
+    // a thin gap between two drawn rooms (walls not snapped together) is not outdoor ground
+    function roomAt(px, py){ return bldg.some(function(r){ var b = roomBBoxPx(r); return px > b.x1 && px < b.x2 && py > b.y1 && py < b.y2; }); }
+    function isSliver(p){
+      var ds = [m2p(0.2), m2p(0.4), m2p(0.6)];
+      function hit(dx, dy){ return ds.some(function(d){ return roomAt(p.x + dx*d, p.y + dy*d); }); }
+      return (hit(1, 0) && hit(-1, 0)) || (hit(0, 1) && hit(0, -1));
+    }
+    // A shop or clinic without its own yard usually shares walls with neighbours — watch the
+    // ground in front of its doors and windows rather than a full ring around it.
+    var frontOnly = (kind === 'store' || kind === 'clinic') && !yards.length;
+    var extOpenings = state.openings.filter(function(o){ var d = OPENING_DEFS[o.type]; return d && d.exterior && onGround(o); });
+    function nearOpening(p){ return extOpenings.some(function(o){ return dist(o.x, o.y, p.x, p.y) <= m2p(6); }); }
+    var cell = m2p(PERIM_CELL_M), targets = [];
+    for (var y = gy1 + cell/2; y < gy2; y += cell){
+      for (var x = gx1 + cell/2; x < gx2; x += cell){
+        var p = { x:x, y:y };
+        if (pointInsideAnyRoom(p, bldg)) continue;
+        if (lot && (x < lot.x1 || x > lot.x2 || y < lot.y1 || y > lot.y2)) continue;
+        if (isSliver(p)) continue;
+        var bd = bldgDist(p), nearB = !aptMode && bd <= band && (!frontOnly || nearOpening(p)), yard = inYard(p);
+        if (!nearB && !yard) continue;
+        var near = !aptMode && bd <= m2p(1.5);
+        targets.push({ x:x, y:y, w: near ? 1.5 : nearB ? 1 : 0.6, near:near, must:false });
+      }
+    }
+    // the approach to every exterior door on the ground floor must be seen
+    state.openings.forEach(function(o){
+      var def = OPENING_DEFS[o.type];
+      if (!def || !def.exterior || def.kind !== 'door' || !onGround(o)) return;
+      var ap = suggestPointNearOpening(o, -1.2, 0);
+      if (pointInsideAnyRoom(ap, bldg)) return;
+      if (aptMode && !inYard(ap)) return;
+      targets.push({ x:ap.x, y:ap.y, w:1, must:true, door:o });
+    });
+    if (!targets.length) return null;
+    var model = { kind:kind, bldg:bldg, yards:yards, segs:segs, targets:targets, cellPx:cell, bldgCenter:{ x:(bx1 + bx2)/2, y:(by1 + by2)/2 } };
+    if (!withCandidates) return model;
+    // candidate mounts: along every outer facade (0.2 m out, aimed out / 45° each way along
+    // the wall), plus garden/yard corners (on a post or the fence)
+    var cands = [], off = m2p(0.2), step = m2p(1.5);
+    function addCand(px, py, rot, how, room){
+      // clear of every wall (not sitting on the line where two rooms meet)
+      if (bldgDist({ x:px, y:py }) < m2p(0.15)) return;
+      if (lot && (px < lot.x1 || px > lot.x2 || py < lot.y1 || py > lot.y2)) return;
+      cands.push({ x:px, y:py, rot:rot, how:how, room:room });
+    }
+    bldg.forEach(function(r){
+      var b = roomBBoxPx(r);
+      [
+        { ax:b.x1, ay:b.y1, bx:b.x2, by:b.y1, n:{ x:0, y:-1 } },
+        { ax:b.x1, ay:b.y2, bx:b.x2, by:b.y2, n:{ x:0, y: 1 } },
+        { ax:b.x1, ay:b.y1, bx:b.x1, by:b.y2, n:{ x:-1, y:0 } },
+        { ax:b.x2, ay:b.y1, bx:b.x2, by:b.y2, n:{ x: 1, y:0 } }
+      ].forEach(function(e){
+        var len = Math.hypot(e.bx - e.ax, e.by - e.ay), tx = (e.bx - e.ax)/len, ty = (e.by - e.ay)/len;
+        var n = Math.max(1, Math.round(len / step));
+        for (var i = 0; i <= n; i++){
+          var px = e.ax + tx*len*i/n + e.n.x*off, py = e.ay + ty*len*i/n + e.n.y*off;
+          var atEnd = (i === 0 || i === n);
+          addCand(px, py, dirRot(e.n.x, e.n.y), 'facade-wall', r);
+          addCand(px, py, dirRot(e.n.x + tx, e.n.y + ty), atEnd ? 'facade-corner' : 'facade-wall', r);
+          addCand(px, py, dirRot(e.n.x - tx, e.n.y - ty), atEnd ? 'facade-corner' : 'facade-wall', r);
+          // flatter (~27° off the wall) for a narrow side alley between the house and the fence
+          addCand(px, py, dirRot(e.n.x*0.5 + tx, e.n.y*0.5 + ty), atEnd ? 'facade-corner' : 'facade-wall', r);
+          addCand(px, py, dirRot(e.n.x*0.5 - tx, e.n.y*0.5 - ty), atEnd ? 'facade-corner' : 'facade-wall', r);
+        }
+      });
+    });
+    yards.forEach(function(r){
+      roomCornersWithBisector(r, 0.2).forEach(function(c){ addCand(c.x, c.y, dirRot(c.dx, c.dy), 'yard-corner', r); });
+    });
+    model.cands = cands;
+    return model;
+  }
+  // Outdoor cameras (placed devices or recommendations) that count toward the ring.
+  function perimeterCamsFrom(list){
+    return list.filter(function(d){
+      if (!isOutCamType(d.type)) return false;
+      if (usesMultiFloor() && Math.floor(d.y / FLOOR_Y_STRIDE) !== 0) return false;
+      return true;
+    }).map(function(d){ var def = DEVICE_DEFS[d.type]; return { x:d.x, y:d.y, rot:d.rot || 0, fov:def.fov || 90, range:m2p(def.range || 8) }; });
+  }
+  function perimeterStats(model, covered){
+    var tot = 0, got = 0, mustMiss = 0;
+    model.targets.forEach(function(t, i){ tot += t.w; if (covered[i]) got += t.w; else if (t.must) mustMiss++; });
+    return { pct: tot ? Math.round(got / tot * 100) : 100, mustMiss: mustMiss };
+  }
+  function perimeterCoverage(model, camList){
+    var covered = new Array(model.targets.length);
+    camList.forEach(function(c){ camSeesTargets(c, model.targets, model.segs).forEach(function(i){ covered[i] = true; }); });
+    return covered;
+  }
+  // Greedy chain completion. seedCams = cameras already placed + already recommended.
+  function planPerimeterChain(model, seedCams){
+    var targets = model.targets, covered = perimeterCoverage(model, seedCams);
+    var before = perimeterStats(model, covered);
+    var totW = targets.reduce(function(s, t){ return s + t.w; }, 0);
+    var camDef = DEVICE_DEFS.cam_out;
+    var cands = model.cands.map(function(c){
+      var cam = { x:c.x, y:c.y, rot:c.rot, fov:camDef.fov, range:m2p(camDef.range) };
+      return { c:c, cam:cam, sees:camSeesTargets(cam, targets, model.segs) };
+    });
+    var maxCams = PERIM_MAX_CAMS[model.kind] || 8;
+    var picks = [], all = seedCams.slice();
+    // Phase 1 — area: doors first, then the camera that closes the most ground, until the ring
+    //   is ~92% closed or the next camera would add under ~3% of the area.
+    // Phase 2 — no dead strips: the 1.5 m strip right along the walls (where an intruder walks
+    //   to a window or door) may not keep an open stretch of 3 m or more if a camera can close it.
+    function pickBest(phase){
+      var best = null;
+      cands.forEach(function(k){
+        if (all.some(function(a){ return dist(a.x, a.y, k.cam.x, k.cam.y) < m2p(2); })) return;
+        var g = 0, cells = 0, mustNew = 0, nearNew = 0;
+        k.sees.forEach(function(i){
+          if (covered[i]) return;
+          g += targets[i].w; cells++;
+          if (targets[i].must) mustNew++;
+          if (targets[i].near) nearNew++;
+        });
+        if (!cells || (phase === 2 && !nearNew)) return;
+        var score = (phase === 2 ? nearNew * 2 + g * 0.25 : g + mustNew * 6) + (k.c.how === 'facade-corner' ? 0.8 : 0) - (k.c.how === 'yard-corner' ? 1.5 : 0);
+        if (!best || score > best.score) best = { k:k, g:g, cells:cells, mustNew:mustNew, nearNew:nearNew, score:score };
+      });
+      return best;
+    }
+    function take(best){
+      var newDoors = best.k.sees.filter(function(i){ return targets[i].must && !covered[i]; }).map(function(i){ return targets[i].door; });
+      best.k.sees.forEach(function(i){ covered[i] = true; });
+      picks.push({ c:best.k.c, cam:best.k.cam, sees:best.k.sees, gainM2:best.cells, doors:newDoors });
+      all.push(best.k.cam);
+    }
+    while (all.length < maxCams){
+      var st = perimeterStats(model, covered);
+      if (st.mustMiss === 0 && st.pct >= PERIM_TARGET_PCT) break;
+      var best1 = pickBest(1);
+      if (!best1) break;
+      if (best1.mustNew === 0 && best1.g < Math.max(4, totW * 0.03)) break;
+      take(best1);
+    }
+    while (all.length < maxCams){
+      var best2 = pickBest(2);
+      if (!best2 || best2.nearNew < 3) break;
+      take(best2);
+    }
+    // handover overlap of each new camera with the rest of the chain (research target 10–20%)
+    var seenBy = targets.map(function(){ return 0; });
+    perimeterCamsSees(model, seedCams).forEach(function(list){ list.forEach(function(i){ seenBy[i]++; }); });
+    picks.forEach(function(p){ p.sees.forEach(function(i){ seenBy[i]++; }); });
+    picks.forEach(function(p){
+      var shared = p.sees.filter(function(i){ return seenBy[i] > 1; }).length;
+      p.overlapPct = p.sees.length ? Math.round(shared / p.sees.length * 100) : 0;
+    });
+    var after = perimeterStats(model, covered);
+    return { picks:picks, before:before, after:after, coveredAfter:covered, seedCount:seedCams.length };
+  }
+  function perimeterCamsSees(model, cams){ return cams.map(function(c){ return camSeesTargets(c, model.targets, model.segs); }); }
+
   // Several openings of the same type (e.g. every "חלון רגיל" in a bedroom wing) are
   // otherwise indistinguishable in a checks/recommendations list — qualifying the label with
   // the room it actually sits in (the main entrance is already unique, so it's left alone)
@@ -4486,21 +4924,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // a secondary exterior door only gets a low-priority optional suggestion, not a scored
     // gap, matching a privacy-conscious deployment where cameras cover true access points
     // rather than blanketing every wall (Israeli customers commonly prefer this). ----
-    var secondaryDoors = restrictToDoorAndPir ? [] : exteriorDoors.filter(function(o){ return o.type !== 'door_main'; });
-    clusterOnSameFacade(secondaryDoors, 7).forEach(function(cluster){
-      var hasCamera = cluster.some(function(co){
-        return devices.some(function(d){ return isAnyCamType(d.type) && dist(d.x,d.y,co.x,co.y) <= m2p(9); });
-      });
-      if (hasCamera) return;
-      var rep = cluster[0];
-      var doorCamFloor = rep.floor || 0;
-      // at the corner of the facade, 45° along the wall (see facadeCornerCameraMount)
-      var camM = facadeCornerCameraMount(rep) || (function(){ var a = suggestPointNearOpening(rep, -0.3, 0), f = suggestPointNearOpening(rep, -9, 0); return { x:a.x, y:a.y, rot:aimRot(a, f) }; })();
-      var labels = cluster.map(function(co){ return openingRoomLabel(co, rooms); });
-      var uniqueLabels = labels.filter(function(l, i){ return labels.indexOf(l) === i; });
-      push('cam_out', camM.x, camM.y, camM.rot, floorRiskSev(camSev('rec'), doorCamFloor), 'מצלמת חוץ — ' + uniqueLabels.join(' + '),
-        'תוספת אופציונלית: כיסוי מצלמה על כניסה משנית — ' + uniqueLabels.join(' + ') + '.' + floorRiskNote(doorCamFloor));
-    });
+    // Secondary exterior doors no longer get a camera of their own here — their approach is a
+    // "must-cover" point of the perimeter camera chain below, so one well-placed facade camera
+    // can watch a door AND close the ring instead of each door adding its own camera.
 
     // ---- interior motion coverage: PIR only at the priority rooms/paths an intruder must
     // actually cross — living room, master bedroom, main hallway (mirrors the standard
@@ -4642,20 +5068,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         'בריכת שחייה — מומלץ תמיד: מצלמה עם אנליטיקת זיהוי אדם שמתריעה ברגע שאדם (ובמיוחד ילד) נכנס לאזור הבריכה ללא השגחה. מוצבת בפינת הבריכה הקרובה לבית, מכוונת באלכסון כך שזווית ה-90° מכסה את כל אזור הבריכה.');
     });
 
-    // ---- cameras need an NVR anchor ----
-    var hasNvr = devices.some(function(d){ return d.type==='nvr'; });
-    var hasOrWillHaveCam = devices.some(function(d){ return isAnyCamType(d.type); }) ||
-      recs.some(function(r){ return isAnyCamType(r.type); });
-    var nvrPoint = null;
-    if (!restrictToDoorAndPir && !hasNvr && hasOrWillHaveCam && interiorRooms.length){
-      var nvrAnchor = mainDoors.length ? mainDoors[0] : { x:interiorRooms[0].x, y:interiorRooms[0].y };
-      var nvrRoom = hubRoom || findRoomNearPoint(interiorRooms, nvrAnchor) || interiorRooms[0];
-      nvrPoint = roomFarCornerFrom(nvrRoom, nvrAnchor, 0.4);
-      if (hubPoint && dist(nvrPoint.x,nvrPoint.y,hubPoint.x,hubPoint.y) < m2p(0.6)) nvrPoint.x += m2p(0.6);
-      push('nvr', nvrPoint.x, nvrPoint.y, 0, 'critical', 'מערכת הקלטה',
-        'קיימות/מוצעות מצלמות אך לא הוגדרה יחידת הקלטה — זו גם נקודת העוגן לחישוב כבילת ה-Cat6. יחידה אחת מרכזת את מצלמות כל הקומות.', true);
-    }
-
     // ---- perimeter fence / gate coverage ----
     // A property with more than one uncovered gate produces several of these — and
     // without a distinguishing label they render as visually IDENTICAL cards (same title,
@@ -4694,6 +5106,57 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         'מומלץ כיסוי מצלמה נוסף על השער לזיהוי כניסה/יציאת רכבים ואנשים.', true);
     });
 
+    // ---- perimeter camera chain: close the ring around the building (see planPerimeterChain) ----
+    var perimeter = null;
+    if (!restrictToDoorAndPir){
+      var pModel = perimeterModel(true);
+      if (pModel){
+        var seedCams = perimeterCamsFrom(devices.concat(recs));
+        var plan = planPerimeterChain(pModel, seedCams);
+        var nowCovered = perimeterCoverage(pModel, perimeterCamsFrom(devices));
+        perimeter = { model:pModel, plan:plan, nowCovered:nowCovered, now:perimeterStats(pModel, nowCovered) };
+        var usedChainTitles = {};
+        plan.picks.forEach(function(pk, idx){
+          var yardHits = {};
+          pk.sees.forEach(function(i){
+            var t = pModel.targets[i];
+            pModel.yards.forEach(function(y){ var b = roomBBoxPx(y); if (t.x >= b.x1 && t.x <= b.x2 && t.y >= b.y1 && t.y <= b.y2) yardHits[y.id] = (yardHits[y.id] || 0) + 1; });
+          });
+          var topYard = pModel.yards.filter(function(y){ return yardHits[y.id]; }).sort(function(a, b){ return yardHits[b.id] - yardHits[a.id]; })[0];
+          var roomLbl = (pk.c.room && pk.c.room.type !== 'yard') ? (pk.c.room.label || 'המבנה') : null;
+          var where = roomLbl && topYard ? (roomLbl + ' ↔ ' + (topYard.label || 'חצר')) : (roomLbl || (topYard && topYard.label) || 'היקף המבנה');
+          var doorLbls = pk.doors.map(function(o){ return openingRoomLabel(o, rooms); }).filter(function(l, i, a){ return a.indexOf(l) === i; });
+          var mountTxt = pk.c.how === 'yard-corner' ? 'בפינת החצר (על עמוד/גדר), מכוונת באלכסון' :
+            pk.c.how === 'facade-corner' ? 'בפינת המבנה בגובה 2.5–3 מ׳, מכוונת ב-45° לאורך החזית' : 'על הקיר החיצוני בגובה 2.5–3 מ׳';
+          var reason = 'חוליה ' + (plan.seedCount + idx + 1) + ' ברצף המצלמות ההיקפי — ' + mountTxt + '. ' +
+            (doorLbls.length ? 'מכסה את הגישה אל ' + doorLbls.join(' + ') + ', ו' : '') +
+            'סוגרת כ-' + pk.gainM2 + ' מ"ר שאינם מכוסים כיום' +
+            (pk.overlapPct ? ', עם חפיפה של כ-' + pk.overlapPct + '% למצלמות הסמוכות (העברת מעקב רציפה, ללא "שטח מת")' : '') + '.';
+          // the plan's north is up (compass rose) — name the side of the building the camera is on
+          var bc = pModel.bldgCenter, ang = (Math.atan2(pk.cam.x - bc.x, -(pk.cam.y - bc.y)) * 180/Math.PI + 360) % 360;
+          var side = ['צפוני','צפון-מזרחי','מזרחי','דרום-מזרחי','דרומי','דרום-מערבי','מערבי','צפון-מערבי'][Math.round(ang / 45) % 8];
+          var title = 'מצלמת חוץ — ' + (doorLbls.length ? doorLbls.join(' + ') + ' (רצף היקפי)' : 'רצף היקפי, צד ' + side + ': ' + where);
+          if (usedChainTitles[title]) title += ' (' + (++usedChainTitles[title]) + ')'; else usedChainTitles[title] = 1;
+          push('cam_out', pk.cam.x, pk.cam.y, pk.cam.rot, camSev(pk.doors.length ? 'warning' : 'rec'), title, reason);
+        });
+      }
+    }
+
+
+    // ---- cameras need an NVR anchor ----
+    var hasNvr = devices.some(function(d){ return d.type==='nvr'; });
+    var hasOrWillHaveCam = devices.some(function(d){ return isAnyCamType(d.type); }) ||
+      recs.some(function(r){ return isAnyCamType(r.type); });
+    var nvrPoint = null;
+    if (!restrictToDoorAndPir && !hasNvr && hasOrWillHaveCam && interiorRooms.length){
+      var nvrAnchor = mainDoors.length ? mainDoors[0] : { x:interiorRooms[0].x, y:interiorRooms[0].y };
+      var nvrRoom = hubRoom || findRoomNearPoint(interiorRooms, nvrAnchor) || interiorRooms[0];
+      nvrPoint = roomFarCornerFrom(nvrRoom, nvrAnchor, 0.4);
+      if (hubPoint && dist(nvrPoint.x,nvrPoint.y,hubPoint.x,hubPoint.y) < m2p(0.6)) nvrPoint.x += m2p(0.6);
+      push('nvr', nvrPoint.x, nvrPoint.y, 0, 'critical', 'מערכת הקלטה',
+        'קיימות/מוצעות מצלמות אך לא הוגדרה יחידת הקלטה — זו גם נקודת העוגן לחישוב כבילת ה-Cat6. יחידה אחת מרכזת את מצלמות כל הקומות.', true);
+    }
+
     // ---- cabling impact estimate — same formula/anchors as the real BOM, falling back to
     // the suggested hub/NVR position as a temporary anchor when the real one doesn't exist
     // yet, so a recommendation for e.g. a PIR still gets a meaningful routing estimate ----
@@ -4707,6 +5170,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     return {
       recs: recs,
+      perimeter: perimeter,
       cabling: { totals:cablingAll.totals, anchors:effAnchors, needsHub: !realAnchors.hub && !!hubPoint, missingAnchor:cablingAll.missingAnchor }
     };
   }
@@ -4771,6 +5235,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       btn.addEventListener('click', function(){ acceptRecommendation(btn.dataset.recId); });
     });
   }
+  function perimeterSummaryHtml(){
+    var P = currentPerimeter;
+    if (!P) return '';
+    var n = P.plan.picks.length, total = P.plan.seedCount + n;
+    return '<div class="perim-summary"><b>רצף מצלמות היקפי (קומת הקרקע):</b> ' +
+      'כיסוי השטח החיצוני כיום <b class="num">' + P.now.pct + '%</b>' +
+      (n ? ' → עם ההמלצות <b class="num">' + P.plan.after.pct + '%</b> (' + n + ' מצלמות נוספות, ' + total + ' בסך הכול).' : '.') +
+      (P.plan.after.mustMiss ? ' ⚠ ' + P.plan.after.mustMiss + ' גישות לדלתות עדיין ללא כיסוי.' : '') +
+      ' כל מצלמה ממוקמת כך ששדה הראייה שלה חופף לזה של שכנתה (10–20%), ללא ריבוי מצלמות מעבר לנדרש.' +
+      '<span class="perim-legend"><i class="sw closing"></i>פער שההמלצות סוגרות <i class="sw open"></i>פער שנשאר פתוח</span></div>';
+  }
   function renderRecsPanel(){
     var introEl = document.getElementById('recsIntro');
     if (introEl) introEl.textContent = 'ניתוח אוטומטי של השרטוט הנוכחי מול עקרונות מיגון מקצועיים: הגנת פתחים חיצוניים, כיסוי גלאי נפח לפי חדר, נקודות עוגן (רכזת/NVR), היקף (גדר/שערים) והעברת התשתית הנדרשת. כל הצעה מוצגת כסימון מנוקד על גבי המפה, וניתן להוסיף אותה בנפרד או את כולן יחד.' +
@@ -4800,7 +5275,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (noteEl) noteEl.innerHTML = '<b>מדיניות מצלמות — ' + (KIND_LABEL_HE[kind]||'בית פרטי') + ':</b> ' +
       (policy === 'optional'
         ? 'בדירה מצלמות אינן חובה — הן מוצגות כאן כאופציה משלימה בלבד (למשל בכניסה לדירה), ולא כפער קריטי.'
-        : 'מומלץ כיסוי מצלמות בנקודות הגישה המרכזיות (כניסה, שערים, ויטרינות).');
+        : 'מומלץ כיסוי מצלמות בנקודות הגישה המרכזיות (כניסה, שערים, ויטרינות).') +
+      perimeterSummaryHtml();
 
     var floorCtxEl = document.getElementById('recsFloorContext');
     if (floorCtxEl){
@@ -4857,7 +5333,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function renderRecsGhosts(){
     var layer = document.getElementById('recsLayer');
     layer.innerHTML = '';
-    if (!recsVisible || !currentRecs.length) return;
+    if (!recsVisible) return;
+    // Outdoor ground the camera ring doesn't see yet: amber = a recommendation below closes
+    // it, red = still open even with every recommendation accepted.
+    if (currentPerimeter && (state.activeFloor || 0) === 0){
+      var pm = currentPerimeter.model, half = pm.cellPx / 2, gapG = el('g', { class:'perim-gaps' });
+      pm.targets.forEach(function(t, i){
+        if (currentPerimeter.nowCovered[i]) return;
+        var closes = currentPerimeter.plan.coveredAfter[i];
+        if (t.must) gapG.appendChild(el('circle', { cx:t.x, cy:t.y, r:half * 0.8, class:'perim-gap must ' + (closes ? 'closing' : 'open') }));
+        else gapG.appendChild(el('rect', { x:t.x - half, y:t.y - half, width:pm.cellPx, height:pm.cellPx, class:'perim-gap ' + (closes ? 'closing' : 'open') }));
+      });
+      layer.appendChild(gapG);
+    }
+    if (!currentRecs.length) return;
     // Cable ghost previews must stay on-floor for the same reason renderCables() does — a
     // physical cable can't jump floors — so anchor them locally rather than to the whole-house
     // anchors used for the cost estimate text.
@@ -4981,6 +5470,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     var result = computeRecommendations();
     currentRecs = result.recs;
+    currentPerimeter = result.perimeter;
     // The panel's score-impact and cabling-impact text must reflect exactly what "✓ הוסף הכל
     // לשרטוט" will actually add — the floor-scoped subset (this floor's own recs plus the
     // always-visible general ones), not the whole house's recs — or the promised outcome and
@@ -5961,6 +6451,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       text: hasNvr ? 'הוגדר מיקום למערכת ההקלטה (NVR)' : 'יש מצלמות אך לא הוגדר מיקום למערכת הקלטה (NVR)',
       fix: 'הוסיפו מערכת הקלטה (NVR) לחיבור המצלמות — זו גם נקודת העוגן לחישוב כבילת ה-Cat6'
     });
+
+    // R: the outdoor cameras form a continuous ring (no dead strip between garden and house)
+    if (hasCam && !restrictToDoorAndPir && (CAMERA_POLICY_BY_KIND[state.kind || 'house'] || 'recommended') === 'recommended'){
+      var pmChk = perimeterModel(false);
+      if (pmChk){
+        var pStat = perimeterStats(pmChk, perimeterCoverage(pmChk, perimeterCamsFrom(devices)));
+        var ringOk = pStat.pct >= 80 && pStat.mustMiss === 0;
+        checks.push({
+          sev: ringOk ? 'ok' : 'warning', weight:2, cat:'camera',
+          text: ringOk ? ('רצף מצלמות היקפי תקין — ' + pStat.pct + '% מהשטח החיצוני מכוסה')
+                       : ('רצף המצלמות ההיקפי חלקי — ' + pStat.pct + '% מהשטח החיצוני מכוסה' + (pStat.mustMiss ? ', ' + pStat.mustMiss + ' גישות לדלתות ללא מצלמה' : '')),
+          fix: 'פתחו "המלצות מיגון" — הפערים מסומנים על המפה, וההמלצות משלימות את הרצף במינימום מצלמות'
+        });
+      }
+    }
 
     // R: perimeter fence — every gate needs coverage, and every run benefits from
     // beam/vibration detection or camera oversight somewhere along it.
@@ -7104,7 +7609,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       savedAt: new Date().toISOString(),
       customer: {
         name: document.getElementById('fCustomer').value,
-        address: document.getElementById('fAddress').value
+        address: document.getElementById('fAddress').value,
+        contact: getCustomerContact()
       },
       state: state,
       rates: {
@@ -7151,6 +7657,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       document.getElementById('fCustomer').value = data.customer.name || '';
       document.getElementById('fAddress').value = data.customer.address || '';
     }
+    // a different project never inherits the previous customer's phone / e-mail / ID
+    setCustomerContact((data.customer && data.customer.contact) || {});
     if (data.rates){
       var rateIdByKey = {
         waste:'rateWaste', alarmCable:'rateAlarmCable', catCable:'rateCatCable', powerCable:'ratePowerCable',
@@ -7178,7 +7686,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function saveProjectFile(){
     var data = serializeProject();
     var json = JSON.stringify(data, null, 2);
-    var filename = 'g1siteguard-' + slugifyFilename(document.getElementById('fCustomer').value) + '.json';
+    var filename = 'g1siteguard-project-' + (state.quoteNumber || fileStamp()) + '.json';
     var viaBrowserDownload = function(){
       try {
         var blob = new Blob([json], { type: 'application/json' });
@@ -7423,6 +7931,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     selected = null;
     roomEditId = null;
     resetRecommendationsView();
+    setCustomerContact({});
 
     if (kind === 'house' && aboveGroundFloorCount > 1) {
       buildMultiFloorHouse(aboveGroundFloorCount, guidingAnswers.floorRoomCounts || {});
@@ -7818,7 +8327,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '</div>' +
         '<p>כל אביזר בשרטוט מתויג במספר סידורי לפי סוג (למשל <b>PIR-1</b>, <b>PIR-2</b>) המקביל לשורה שלו בטבלת כתב הכמויות (לשונית "כמויות וכבילה") — כך שהמתקין יודע בדיוק אילו סימונים בשטח שייכים לאילו פריטים בהזמנה.</p>' +
       '</div>';
-    body.innerHTML = intro + basementNote + conventions + LEGEND_SECTIONS.map(function(sec){
+    var infraHtml = infraSummaryHtml();
+    var infraBlock = '<div class="legend-conventions infra-block"><h4>תשתית חשמל ותקשורת להכנה באתר — לחשמלאי</h4>' +
+      '<p>מצלמה ויחידת הקלטה (NVR) מחייבות כל אחת <b>נקודת חשמל ונקודת רשת</b>. אם יש <b>ארון תקשורת</b> — לחילופין נדרשים בו <b>לפחות 3 שקעי חשמל ו-2 נקודות תקשורת</b> (יותר לפי כמות האביזרים צורכי הרשת). <b>בקר PAL ואינטרקום PAL</b> — חשמל בלבד, ללא נקודת רשת (מודול סלולרי מובנה).</p>' +
+      (infraHtml ? '<h4 style="margin-top:10px">בפרויקט הנוכחי</h4>' + infraHtml : '<p style="color:#8a8170">טרם הוצבו בשרטוט אביזרים הדורשים נקודות חשמל/רשת.</p>') +
+      '</div>';
+    body.innerHTML = intro + basementNote + conventions + infraBlock + LEGEND_SECTIONS.map(function(sec){
       var rows = sec.types.map(function(t){
         var isOpening = !!OPENING_DEFS[t];
         var isStruct = t === 'room' || t === 'yard';
@@ -7841,7 +8355,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var bodyHtml = guide
           ? '<span class="guide-field use"><b>שימוש:</b> ' + guide.use + '</span>' +
             '<span class="guide-field range"><b>טווח פעולה:</b> ' + guide.range + '</span>' +
-            '<span class="guide-field install"><b>התקנה:</b> ' + guide.install + '</span>'
+            '<span class="guide-field install"><b>התקנה:</b> ' + guide.install + '</span>' +
+            (INFRA_REQ[t] ? '<span class="guide-field infra"><b>תשתית נדרשת:</b> ' + INFRA_REQ[t].text + '</span>' : '')
           : '<span>' + (TIPS[t]||'') + '</span>';
         return '<div class="legend-row"><div class="ico">' + iconHtml + '</div><div class="txt"><b>' + label + codeTag + '</b>' + bodyHtml + '</div></div>';
       }).join('');
@@ -7869,6 +8384,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function fmtIls(n){ return '₪' + Math.round(n||0).toLocaleString('he-IL'); }
   function recalcQuoteInstall(){
     var subtotal = 0;
+    var vatPctLbl = document.getElementById('qVatPctLabel');
+    if (vatPctLbl) vatPctLbl.textContent = parseFloat(document.getElementById('qVatRate').value) || 0;
     document.querySelectorAll('#qEquipTable tbody tr[data-row], #qCableTable tbody tr[data-row]').forEach(function(tr){
       var qty = parseFloat(tr.dataset.qty || tr.dataset.meters) || 0;
       var priceInput = tr.querySelector('.q-price');
@@ -7919,7 +8436,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
   }
   function recalcQuoteMonitor(){
-    var subtotal = 0;
+    var subtotal = 0, anyMon = false;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
       var cb = tr.querySelector('.qMonCheck');
       var priceInput = tr.querySelector('.qMonPrice');
@@ -7929,8 +8446,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // isn't checked just doesn't count toward the total; the dimmed opacity is the only
       // visual cue now, not a hard block on typing.
       priceInput.style.opacity = cb.checked ? '1' : '.55';
-      if (cb.checked) subtotal += parseFloat(priceInput.value) || 0;
+      tr.classList.toggle('mon-off', !cb.checked);
+      if (cb.checked) { subtotal += parseFloat(priceInput.value) || 0; anyMon = true; }
     });
+    var monSec = document.getElementById('qMonSection');
+    if (monSec) monSec.classList.toggle('mon-empty', !anyMon);
     var vatRate = parseFloat(document.getElementById('qVatRate').value) || 0;
     var vatAmt = subtotal * vatRate / 100;
     document.getElementById('qMonSubtotal').textContent = fmtIls(subtotal);
@@ -8266,6 +8786,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       agentName: agentInfo.name || '',
       agentBranch: agentInfo.branch || '',
       customerEmail: document.getElementById('qCustomerEmail').value || '',
+      customerContact: getCustomerContact(),
       quoteInputs: captureQuoteInputs(),
       project: serializeProject()
     };
@@ -8275,7 +8796,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (idx >= 0) library[idx] = record; else library.push(record);
     saveQuoteLibraryRecords(library);
     updateQuoteNumberBadge();
-    if (isNewNumber) downloadQuoteRecord(record);
+    // No automatic file here any more: the only file that leaves with a quote is its PDF
+    // (a .json landing in Downloads beside it was being attached to the e-mail by mistake).
     return record;
   }
   function deleteQuoteFromLibrary(number){
@@ -8297,7 +8819,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     quoteLibBackdrop.hidden = true;
     openQuoteModal();
     if (record.quoteInputs) restoreQuoteInputs(record.quoteInputs);
-    if (record.customerEmail) document.getElementById('qCustomerEmail').value = record.customerEmail;
+    if (record.customerContact) setCustomerContact(record.customerContact);
+    else if (record.customerEmail) setCustomerContact({ email: record.customerEmail });
   }
   function renderQuoteLibrary(){
     var library = loadQuoteLibrary().slice().sort(function(a,b){ return b.number - a.number; });
@@ -8321,7 +8844,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<td>' + escapeHtml(rec.agentName || '—') + '</td>' +
         '<td><div class="quote-lib-row-actions">' +
           '<button type="button" class="btn btn-primary btn-sm" data-act="open">✎ פתיחה לעריכה</button>' +
-          '<button type="button" class="btn btn-ghost btn-sm" data-act="download">⬇ הורדת קובץ</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="download">⬇ הורדת PDF</button>' +
           '<button type="button" class="btn btn-danger btn-sm" data-act="delete">🗑️ מחיקה</button>' +
         '</div></td></tr>';
     }).join('');
@@ -8344,7 +8867,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (act === 'open') {
       openQuoteFromLibrary(record);
     } else if (act === 'download') {
-      downloadQuoteRecord(record);
+      // Reopen the saved quote exactly as it was and save / share its customer-facing PDF.
+      openQuoteFromLibrary(record);
+      sendQuoteFlow(true);
     } else if (act === 'delete') {
       if (btn.dataset.armed === '1') {
         deleteQuoteFromLibrary(number);
@@ -8365,6 +8890,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qAddress').textContent = document.getElementById('fAddress').value || '';
     buildQuote(r.bom);
     updateQuoteNumberBadge();
+    updateCustomerDetails();
     setClientView(false);
     document.getElementById('sendOk').classList.remove('show');
     backdrop.hidden = false;
@@ -8404,8 +8930,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Rasterizes one DOM element at a fixed, generous resolution regardless of the visitor's
   // own window size or zoom, so the PDF always reads like a proper desktop print-out.
   function renderElementToCanvas(el){
+    // Phones (iOS Safari above all) refuse canvases beyond ~16.7M pixels — keep a long quote
+    // under that by easing the scale down instead of failing silently.
+    var area = Math.max(1, el.scrollWidth * el.scrollHeight);
+    var scale = Math.max(1, Math.min(2, Math.sqrt(14e6 / area)));
     return html2canvas(el, {
-      scale: 2,
+      scale: scale,
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false
@@ -8449,6 +8979,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Hands the finished PDF Blob to the visitor. Returns 'saved' / 'delivered' / 'downloaded',
   // or throws on an outright decline/error (the caller decides how to report that).
   async function deliverPdfBlob(blob, filename){
+    filename = ensurePdfName(filename);
+    if (blob.type !== 'application/pdf') blob = new Blob([blob], { type:'application/pdf' });
     if (window.claude && typeof window.claude.use === 'function'){
       try {
         var downloads = await window.claude.use('downloads');
@@ -8474,14 +9006,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Full pipeline: unclip the panel for a clean capture, rasterize it, build the PDF, restore
   // the panel, then deliver the file. `btn` (optional) gets a disabled "מפיק PDF…" state while
   // this runs so a slow capture doesn't look like a dead button.
-  async function exportPanelToPdf(panelSelector, filename, btn, opts){
-    var silent = opts && opts.silent;
-    if (typeof html2canvas === 'undefined' || !window.jspdf){
-      if (!silent) alert('רכיבי הפקת ה-PDF לא נטענו (ייתכן שאין חיבור לאינטרנט כרגע). נסו שוב, או השתמשו באפשרויות השליחה הידניות למטה.');
-      return null;
-    }
-    var originalLabel = null;
-    if (btn){ originalLabel = btn.textContent; btn.disabled = true; btn.textContent = '⏳ מפיק PDF…'; }
+  // Renders a panel to a PDF Blob (no delivery) — null when the PDF parts are missing or fail.
+  async function buildPanelPdfBlob(panelSelector){
+    if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     try {
       pdfExportMode(true);
       // let layout settle before measuring/capturing it
@@ -8489,18 +9016,54 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var panel = document.querySelector(panelSelector);
       if (!panel) throw new Error('panel not found: ' + panelSelector);
       var canvas = await renderElementToCanvas(panel);
-      var blob = canvasToPdfBlob(canvas);
-      var status = await deliverPdfBlob(blob, filename);
-      return status;
+      return canvasToPdfBlob(canvas);
     } catch(e){
-      if (!silent && !(e && e.code === 'declined')) {
-        alert('הפקת ה-PDF נכשלה. אפשר לנסות שוב, או להעתיק את תוכן המייל ולשלוח ידנית.');
-      }
       return null;
     } finally {
       pdfExportMode(false);
+    }
+  }
+  // Full pipeline for the sketch PDFs: render, then download on a computer, or open the share
+  // sheet on a phone (where a script-started download is a dead end). `btn` (optional) gets a
+  // disabled "מפיק PDF…" state while this runs so a slow capture doesn't look like a dead button.
+  async function exportPanelToPdf(panelSelector, filename, btn, opts){
+    var silent = opts && opts.silent;
+    if (typeof html2canvas === 'undefined' || !window.jspdf){
+      if (!silent) alert('רכיבי הפקת ה-PDF לא נטענו. נסו שוב בעוד רגע.');
+      return null;
+    }
+    var originalLabel = null;
+    if (btn){ originalLabel = btn.textContent; btn.disabled = true; btn.textContent = '⏳ מפיק PDF…'; }
+    try {
+      var blob = await buildPanelPdfBlob(panelSelector);
+      if (!blob) throw new Error('pdf failed');
+      filename = ensurePdfName(filename);
+      var file = pdfFileFrom(blob, filename);
+      if (prefersShareSheet(file)){
+        renderFileShareSheet({ blob:blob, file:file, name:filename }, (opts && opts.title) || 'קובץ ה-PDF מוכן');
+        return 'sheet';
+      }
+      return await deliverPdfBlob(blob, filename);
+    } catch(e){
+      if (!silent && !(e && e.code === 'declined')) alert('הפקת ה-PDF נכשלה. נסו שוב.');
+      return null;
+    } finally {
       if (btn){ btn.disabled = false; btn.textContent = originalLabel; }
     }
+  }
+  // Saved-file names are ASCII on purpose. With Hebrew characters in a.download, some browsers /
+  // systems silently drop the whole name and save the file as just "download" — with no .pdf
+  // extension — and Outlook then opens the attachment as raw text ("code"). The quote number
+  // identifies the file; the customer's name is inside the document.
+  function fileStamp(){
+    var d = new Date(), p = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+  }
+  function quotePdfFilename(number){ return 'G1-Quote-' + (number || fileStamp()) + '.pdf'; }
+  function ensurePdfName(name){
+    var n = String(name || '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    if (!/\.pdf$/i.test(n)) n = (n || 'G1-' + fileStamp()) + '.pdf';
+    return n;
   }
   function safeFileSlug(s){
     return (s || 'לקוח').replace(/[\\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) || 'לקוח';
@@ -8551,83 +9114,275 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
     } catch(e) { legacyFallback(); }
   }
-  document.getElementById('btnConfirmSend').onclick = function(){
-    recordQuoteSend();
-    setClientView(true);
+  /* ============================= customer contact details ============================= */
+  var ID_TYPE_LABEL = { tz:'ת״ז', osek:'עוסק מורשה', hp:'ח.פ' };
+  var qPhoneEl = document.getElementById('qCustomerPhone');
+  var qEmailEl = document.getElementById('qCustomerEmail');
+  var qIdTypeEl = document.getElementById('qCustomerIdType');
+  var qIdEl = document.getElementById('qCustomerId');
+  // Israeli numbers in any common spelling (050-1234567, 0501234567, +972 50…, 00972…) →
+  // international digits for wa.me, plus a tidy local display. A full foreign number is kept.
+  function parsePhone(raw){
+    var d = String(raw || '').replace(/[^\d+]/g, '');
+    if (!d) return null;
+    if (d.charAt(0) === '+') d = d.slice(1);
+    if (d.indexOf('00') === 0) d = d.slice(2);
+    var intl;
+    if (d.indexOf('972') === 0) intl = d;
+    else if (d.charAt(0) === '0') intl = '972' + d.slice(1);
+    else if (/^5\d{8}$/.test(d)) intl = '972' + d;
+    else intl = d;
+    var isIl = intl.indexOf('972') === 0;
+    if (isIl && intl.charAt(3) === '0') intl = '972' + intl.slice(4); // "+972 050…"
+    var local = isIl ? '0' + intl.slice(3) : '+' + intl;
+    var mobile = isIl ? /^9725\d{8}$/.test(intl) : (intl.length >= 8 && intl.length <= 15);
+    var valid = isIl ? /^972\d{8,9}$/.test(intl) : mobile;
+    var display = (isIl && local.length === 10) ? local.slice(0, 3) + '-' + local.slice(3) : (isIl && local.length === 9 ? local.slice(0, 2) + '-' + local.slice(2) : local);
+    return { intl:intl, display:display, mobile:mobile, valid:valid };
+  }
+  // Israeli ID / עוסק מורשה / ח.פ all share the same 9-digit check-digit rule.
+  function validIsraeliId(num){
+    var d = String(num || '').replace(/\D/g, '');
+    if (d.length < 5 || d.length > 9) return false;
+    d = ('000000000' + d).slice(-9);
+    var sum = 0;
+    for (var i = 0; i < 9; i++){ var x = Number(d.charAt(i)) * ((i % 2) + 1); sum += x > 9 ? x - 9 : x; }
+    return sum % 10 === 0;
+  }
+  function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+  function getCustomerContact(){
+    return { phone: document.getElementById('qCustomerPhone').value.trim(), email: document.getElementById('qCustomerEmail').value.trim(), idType: document.getElementById('qCustomerIdType').value || 'tz', idNum: document.getElementById('qCustomerId').value.replace(/\D/g, '') };
+  }
+  function setCustomerContact(c){
+    c = c || {};
+    document.getElementById('qCustomerPhone').value = c.phone || ''; document.getElementById('qCustomerEmail').value = c.email || '';
+    document.getElementById('qCustomerIdType').value = ID_TYPE_LABEL[c.idType] ? c.idType : 'tz'; document.getElementById('qCustomerId').value = c.idNum || '';
+    updateCustomerDetails();
+  }
+  // Validates as the agent types (never blocks — a warning only) and writes the details that
+  // are filled in onto the quote itself, where the client view / PDF shows them as plain text.
+  function updateCustomerDetails(){
+    var c = getCustomerContact(), warn = [], lines = [];
+    var ph = parsePhone(c.phone);
+    var phoneBad = !!c.phone && !(ph && ph.valid);
+    document.getElementById('qCustomerPhone').classList.toggle('invalid', phoneBad);
+    if (phoneBad) warn.push('מספר הטלפון אינו תקין.');
+    else if (ph && !ph.mobile) warn.push('המספר אינו נייד — לשליחה בוואטסאפ נדרש מספר נייד.');
+    var emailBad = !!c.email && !validEmail(c.email);
+    document.getElementById('qCustomerEmail').classList.toggle('invalid', emailBad);
+    if (emailBad) warn.push('כתובת האימייל אינה תקינה.');
+    var idBad = !!c.idNum && !validIsraeliId(c.idNum);
+    document.getElementById('qCustomerId').classList.toggle('invalid', idBad);
+    if (idBad) warn.push('מספר ה' + ID_TYPE_LABEL[c.idType] + ' אינו תקין (ספרת ביקורת) — בדקו את הספרות.');
+    if (ph && ph.valid) lines.push('<div><b>טלפון:</b> <span class="ltr">' + escapeHtml(ph.display) + '</span></div>');
+    if (c.email && !emailBad) lines.push('<div><b>אימייל:</b> <span class="ltr">' + escapeHtml(c.email) + '</span></div>');
+    if (c.idNum) lines.push('<div><b>' + ID_TYPE_LABEL[c.idType] + ':</b> <span class="ltr">' + escapeHtml(c.idNum) + '</span></div>');
+    var det = document.getElementById('qCustomerDetails');
+    det.innerHTML = lines.join(''); det.hidden = !lines.length;
+    var w = document.getElementById('qContactWarn');
+    w.textContent = warn.join(' '); w.hidden = !warn.length;
+    return { contact:c, phone:ph, emailOk: !!c.email && !emailBad };
+  }
+  [qPhoneEl, qEmailEl, qIdEl].forEach(function(inp){ inp.addEventListener('input', updateCustomerDetails); });
+  qIdTypeEl.addEventListener('change', updateCustomerDetails);
+  qIdEl.addEventListener('input', function(){ var v = qIdEl.value.replace(/\D/g, ''); if (v !== qIdEl.value) qIdEl.value = v; });
+
+  /* ============================= quote message text ============================= */
+  // The same summary for e-mail and WhatsApp (WhatsApp gets *bold* on the key figures).
+  function quoteMessageLines(channel){
+    var wa = channel === 'wa', b = function(t){ return wa ? '*' + t + '*' : t; };
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
-    var toEmail = document.getElementById('qCustomerEmail').value;
-    var lines = [];
-    lines.push('שלום ' + customer + ',');
+    var address = document.getElementById('fAddress').value || '';
+    var lines = ['שלום ' + customer + ',', ''];
+    lines.push((wa ? 'מצורפת ' : 'מצורפת (בקובץ PDF) ') + 'הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ממיגון G1 למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
     lines.push('');
-    lines.push('מספר הצעה: ' + state.quoteNumber);
-    lines.push('');
-    lines.push('מצורפת (ראו קובץ PDF מצורף) הצעת מחיר למערכת מיגון עבור הכתובת: ' + (document.getElementById('fAddress').value || ''));
-    lines.push('');
-    // The word "הנחה" appears here only when qDiscountAmountRow is actually shown — see the
-    // same rule applied to the on-screen quote/PDF in recalcQuoteInstall().
-    if (!document.getElementById('qDiscountAmountRow').hidden) {
-      lines.push('הנחה: ' + document.getElementById('qDiscountAmt').textContent);
-    }
-    lines.push('סה״כ התקנה לתשלום (כולל מע״מ): ' + document.getElementById('qTotal').textContent);
+    // "הנחה" appears only when the discount row is actually shown (same rule as the quote/PDF)
+    if (!document.getElementById('qDiscountAmountRow').hidden) lines.push('הנחה: ' + document.getElementById('qDiscountAmt').textContent);
+    lines.push('סה״כ התקנה לתשלום (כולל מע״מ): ' + b(document.getElementById('qTotal').textContent));
     var monTotal = document.getElementById('qMonTotal').textContent;
-    if (monTotal && monTotal !== '₪0') lines.push('סה״כ חודשי בהוראת קבע למוקד מבצעי (כולל מע״מ): ' + monTotal);
+    if (monTotal && monTotal !== '₪0') lines.push('סה״כ חודשי בהוראת קבע למוקד מבצעי (כולל מע״מ): ' + b(monTotal));
     lines.push('');
-    var paymentTermsText = document.getElementById('qPaymentTerms').value.trim();
-    if (paymentTermsText) {
-      lines.push('תנאי תשלום: ' + paymentTermsText);
-      lines.push('');
-    }
+    var terms = document.getElementById('qPaymentTerms').value.trim();
+    if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
     lines.push('ההצעה תקפה לשבעה ימים מיום הוצאתה. כבילת המערכת תימדד ותחושב בפועל בסיום ההתקנה ותחויב בהתאם.');
+    if (wa) lines.push('קובץ ההצעה המלא (PDF) נשלח כאן בצ׳אט.');
     lines.push('');
     lines.push('בברכה,');
     if (agentInfo.name) lines.push(agentInfo.name);
     lines.push('יועץ מיגון סניף ' + (agentInfo.branch || '—'));
     if (agentInfo.phone) lines.push(agentInfo.phone);
-    var quoteSubject = 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1 עבור ' + customer;
-    var quoteMailtoUrl = buildMailto(toEmail, quoteSubject, lines);
-    // Open the mail draft first, synchronously within this click — the PDF capture below is
-    // asynchronous (a moment of rendering work) and some browsers only allow a script-driven
-    // navigation/download while it's still directly inside the click's own call stack.
-    openMailto(quoteMailtoUrl);
-    // The automatic attempt above can fail silently inside a sandboxed embed with no way for
-    // us to detect it — so the manual link and the copy-to-clipboard fallback are always shown
-    // as equally-valid ways to send this, not just a small "if it didn't work" afterthought.
-    var sendOkEl = document.getElementById('sendOk');
-    var pdfFilename = 'הצעת מחיר מס׳ ' + state.quoteNumber + ' - ' + safeFileSlug(customer) + '.pdf';
-    sendOkEl.innerHTML =
-      '<div class="send-ok-msg">ניסינו לפתוח טיוטת מייל באפליקציית המייל שלכם (אאוטלוק וכדומה)' + (toEmail ? (' אל ' + escapeHtml(toEmail)) : '') +
-      '. אם לא נפתח חלון מייל אוטומטית, השתמשו באחת האפשרויות למטה.</div>' +
-      '<div class="send-ok-msg" id="quotePdfStatusNote">⏳ מכינים את קובץ ה-PDF של ההצעה לצירוף…</div>' +
-      '<div class="send-ok-actions">' +
-      '<a class="btn btn-primary btn-sm" href="' + quoteMailtoUrl + '" target="_blank" rel="noopener">📧 פתיחה ידנית באפליקציית המייל</a>' +
-      '<button type="button" class="btn btn-ghost btn-sm" id="btnCopyQuoteMail">📋 העתקת תוכן המייל</button>' +
-      '</div>' +
-      '<div class="send-ok-copied" id="quoteMailCopiedNote" style="display:none"></div>';
-    sendOkEl.classList.add('show', 'expanded');
-    document.getElementById('btnCopyQuoteMail').onclick = function(){
-      var text = 'אל: ' + (toEmail || '') + '\nנושא: ' + quoteSubject + '\n\n' + lines.join('\n');
-      copyToClipboard(text, function(ok){
-        var note = document.getElementById('quoteMailCopiedNote');
-        note.style.display = 'block';
-        note.textContent = ok ? '✓ תוכן המייל הועתק ללוח — פתחו מייל חדש ידנית באאוטלוק והדביקו (Ctrl+V)' : 'ההעתקה נכשלה בדפדפן זה — יש להעתיק את הפרטים ידנית';
-      });
-    };
-    // Streamlines the send flow into this single click: the PDF is produced right after the
-    // mail draft opens, so the agent just needs to switch to the mail app and attach it —
-    // no separate "click print first" step to remember.
-    exportPanelToPdf('#modalBackdrop .modal', pdfFilename, null, {silent:true}).then(function(status){
-      var note = document.getElementById('quotePdfStatusNote');
-      if (!note) return; // panel was closed/replaced meanwhile
-      note.textContent = status
-        ? ('✓ קובץ ה-PDF של ההצעה נשמר (' + pdfFilename + ') — צרפו אותו לטיוטת המייל שנפתחה.')
-        : '⚠ לא הצלחנו להפיק את קובץ ה-PDF כעת. לחצו "הדפס / שמור כ-PDF" למטה ונסו שוב, ואז צרפו אותו לטיוטת המייל.';
+    return lines;
+  }
+  function quoteSubject(){ return 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1 עבור ' + (document.getElementById('fCustomer').value || 'הלקוח'); }
+
+  /* ============================= send / share sheet ============================= */
+  // Phones (iPhone above all, and the installed app) can't "download" a file the way a desktop
+  // browser does — a script-started download opens a dead-end PDF viewer with no way to save or
+  // share it. There the finished PDF goes through the system share sheet (navigator.share),
+  // which lists WhatsApp, Outlook, Mail and "Save to Files" with the file already attached.
+  // The share sheet only opens from a tap, so the PDF is rendered first and every send option
+  // is then its own button.
+  function isIOSDevice(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+  function isTouchDevice(){ return isIOSDevice() || !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches); }
+  function canShareFile(file){ try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })); } catch(e){ return false; } }
+  function prefersShareSheet(file){ return isTouchDevice() && canShareFile(file); }
+  function pdfFileFrom(blob, name){ try { return new File([blob], name, { type:'application/pdf' }); } catch(e){ return blob; } }
+  async function shareFile(file, extra){
+    if (!canShareFile(file)) return 'unsupported';
+    var data = { files:[file] };
+    if (extra && extra.title) data.title = extra.title;
+    if (extra && extra.text) data.text = extra.text;
+    try { await navigator.share(data); return 'shared'; }
+    catch(e){ return (e && e.name === 'AbortError') ? 'cancelled' : 'error'; }
+  }
+  var shareSheetBackdrop = document.getElementById('shareSheetBackdrop');
+  function closeShareSheet(){ shareSheetBackdrop.hidden = true; }
+  document.getElementById('shareSheetClose').onclick = closeShareSheet;
+  shareSheetBackdrop.addEventListener('click', function(ev){ if (ev.target === shareSheetBackdrop) closeShareSheet(); });
+  function openShareSheet(title, sub){
+    document.getElementById('shareSheetTitle').textContent = title;
+    document.getElementById('shareSheetSub').textContent = sub || '';
+    document.getElementById('shareSheetBody').innerHTML = '<div class="share-note">⏳ מפיקים את קובץ ה-PDF בפורמט ללקוח…</div>';
+    shareSheetBackdrop.hidden = false;
+  }
+  function el2(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function shareNote(parent, text, warn){ var n = el2('div', 'share-note' + (warn ? ' warn' : '')); n.textContent = text; parent.appendChild(n); return n; }
+  function linkBtn(cls, html, href){ var a = el2('a', 'share-btn ' + cls, html); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.addEventListener('click', function(){ a.classList.add('done'); }); return a; }
+  function actBtn(cls, html, fn){ var b = el2('button', 'share-btn ' + cls, html); b.type = 'button'; b.addEventListener('click', function(){ fn(b); }); return b; }
+  // "Save to Files / other app" on a phone, a plain download on a computer.
+  function saveOrShareButton(pdf, mobile, label){
+    return actBtn('primary', label || (mobile ? '📤 שמירה בקבצים / שיתוף לאפליקציה אחרת' : '⬇ הורדת קובץ ה-PDF'), async function(b){
+      if (mobile){ var r = await shareFile(pdf.file); if (r === 'shared') b.classList.add('done'); else if (r !== 'cancelled') await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); }
+      else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }
     });
-  };
-  document.getElementById('btnPrint').onclick = function(){
+  }
+  function renderQuoteShareSheet(pdf, opts){
+    opts = opts || {};
+    var mobile = !!opts.mobileShare;
+    var info = updateCustomerDetails();
+    var customer = document.getElementById('fCustomer').value || 'הלקוח';
+    document.getElementById('shareSheetTitle').textContent = '✓ הצעה מס׳ ' + pdf.number + ' מוכנה לשליחה';
+    document.getElementById('shareSheetSub').textContent = pdf.name + ' · ' + customer + ' · נוסח ללקוח (ריכוז כללי)';
+    var body = document.getElementById('shareSheetBody');
+    body.innerHTML = '';
+    if (opts.autoSaved) shareNote(body, '✓ קובץ ה-PDF נשמר (' + pdf.name + ')' + (mobile ? '' : ' בתיקיית ההורדות'));
+
+    var waText = quoteMessageLines('wa').join('\n');
+    var mailLines = quoteMessageLines('mail');
+
+    // --- WhatsApp ---
+    var wa = el2('div', 'share-card');
+    wa.appendChild(el2('h4', '', '💬 וואטסאפ ללקוח' + (info.phone && info.phone.mobile ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.phone.display) + '</span>' : '')));
+    if (info.phone && info.phone.mobile){
+      var steps = el2('div', 'share-steps');
+      steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח + הודעה מוכנה', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText)));
+      steps.appendChild(actBtn('wa-2', '<span class="step">2</span> ' + (mobile ? 'שליחת קובץ ה-PDF לצ׳אט' : 'הורדת ה-PDF לצירוף בצ׳אט'), async function(b){
+        if (mobile){ var r = await shareFile(pdf.file); if (r === 'shared') b.classList.add('done'); }
+        else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }
+      }));
+      wa.appendChild(steps);
+      wa.appendChild(el2('p', '', mobile
+        ? 'שלב 1 פותח את הצ׳אט של הלקוח (גם אם אינו שמור באנשי הקשר) עם סיכום ההצעה — שלחו. בשלב 2 בחרו WhatsApp, והצ׳אט של הלקוח יופיע ראשון ברשימה.'
+        : 'נפתח ב-WhatsApp Web / WhatsApp למחשב. בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.'));
+    } else {
+      shareNote(wa, info.contact.phone ? 'המספר שהוזן אינו נייד תקין — תקנו אותו בפרטי הלקוח כדי לשלוח ישירות לצ׳אט שלו.' : 'הזינו את הטלפון הנייד של הלקוח (בראש ההצעה) כדי לשלוח ישירות לצ׳אט שלו.', true);
+      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף ה-PDF בוואטסאפ (בחירת איש קשר)', async function(b){ var r = await shareFile(pdf.file, { text: waText }); if (r === 'shared') b.classList.add('done'); }));
+    }
+    body.appendChild(wa);
+
+    // --- E-mail ---
+    var mail = el2('div', 'share-card');
+    mail.appendChild(el2('h4', '', '📧 מייל ללקוח' + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
+    if (mobile){
+      mail.appendChild(actBtn('mail', 'שליחה במייל — ה-PDF מצורף', async function(b){
+        var r = await shareFile(pdf.file, { title: quoteSubject(), text: mailLines.join('\n') });
+        if (r === 'shared') b.classList.add('done');
+      }));
+      mail.appendChild(el2('p', '', 'בחרו Outlook או Mail — הקובץ, הנושא ונוסח ההודעה כבר בפנים. ' + (info.emailOk ? 'הוסיפו את כתובת הלקוח כנמען (אפשר להעתיק למטה).' : 'הזינו את כתובת הלקוח כנמען.')));
+      if (info.emailOk){
+        var cr = el2('div', 'share-copy-row');
+        cr.appendChild(actBtn('', '📋 העתקת כתובת המייל', function(b){ copyToClipboard(info.contact.email, function(ok){ if (ok) b.classList.add('done'); }); }));
+        cr.appendChild(linkBtn('', '✉️ טיוטה עם הנמען (בלי קובץ)', buildMailto(info.contact.email, quoteSubject(), mailLines)));
+        mail.appendChild(cr);
+      }
+    } else {
+      mail.appendChild(linkBtn('mail', 'פתיחת טיוטה באאוטלוק', buildMailto(info.emailOk ? info.contact.email : '', quoteSubject(), mailLines)));
+      mail.appendChild(el2('p', '', 'הדפדפן אינו יכול לצרף קובץ בעצמו — ' + (opts.autoSaved ? 'הקובץ ' + pdf.name + ' כבר נשמר בהורדות; גררו אותו לטיוטה.' : 'הורידו את הקובץ למטה וגררו אותו לטיוטה.')));
+    }
+    body.appendChild(mail);
+
+    // --- Save / other ---
+    var other = el2('div', 'share-card');
+    other.appendChild(el2('h4', '', '💾 שמירה ושיתוף אחר'));
+    other.appendChild(saveOrShareButton(pdf, mobile));
+    var copyRow = el2('div', 'share-copy-row');
+    copyRow.appendChild(actBtn('', '📋 העתקת נוסח ההודעה', function(b){
+      copyToClipboard(quoteSubject() + '\n\n' + mailLines.join('\n'), function(ok){ if (ok) b.classList.add('done'); });
+    }));
+    other.appendChild(copyRow);
+    if (opts.saveFirst) body.insertBefore(other, body.firstChild); else body.appendChild(other);
+  }
+  // Generic version for any other PDF (the sketch): just "save / share" on a phone.
+  function renderFileShareSheet(pdf, title){
+    document.getElementById('shareSheetTitle').textContent = '✓ ' + title;
+    document.getElementById('shareSheetSub').textContent = pdf.name;
+    var body = document.getElementById('shareSheetBody');
+    body.innerHTML = '';
+    var card = el2('div', 'share-card');
+    card.appendChild(saveOrShareButton(pdf, true, '📤 שמירה בקבצים / שליחה (וואטסאפ, מייל…)'));
+    card.appendChild(el2('p', '', 'בחלון השיתוף בחרו "שמירה בקבצים", WhatsApp, Outlook או כל אפליקציה אחרת — הקובץ מצורף.'));
+    body.appendChild(card);
+    shareSheetBackdrop.hidden = false;
+  }
+  function renderShareError(msg){
+    document.getElementById('shareSheetTitle').textContent = 'לא הצלחנו להפיק את ה-PDF';
+    document.getElementById('shareSheetSub').textContent = '';
+    var body = document.getElementById('shareSheetBody'); body.innerHTML = '';
+    shareNote(body, msg || 'נסו שוב בעוד רגע. אם הבעיה חוזרת — סגרו ופתחו מחדש את ההצעה.', true);
+  }
+  async function prepareQuotePdf(){
     recordQuoteSend();
-    var customer = document.getElementById('fCustomer').value || 'לקוח';
-    exportPanelToPdf('#modalBackdrop .modal', 'הצעת מחיר מס׳ ' + state.quoteNumber + ' - ' + safeFileSlug(customer) + '.pdf', document.getElementById('btnPrint'));
-  };
+    setClientView(true);
+    updateCustomerDetails();
+    var name = quotePdfFilename(state.quoteNumber);
+    var blob = await buildPanelPdfBlob('#modalBackdrop .modal');
+    if (!blob) return null;
+    return { blob:blob, file:pdfFileFrom(blob, name), name:name, number:state.quoteNumber };
+  }
+  var quotePdfBusy = false;
+  async function sendQuoteFlow(saveFirst){
+    if (quotePdfBusy) return;
+    quotePdfBusy = true;
+    var sendBtn = document.getElementById('btnConfirmSend'), printBtn = document.getElementById('btnPrint');
+    sendBtn.disabled = printBtn.disabled = true;
+    try {
+      // On a computer, "save as PDF" is a straight download; everything else opens the sheet.
+      openShareSheet('מכינים את ההצעה לשליחה…', 'ההצעה מומרת לקובץ PDF בנוסח ללקוח (ריכוז כללי).');
+      var pdf = await prepareQuotePdf();
+      if (!pdf) { renderShareError(); return; }
+      var mobile = prefersShareSheet(pdf.file);
+      var autoSaved = false;
+      if (!mobile){
+        var st = await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){ return null; });
+        autoSaved = !!st;
+        if (saveFirst){
+          closeShareSheet();
+          var ok = document.getElementById('sendOk');
+          ok.innerHTML = autoSaved ? ('✓ ההצעה נשמרה כקובץ PDF: <b>' + escapeHtml(pdf.name) + '</b> (בתיקיית ההורדות)') : 'השמירה בוטלה או נחסמה בדפדפן — נסו שוב.';
+          ok.classList.remove('expanded'); ok.classList.add('show');
+          return;
+        }
+      }
+      renderQuoteShareSheet(pdf, { mobileShare:mobile, autoSaved:autoSaved, saveFirst:saveFirst });
+    } finally {
+      quotePdfBusy = false;
+      sendBtn.disabled = printBtn.disabled = false;
+    }
+  }
+  document.getElementById('btnConfirmSend').onclick = function(){ sendQuoteFlow(false); };
+  // Saving the quote before it goes to the customer always produces the customer-facing PDF:
+  // the client view (summary pricing, no agent-only fields/notes), never a project/data file.
+  document.getElementById('btnPrint').onclick = function(){ sendQuoteFlow(true); };
 
   /* ============================= professional sketch view ============================= */
   // A chrome-free, full-screen presentation of the exact plan on the canvas — same walls,
@@ -8816,6 +9571,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     document.getElementById('sketchCableTable').querySelector('tbody').innerHTML = cableHtml || '<tr><td colspan="2" style="color:var(--ink-dim);text-align:center">אין כבילה לחישוב</td></tr>';
 
+    var infraSec = document.getElementById('sketchInfraSection'), infraInner = infraSummaryHtml();
+    if (infraSec){ infraSec.hidden = !infraInner; document.getElementById('sketchInfraInfo').innerHTML = infraInner; }
+
     var fenceSummary = computeFenceSummary();
     var fenceSection = document.getElementById('sketchFenceSection');
     if (fenceSummary.segCount){
@@ -8847,7 +9605,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.getElementById('btnSketchPrint').onclick = function(){
     var customer = document.getElementById('fCustomer').value || 'לקוח';
     var floorSuffix = usesMultiFloor() ? (' - ' + floorLabelFor(sketchActiveFloor)) : '';
-    exportPanelToPdf('#sketchBackdrop .sketch-sheet', 'סקיצת מיגון - ' + safeFileSlug(customer) + floorSuffix + '.pdf', document.getElementById('btnSketchPrint'));
+    exportPanelToPdf('#sketchBackdrop .sketch-sheet', 'G1-Sketch-' + (state.quoteNumber || fileStamp()) + (usesMultiFloor() ? '-floor' + sketchActiveFloor : '') + '.pdf', document.getElementById('btnSketchPrint'), { title:'סקיצת המיגון מוכנה' });
   };
   document.getElementById('btnSketchEmail').onclick = function(){
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
@@ -8876,7 +9634,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // on btnConfirmSend above for why the PDF capture (async) happens only after this.
     openMailto(sketchMailtoUrl);
     var sketchSendOk = document.getElementById('sketchSendOk');
-    var sketchPdfFilename = 'סקיצת מיגון - ' + safeFileSlug(customer) + (usesMultiFloor() ? (' - ' + floorLabelFor(sketchActiveFloor)) : '') + '.pdf';
+    var sketchPdfFilename = 'G1-Sketch-' + (state.quoteNumber || fileStamp()) + (usesMultiFloor() ? '-floor' + sketchActiveFloor : '') + '.pdf';
     sketchSendOk.innerHTML =
       '<div class="send-ok-msg">ניסינו לפתוח טיוטת מייל באפליקציית המייל שלכם' + (toEmail ? (' אל ' + escapeHtml(toEmail)) : '') +
       '. אם לא נפתח אוטומטית, השתמשו באחת האפשרויות למטה.</div>' +
@@ -8895,12 +9653,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         note.textContent = ok ? '✓ תוכן המייל הועתק ללוח — פתחו מייל חדש ידנית והדביקו (Ctrl+V)' : 'ההעתקה נכשלה בדפדפן זה — יש להעתיק את הפרטים ידנית';
       });
     };
-    exportPanelToPdf('#sketchBackdrop .sketch-sheet', sketchPdfFilename, null, {silent:true}).then(function(status){
+    exportPanelToPdf('#sketchBackdrop .sketch-sheet', sketchPdfFilename, null, {silent:true, title:'סקיצת המיגון מוכנה'}).then(function(status){
       var note = document.getElementById('sketchPdfStatusNote');
       if (!note) return;
-      note.textContent = status
+      note.textContent = status === 'sheet'
+        ? ('✓ קובץ ה-PDF של הסקיצה מוכן — בחלון שנפתח בחרו Outlook / Mail / WhatsApp או "שמירה בקבצים".')
+        : status
         ? ('✓ קובץ ה-PDF של הסקיצה נשמר (' + sketchPdfFilename + ') — צרפו אותו לטיוטת המייל שנפתחה.')
-        : '⚠ לא הצלחנו להפיק את קובץ ה-PDF כעת. לחצו "הדפס / שמור כ-PDF" למעלה ונסו שוב, ואז צרפו אותו לטיוטת המייל.';
+        : '⚠ לא הצלחנו להפיק את קובץ ה-PDF כעת. לחצו "שמירה כ-PDF" למעלה ונסו שוב, ואז צרפו אותו לטיוטת המייל.';
     });
   };
   document.addEventListener('keydown', function(ev){
