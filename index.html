@@ -500,10 +500,13 @@
   .item-g{ cursor:grab; }
   .item-g.selected .item-ring{ stroke:var(--accent-2); stroke-width:2.5; stroke-dasharray:3 3; }
   .item-g:active{ cursor:grabbing; }
-  .fov-cone{ fill:var(--accent-2); opacity:.16; pointer-events:none; }
-  .fov-cone.alarm{ fill:var(--accent); }
-  .fov-cone.intercom{ fill:var(--accent-3); }
-  .fov-cone.smart{ fill:var(--accent-6); }
+  /* coverage = what the device can actually see (line of sight, stops at walls — see
+     sightPolygon): a light fill plus a thin outline, so the edge of coverage reads clearly
+     even over the wood/deck floor textures */
+  .fov-cone{ fill:url(#pCovCam); stroke:#1f7266; stroke-opacity:.7; stroke-width:1.2; stroke-dasharray:5 3; stroke-linejoin:round; pointer-events:none; }
+  .fov-cone.alarm{ fill:url(#pCovAlarm); stroke:#a85f17; }
+  .fov-cone.intercom{ fill:url(#pCovIntercom); stroke:#5c4ba3; }
+  .fov-cone.smart{ fill:url(#pCovSmart); stroke:#2c7a41; }
   .glass-radius{ fill:none; stroke:var(--accent); opacity:.35; stroke-width:1; stroke-dasharray:2 3; pointer-events:none; }
   .glass-radius.network{ stroke:var(--accent-5); }
   .device-tag{
@@ -1039,9 +1042,10 @@
     border-color:var(--accent-2); background:var(--panel-3);
     box-shadow:0 0 0 2px rgba(47,143,130,0.35);
   }
+  .canvas-hint-wrap{ position:sticky; top:10px; height:0; z-index:15; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
   .canvas-hint{
-    position:sticky; top:10px; z-index:15; width:fit-content; max-width:92%;
-    margin:0 auto; background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600;
+    pointer-events:auto; width:fit-content; max-width:92%;
+    background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600;
     padding:9px 16px; border-radius:999px; box-shadow:0 6px 18px rgba(24,35,53,0.28);
     display:flex; align-items:center; gap:8px; text-align:center;
   }
@@ -1466,9 +1470,13 @@
         </div>
       </div>
       <div class="canvas-scroll" id="canvasScroll">
-        <div class="canvas-hint" id="canvasHint" hidden>
-          <span id="canvasHintLabel"></span>
-          <button type="button" id="canvasHintCancel" aria-label="ביטול הוספה">✕</button>
+        <!-- zero-height sticky wrapper (same as the toast below): arming an item used to push
+             the whole plan down by the hint's height, so the agent's tap landed off target -->
+        <div class="canvas-hint-wrap">
+          <div class="canvas-hint" id="canvasHint" hidden>
+            <span id="canvasHintLabel"></span>
+            <button type="button" id="canvasHintCancel" aria-label="ביטול הוספה">✕</button>
+          </div>
         </div>
         <!-- Transient note after a preset room is placed ("✓ מרפסת נוספה בצמוד לסלון") —
              zero-height sticky wrapper so it floats over the plan without shifting it. -->
@@ -1540,6 +1548,24 @@
                 <rect x="1.5" y="7" width="6" height="3.5" rx="0.8" fill="#a8c79a"/>
                 <rect x="10.5" y="7" width="6" height="3.5" rx="0.8" fill="#e59a8c"/>
                 <rect x="19.5" y="7" width="6" height="3.5" rx="0.8" fill="#e8b86b"/>
+              </pattern>
+              <!-- Detection coverage: a light tint plus diagonal hatching (the usual CAD convention
+                   for a detection zone) so it stays readable over any floor texture, wood included. -->
+              <pattern id="pCovAlarm" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <rect width="7" height="7" fill="#c9832f" fill-opacity="0.13"/>
+                <line x1="0" y1="0" x2="0" y2="7" stroke="#a85f17" stroke-width="1.4" stroke-opacity="0.55"/>
+              </pattern>
+              <pattern id="pCovCam" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+                <rect width="7" height="7" fill="#2f8f82" fill-opacity="0.13"/>
+                <line x1="0" y1="0" x2="0" y2="7" stroke="#1f7266" stroke-width="1.2" stroke-opacity="0.45"/>
+              </pattern>
+              <pattern id="pCovIntercom" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <rect width="7" height="7" fill="#8577c4" fill-opacity="0.13"/>
+                <line x1="0" y1="0" x2="0" y2="7" stroke="#5c4ba3" stroke-width="1.2" stroke-opacity="0.45"/>
+              </pattern>
+              <pattern id="pCovSmart" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+                <rect width="7" height="7" fill="#4a9d5f" fill-opacity="0.13"/>
+                <line x1="0" y1="0" x2="0" y2="7" stroke="#2c7a41" stroke-width="1.2" stroke-opacity="0.45"/>
               </pattern>
               <!-- Storage: smooth grey concrete with a faint speckle. -->
               <pattern id="pConcrete" width="30" height="30" patternUnits="userSpaceOnUse">
@@ -2498,10 +2524,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     siren_out:    { label:'סירנה חיצונית',         cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     fence_sensor: { label:'גלאי קרן',               cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     safe_sensor:  { label:'גלאי כספת',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
-    cam_in:       { label:'מצלמה פנימית',          cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:70, range:5.5 },
-    cam_out:      { label:'מצלמת חוץ',             cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:80, range:8 },
-    cam_in_analytics:  { label:'מצלמת אנליטיקה פנימית',  cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:70, range:5.5 },
-    cam_out_analytics: { label:'מצלמת אנליטיקה חיצונית', cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:80, range:8 },
+    cam_in:       { label:'מצלמה פנימית',          cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:90, range:5.5 },
+    cam_out:      { label:'מצלמת חוץ',             cat:'camera',   color:'var(--accent-2)',  cable:'cat6', rotatable:true, fov:90, range:8 },
+    cam_in_analytics:  { label:'מצלמת אנליטיקה פנימית',  cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:90, range:5.5 },
+    cam_out_analytics: { label:'מצלמת אנליטיקה חיצונית', cat:'camera', color:'var(--accent-2)', cable:'cat6', rotatable:true, fov:90, range:8 },
     // PAL LPR camera: a standalone license-plate-recognition camera that works over the
     // cellular network like the rest of the PAL lineup — it is NOT wired to the NVR/switch
     // (no cat6/PoE run, no NVR channel used), only to mains power, hence cable:'power' and
@@ -2670,22 +2696,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     },
     cam_in: {
       use: 'תיעוד וניטור מעברים ופתחים פנימיים מרכזיים בזמן אמת ובהקלטה.',
-      range: 'טווח ראייה אפקטיבי כ-5.5 מ׳ בזווית צילום כ-70 מעלות (בהתאם לדגם ולתאורה).',
+      range: 'טווח ראייה אפקטיבי כ-5.5 מ׳ בזווית צילום כ-90 מעלות (בהתאם לדגם ולתאורה) — בהתקנה בפינת החדר, מכוונת באלכסון, הזווית מכסה את כל החדר.',
       install: 'בתקרה או בקיר גבוה, מכוונת למעבר/פתח הרצוי; להימנע מכיוון ישיר מול חלון או תאורה חזקה שעלולים לסנוור את החיישן.'
     },
     cam_out: {
       use: 'כיסוי כניסות, חניה והיקף חיצוני של הנכס, לרוב בשילוב תאורת IR לצילום לילה.',
-      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-80 מעלות (משתנה לפי דגם ותנאי תאורה).',
+      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-90 מעלות (משתנה לפי דגם ותנאי תאורה) — בהתקנה בפינת המבנה, מכוונת ב-45° לאורך החזית.',
       install: 'בגובה כ-2.5–3 מ׳ מחוץ לטווח יד, עם הגנה מגשם ישיר; מומלץ חפיפה של 10–20% בין מצלמות סמוכות למניעת אזורים עיוורים.'
     },
     cam_in_analytics: {
       use: 'מצלמה פנימית עם מנוע אנליטיקה מובנה (זיהוי אדם, חציית קו, כניסה לאזור מוגדר) — מפחיתה משמעותית התראות שווא לעומת מצלמה רגילה ומאפשרת התרעה חכמה בזמן אמת.',
-      range: 'טווח ראייה אפקטיבי כ-5.5 מ׳ בזווית צילום כ-70 מעלות; דיוק הזיהוי האנליטי תלוי בתאורה ובמרחק מהמצלמה (מומלץ בתוך טווח הגילוי המומלץ ליצרן).',
+      range: 'טווח ראייה אפקטיבי כ-5.5 מ׳ בזווית צילום כ-90 מעלות; דיוק הזיהוי האנליטי תלוי בתאורה ובמרחק מהמצלמה (מומלץ בתוך טווח הגילוי המומלץ ליצרן).',
       install: 'בתקרה או בקיר גבוה, מכוונת למעבר/פתח מרכזי; יש להגדיר את אזור/קו האנליטיקה בהגדרות ה-NVR/אפליקציה לאחר ההתקנה, ולהימנע מכיוון ישיר מול חלון או תאורה חזקה.'
     },
     cam_out_analytics: {
       use: 'מצלמה חיצונית עם אנליטיקה מובנית (זיהוי אדם/רכב, חציית קו, אזור מוגדר) — מסננת תנועת בעלי חיים/צמחייה ורוח, ומאפשרת התרעה חכמה ומדויקת יותר מהתראת תנועה רגילה.',
-      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-80 מעלות; לדיוק אנליטי מיטבי מומלץ למקד את אזור/קו הזיהוי בתוך הטווח האפקטיבי ולא בקצוות התמונה.',
+      range: 'טווח ראייה אפקטיבי כ-8 מ׳ בזווית צילום כ-90 מעלות; לדיוק אנליטי מיטבי מומלץ למקד את אזור/קו הזיהוי בתוך הטווח האפקטיבי ולא בקצוות התמונה.',
       install: 'בגובה כ-2.5–3 מ׳ מחוץ לטווח יד, עם הגנה מגשם ישיר; לאחר ההתקנה יש להגדיר את קווי/אזורי האנליטיקה דרך האפליקציה או ה-NVR בהתאם לפריסת השטח בפועל.'
     },
     cam_lpr: {
@@ -2915,10 +2941,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     addDevice({ type:'nvr',          x:150, y:330 });                 // next to hub
     addDevice({ type:'keypad',       x:170, y:96 });                  // just inside the front door
     addDevice({ type:'contact',      x:170, y:71 });                  // on the front door
-    addDevice({ type:'pir',          x:255, y:95 });                  // living room far corner
-    addDevice({ type:'pir',          x:340, y:305 });                 // kids room corner
-    addDevice({ type:'intercom_ext', x:196, y:71, rot:180 });         // beside the front door, facing out
-    addDevice({ type:'cam_out',      x:62,  y:118, rot:95 });         // covers the front door + yard side
+    addDevice({ type:'pir',          x:270, y:80, rot:225 });         // living room corner opposite the front door, aimed along the corner bisector
+    addDevice({ type:'pir',          x:360, y:290, rot:225 });        // kids room corner, aimed along the corner bisector
+    addDevice({ type:'intercom_ext', x:196, y:64, rot:0 });           // beside the front door, outside, facing the street
+    addDevice({ type:'cam_out',      x:60,  y:62, rot:45 });          // facade corner, 45° along the wall: front door + approach
     addDevice({ type:'siren_out',    x:470, y:74, rot:200 });         // visible exterior wall toward the street
     // intentionally left without: contact/glassbreak on the kitchen or kids-room windows, and no camera
     // covering the side door — so the guidance list below shows real, specific gaps.
@@ -3762,41 +3788,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var typeTotals = {};
     state.devices.forEach(function(d){ typeTotals[d.type] = (typeTotals[d.type]||0) + 1; });
 
+    var walls = sightWalls(); // one wall list for the whole pass — see sightPolygon()
     visibleDevices().forEach(function(d){
       var def = DEVICE_DEFS[d.type];
       var isSel = selected && selected.kind==='device' && selected.id===d.id;
       var g = el('g', { class:'item-g' + (isSel?' selected':''), transform:'translate(' + d.x + ',' + d.y + ')' });
 
       if (def.fov) {
-        var r = m2p(def.range);
         var coneClass = 'fov-cone ' + (def.cat==='intercom' ? 'intercom' : def.cat==='alarm' ? 'alarm' : def.cat==='smart' ? 'smart' : '');
-        var coneRoom = ROOM_FIT_FOV_TYPES.indexOf(d.type) > -1 ? roomContainingPoint({x:d.x,y:d.y}) : null;
-        var cone = null;
-        if (coneRoom) {
-          // Build the cone directly in absolute canvas coordinates (translate by the device's
-          // own position, rotate by d.rot using the same matrix as SVG's rotate() transform),
-          // clip it to the room's rectangle, then convert back to the parent <g>'s local frame
-          // (that g only translates by d.x,d.y, so subtracting d.x,d.y is the exact inverse) —
-          // this cone element then needs no further transform, since the rotation is already
-          // baked into its points.
-          var bb = roomBBoxPx(coneRoom);
-          var rad = d.rot * Math.PI/180, cosR = Math.cos(rad), sinR = Math.sin(rad);
-          var absPts = conePolygon(r, def.fov).map(function(p){
-            return [ p[0]*cosR - p[1]*sinR + d.x, p[0]*sinR + p[1]*cosR + d.y ];
-          });
-          var clipped = clipPolyToRect(absPts, bb.x1, bb.y1, bb.x2, bb.y2);
-          if (clipped.length >= 3) {
-            var dAttr = 'M' + clipped.map(function(p){ return (p[0]-d.x).toFixed(1) + ',' + (p[1]-d.y).toFixed(1); }).join(' L') + ' Z';
-            cone = el('path', { d: dAttr, class: coneClass });
-          }
-        }
-        if (!cone) {
-          cone = el('path', { d: coneArc(r, def.fov), transform:'rotate(' + d.rot + ')', class: coneClass });
-        }
-        g.appendChild(cone);
+        // line of sight: the coverage ends at the first wall, never passes through it
+        var coneD = sightPathD(d.x, d.y, d.rot, def.fov, m2p(def.range), walls);
+        if (coneD) g.appendChild(el('path', { d: coneD, class: coneClass }));
       }
       if (def.radius) {
-        g.appendChild(el('circle', { cx:0, cy:0, r:m2p(def.radius), class:'glass-radius' + (def.cat==='network' ? ' network' : '') }));
+        if (def.cat === 'network') {
+          // Wi-Fi does pass through walls — its reach stays a plain circle
+          g.appendChild(el('circle', { cx:0, cy:0, r:m2p(def.radius), class:'glass-radius network' }));
+        } else {
+          var radD = sightPathD(d.x, d.y, 0, 360, m2p(def.radius), walls);
+          if (radD) g.appendChild(el('path', { d: radD, class:'glass-radius' }));
+        }
       }
 
       var ring = el('circle', { cx:0, cy:0, r:15, fill:'none', class:'item-ring' });
@@ -3890,6 +3901,76 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // coordinates — same "rot=0 points up" convention as coneArc's exact-arc path. Used only
   // when the cone needs clipping (see renderDevices); the exact SVG arc is kept for the
   // common unclipped case since it's cheaper and pixel-smoother.
+  /* ---------- line of sight: coverage stops at walls ----------
+     A detector or camera can't see through a wall, so its coverage is drawn as a true
+     visibility polygon instead of a plain wedge: rays are cast across the field of view and
+     each one stops at the first wall it meets (or at the device's range). Walls are the four
+     sides of every walled (non-yard) room on the floor being shown — so an indoor PIR stays
+     inside its own room, an outdoor camera's view ends at the building's outer wall instead of
+     sweeping through the living room, and an L-shaped run of rooms shadows correctly. Doors and
+     windows are treated as closed (a PIR doesn't detect through glass; a camera through a
+     closed door doesn't either). Ray angles include the exact angle to every wall corner in
+     range, so shadow edges come out crisp rather than stair-stepped. */
+  function sightWalls(){
+    var segs = [];
+    visibleRooms().forEach(function(r){
+      if (r.type === 'yard') return;
+      var b = roomBBoxPx(r);
+      segs.push([b.x1,b.y1,b.x2,b.y1], [b.x2,b.y1,b.x2,b.y2], [b.x2,b.y2,b.x1,b.y2], [b.x1,b.y2,b.x1,b.y1]);
+    });
+    return segs;
+  }
+  function sightRayLength(ox, oy, dx, dy, segs, maxT){
+    var best = maxT;
+    for (var i = 0; i < segs.length; i++){
+      var s = segs[i], ex = s[2]-s[0], ey = s[3]-s[1];
+      var den = dx*ey - dy*ex;
+      if (Math.abs(den) < 1e-9) continue;
+      var wx = s[0]-ox, wy = s[1]-oy;
+      var t = (wx*ey - wy*ex) / den, u = (wx*dy - wy*dx) / den;
+      if (t > 0.5 && t < best && u >= -1e-6 && u <= 1 + 1e-6) best = t;
+    }
+    return best;
+  }
+  // Absolute [x,y] points of what a device at (x,y), aimed rotDeg (0 = up, clockwise — the
+  // same convention as the cone's rotate() transform), can actually see within fovDeg/rangePx.
+  // fovDeg >= 360 gives an all-round area (glass-break microphone).
+  function sightPolygon(x, y, rotDeg, fovDeg, rangePx, segs){
+    var full = fovDeg >= 360;
+    var aim = (rotDeg || 0) * Math.PI/180;
+    // nudge the origin off any wall the device is mounted on, toward where it looks
+    var ox = full ? x : x + Math.sin(aim)*2, oy = full ? y : y - Math.cos(aim)*2;
+    var half = full ? Math.PI : fovDeg/2 * Math.PI/180;
+    var steps = Math.max(16, Math.ceil((full ? 360 : fovDeg) / 1.5));
+    var angles = [];
+    for (var i = 0; i <= steps; i++) angles.push(-half + 2*half*i/steps);
+    var r2 = rangePx * rangePx * 1.05;
+    segs.forEach(function(s){
+      [[s[0],s[1]],[s[2],s[3]]].forEach(function(p){
+        var vx = p[0]-ox, vy = p[1]-oy;
+        if (vx*vx + vy*vy > r2) return;
+        var a = Math.atan2(vx, -vy) - aim;
+        a = Math.atan2(Math.sin(a), Math.cos(a));
+        if (a > -half && a < half) angles.push(a - 0.002, a, a + 0.002);
+      });
+    });
+    angles.sort(function(a, b){ return a - b; });
+    var pts = full ? [] : [[ox, oy]];
+    angles.forEach(function(a){
+      if (a < -half || a > half) return;
+      var th = aim + a, dx = Math.sin(th), dy = -Math.cos(th);
+      var t = sightRayLength(ox, oy, dx, dy, segs, rangePx);
+      pts.push([ox + dx*t, oy + dy*t]);
+    });
+    return pts;
+  }
+  // The same, as an SVG path in the device's own translated frame (its <g> is at x,y).
+  function sightPathD(x, y, rotDeg, fovDeg, rangePx, segs){
+    var pts = sightPolygon(x, y, rotDeg, fovDeg, rangePx, segs);
+    if (pts.length < 3) return null;
+    return 'M' + pts.map(function(p){ return (p[0]-x).toFixed(1) + ',' + (p[1]-y).toFixed(1); }).join(' L') + ' Z';
+  }
+
   function conePolygon(r, fovDeg, segments){
     segments = segments || 20;
     var half = fovDeg/2 * Math.PI/180;
@@ -4035,6 +4116,175 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ];
     return corners.reduce(function(best, c){ return dist(c.x,c.y,p.x,p.y) > dist(best.x,best.y,p.x,p.y) ? c : best; });
   }
+
+  /* ---------- structure-aware mounting: corners, 90° coverage ----------
+     The most effective spot for a motion detector or camera is a CORNER, aimed along the
+     corner's bisector (45° to each wall): the 90° between the two walls is then exactly the
+     room, so a ~90° field of view covers the entire room from one point and nothing is wasted
+     on the wall behind it. Outdoors the same idea applies to the building: a camera mounted at
+     the corner of a facade, aimed 45° (halfway between "along the wall" and "straight out"),
+     covers the door, the wall strip either side of it and the approach in one 90° view. These
+     helpers find those positions from the actual room geometry; the recommendations engine,
+     tap-to-place and drag-to-move all use them. */
+  var CORNER_INSET_M = 0.25;
+  // A room's 4 corners: the mount point (inset off the walls), the raw corner, and the inward
+  // bisector (dx,dy) — the diagonal pointing into the room.
+  function roomCornersWithBisector(r, insetM){
+    var b = roomBBoxPx(r), ins = m2p(insetM == null ? CORNER_INSET_M : insetM);
+    return [
+      { x:b.x1+ins, y:b.y1+ins, cx:b.x1, cy:b.y1, dx: 1, dy: 1 },
+      { x:b.x2-ins, y:b.y1+ins, cx:b.x2, cy:b.y1, dx:-1, dy: 1 },
+      { x:b.x1+ins, y:b.y2-ins, cx:b.x1, cy:b.y2, dx: 1, dy:-1 },
+      { x:b.x2-ins, y:b.y2-ins, cx:b.x2, cy:b.y2, dx:-1, dy:-1 }
+    ];
+  }
+  function dirRot(dx, dy){ return aimRot({ x:0, y:0 }, { x:dx, y:dy }); }
+  function walledRoomsOnFloor(floorIdx){
+    return state.rooms.filter(function(r){ return r.type !== 'yard' && (!usesMultiFloor() || (r.floor||0) === floorIdx); });
+  }
+  function pointInsideAnyRoom(p, roomsList){
+    return roomsList.some(function(r){ var b = roomBBoxPx(r); return p.x > b.x1 + 0.5 && p.x < b.x2 - 0.5 && p.y > b.y1 + 0.5 && p.y < b.y2 - 0.5; });
+  }
+  // Best corner for an interior detector/camera in room r: far from the way in (so whoever
+  // enters walks straight into its view), not right beside a door's swing, and preferring
+  // windows on its own two walls (edge of view) over windows it would stare at (sunlight and
+  // heat are the classic PIR false-alarm sources).
+  function bestDetectorCorner(r, openingsList){
+    var b = roomBBoxPx(r), diag = Math.hypot(b.x2 - b.x1, b.y2 - b.y1) || 1;
+    var near = openingsList.filter(function(o){ return pointInBBox({ x:o.x, y:o.y }, b, m2p(0.4)); });
+    var doors = near.filter(function(o){ return OPENING_DEFS[o.type].kind === 'door'; });
+    var windows = near.filter(function(o){ return OPENING_DEFS[o.type].kind === 'window'; });
+    var entry = doors.filter(function(o){ return o.type === 'door_main'; })[0] || doors[0] || null;
+    var best = null;
+    roomCornersWithBisector(r).forEach(function(c, i){
+      var score = -i * 0.001; // stable tie-break
+      if (entry) score += dist(c.cx, c.cy, entry.x, entry.y) / diag * 3;
+      doors.forEach(function(o){ if (dist(c.cx, c.cy, o.x, o.y) < m2p(1.0)) score -= 3; });
+      windows.forEach(function(o){
+        var onOwnWall = Math.abs(o.x - c.cx) < 8 || Math.abs(o.y - c.cy) < 8;
+        if (!onOwnWall) score -= 0.8;
+      });
+      if (!best || score > best.score) best = { c:c, score:score };
+    });
+    return { x:best.c.x, y:best.c.y, rot:dirRot(best.c.dx, best.c.dy), entry:entry };
+  }
+  // Outdoor camera for an exterior opening: at an end of the facade wall the opening is on,
+  // just outside the wall, aimed 45° between "along the wall toward the opening" and "straight
+  // out". Picks the end that's ~3 m from the opening (far enough to see a face approaching)
+  // and whose mount point really is outside the building.
+  function facadeCornerCameraMount(o){
+    var floorRooms = walledRoomsOnFloor(o.floor || 0);
+    var room = findRoomNearPoint(floorRooms, o);
+    if (!room) return null;
+    var b = roomBBoxPx(room);
+    var sides = [
+      { d:Math.abs(o.y - b.y1), n:{ x:0, y:-1 }, ends:[{ x:b.x1, y:b.y1 }, { x:b.x2, y:b.y1 }] },
+      { d:Math.abs(o.y - b.y2), n:{ x:0, y: 1 }, ends:[{ x:b.x1, y:b.y2 }, { x:b.x2, y:b.y2 }] },
+      { d:Math.abs(o.x - b.x1), n:{ x:-1, y:0 }, ends:[{ x:b.x1, y:b.y1 }, { x:b.x1, y:b.y2 }] },
+      { d:Math.abs(o.x - b.x2), n:{ x: 1, y:0 }, ends:[{ x:b.x2, y:b.y1 }, { x:b.x2, y:b.y2 }] }
+    ];
+    var side = sides.reduce(function(a, s){ return s.d < a.d ? s : a; });
+    var off = m2p(0.2), best = null;
+    side.ends.forEach(function(e){
+      var dd = dist(e.x, e.y, o.x, o.y);
+      var mount = { x:e.x + side.n.x*off, y:e.y + side.n.y*off };
+      if (pointInsideAnyRoom(mount, floorRooms)) return;
+      var tx = dd > 1 ? (o.x - e.x)/dd : 0, ty = dd > 1 ? (o.y - e.y)/dd : 0;
+      var score = Math.abs(dd - m2p(3));
+      if (!best || score < best.score) best = { score:score, x:mount.x, y:mount.y, rot:dirRot(tx + side.n.x, ty + side.n.y) };
+    });
+    if (!best) {
+      // both ends are buried in neighbouring rooms — mount on the wall itself, 1.5 m aside
+      var t = side.n.x === 0 ? { x:1, y:0 } : { x:0, y:1 };
+      best = { x:o.x + t.x*m2p(1.5) + side.n.x*off, y:o.y + t.y*m2p(1.5) + side.n.y*off, rot:dirRot(-t.x + side.n.x, -t.y + side.n.y) };
+    }
+    return best;
+  }
+  // Where a device the agent just placed (or dragged) should really sit, given the structure
+  // around the point. Returns { x, y, rot, how } or null when nothing applies.
+  //   indoor detector/camera:  near a corner → into the corner, aimed along its bisector;
+  //                            against a wall → on the wall, facing straight into the room;
+  //   outdoor camera:          near a building corner → at the end of the nearer facade, 45°;
+  //                            against an outer wall → on the wall, facing straight out;
+  //                            near a garden/yard corner → in that corner, aimed across it.
+  // opts.cornerReach (px) tightens how close to a corner counts as "into the corner" — used
+  // for drag-to-move, where only an obvious drop into a corner should re-seat the device.
+  function smartMountForDevice(type, p, opts){
+    opts = opts || {};
+    var floorRooms = walledRoomsOnFloor(state.activeFloor || 0);
+    if (ROOM_FIT_FOV_TYPES.indexOf(type) > -1) {
+      var room = null;
+      floorRooms.forEach(function(r){ var b = roomBBoxPx(r); if (!room && p.x >= b.x1 && p.x <= b.x2 && p.y >= b.y1 && p.y <= b.y2) room = r; });
+      if (!room) return null;
+      var b = roomBBoxPx(room), minDim = Math.min(b.x2 - b.x1, b.y2 - b.y1);
+      var nc = roomCornersWithBisector(room).reduce(function(a, c){ return dist(c.cx, c.cy, p.x, p.y) < dist(a.cx, a.cy, p.x, p.y) ? c : a; });
+      if (dist(nc.cx, nc.cy, p.x, p.y) <= (opts.cornerReach || Math.max(m2p(1.0), minDim * 0.3))) return { x:nc.x, y:nc.y, rot:dirRot(nc.dx, nc.dy), how:'corner' };
+      var dl = p.x - b.x1, dr = b.x2 - p.x, dt = p.y - b.y1, db = b.y2 - p.y, mn = Math.min(dl, dr, dt, db), ins = m2p(0.2);
+      if (mn <= m2p(0.8)) {
+        if (mn === dl) return { x:b.x1 + ins, y:p.y, rot:dirRot(1, 0), how:'wall' };
+        if (mn === dr) return { x:b.x2 - ins, y:p.y, rot:dirRot(-1, 0), how:'wall' };
+        if (mn === dt) return { x:p.x, y:b.y1 + ins, rot:dirRot(0, 1), how:'wall' };
+        return { x:p.x, y:b.y2 - ins, rot:dirRot(0, -1), how:'wall' };
+      }
+      return { x:p.x, y:p.y, rot:defaultRoomFacingRot(room, p), how:'free' };
+    }
+    if (isOutCamType(type)) {
+      if (pointInsideAnyRoom(p, floorRooms)) return null;
+      var off = m2p(0.2), reach = opts.cornerReach || m2p(1.2), best = null;
+      // 1) an outer corner of the building
+      floorRooms.forEach(function(r){
+        roomCornersWithBisector(r, 0).forEach(function(c){
+          var dd = dist(c.cx, c.cy, p.x, p.y);
+          if (dd > reach || (best && dd >= best.dd)) return;
+          var outside = { x:c.cx - c.dx*m2p(0.3), y:c.cy - c.dy*m2p(0.3) };
+          if (pointInsideAnyRoom(outside, floorRooms)) return; // not a convex outer corner
+          var vx = p.x - c.cx, vy = p.y - c.cy;
+          // which facade is the point beside: past the horizontal wall (y) or the vertical one (x)?
+          var pastH = vy * -c.dy, pastV = vx * -c.dx, m;
+          if (pastH >= pastV) m = { x:c.cx, y:c.cy - c.dy*off, rot:dirRot(c.dx, -c.dy) };
+          else m = { x:c.cx - c.dx*off, y:c.cy, rot:dirRot(-c.dx, c.dy) };
+          if (pointInsideAnyRoom(m, floorRooms)) return;
+          best = { dd:dd, x:m.x, y:m.y, rot:m.rot, how:'facade-corner' };
+        });
+      });
+      if (best) return best;
+      // 2) an outer wall
+      floorRooms.forEach(function(r){
+        var bb = roomBBoxPx(r);
+        [
+          { d:bb.y1 - p.y, n:{ x:0, y:-1 }, along:p.x, lo:bb.x1, hi:bb.x2, at:function(){ return { x:p.x, y:bb.y1 - off }; } },
+          { d:p.y - bb.y2, n:{ x:0, y: 1 }, along:p.x, lo:bb.x1, hi:bb.x2, at:function(){ return { x:p.x, y:bb.y2 + off }; } },
+          { d:bb.x1 - p.x, n:{ x:-1, y:0 }, along:p.y, lo:bb.y1, hi:bb.y2, at:function(){ return { x:bb.x1 - off, y:p.y }; } },
+          { d:p.x - bb.x2, n:{ x: 1, y:0 }, along:p.y, lo:bb.y1, hi:bb.y2, at:function(){ return { x:bb.x2 + off, y:p.y }; } }
+        ].forEach(function(s){
+          if (s.d < 0 || s.d > m2p(1.0) || s.along < s.lo || s.along > s.hi) return;
+          if (best && s.d >= best.dd) return;
+          var m = s.at();
+          if (pointInsideAnyRoom(m, floorRooms)) return;
+          best = { dd:s.d, x:m.x, y:m.y, rot:dirRot(s.n.x, s.n.y), how:'facade-wall' };
+        });
+      });
+      if (best) return best;
+      // 3) a corner of a garden / yard area
+      visibleRooms().forEach(function(r){
+        if (r.type !== 'yard') return;
+        roomCornersWithBisector(r, 0.2).forEach(function(c){
+          var dd = dist(c.cx, c.cy, p.x, p.y);
+          if (dd > m2p(1.5) || (best && dd >= best.dd)) return;
+          best = { dd:dd, x:c.x, y:c.y, rot:dirRot(c.dx, c.dy), how:'yard-corner' };
+        });
+      });
+      return best;
+    }
+    return null;
+  }
+  var SMART_MOUNT_NOTE = {
+    corner:'✓ הוצב בפינת החדר, מכוון באלכסון (45°) — זווית ה-90° מכסה את כל החדר',
+    wall:'✓ הוצב על הקיר, מכוון ישר אל תוך החדר',
+    'facade-corner':'✓ הוצבה בפינת המבנה, מכוונת ב-45° לאורך החזית — מכסה את הקיר ואת הגישה',
+    'facade-wall':'✓ הוצבה על הקיר החיצוני, מכוונת החוצה',
+    'yard-corner':'✓ הוצבה בפינת החצר, מכוונת באלכסון לכיסוי כל השטח'
+  };
 
   // Several openings of the same type (e.g. every "חלון רגיל" in a bedroom wing) are
   // otherwise indistinguishable in a checks/recommendations list — qualifying the label with
@@ -4244,11 +4494,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (hasCamera) return;
       var rep = cluster[0];
       var doorCamFloor = rep.floor || 0;
-      var camP = suggestPointNearOpening(rep, -2.5, 0);
-      var farP = suggestPointNearOpening(rep, -9, 0);
+      // at the corner of the facade, 45° along the wall (see facadeCornerCameraMount)
+      var camM = facadeCornerCameraMount(rep) || (function(){ var a = suggestPointNearOpening(rep, -0.3, 0), f = suggestPointNearOpening(rep, -9, 0); return { x:a.x, y:a.y, rot:aimRot(a, f) }; })();
       var labels = cluster.map(function(co){ return openingRoomLabel(co, rooms); });
       var uniqueLabels = labels.filter(function(l, i){ return labels.indexOf(l) === i; });
-      push('cam_out', camP.x, camP.y, aimRot(camP, farP), floorRiskSev(camSev('rec'), doorCamFloor), 'מצלמת חוץ — ' + uniqueLabels.join(' + '),
+      push('cam_out', camM.x, camM.y, camM.rot, floorRiskSev(camSev('rec'), doorCamFloor), 'מצלמת חוץ — ' + uniqueLabels.join(' + '),
         'תוספת אופציונלית: כיסוי מצלמה על כניסה משנית — ' + uniqueLabels.join(' + ') + '.' + floorRiskNote(doorCamFloor));
     });
 
@@ -4283,26 +4533,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var margin = m2p(0.3);
       var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
       if (covered) return;
-      var entry = null;
-      openings.forEach(function(o){
-        if (!pointInBBox({x:o.x,y:o.y}, bb, m2p(0.4))) return;
-        if (!entry || OPENING_DEFS[o.type].kind === 'door') entry = o;
-      });
-      var inset = m2p(0.35);
-      var corners = [
-        { x:bb.x1+inset, y:bb.y1+inset }, { x:bb.x2-inset, y:bb.y1+inset },
-        { x:bb.x1+inset, y:bb.y2-inset }, { x:bb.x2-inset, y:bb.y2-inset }
-      ];
-      var pirPos, aimTarget;
-      if (entry){
-        pirPos = corners.reduce(function(best,c){ return dist(c.x,c.y,entry.x,entry.y) > dist(best.x,best.y,entry.x,entry.y) ? c : best; });
-        aimTarget = entry;
-      } else {
-        pirPos = corners[0];
-        aimTarget = corners[3];
-      }
-      push(pirType, pirPos.x, pirPos.y, aimRot(pirPos, aimTarget), 'warning', (state.hasPet ? 'גלאי נפח מתעלם מחיות — ' : 'גלאי נפח — ') + (r.label||'חדר'),
-        'אזור מפתח למעבר/שהייה — מוצע ' + (state.hasPet ? 'גלאי נפח מתעלם מחיות (בהתאם למגבלות היצרן — משקל/גובה התקנה)' : 'גלאי נפח') + ' ב"' + (r.label||'חדר') + '"' + (entry?' בפינה אלכסונית מול הכניסה':'') + '.');
+      // Corner mount aimed along the corner's bisector (see bestDetectorCorner): the 90° between
+      // the two walls is the whole room, so the detector's field of view covers all of it.
+      var pm = bestDetectorCorner(r, openings);
+      push(pirType, pm.x, pm.y, pm.rot, 'warning', (state.hasPet ? 'גלאי נפח מתעלם מחיות — ' : 'גלאי נפח — ') + (r.label||'חדר'),
+        'אזור מפתח למעבר/שהייה — מוצע ' + (state.hasPet ? 'גלאי נפח מתעלם מחיות (בהתאם למגבלות היצרן — משקל/גובה התקנה)' : 'גלאי נפח') + ' ב"' + (r.label||'חדר') + '"' +
+        ' בפינת החדר' + (pm.entry ? ' מול הכניסה' : '') + ', מכוון באלכסון (45°) — זווית הגילוי מכסה את כל החדר.');
     });
 
     // ---- basement-specific: the indoor PIR for its large main space is already covered by
@@ -4359,10 +4595,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
       var camNear = devices.some(function(d){ return isOutCamType(d.type) && dist(d.x,d.y,o.x,o.y) <= m2p(9); });
       if (!camNear){
-        var cp2 = suggestPointNearOpening(o, -2.5, -0.6);
-        var far2 = suggestPointNearOpening(o, -9, -0.6);
-        push('cam_out', cp2.x, cp2.y, aimRot(cp2, far2), camSev('warning'), 'מצלמת חוץ — כניסה ראשית',
-          'הכניסה הראשית ללא כיסוי מצלמת חוץ — מוצע מיקום מעל/סמוך לדלת, מכוון על השטח המתקרב.');
+        var cm2 = facadeCornerCameraMount(o) || (function(){ var a = suggestPointNearOpening(o, -0.3, -0.6), f = suggestPointNearOpening(o, -9, -0.6); return { x:a.x, y:a.y, rot:aimRot(a, f) }; })();
+        push('cam_out', cm2.x, cm2.y, cm2.rot, camSev('warning'), 'מצלמת חוץ — כניסה ראשית',
+          'הכניסה הראשית ללא כיסוי מצלמת חוץ — מוצע מיקום בפינת החזית, מכוון ב-45° לאורך הקיר: זווית ה-90° מכסה את הדלת, את הקיר משני צדיה ואת השטח המתקרב.');
       }
       var intercomNear = devices.some(function(d){ return d.type==='intercom_ext' && dist(d.x,d.y,o.x,o.y) <= m2p(3); });
       if (!intercomNear){
@@ -4380,10 +4615,37 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         'מומלץ להוסיף סירנה חיצונית להרתעה — מיקום מוצע גבוה על קיר חיצוני גלוי לרחוב, סמוך לכניסה הראשית. סירנה אחת מספיקה לבית כולו ואינה תלויית-קומה.', true);
     }
 
+    // ---- swimming pool: ALWAYS a person-detection analytics camera ----
+    // Unsupervised access to the water — above all by young children — is the risk here, not
+    // burglary, so this is pushed regardless of the property kind's camera policy (even where
+    // cameras are otherwise only optional, e.g. a garden apartment or penthouse). A camera
+    // with human-detection analytics raises an alert the moment a person enters the pool area
+    // outside permitted hours. Mounted at the pool corner nearest the house (wall/post) and
+    // aimed along that corner's bisector, so its 90° view takes in the whole pool area.
+    rooms.filter(function(r){ return roomKind(r) === 'pool'; }).forEach(function(pool){
+      var pb = roomBBoxPx(pool);
+      var covered = devices.some(function(d){
+        if (d.type !== 'cam_out_analytics' && d.type !== 'cam_in_analytics') return false;
+        var gx = Math.max(pb.x1 - d.x, 0, d.x - pb.x2), gy = Math.max(pb.y1 - d.y, 0, d.y - pb.y2);
+        return Math.hypot(gx, gy) <= m2p(4);
+      });
+      if (covered) return;
+      var house = walledRoomsOnFloor(pool.floor || 0);
+      var pc = roomCornersWithBisector(pool, 0.2).reduce(function(best, c){
+        var dc = house.length ? Math.min.apply(null, house.map(function(h){
+          var hb = roomBBoxPx(h);
+          return Math.hypot(Math.max(hb.x1 - c.cx, 0, c.cx - hb.x2), Math.max(hb.y1 - c.cy, 0, c.cy - hb.y2));
+        })) : 0;
+        return (!best || dc < best.dc) ? { c:c, dc:dc } : best;
+      }, null).c;
+      push('cam_out_analytics', pc.x, pc.y, dirRot(pc.dx, pc.dy), 'warning', 'מצלמת אנליטיקה — ' + (pool.label || 'בריכת שחייה') + ' (זיהוי אדם)',
+        'בריכת שחייה — מומלץ תמיד: מצלמה עם אנליטיקת זיהוי אדם שמתריעה ברגע שאדם (ובמיוחד ילד) נכנס לאזור הבריכה ללא השגחה. מוצבת בפינת הבריכה הקרובה לבית, מכוונת באלכסון כך שזווית ה-90° מכסה את כל אזור הבריכה.');
+    });
+
     // ---- cameras need an NVR anchor ----
     var hasNvr = devices.some(function(d){ return d.type==='nvr'; });
     var hasOrWillHaveCam = devices.some(function(d){ return isAnyCamType(d.type); }) ||
-      recs.some(function(r){ return r.type==='cam_out'||r.type==='cam_in'; });
+      recs.some(function(r){ return isAnyCamType(r.type); });
     var nvrPoint = null;
     if (!restrictToDoorAndPir && !hasNvr && hasOrWillHaveCam && interiorRooms.length){
       var nvrAnchor = mainDoors.length ? mainDoors[0] : { x:interiorRooms[0].x, y:interiorRooms[0].y };
@@ -4419,7 +4681,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       fenceGateNum++;
       var dx = f.x2-f.x1, dy = f.y2-f.y1, len = Math.hypot(dx,dy) || 1;
       var nx = -dy/len, ny = dx/len;
-      var camPt = { x: midX + nx*m2p(3), y: midY + ny*m2p(3) };
+      // up to 3 m inside the lot facing the gate — but never inside the building: if the house
+      // is closer than that, the camera goes on its outer wall instead
+      var gateFloorRooms = walledRoomsOnFloor(f.floor || 0), camPt = { x: midX, y: midY };
+      for (var gs = 1; gs <= 12; gs++){
+        var gp = { x: midX + nx*m2p(0.25*gs), y: midY + ny*m2p(0.25*gs) };
+        if (pointInsideAnyRoom(gp, gateFloorRooms)) break;
+        camPt = gp;
+      }
       var farPt = { x: midX - nx*m2p(3), y: midY - ny*m2p(3) };
       push('cam_out', camPt.x, camPt.y, aimRot(camPt, farPt), camSev('warning'), 'מצלמת חוץ — שער ' + fenceGateNum,
         'מומלץ כיסוי מצלמה נוסף על השער לזיהוי כניסה/יציאת רכבים ואנשים.', true);
@@ -4593,6 +4862,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // physical cable can't jump floors — so anchor them locally rather than to the whole-house
     // anchors used for the cost estimate text.
     var anchors = getAnchors(visibleDevices());
+    var recWalls = sightWalls();
     currentRecs.filter(function(r){ return recFloor(r) === (state.activeFloor||0); }).forEach(function(r){
       var def = DEVICE_DEFS[r.type];
       if (def.cable && anchors){
@@ -4607,27 +4877,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
       var g = el('g', { class:'rec-ghost', transform:'translate('+r.x+','+r.y+')' });
       if (def.fov){
-        // Same wall-clipping as the real placed device (renderDevices) — so the ghost preview
-        // already looks like what the agent gets after accepting it, not a wider unclipped cone.
-        var recRoom = ROOM_FIT_FOV_TYPES.indexOf(r.type) > -1 ? roomContainingPoint({x:r.x,y:r.y}) : null;
-        var recCone = null;
-        if (recRoom) {
-          var recBb = roomBBoxPx(recRoom);
-          var recRad = (r.rot||0) * Math.PI/180, recCos = Math.cos(recRad), recSin = Math.sin(recRad);
-          var recAbsPts = conePolygon(m2p(def.range), def.fov).map(function(p){
-            return [ p[0]*recCos - p[1]*recSin + r.x, p[0]*recSin + p[1]*recCos + r.y ];
-          });
-          var recClipped = clipPolyToRect(recAbsPts, recBb.x1, recBb.y1, recBb.x2, recBb.y2);
-          if (recClipped.length >= 3) {
-            var recDAttr = 'M' + recClipped.map(function(p){ return (p[0]-r.x).toFixed(1) + ',' + (p[1]-r.y).toFixed(1); }).join(' L') + ' Z';
-            recCone = el('path', { d: recDAttr, class:'rec-cone' });
-          }
-        }
-        if (!recCone) recCone = el('path', { d:coneArc(m2p(def.range), def.fov), transform:'rotate('+(r.rot||0)+')', class:'rec-cone' });
-        g.appendChild(recCone);
+        // Same line-of-sight as the real placed device (renderDevices) — so the ghost preview
+        // already looks like what the agent gets after accepting it.
+        var recConeD = sightPathD(r.x, r.y, r.rot || 0, def.fov, m2p(def.range), recWalls);
+        if (recConeD) g.appendChild(el('path', { d: recConeD, class:'rec-cone' }));
       }
       if (def.radius){
-        g.appendChild(el('circle', { cx:0, cy:0, r:m2p(def.radius), class:'rec-cone' }));
+        var recRadD = def.cat === 'network' ? null : sightPathD(r.x, r.y, 0, 360, m2p(def.radius), recWalls);
+        g.appendChild(recRadD ? el('path', { d: recRadD, class:'rec-cone' }) : el('circle', { cx:0, cy:0, r:m2p(def.radius), class:'rec-cone' }));
       }
       g.appendChild(el('circle', { cx:0, cy:0, r:16, class:'rec-halo' }));
       g.appendChild(el('circle', { cx:0, cy:0, r:11, class:'rec-badge' }));
@@ -5257,12 +5514,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (drawMode) return;
     ev.preventDefault(); ev.stopPropagation();
     selectItem('device', d.id);
+    var startX = d.x, startY = d.y;
     function move(e){
       var p = svgPoint(e);
       d.x = p.x; d.y = p.y;
       scheduleRenderLive();
     }
-    function up(){ window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); flushScheduledRenderLive(); render(); }
+    function up(){
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+      flushScheduledRenderLive();
+      // Dragged into a corner (or onto a building corner) → seat it there and re-aim along the
+      // corner's bisector. Only for a real drag into a corner — a plain tap, or dropping it in
+      // the middle of a wall/room, leaves the agent's own position and rotation alone.
+      if (Math.hypot(d.x - startX, d.y - startY) > m2p(0.3)) {
+        var m = smartMountForDevice(d.type, { x:d.x, y:d.y }, { cornerReach:m2p(0.8) });
+        if (m && (m.how === 'corner' || m.how === 'facade-corner' || m.how === 'yard-corner')) {
+          d.x = m.x; d.y = m.y; d.rot = m.rot;
+          showCanvasToast(SMART_MOUNT_NOTE[m.how]);
+        }
+      }
+      render();
+    }
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   }
@@ -6445,12 +6717,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var o = addOpening({ type:type, x:p.x, y:p.y });
       selectItem('opening', o.id);
     } else if (DEVICE_DEFS[type]) {
-      var rot = type.indexOf('out')>-1 ? 180 : 0;
+      var rot = type.indexOf('out')>-1 ? 180 : 0, x = p.x, y = p.y;
       if (ROOM_FIT_FOV_TYPES.indexOf(type) > -1) {
         var room = roomContainingPoint(p);
         if (room) rot = defaultRoomFacingRot(room, p);
       }
-      var d = addDevice({ type:type, x:p.x, y:p.y, rot: rot });
+      // read the structure around the drop point: corner → bisector, wall → straight in/out
+      var mount = smartMountForDevice(type, p);
+      if (mount) { x = mount.x; y = mount.y; rot = mount.rot; if (SMART_MOUNT_NOTE[mount.how]) showCanvasToast(SMART_MOUNT_NOTE[mount.how]); }
+      var d = addDevice({ type:type, x:x, y:y, rot: rot });
       selectItem('device', d.id);
     }
   }
