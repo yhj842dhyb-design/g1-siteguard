@@ -159,6 +159,10 @@
   .btn-accent3.active{ filter:brightness(0.9); box-shadow:0 0 0 2px var(--accent-3) inset; }
   .btn-sm{ padding:6px 10px; font-size:12px; border-radius:7px; }
   .btn[disabled]{ opacity:.45; cursor:not-allowed; }
+  /* The hidden attribute must always win over a component's own display value (.btn's
+     inline-flex, .floor-tabs' flex…) — without this the "install app" button showed on every
+     desktop and a single-floor project drew an empty floor-tab pill in the toolbar. */
+  [hidden]{ display:none !important; }
 
   /* ---------- Layout body ---------- */
   .body{ flex:1 1 auto; display:flex; min-height:0; }
@@ -238,12 +242,10 @@
   .room-preset-btn:hover{ border-color:var(--accent-2); background:var(--panel-3); }
   .room-preset-btn small{ display:block; color:var(--ink-dim); font-weight:500; font-size:10.5px; }
   .room-preset-swatch{ width:24px; height:18px; border:2px solid var(--ink-dim); border-radius:3px; flex:0 0 auto; }
-  /* The pool preset is the one swatch that needs to actually read as water at a glance rather
-     than just as a differently-sized box (which is all the other presets need, since their
-     shape is just their room's footprint proportions) — a light-blue fill with two ripple
-     lines, instead of a plain outline, is the smallest change that still reads as "pool". */
-  .room-preset-swatch.pool-swatch{ border-color:#2f7fa6; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#dff1fa; }
-  .room-preset-swatch.pool-swatch svg{ display:block; }
+  /* Preset thumbnails are generated at startup (buildRoomPresetThumbs()) as a miniature of the
+     room exactly as it will be drawn — floor texture and illustration included. */
+  .room-preset-swatch.room-thumb{ width:46px; height:32px; border:0; border-radius:0; display:flex; align-items:center; justify-content:center; }
+  .room-preset-swatch.room-thumb svg{ display:block; }
 
   /* Room-preset sub-menu: a short stack of collapsed group headers (one per project kind,
      plus "בסיסי"/"שטחי חוץ" shared by every kind) instead of one long flat button list — see
@@ -278,8 +280,70 @@
   /* ---------- Canvas ---------- */
   .canvas-wrap{ flex:1 1 auto; display:flex; flex-direction:column; min-width:0; background:var(--bg); }
   .canvas-toolbar{
-    display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:6px 12px; padding:7px 12px; border-bottom:1px solid var(--line);
     flex:0 0 auto; flex-wrap:wrap;
+    /* a query container: labels collapse to icons as the toolbar narrows (see the @container
+       rules below) instead of the toolbar growing extra rows or scrolling sideways */
+    container-type:inline-size; container-name:cvtb;
+    position:relative; z-index:30; /* lets the "עוד" menu drop down over the plan */
+  }
+  .tb-row{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex:1 1 100%; min-width:0; }
+  .tb-spacer{ flex:1 1 auto; }
+  /* Work steps: a numbered segment per step, in the order the work is done. The number is
+     real information here (a sequence), not decoration. */
+  .tb-step{
+    display:flex; align-items:center; gap:3px; padding:3px 3px 3px 4px; border-radius:10px;
+    background:var(--panel-2); border:1px solid var(--line);
+  }
+  .tb-step-num{
+    width:19px; height:19px; border-radius:50%; flex:0 0 auto; margin-inline:3px 2px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:11px; font-weight:700; font-variant-numeric:tabular-nums;
+    background:var(--ink-on-dark); color:var(--panel);
+  }
+  .tb-step .btn{ border-color:transparent; }
+  .tb-step .btn-ghost:hover{ background:var(--panel-3); }
+  .tb-step .tb-step-main{ font-weight:700; }
+  .tb-step[data-step="1"] .tb-step-main{ background:var(--panel); border-color:var(--line-strong); }
+  .tb-step[data-step="3"] .tb-step-main{ background:var(--panel); border-color:var(--accent); color:var(--accent-text, var(--ink-on-dark)); }
+  .tb-flow-arrow{ color:var(--ink-dim); font-size:13px; opacity:.6; flex:0 0 auto; }
+  .tb-menu{ position:relative; }
+  .tb-menu-pop{
+    position:absolute; top:calc(100% + 6px); inset-inline-end:0; min-width:190px; z-index:40;
+    display:flex; flex-direction:column; gap:2px; padding:6px;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-s);
+    box-shadow:0 10px 28px rgba(24,35,53,0.22);
+  }
+  .tb-menu-pop[hidden]{ display:none; }
+  .tb-menu-pop .btn{ justify-content:flex-start; width:100%; border-color:transparent; }
+  .tb-menu-pop .btn-ghost:hover{ background:var(--panel-3); }
+  /* "1 סידור ואבזור" on a desktop: the palette is already open beside the plan, so the
+     button points at it instead of opening a drawer. */
+  .palette.attention{ box-shadow:inset 0 0 0 3px var(--accent-2); transition:box-shadow .2s; }
+  .tb-step .btn-sm{ padding:6px 8px; }
+  #zoomLabel{ display:inline-block; }
+  .floor-tabs .ft-short{ display:none; }
+  @container cvtb (max-width:850px){
+    .tb-lbl{ display:none; }
+  }
+  @container cvtb (max-width:700px){
+    .tb-flow-arrow{ display:none; }
+  }
+  @container cvtb (max-width:560px){
+    .tb-lbl-sm, #zoomLabel.tb-lbl-sm, .tb-flow-arrow, #floorLabel{ display:none; }
+    /* narrow: drop the two-row grouping so the steps, floor tabs and view controls pack
+       into as few lines as possible (3 on a phone instead of 4+) */
+    .tb-row{ display:contents; }
+    /* with the scale note hidden, the status pill only appears to show a save/open result */
+    .tb-status:not(:has(.tb-status-io:not(:empty))){ display:none; }
+    .floor-tabs button{ padding:5px 8px; }
+    .floor-tabs .ft-long{ display:none; }
+    .floor-tabs .ft-short{ display:inline; }
+  }
+  /* very wide: both rows share one line */
+  @container cvtb (min-width:1600px){
+    .tb-row{ flex:0 1 auto; }
+    .tb-row.tb-canvas{ flex:1 1 auto; }
   }
   .toolbar-sep{ width:1px; align-self:stretch; background:var(--line); margin:0 4px; }
   /* ---- Toolbar reorganization: related buttons cluster into labeled, segmented groups
@@ -922,10 +986,15 @@
      z-index, so tapping either button dimmed the backdrop but the drawer itself never appeared.
      Excluding .mobile-open here is what lets openMobilePanel()'s class toggle actually show it. */
   .app.is-fullscreen .panel:not(.mobile-open){ display:none; }
-  .app.is-fullscreen .canvas-toolbar > *{ display:none; }
-  .app.is-fullscreen .canvas-toolbar > .mobile-only-btn{ display:inline-flex; }
-  .app.is-fullscreen .canvas-toolbar > #floorTabs:not([hidden]){ display:flex; }
-  .app.is-fullscreen .canvas-toolbar > .toolbar-group[aria-label="תצוגה"]{ display:flex; }
+  /* fullscreen keeps: the palette/inspector drawer buttons, the floor switcher and the view
+     controls — on one row — and drops the quote/sketch steps, status and the "עוד" menu */
+  .app.is-fullscreen .tb-row{ flex:0 1 auto; }
+  .app.is-fullscreen .tb-row.tb-canvas{ flex:1 1 auto; }
+  .app.is-fullscreen .tb-step:not([data-step="1"]), .app.is-fullscreen .tb-flow-arrow,
+  .app.is-fullscreen .tb-step-num, .app.is-fullscreen #btnRecommendations, .app.is-fullscreen #btnLegend,
+  .app.is-fullscreen .tb-status, .app.is-fullscreen .tb-menu, .app.is-fullscreen #btnInstallApp{ display:none; }
+  .app.is-fullscreen .tb-step[data-step="1"]{ background:transparent; border-color:transparent; padding:0; }
+  .app.is-fullscreen .mobile-only-btn{ display:inline-flex; }
   @media print{
     .app{ display:none !important; }
     .modal-backdrop{ position:static; background:none; padding:0; }
@@ -977,6 +1046,13 @@
     display:flex; align-items:center; gap:8px; text-align:center;
   }
   .canvas-hint[hidden]{ display:none; }
+  .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
+  .canvas-toast span{
+    background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600; padding:8px 16px;
+    border-radius:999px; box-shadow:0 6px 18px rgba(24,35,53,0.28); max-width:92%; text-align:center;
+  }
+  .canvas-toast span[hidden]{ display:none; }
+  .canvas-toast span.warn{ background:#b8382a; }
   .canvas-hint button{
     background:rgba(255,255,255,0.18); border:0; color:#fff; border-radius:999px;
     width:20px; height:20px; font-size:12px; cursor:pointer; flex:0 0 auto; line-height:1;
@@ -1019,21 +1095,11 @@
     .mobile-only-btn{ display:inline-flex; }
     .mobile-panel-close{ display:inline-flex; }
     .legend{ display:none; }
-    /* The canvas toolbar packs several button groups (view/zoom, recommendations & guide,
-       save/open/sample/clear) that were designed for a wide desktop row. Rather than losing
-       any of them or letting them wrap into a tall multi-row mess above a shrunken canvas,
-       turn the toolbar itself into a single-row, horizontally-swipeable strip — the same
-       pattern as a mobile app's filter-chip bar — so every action stays one tap away and
-       nothing overflows the screen. -webkit-overflow-scrolling gives it inertial scrolling
-       on iOS; the scrollbar is hidden since a thin persistent bar reads as visual noise on
-       a control strip people scan by icon, not by scrollbar position. */
-    .canvas-toolbar{
-      flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
-      scrollbar-width:none; -ms-overflow-style:none;
-    }
-    .canvas-toolbar::-webkit-scrollbar{ display:none; }
-    .canvas-toolbar > *{ flex-shrink:0; }
-    .toolbar-group{ flex-wrap:nowrap; }
+    /* The canvas toolbar used to become a single sideways-swipe strip here, which hid the
+       floor switcher, recommendations, quote and sketch off the edge of the screen. It now
+       stays fully visible: its rows wrap and secondary labels collapse to icons (the
+       @container rules on .canvas-toolbar), so every step is one tap away with no swiping. */
+    .canvas-toolbar{ padding:6px 8px; gap:6px; }
     .tb-status{ white-space:nowrap; }
     .palette, .inspector{
       position:fixed; top:0; bottom:0; width:86vw; max-width:340px; z-index:10140; /* above .app.is-fullscreen — same reason as .modal-backdrop */
@@ -1044,6 +1110,16 @@
     .inspector{ left:0; transform:translateX(-100%); border-right:0; }
     .palette.mobile-open{ transform:translateX(0); }
     .inspector.mobile-open{ transform:translateX(0); }
+  }
+  /* narrow phone: fit the logo, score and the two header buttons on one row (score shows its
+     ring only — the full gauge is in the הכוונה panel), so the header takes 2 rows, not 3 */
+  @media (max-width:520px){
+    .topbar{ gap:6px; padding-inline:10px; }
+    .topbar .brand{ font-size:14px; gap:6px; }
+    .topbar .brand small{ display:none; }
+    .topbar .score-label{ display:none; }
+    .topbar .score-badge{ padding:4px; }
+    .topbar #btnAgentInfo, .topbar #btnReset{ padding:6px 7px; font-size:11.5px; }
   }
   /* A phone rotated to landscape is short on height (~360–430px) but has plenty of WIDTH to
      spare — the opposite trade-off from a narrow portrait phone. The 860px tablet rule above
@@ -1107,7 +1183,6 @@
     </div>
     <button class="btn btn-ghost btn-sm" id="btnAgentInfo">פרטי סוכן</button>
     <button class="btn btn-ghost btn-sm" id="btnReset">פרויקט חדש</button>
-    <button class="btn btn-primary" id="btnSend">שלח ללקוח ⇦</button>
   </header>
 
   <div class="body">
@@ -1141,9 +1216,9 @@
           <div class="room-subgroup-body" hidden>
             <div class="room-presets">
               <button class="room-preset-btn" data-label="חדר כללי" data-type="room" data-w="3.5" data-h="3.5"><span class="room-preset-swatch"></span><span>חדר כללי<small>3.5 × 3.5 מ׳</small></span></button>
-              <button class="room-preset-btn" data-label="מסדרון" data-type="room" data-w="3" data-h="1.3"><span class="room-preset-swatch" style="width:28px;height:10px"></span><span>מסדרון<small>3.0 × 1.3 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="מסדרון" data-type="room" data-w="6" data-h="1.3"><span class="room-preset-swatch"></span><span>מסדרון<small>6.0 × 1.3 מ׳</small></span></button>
               <button class="room-preset-btn" data-label="מחסן" data-type="room" data-w="2" data-h="2"><span class="room-preset-swatch" style="width:16px;height:16px"></span><span>מחסן<small>2.0 × 2.0 מ׳</small></span></button>
-              <button class="room-preset-btn" data-label="שירותים" data-type="room" data-w="1.6" data-h="1.6"><span class="room-preset-swatch" style="width:14px;height:14px"></span><span>שירותים<small>1.6 × 1.6 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="שירותים" data-type="room" data-w="1.8" data-h="2.2"><span class="room-preset-swatch"></span><span>שירותים<small>1.8 × 2.2 מ׳</small></span></button>
             </div>
           </div>
         </div>
@@ -1161,13 +1236,7 @@
               <button class="room-preset-btn" data-label="סלון" data-type="room" data-w="5.5" data-h="4.5"><span class="room-preset-swatch" style="width:28px;height:22px"></span><span>סלון<small>5.5 × 4.5 מ׳</small></span></button>
               <button class="room-preset-btn" data-label="אמבטיה" data-type="room" data-w="2" data-h="1.8"><span class="room-preset-swatch" style="width:18px;height:14px"></span><span>אמבטיה<small>2.0 × 1.8 מ׳</small></span></button>
               <button class="room-preset-btn" data-label="ממ&quot;ד" data-type="room" data-w="2.2" data-h="2.2"><span class="room-preset-swatch"></span><span>ממ"ד<small>2.2 × 2.2 מ׳</small></span></button>
-              <button class="room-preset-btn" data-label="בריכת שחייה" data-type="yard" data-w="6" data-h="3" title="רלוונטי בעיקר לבית פרטי, דירת גן או פנטהאוז">
-                <span class="room-preset-swatch pool-swatch"><svg viewBox="0 0 20 14" width="20" height="14" aria-hidden="true">
-                  <path d="M1 5c1.8 1.9 3.6 1.9 5.4 0s3.6-1.9 5.4 0 3.6 1.9 5.4 0" fill="none" stroke="#2f7fa6" stroke-width="1.4" stroke-linecap="round"/>
-                  <path d="M1 9.5c1.8 1.9 3.6 1.9 5.4 0s3.6-1.9 5.4 0 3.6 1.9 5.4 0" fill="none" stroke="#5a9bc4" stroke-width="1.4" stroke-linecap="round" opacity=".7"/>
-                </svg></span>
-                <span>בריכת שחייה<small>6.0 × 3.0 מ׳ · בית פרטי / דירת גן / פנטהאוז</small></span>
-              </button>
+              <button class="room-preset-btn" data-label="בריכת שחייה" data-type="yard" data-w="7" data-h="3.5" title="רלוונטי בעיקר לבית פרטי, דירת גן או פנטהאוז"><span class="room-preset-swatch"></span><span>בריכת שחייה<small>7.0 × 3.5 מ׳ · בית פרטי / דירת גן / פנטהאוז</small></span></button>
             </div>
           </div>
         </div>
@@ -1180,7 +1249,7 @@
           <div class="room-subgroup-body" hidden>
             <div class="room-presets">
               <button class="room-preset-btn" data-label="חלל מכירה" data-type="room" data-w="6" data-h="5"><span class="room-preset-swatch" style="width:28px;height:22px"></span><span>חלל מכירה<small>6.0 × 5.0 מ׳</small></span></button>
-              <button class="room-preset-btn" data-label="דלפק קופה" data-type="room" data-w="2" data-h="1.2"><span class="room-preset-swatch" style="width:20px;height:10px"></span><span>דלפק קופה<small>2.0 × 1.2 מ׳</small></span></button>
+              <button class="room-preset-btn" data-label="דלפק קופה" data-type="room" data-w="3" data-h="2"><span class="room-preset-swatch"></span><span>דלפק קופה<small>3.0 × 2.0 מ׳</small></span></button>
               <button class="room-preset-btn" data-label="מחסן סחורה" data-type="room" data-w="3" data-h="3"><span class="room-preset-swatch"></span><span>מחסן סחורה<small>3.0 × 3.0 מ׳</small></span></button>
               <button class="room-preset-btn" data-label="משרד אחורי" data-type="room" data-w="2.5" data-h="2.5"><span class="room-preset-swatch"></span><span>משרד אחורי<small>2.5 × 2.5 מ׳</small></span></button>
             </div>
@@ -1328,56 +1397,72 @@
 
     <!-- Center: canvas -->
     <main class="canvas-wrap">
+      <!-- Canvas toolbar, laid out in the order the work is actually done, so the agent never has
+           to hunt (or swipe) for the next button:
+             row 1 — the three work steps: 1 סידור ואבזור (rooms + equipment, with the guidance
+                     tools that belong to this step: security recommendations + install guide)
+                     → 2 הצעת מחיר (build/send the quote, and the saved-quotes library) → 3 סקיצה.
+             row 2 — the canvas itself: floor switcher (multi-floor houses), a short scale note,
+                     zoom/fullscreen, and an "עוד" menu for project-file housekeeping.
+           Nothing scrolls sideways: rows wrap, and secondary labels collapse to their icons as the
+           toolbar gets narrower (container queries on .canvas-toolbar — see .tb-lbl/.tb-lbl-sm). -->
       <div class="canvas-toolbar">
-        <button type="button" class="btn btn-ghost btn-sm mobile-only-btn" id="btnMobilePalette" title="פתיחת אביזרים וחדרים" aria-label="פתיחת אביזרים וחדרים">🧰 אביזרים</button>
-        <button type="button" class="btn btn-ghost btn-sm mobile-only-btn" id="btnMobileInspector" title="פתיחת מאפיינים / ציון הגנה / כמויות" aria-label="פתיחת מאפיינים / ציון הגנה / כמויות">📋 מאפיינים</button>
-
-        <div class="tb-status">
-          <span class="tb-status-dot" aria-hidden="true"></span>
-          <span id="floorLabel">קומת קרקע · כל משבצת ברשת ≈ 0.5 מ׳ בשטח</span>
-          <span class="tb-status-io" id="projectIOStatus"></span>
-        </div>
-
-        <!-- Only shown/populated for a multi-floor house (see buildFloorTabs()) — lets the
-             agent switch which floor's rooms/devices are on the canvas right now. -->
-        <div class="floor-tabs" id="floorTabs" role="tablist" aria-label="מעבר בין קומות" hidden></div>
-
-        <div style="flex:1"></div>
-
-        <div class="toolbar-group" role="group" aria-label="תצוגה">
-          <button class="btn btn-ghost btn-sm" id="btnFullscreen" title="הרחיבו את השרטוט למסך מלא כדי לדייק גם באזורים סביב המבנה" aria-label="מסך מלא">⛶ מסך מלא</button>
-          <div class="zoom-group">
-            <button class="btn btn-ghost btn-sm" id="zoomOut" aria-label="הקטן תצוגה">－</button>
-            <span class="num" id="zoomLabel" style="font-size:11.5px;color:var(--ink-dim);min-width:38px;text-align:center;display:inline-block">100%</span>
-            <button class="btn btn-ghost btn-sm" id="zoomIn" aria-label="הגדל תצוגה">＋</button>
+        <div class="tb-row tb-flow" role="toolbar" aria-label="שלבי העבודה">
+          <div class="tb-step" data-step="1">
+            <span class="tb-step-num" aria-hidden="true">1</span>
+            <button type="button" class="btn btn-sm tb-step-main" id="btnMobilePalette" title="חדרים, פתחים ואביזרים — שרטוט המבנה ומיקום האביזרים" aria-label="סידור ואבזור — פתיחת רשימת החדרים והאביזרים">🧰 סידור ואבזור</button>
+            <button type="button" class="btn btn-ghost btn-sm mobile-only-btn" id="btnMobileInspector" title="הכוונה, ציון הגנה, כמויות ומאפייני הפריט שנבחר" aria-label="הכוונה ומאפיינים">📋<span class="tb-lbl"> הכוונה</span></button>
+            <button class="btn btn-accent3 btn-sm" id="btnRecommendations" title="לאחר שסימנתם את החדרים/פתחים/גדרות כפי שהם במציאות — ניתוח נקודות תורפה וגילוי, והצעת מיקומי אביזרים משלימים ישירות על גבי המפה">🎯 המלצות<span class="tb-lbl"> מיגון</span></button>
+            <button class="btn btn-ghost btn-sm" id="btnLegend" title="מדריך התקנה לכל אביזר — גובה, מיקום וטיפים" aria-label="מדריך התקנה">📘<span class="tb-lbl"> מדריך התקנה</span></button>
           </div>
-          <button class="btn btn-ghost btn-sm" id="btnGestureHelp" title="איך לנווט, להגדיל ולערוך בשרטוט" aria-label="עזרה בניווט בשרטוט">🖐️ עזרה בניווט</button>
+          <span class="tb-flow-arrow" aria-hidden="true">←</span>
+          <div class="tb-step" data-step="2">
+            <span class="tb-step-num" aria-hidden="true">2</span>
+            <button class="btn btn-primary btn-sm tb-step-main" id="btnSend" title="בניית הצעת מחיר לפי השרטוט ושליחתה ללקוח">💰 הצעת מחיר</button>
+            <button class="btn btn-ghost btn-sm" id="btnQuoteLibrary" title="כל הצעות המחיר שנשלחו/הודפסו ממכשיר זה — איתור, פתיחה לעריכה או הורדת קובץ מחדש" aria-label="הצעות מחיר שנשמרו">🗂️<span class="tb-lbl"> הצעות שמורות</span></button>
+          </div>
+          <span class="tb-flow-arrow" aria-hidden="true">←</span>
+          <div class="tb-step" data-step="3">
+            <span class="tb-step-num" aria-hidden="true">3</span>
+            <button class="btn btn-sm tb-step-main" id="btnSketch" title="תצוגת סקיצה מקצועית במסך מלא — למסירה ללקוח או לקבלן/מתקין, כולל מקרא אביזרים וסיכום כבילה">📐 סקיצה<span class="tb-lbl-sm"> להדפסה</span></button>
+          </div>
         </div>
 
-        <div class="toolbar-sep"></div>
-
-        <div class="toolbar-group" role="group" aria-label="ניתוח ומקרא">
-          <button class="btn btn-accent3 btn-sm" id="btnRecommendations" title="לאחר שסימנתם את החדרים/פתחים/גדרות כפי שהם במציאות — ניתוח נקודות תורפה וגילוי, והצעת מיקומי אביזרים משלימים ישירות על גבי המפה">🎯 המלצות מיגון</button>
-          <button class="btn btn-ghost btn-sm" id="btnLegend">📘 מדריך התקנה</button>
-        </div>
-
-        <button class="btn btn-primary btn-sm tb-cta" id="btnSketch" title="תצוגת סקיצה מקצועית במסך מלא — למסירה ללקוח או לקבלן/מתקין, כולל מקרא אביזרים וסיכום כבילה">📐 סקיצה להדפסה</button>
-
-        <div class="toolbar-sep"></div>
-
-        <div class="toolbar-group" role="group" aria-label="ניהול פרויקט">
-          <button class="btn btn-ghost btn-sm" id="btnSaveProject" title="שמירת השרטוט, האביזרים ופרטי הלקוח כקובץ במכשיר — לצורך המשך עבודה מאוחר יותר">💾 שמירת פרויקט</button>
-          <button class="btn btn-ghost btn-sm" id="btnOpenProject" title="פתיחת קובץ פרויקט שנשמר בעבר">📂 פתיחת פרויקט</button>
-          <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none">
-          <button class="btn btn-ghost btn-sm" id="btnQuoteLibrary" title="כל הצעות המחיר שנשלחו/הודפסו ממכשיר זה — איתור, פתיחה לעריכה או הורדת קובץ מחדש">🗂️ הצעות מחיר שנשמרו</button>
-          <button class="btn btn-ghost btn-sm" id="btnLoadSample">📄 טען דוגמה</button>
-          <button class="btn btn-warn-subtle btn-sm" id="btnClear">🗑️ נקה שרטוט</button>
+        <div class="tb-row tb-canvas">
+          <!-- Only shown/populated for a multi-floor house (see buildFloorTabs()) — lets the
+               agent switch which floor's rooms/devices are on the canvas right now. -->
+          <div class="floor-tabs" id="floorTabs" role="tablist" aria-label="מעבר בין קומות" hidden></div>
+          <div class="tb-status" title="קנה מידה: כל משבצת ברשת השרטוט שווה ל-0.5 מטר בשטח">
+            <span class="tb-status-dot" aria-hidden="true"></span>
+            <span id="floorLabel">משבצת = 0.5 מ׳</span>
+            <span class="tb-status-io" id="projectIOStatus"></span>
+          </div>
+          <div class="tb-spacer"></div>
+          <div class="toolbar-group tb-view" role="group" aria-label="תצוגה">
+            <div class="zoom-group">
+              <button class="btn btn-ghost btn-sm" id="zoomOut" aria-label="הקטן תצוגה">－</button>
+              <span class="num tb-lbl-sm" id="zoomLabel" style="font-size:11.5px;color:var(--ink-dim);min-width:38px;text-align:center">100%</span>
+              <button class="btn btn-ghost btn-sm" id="zoomIn" aria-label="הגדל תצוגה">＋</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="btnFullscreen" title="הרחיבו את השרטוט למסך מלא כדי לדייק גם באזורים סביב המבנה" aria-label="מסך מלא">⛶<span class="tb-lbl"> מסך מלא</span></button>
+          </div>
           <!-- Hidden until JS decides installation actually applies here (see the install-prompt
                block near the end of the script): a real install affordance on Android/Chrome once
                the browser's own beforeinstallprompt fires, or manual iOS instructions on an iPhone/
                iPad, since iOS Safari never fires that event at all. Never shown when the page is
                already running installed, or on a desktop browser that supports neither path. -->
-          <button type="button" class="btn btn-accent3 btn-sm" id="btnInstallApp" title="התקנת G1 SiteGuard כאפליקציה עם אייקון במסך הבית — עובד גם ללא חיבור לאינטרנט" hidden>📲 התקנת אפליקציה</button>
+          <button type="button" class="btn btn-accent3 btn-sm" id="btnInstallApp" title="התקנת G1 SiteGuard כאפליקציה עם אייקון במסך הבית — עובד גם ללא חיבור לאינטרנט" hidden>📲<span class="tb-lbl"> התקנת אפליקציה</span></button>
+          <div class="tb-menu">
+            <button type="button" class="btn btn-ghost btn-sm" id="btnMoreMenu" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu" title="שמירה ופתיחה של קובץ פרויקט, דוגמה, עזרה וניקוי">⋯<span class="tb-lbl"> עוד</span></button>
+            <div class="tb-menu-pop" id="moreMenu" role="menu" hidden>
+              <button class="btn btn-ghost btn-sm" id="btnSaveProject" role="menuitem" title="שמירת השרטוט, האביזרים ופרטי הלקוח כקובץ במכשיר — לצורך המשך עבודה מאוחר יותר">💾 שמירת פרויקט</button>
+              <button class="btn btn-ghost btn-sm" id="btnOpenProject" role="menuitem" title="פתיחת קובץ פרויקט שנשמר בעבר">📂 פתיחת פרויקט</button>
+              <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none">
+              <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
+              <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
+              <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="canvas-scroll" id="canvasScroll">
@@ -1385,6 +1470,9 @@
           <span id="canvasHintLabel"></span>
           <button type="button" id="canvasHintCancel" aria-label="ביטול הוספה">✕</button>
         </div>
+        <!-- Transient note after a preset room is placed ("✓ מרפסת נוספה בצמוד לסלון") —
+             zero-height sticky wrapper so it floats over the plan without shifting it. -->
+        <div class="canvas-toast" aria-live="polite"><span id="canvasToast" hidden></span></div>
         <div class="canvas-stage">
           <svg id="plan" width="1000" height="680" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -1424,6 +1512,41 @@
               <pattern id="pPavement" width="42" height="42" patternUnits="userSpaceOnUse">
                 <rect width="42" height="42" fill="#d0d3d2"/>
                 <rect x="0.7" y="0.7" width="40.6" height="40.6" fill="none" stroke="#b7bcba" stroke-width="1.3"/>
+              </pattern>
+              <!-- Pool surround: pale-aqua stone tiles (the light-blue ground the pool sits in),
+                   plus the water itself for the basin drawn on top of it. -->
+              <pattern id="pPoolDeck" width="24" height="24" patternUnits="userSpaceOnUse">
+                <rect width="24" height="24" fill="#e2f2f8"/>
+                <rect x="0.6" y="0.6" width="22.8" height="22.8" fill="none" stroke="#c4e1ec" stroke-width="1"/>
+              </pattern>
+              <pattern id="pWater" width="40" height="22" patternUnits="userSpaceOnUse">
+                <rect width="40" height="22" fill="#79c3e6"/>
+                <path d="M0 7 q5 -3.5 10 0 t10 0 t10 0 t10 0" fill="none" stroke="#b3e1f5" stroke-width="1.3" opacity="0.85"/>
+                <path d="M0 18 q5 -3 10 0 t10 0 t10 0 t10 0" fill="none" stroke="#63b2da" stroke-width="1.1" opacity="0.8"/>
+              </pattern>
+              <!-- Retail floor: large light porcelain tiles (sales floor / checkout). -->
+              <pattern id="pRetail" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#f3f0e8"/>
+                <rect x="0.6" y="0.6" width="38.8" height="38.8" fill="none" stroke="#e0d9c9" stroke-width="1"/>
+              </pattern>
+              <!-- A shelving gondola seen from above, stocked on both faces (one 12px-deep row of
+                   colored product facings either side of the centre divider). -->
+              <pattern id="pGoods" width="27" height="12" patternUnits="userSpaceOnUse">
+                <rect width="27" height="12" fill="#ffffff"/>
+                <rect x="1.5" y="1.5" width="6" height="3.5" rx="0.8" fill="#e8b86b"/>
+                <rect x="10.5" y="1.5" width="6" height="3.5" rx="0.8" fill="#9fc4d8"/>
+                <rect x="19.5" y="1.5" width="6" height="3.5" rx="0.8" fill="#c9a0c4"/>
+                <line x1="0" y1="6" x2="27" y2="6" stroke="#d9d2c2" stroke-width="0.8"/>
+                <rect x="1.5" y="7" width="6" height="3.5" rx="0.8" fill="#a8c79a"/>
+                <rect x="10.5" y="7" width="6" height="3.5" rx="0.8" fill="#e59a8c"/>
+                <rect x="19.5" y="7" width="6" height="3.5" rx="0.8" fill="#e8b86b"/>
+              </pattern>
+              <!-- Storage: smooth grey concrete with a faint speckle. -->
+              <pattern id="pConcrete" width="30" height="30" patternUnits="userSpaceOnUse">
+                <rect width="30" height="30" fill="#dcdcd7"/>
+                <circle cx="6" cy="8" r="0.9" fill="#c4c4be"/><circle cx="21" cy="5" r="0.7" fill="#c9c9c3"/>
+                <circle cx="14" cy="19" r="1" fill="#c4c4be"/><circle cx="26" cy="24" r="0.8" fill="#cacac4"/>
+                <circle cx="4" cy="26" r="0.7" fill="#c9c9c3"/>
               </pattern>
 
               <filter id="softShadow" x="-60%" y="-60%" width="220%" height="220%">
@@ -2335,6 +2458,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // risk-scoring treatment (floorRiskSev/floorRiskNote below) need to special-case it.
   function isBasementFloor(idx){ return !!state.hasBasement && idx === (state.floorCount||1) - 1; }
   function floorLabelFor(idx){ return isBasementFloor(idx) ? 'מרתף' : (FLOOR_NAMES[idx] || ('קומה ' + idx)); }
+  // Compact tab text for a narrow toolbar (see .ft-short), so a 3–4 floor house's tabs still
+  // fit on one line beside the view controls on a phone.
+  function floorShortLabelFor(idx){ return isBasementFloor(idx) ? 'מרתף' : (idx === 0 ? 'כניסה' : 'ק׳ ' + idx); }
   var svg = document.getElementById('plan');
   var roomsLayer = document.getElementById('roomsLayer');
   var furnitureLayer = document.getElementById('furnitureLayer');
@@ -2934,15 +3060,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { id:'w',  dx:0,   dy:0.5, cur:'cur-ew' }
   ];
 
+  // Order matters — first match wins: e.g. "שירותי אורחים" must hit 'wc' before 'living'
+  // ("אורחים"), "מרפסת שירות" must hit 'balcony' before 'bath' ("שירות"), and "חלל מכירה
+  // מרכזי" must hit 'sales' before anything else. Each kind drives both the floor texture
+  // (FLOOR_PATTERN) and the furniture/illustration drawn in the room (furnitureGroup()).
   var ROOM_KIND_PATTERNS = [
-    { kind:'kitchen',  re:/מטבח/ },
-    { kind:'bath',     re:/רחצה|אמבט|שירות|מקלחת/ },
-    { kind:'clinic',   re:/טיפול/ },
-    { kind:'bedroom',  re:/הורים|ילדים|שינה|חדר עבודה|משרד/ },
-    { kind:'living',   re:/סלון|משפחה|אורחים|קבלה|המתנה/ },
-    { kind:'hall',     re:/מסדרון|מבוא|לובי/ },
-    { kind:'dining',   re:/אוכל/ },
-    { kind:'parking',  re:/חניה|חנייה/ }
+    { kind:'pool',      re:/בריכ/ },
+    { kind:'balcony',   re:/מרפסת/ },
+    { kind:'bath',      re:/רחצה|אמבט|מקלחת/ },  // before 'wc': "חדר אמבטיה ושירותים" is a full bathroom
+    { kind:'wc',        re:/שירותים/ },
+    { kind:'kitchen',   re:/מטבח/ },
+    { kind:'bath',      re:/שירות/ },            // "חדר שירות" (utility/laundry) — wet room, tiled
+    { kind:'safe',      re:/ממ"ד|ממ״ד|ממ׳׳ד|(^|\s)ממד(\s|$)|מרחב מוגן/ },
+    { kind:'clinic',    re:/טיפול/ },
+    { kind:'lab',       re:/ציוד|מעבדה/ },
+    { kind:'checkout',  re:/קופה|דלפק/ },
+    { kind:'sales',     re:/מכירה|תצוגה/ },
+    { kind:'storage',   re:/מחסן/ },
+    { kind:'office',    re:/משרד|חדר עבודה/ },
+    { kind:'reception', re:/קבלה|המתנה/ },
+    { kind:'bedroom',   re:/הורים|ילדים|שינה/ },
+    { kind:'living',    re:/סלון|משפחה|אורחים/ },
+    { kind:'hall',      re:/מסדרון|מבוא|לובי|פרוזדור/ },
+    { kind:'dining',    re:/אוכל/ },
+    { kind:'parking',   re:/חניה|חנייה/ },
+    { kind:'general',   re:/חדר כללי/ }
   ];
   // Label wins over the generic room/yard type — e.g. a yard-typed room labeled "חניה"
   // (parking) reads as pavement rather than the default wood-deck yard texture — and only
@@ -2958,7 +3100,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // and paving slabs for a driveway/parking area.
   var FLOOR_PATTERN = {
     kitchen:'url(#pKitchenTile)', bath:'url(#pTile)', clinic:'url(#pTile)', bedroom:'url(#pWood)', living:'url(#pWood)',
-    hall:'url(#pWood)', dining:'url(#pWood)', yard:'url(#pDeck)', parking:'url(#pPavement)', generic:'url(#pWood)'
+    hall:'url(#pWood)', dining:'url(#pWood)', yard:'url(#pDeck)', parking:'url(#pPavement)', generic:'url(#pWood)',
+    pool:'url(#pPoolDeck)', balcony:'url(#pDeck)', wc:'url(#pTile)', safe:'url(#pWood)', lab:'url(#pTile)',
+    checkout:'url(#pRetail)', sales:'url(#pRetail)', storage:'url(#pConcrete)', office:'url(#pWood)',
+    reception:'url(#pWood)', general:'url(#pWood)'
   };
 
   function renderRooms(){
@@ -3086,18 +3231,32 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      each piece lifted off the floor with a soft drop-shadow. Still purely decorative
      and always drawn BELOW the cable/opening/device layers, so it adds visual warmth
      without ever competing with — or obscuring — a security symbol placed on top of it. */
-  function furnitureGroup(kind, wpx, hpx){
-    var g = el('g', { filter:'url(#softShadow)', 'pointer-events':'none' });
+  // Rough on-plan width of a room's name (right-anchored at the room's top-right corner — see
+  // .room-label), same font-size formula as renderRooms(), so an illustration can stop short
+  // of it instead of drawing underneath the text.
+  function estRoomLabelW(label, wpx){
+    var fs = Math.max(13, Math.min(19, Math.round(wpx/9)));
+    return (label ? label.length : 8) * fs * 0.58;
+  }
+  // Kinds whose illustration is laid out to dodge the name (top-right) and the size caption
+  // (bottom-left) directly, so they still draw something in a room too shallow for the
+  // generic safe band — a 1.5 m balcony, a 1.2 m corridor, a small WC or storeroom.
+  var COMPACT_FURNITURE_KINDS = { yard:1, parking:1, balcony:1, checkout:1, hall:1, wc:1, pool:1, storage:1, safe:1 };
+
+  function furnitureGroup(kind, wpx, hpx, label, opts){
+    opts = opts || {};
+    var g = el('g', { filter: opts.noShadow ? 'none' : 'url(#softShadow)', 'pointer-events':'none' });
     function rect(attrs){ g.appendChild(el('rect', attrs)); }
     function circ(attrs){ g.appendChild(el('circle', attrs)); }
     function ell(attrs){ g.appendChild(el('ellipse', attrs)); }
     function ln(attrs){ g.appendChild(el('line', attrs)); }
     function pth(attrs){ g.appendChild(el('path', attrs)); }
+    var labelW = estRoomLabelW(label, wpx);
 
-    // keep every piece clear of the room name (top-left) and the dimensions
+    // keep every piece clear of the room name (top-right) and the dimensions
     // caption (bottom-left), regardless of room size, by working within this band.
     var safeTop = 34, safeBottom = hpx - 24;
-    if (safeBottom - safeTop < 26 && kind !== 'yard' && kind !== 'parking') return g;
+    if (safeBottom - safeTop < 26 && !COMPACT_FURNITURE_KINDS[kind]) return g;
 
     if (kind === 'bedroom' && wpx > 95 && hpx > 95) {
       var bw = Math.min(wpx*0.46, 100), bh = Math.min(hpx*0.64, safeBottom-safeTop, 138);
@@ -3111,7 +3270,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       circ({ cx:bx-11.5, cy:by-3, r:4, fill:'#e8c874' });                                    // lamp
     } else if (kind === 'living' && wpx > 110 && hpx > 90) {
       var sofaW = Math.min(wpx*0.55, 150), sofaH = 28;
-      var sx = wpx - sofaW - 14, sy = Math.min(safeBottom-sofaH, hpx-sofaH-12);
+      // lifted far enough that the rug under the sofa stays clear of the size caption (bottom-left)
+      var sx = wpx - sofaW - 14, sy = Math.max(safeTop, Math.min(safeBottom - sofaH - 16, hpx - sofaH - 28));
       ell({ cx:sx-8, cy:sy+sofaH/2+2, rx:Math.min(sofaW*0.6,68), ry:Math.min(sofaH*1.25,32), fill:'#efe6d2', stroke:'#dccfa9', 'stroke-width':1 }); // rug
       rect({ x:sx-10, y:sy-3, width:12, height:sofaH+6, rx:4, fill:'#8b8474' });             // arm
       rect({ x:sx+sofaW-2, y:sy-3, width:12, height:sofaH+6, rx:4, fill:'#8b8474' });        // arm
@@ -3165,7 +3325,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         circ({ cx:cx0+s*0.4, cy:cy0-s*0.15, r:s*0.62, fill:'#80a26a' });
         circ({ cx:cx0, cy:cy0+s*0.32, r:s*0.5, fill:'#688857' });
       }
-      bush(wpx-24, 26, 13);
+      bush(wpx-24, 56, 13); // below the yard's name, which sits at the top-right corner
       if (hpx > 150) bush(wpx-24, hpx-26, 13);
       if (hpx > 230) bush(wpx-24, hpx/2, 12);
       // small outdoor seating cluster — round table + four chairs, kept centered
@@ -3198,17 +3358,224 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var lx = wpx/lanes*li;
         ln({ x1:lx, y1:12, x2:lx, y2:hpx-12, stroke:'#ffffff', 'stroke-width':2.2, opacity:0.6 });
       }
+    } else if (kind === 'pool' && wpx > 60 && hpx > 50) {
+      // Pale-aqua stone surround (the room's own floor pattern), a tiled basin of water with
+      // shallow-end steps and a ladder, and — when the area is big enough — a pair of sun
+      // loungers and a parasol on the deck beside it.
+      var bigPool = wpx > 200 && hpx > 110;
+      var pbx = 12, pby = bigPool ? 34 : Math.min(30, Math.max(8, hpx*0.3));
+      var pbw = bigPool ? (wpx*0.6 - 12) : (wpx - 24);
+      var pbh = hpx - pby - (hpx > 70 ? 26 : 8);
+      if (pbh < 20) { pby = 8; pbh = hpx - 16; }
+      rect({ x:pbx-4, y:pby-4, width:pbw+8, height:pbh+8, rx:9, fill:'#f6f3ec', stroke:'#d8d0bf', 'stroke-width':1 }); // coping
+      rect({ x:pbx, y:pby, width:pbw, height:pbh, rx:6, fill:'url(#pWater)', stroke:'#4fa3cf', 'stroke-width':1.2 });  // water
+      if (pbw > 60 && pbh > 44) {
+        [26, 18, 10].forEach(function(s, si){                                                  // shallow-end steps
+          rect({ x:pbx+1, y:pby+pbh-1-s, width:s, height:s, rx:3, fill: si % 2 ? '#b4e0f3' : '#9dd5ee' });
+        });
+      }
+      pth({ d:'M' + (pbx+pbw*0.3) + ',' + (pby+pbh*0.35) + ' q8 -4 16 0', fill:'none', stroke:'#ffffff', 'stroke-width':1.6, 'stroke-linecap':'round', opacity:0.85 });
+      pth({ d:'M' + (pbx+pbw*0.55) + ',' + (pby+pbh*0.6) + ' q7 -3.5 14 0', fill:'none', stroke:'#ffffff', 'stroke-width':1.4, 'stroke-linecap':'round', opacity:0.75 });
+      var ldx = pbx + pbw*0.72;                                                                 // ladder over the coping
+      [0, 9].forEach(function(o){ ln({ x1:ldx+o, y1:pby-6, x2:ldx+o, y2:pby+12, stroke:'#8f9aa1', 'stroke-width':2, 'stroke-linecap':'round' }); });
+      [2, 8].forEach(function(o){ ln({ x1:ldx, y1:pby+o, x2:ldx+9, y2:pby+o, stroke:'#8f9aa1', 'stroke-width':1.5 }); });
+      if (bigPool) {
+        var lgx0 = pbx + pbw + 16, lgAvail = wpx - 14 - lgx0;
+        var lgw = Math.min(24, (lgAvail - 10) / 2), lgh = Math.min(58, hpx - 70);
+        if (lgw >= 14 && lgh >= 34) {
+          var lgy = hpx - 28 - lgh;
+          for (var lgi = 0; lgi < 2; lgi++){
+            var lgx = lgx0 + lgi*(lgw + 10);
+            rect({ x:lgx, y:lgy, width:lgw, height:lgh, rx:4, fill:'#ffffff', stroke:'#c9c2b0', 'stroke-width':1 });     // lounger frame
+            rect({ x:lgx+2, y:lgy+2, width:lgw-4, height:lgh*0.3, rx:3, fill:'#efb979' });                              // raised backrest
+            rect({ x:lgx+2, y:lgy+lgh*0.3+4, width:lgw-4, height:lgh*0.7-6, rx:3, fill:'#f6d6ad' });                    // cushion
+            for (var sk = lgy+lgh*0.3+10; sk < lgy+lgh-6; sk += 8) ln({ x1:lgx+3, y1:sk, x2:lgx+lgw-3, y2:sk, stroke:'#eabf8a', 'stroke-width':1 });
+          }
+          var ucx = lgx0 + (2*lgw + 10)/2, ucy = lgy - 20;
+          if (ucy - 15 > 34) {                                                                  // parasol
+            circ({ cx:ucx, cy:ucy, r:15, fill:'#fbf7ee', stroke:'#d9c9a5', 'stroke-width':1 });
+            for (var ua = 0; ua < 8; ua++){ var uar = ua*Math.PI/4; ln({ x1:ucx, y1:ucy, x2:ucx+Math.cos(uar)*14, y2:ucy+Math.sin(uar)*14, stroke:'#e6d9bb', 'stroke-width':0.9 }); }
+            circ({ cx:ucx, cy:ucy, r:2, fill:'#a08860' });
+          }
+        }
+        circ({ cx:wpx-16, cy:hpx-14, r:7, fill:'#6f9a58' });                                     // potted plant
+        circ({ cx:wpx-19, cy:hpx-16, r:4, fill:'#82ad69' });
+      }
+    } else if (kind === 'balcony' && wpx >= 50 && hpx >= 50) {
+      // bistro table + two chairs, and a planter box at the far end
+      var bHoriz = wpx >= hpx;
+      var btx = bHoriz ? 34 : wpx/2, bty = bHoriz ? Math.min(26, hpx*0.42) : hpx*0.46;
+      var bChairs = bHoriz ? [[-15,0],[15,0]] : [[0,-15],[0,15]];
+      bChairs.forEach(function(o){ rect({ x:btx+o[0]-5, y:bty+o[1]-5, width:10, height:10, rx:2.5, fill:'#f2eee2', stroke:'#bfae88', 'stroke-width':1 }); });
+      circ({ cx:btx, cy:bty, r:8, fill:'#efe9da', stroke:'#bfae88', 'stroke-width':1.1 });
+      function planterBox(x0, y0, w0, h0){
+        rect({ x:x0, y:y0, width:w0, height:h0, rx:2, fill:'#a9826a', stroke:'#8c6a53', 'stroke-width':0.8 });
+        var n0 = Math.max(2, Math.round(Math.max(w0, h0) / 11));
+        for (var pi2 = 0; pi2 < n0; pi2++){
+          var t0 = (pi2 + 0.5) / n0;
+          circ({ cx: w0 >= h0 ? x0 + w0*t0 : x0 + w0/2, cy: w0 >= h0 ? y0 + h0/2 - 1 : y0 + h0*t0, r:5, fill: pi2 % 2 ? '#80a26a' : '#6f8f5c' });
+        }
+      }
+      if (bHoriz && wpx > 120) planterBox(wpx - 48, hpx - 16, 38, 10);
+      else if (!bHoriz && hpx > 120) planterBox(wpx - 16, hpx*0.62, 10, 36);
+    } else if (kind === 'wc' && wpx >= 56 && hpx >= 56) {
+      // toilet against the right wall (tank + bowl), hand basin on the left wall
+      var wMid = Math.max(32, Math.min(hpx/2, hpx - 34));
+      rect({ x:wpx-15, y:wMid-8, width:8, height:16, rx:2, fill:'#ffffff', stroke:'#c9d3d6', 'stroke-width':1.1 });
+      ell({ cx:wpx-25, cy:wMid, rx:9, ry:7, fill:'#ffffff', stroke:'#c9d3d6', 'stroke-width':1.1 });
+      ell({ cx:wpx-26, cy:wMid, rx:5, ry:3.8, fill:'#eef4f5' });
+      rect({ x:6, y:wMid-8, width:12, height:16, rx:3, fill:'#ffffff', stroke:'#c9d3d6', 'stroke-width':1.1 });
+      ell({ cx:13, cy:wMid, rx:3.5, ry:5, fill:'#eef4f5' });
+    } else if (kind === 'checkout' && wpx >= 70 && hpx >= 50) {
+      // L-shaped counter in the top-left corner (clear of the name at top-right and the size
+      // caption at bottom-left), with the register and card terminal on it and the cashier's
+      // stool inside the L; a stack of shopping baskets in the free bottom-right corner.
+      var cT = 14;
+      var cTop = Math.max(cT + 6, Math.min(wpx - labelW - 26, wpx*0.5));
+      var cSide = Math.max(cT + 6, hpx - 24 - 8);
+      rect({ x:8, y:8, width:cT, height:cSide, rx:2, fill:'#8a6f4c' });
+      rect({ x:8, y:8, width:cTop, height:cT, rx:2, fill:'#8a6f4c' });
+      rect({ x:10, y:10, width:cT-4, height:cSide-4, rx:1.5, fill:'#d9c3a0' });
+      rect({ x:10, y:10, width:cTop-4, height:cT-4, rx:1.5, fill:'#d9c3a0' });
+      rect({ x:10, y:8 + cSide*0.45, width:cT-4, height:10, rx:1.5, fill:'#3d3b36' });          // register
+      rect({ x:11, y:8 + cSide*0.45 + 13, width:cT-6, height:6, rx:1, fill:'#5c6770' });        // card terminal
+      circ({ cx:8 + cT + 12, cy:8 + cT + 14, r:6, fill:'#cfc6b3', stroke:'#a89d84', 'stroke-width':1 }); // stool
+      if (wpx > 96) {
+        rect({ x:wpx-24, y:hpx-24, width:16, height:13, rx:2, fill:'#d8574a', stroke:'#b8473b', 'stroke-width':1 });
+        rect({ x:wpx-22, y:hpx-27, width:16, height:13, rx:2, fill:'#e26a5d', stroke:'#b8473b', 'stroke-width':1 });
+      }
+    } else if (kind === 'sales' && wpx > 120 && hpx > 100) {
+      // parallel shelving gondolas stocked on both faces, plus perimeter wall shelving
+      var sBand = safeBottom - safeTop;
+      var sRows = Math.max(1, Math.min(4, Math.floor((sBand - 6) / 40)));
+      var sx0 = Math.max(26, wpx*0.14), sx1 = wpx - Math.max(26, wpx*0.14);
+      var sGap = 28, sGh = 12;
+      var sStart = safeTop + (sBand - sRows*sGh - (sRows-1)*sGap) / 2;
+      for (var sri = 0; sri < sRows; sri++){
+        var sgy = Math.round((sStart + sri*(sGh + sGap)) / 12) * 12; // on the pGoods tile grid
+        rect({ x:sx0, y:sgy, width:sx1-sx0, height:sGh, rx:2, fill:'url(#pGoods)', stroke:'#c4bba7', 'stroke-width':1 });
+      }
+      if (wpx > 200) rect({ x:6, y:safeTop, width:10, height:sBand, rx:1.5, fill:'url(#pGoods)', stroke:'#c4bba7', 'stroke-width':1 });
+    } else if (kind === 'storage' && wpx >= 60 && hpx >= 60) {
+      // tall steel racking along the left wall (and the top wall when there's room left of the
+      // name), with a few stored boxes, plus a stack of cartons in the free corner
+      var rT = 12, rTop = 8, rBot = hpx - 24;
+      rect({ x:6, y:rTop, width:rT, height:rBot-rTop, rx:1.5, fill:'#b9bec3', stroke:'#8f959b', 'stroke-width':1 });
+      for (var rsy = rTop+10; rsy < rBot-4; rsy += 12) ln({ x1:7, y1:rsy, x2:5+rT, y2:rsy, stroke:'#8f959b', 'stroke-width':0.8 });
+      [[0.12,'#c9a26b'],[0.42,'#b8d0de'],[0.7,'#c9a26b']].forEach(function(b){ rect({ x:8, y:rTop+(rBot-rTop)*b[0], width:rT-4, height:7, rx:1, fill:b[1] }); });
+      var topRackEnd = wpx - labelW - 22;
+      if (topRackEnd - 24 > 30) {
+        rect({ x:24, y:6, width:topRackEnd-24, height:rT, rx:1.5, fill:'#b9bec3', stroke:'#8f959b', 'stroke-width':1 });
+        for (var rsx = 38; rsx < topRackEnd-4; rsx += 14) ln({ x1:rsx, y1:7, x2:rsx, y2:5+rT, stroke:'#8f959b', 'stroke-width':0.8 });
+      }
+      var cbx = wpx - 30, cby = hpx - 26 - 22;
+      rect({ x:cbx, y:cby, width:22, height:22, rx:1.5, fill:'#c9a26b', stroke:'#a8844f', 'stroke-width':1 });
+      ln({ x1:cbx+11, y1:cby, x2:cbx+11, y2:cby+22, stroke:'#e6cf9f', 'stroke-width':1.6 });
+      if (wpx > 110) {
+        rect({ x:cbx-24, y:cby+4, width:18, height:18, rx:1.5, fill:'#d4b07a', stroke:'#a8844f', 'stroke-width':1 });
+        ln({ x1:cbx-15, y1:cby+4, x2:cbx-15, y2:cby+22, stroke:'#ecd8ab', 'stroke-width':1.4 });
+      }
+    } else if (kind === 'office' && wpx > 80 && hpx > 80) {
+      // desk with monitor + keyboard under the name, desk chair, bookshelf on the left wall
+      var dw = Math.min(wpx*0.5, 74), dh = 26, dx0 = wpx - dw - 12, dy0 = safeTop;
+      rect({ x:dx0, y:dy0, width:dw, height:dh, rx:3, fill:'#a9835a', stroke:'#8a6b45', 'stroke-width':1 });
+      rect({ x:dx0+dw*0.3, y:dy0+3, width:dw*0.4, height:4, rx:1, fill:'#2f3236' });
+      rect({ x:dx0+dw*0.33, y:dy0+11, width:dw*0.3, height:6, rx:1, fill:'#ece8df' });
+      var och = Math.min(dy0 + dh + 14, safeBottom - 8);
+      circ({ cx:dx0+dw/2, cy:och, r:8.5, fill:'#5c6770', stroke:'#454e55', 'stroke-width':1 });
+      rect({ x:dx0+dw/2-8, y:och+5, width:16, height:4, rx:2, fill:'#454e55' });
+      if (wpx > 100) {
+        rect({ x:8, y:safeTop, width:12, height:safeBottom-safeTop, rx:1.5, fill:'#8a6f4c' });
+        var bookC = ['#c86f5a','#5b88a8','#e0b45c','#7a9c6a'];
+        for (var obi = 0, oby = safeTop+3; oby < safeBottom-8; oby += 8, obi++) rect({ x:10, y:oby, width:8, height:6, rx:1, fill:bookC[obi % 4] });
+      }
+      if (hpx > 110 && wpx > 110) { circ({ cx:wpx-20, cy:safeBottom-6, r:7, fill:'#6f9a58' }); circ({ cx:wpx-22, cy:safeBottom-8, r:4, fill:'#82ad69' }); }
+    } else if (kind === 'reception' && wpx > 110 && hpx > 90) {
+      // reception counter + staff chair under the name, a row of waiting chairs along the
+      // left wall with a low table beside them
+      var rcw = Math.min(wpx*0.42, 84), rcd = 16, rcx = wpx - rcw - 12, rcy = safeTop + 2;
+      rect({ x:rcx, y:rcy, width:rcw, height:rcd, rx:3, fill:'#8a6f4c' });
+      rect({ x:rcx, y:rcy, width:rcd, height:Math.min(40, safeBottom-rcy-4), rx:3, fill:'#8a6f4c' });
+      rect({ x:rcx+rcd+6, y:rcy+4, width:18, height:4, rx:1, fill:'#2f3236' });
+      circ({ cx:rcx+rcw-16, cy:Math.min(rcy+rcd+12, safeBottom-6), r:7, fill:'#5c6770', stroke:'#454e55', 'stroke-width':1 });
+      var nWait = Math.max(2, Math.min(5, Math.floor((safeBottom - safeTop) / 22)));
+      for (var wci = 0; wci < nWait; wci++){
+        var wcy = safeTop + 4 + wci*20;
+        rect({ x:10, y:wcy, width:16, height:15, rx:3, fill:'#9fb6c4', stroke:'#7f97a6', 'stroke-width':1 });
+        rect({ x:10, y:wcy, width:4, height:15, rx:2, fill:'#7f97a6' });
+      }
+      rect({ x:34, y:safeTop + 4 + nWait*10 - 10, width:18, height:20, rx:3, fill:'#efe6d2', stroke:'#cdbf9c', 'stroke-width':1 });
+    } else if (kind === 'lab' && wpx > 80 && hpx > 80) {
+      // work bench with a sink and instruments along the right wall, equipment cabinet on the left
+      var lbd = 20, lbx = wpx - lbd - 8, lbh = safeBottom - safeTop;
+      rect({ x:lbx, y:safeTop, width:lbd, height:lbh, rx:2, fill:'#ffffff', stroke:'#c3d3d6', 'stroke-width':1.1 });
+      rect({ x:lbx+2, y:safeTop+2, width:lbd-4, height:lbh-4, rx:1, fill:'#dfe8ea' });
+      rect({ x:lbx+4, y:safeTop+6, width:lbd-8, height:12, rx:2, fill:'#c7cdd0' });
+      circ({ cx:lbx+lbd/2, cy:safeTop+lbh*0.6, r:4.5, fill:'#5c6770' });
+      rect({ x:lbx+5, y:safeTop+lbh*0.78, width:10, height:6, rx:1, fill:'#9fc4d8' });
+      var cabH = Math.min(34, lbh);
+      rect({ x:8, y:safeTop, width:16, height:cabH, rx:2, fill:'#ffffff', stroke:'#c3ccc8', 'stroke-width':1 });
+      for (var cdy = safeTop + cabH/3; cdy < safeTop + cabH - 2; cdy += cabH/3) ln({ x1:9, y1:cdy, x2:23, y2:cdy, stroke:'#c3ccc8', 'stroke-width':0.9 });
+      if (wpx > 110) rect({ x:wpx/2-14, y:safeBottom-16, width:16, height:12, rx:2, fill:'#dfe6e2', stroke:'#b9c4c0', 'stroke-width':1 });
+    } else if (kind === 'safe' && wpx > 50 && hpx > 50) {
+      // a ממ"ד's walls are reinforced concrete, much thicker than a normal partition — shown
+      // as a heavy grey inner band — plus a fold-out bed and a shelf of emergency supplies
+      rect({ x:3, y:3, width:wpx-6, height:hpx-6, rx:1.5, fill:'none', stroke:'#7c8084', 'stroke-width':5, opacity:0.7 });
+      if (safeBottom - safeTop >= 26) {
+        var sbw = Math.min(wpx*0.32, 34), sbh = Math.min(safeBottom - safeTop, 70);
+        rect({ x:10, y:safeTop, width:sbw, height:sbh, rx:4, fill:'#f5f1e7', stroke:'#ddd5c1', 'stroke-width':1 });
+        rect({ x:12, y:safeTop+sbh*0.3, width:sbw-4, height:sbh*0.66, rx:3, fill:'#9fb0bd' });
+        rect({ x:13, y:safeTop+3, width:sbw-6, height:sbh*0.2, rx:3, fill:'#ffffff' });
+        var shx = wpx - 22, shh = Math.min(40, safeBottom - safeTop);
+        rect({ x:shx, y:safeTop, width:12, height:shh, rx:1.5, fill:'#8a6f4c' });
+        for (var wb = 0; wb < 3 && 6 + wb*11 < shh; wb++) circ({ cx:shx+6, cy:safeTop+6+wb*11, r:3.5, fill:'#8ecbe8', stroke:'#5fa9cf', 'stroke-width':0.8 });
+      }
+    } else if (kind === 'hall') {
+      // a long runner rug down the corridor, kept between the size caption and the name
+      if (wpx >= hpx) {
+        var hx0 = 100, hx1 = wpx - 10 - labelW - 14, hrh = Math.min(18, hpx*0.4);
+        if (hx1 - hx0 > 40 && hpx >= 30) {
+          var hry = hpx/2 - hrh/2;
+          rect({ x:hx0, y:hry, width:hx1-hx0, height:hrh, rx:2, fill:'#b79f7c', stroke:'#9b8360', 'stroke-width':1 });
+          rect({ x:hx0+3, y:hry+3, width:hx1-hx0-6, height:hrh-6, rx:1.5, fill:'none', stroke:'#d8c6a6', 'stroke-width':0.9 });
+        }
+      } else if (hpx > 120 && wpx >= 34) {
+        var hrw = Math.min(18, wpx*0.4), hrx = wpx/2 - hrw/2;
+        rect({ x:hrx, y:36, width:hrw, height:hpx-62, rx:2, fill:'#b79f7c', stroke:'#9b8360', 'stroke-width':1 });
+        rect({ x:hrx+3, y:39, width:hrw-6, height:hpx-68, rx:1.5, fill:'none', stroke:'#d8c6a6', 'stroke-width':0.9 });
+      }
+    } else if (kind === 'general' && wpx > 90 && hpx > 90) {
+      // a simple square table with four chairs, centered in the free band
+      var gcx = wpx/2, gcy = (safeTop + safeBottom)/2, gts = Math.min(26, (safeBottom - safeTop)/2 - 6);
+      rect({ x:gcx-gts/2, y:gcy-gts/2, width:gts, height:gts, rx:3, fill:'#a9835a', stroke:'#8a6b45', 'stroke-width':1 });
+      [[0,-1],[0,1],[-1,0],[1,0]].forEach(function(s){
+        rect({ x:gcx + s[0]*(gts/2+8) - 5, y:gcy + s[1]*(gts/2+8) - 4, width:10, height:8, rx:2, fill:'#cfc6b3', stroke:'#a89d84', 'stroke-width':1 });
+      });
     }
     return g;
   }
 
+  // True when another room sits inside this (outdoor) room — e.g. a pool or a patio placed
+  // within the garden. The garden's own decorations (trees, seating) are skipped then, since
+  // the furniture layer draws above every room and would otherwise paint over the nested one.
+  function roomHostsAnother(host, rooms){
+    var hx = host.x, hy = host.y, hw = m2p(host.w), hh = m2p(host.h);
+    return rooms.some(function(o){
+      if (o === host) return false;
+      var ow = m2p(o.w), oh = m2p(o.h);
+      var ix = Math.min(hx+hw, o.x+ow) - Math.max(hx, o.x), iy = Math.min(hy+hh, o.y+oh) - Math.max(hy, o.y);
+      return ix > 0 && iy > 0 && ix*iy > 0.5 * ow*oh;
+    });
+  }
   function renderFurniture(){
     furnitureLayer.innerHTML = '';
-    visibleRooms().forEach(function(r){
+    var vis = visibleRooms();
+    vis.forEach(function(r){
       var kind = roomKind(r);
       if (kind === 'generic') return;
+      if (kind === 'yard' && roomHostsAnother(r, vis)) return;
       var wpx = m2p(r.w), hpx = m2p(r.h);
-      var g = furnitureGroup(kind, wpx, hpx);
+      var g = furnitureGroup(kind, wpx, hpx, r.label);
       g.setAttribute('transform', 'translate(' + r.x + ',' + r.y + ')');
       furnitureLayer.appendChild(g);
     });
@@ -3693,7 +4060,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var r = interior.find(function(r){ return picks.indexOf(r) === -1 && pred(r); });
       if (r) picks.push(r);
     }
-    addIfFound(function(r){ return roomKind(r) === 'living'; });
+    // A clinic's waiting room ('reception') is its "living room" for this purpose — it used to
+    // be classified as 'living' outright before reception got its own illustration kind, and
+    // the detector pick must not change just because the drawing did.
+    addIfFound(function(r){ var k = roomKind(r); return k === 'living' || k === 'reception'; });
     addIfFound(function(r){ return /הורים/.test(r.label || ''); });
     addIfFound(function(r){ return roomKind(r) === 'hall'; });
     if (!picks.length && interior.length){
@@ -4439,7 +4809,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var off = (state.activeFloor||0) * FLOOR_Y_STRIDE;
     svg.setAttribute('viewBox', '0 ' + off + ' 1000 680');
     var lbl = document.getElementById('floorLabel');
-    if (lbl) lbl.textContent = (usesMultiFloor() ? floorLabelFor(state.activeFloor) : 'קומת קרקע') + ' · כל משבצת ברשת ≈ 0.5 מ׳ בשטח';
+    // Just the scale — the active floor is already shown by the floor tabs right beside it, and
+    // the full explanation lives in the pill's tooltip.
+    if (lbl) lbl.textContent = 'משבצת = 0.5 מ׳';
     buildFloorTabs();
   }
   // Small tab strip letting the agent switch which floor is being edited/viewed — only shown
@@ -4451,7 +4823,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     wrap.hidden = false;
     var html = '';
     for (var i = 0; i < state.floorCount; i++){
-      html += '<button type="button" class="' + (i === state.activeFloor ? 'active' : '') + '" data-floor="' + i + '" role="tab" aria-selected="' + (i === state.activeFloor) + '">' + floorLabelFor(i) + '</button>';
+      html += '<button type="button" class="' + (i === state.activeFloor ? 'active' : '') + '" data-floor="' + i + '" role="tab" aria-selected="' + (i === state.activeFloor) + '" aria-label="' + floorLabelFor(i) + '">' +
+        '<span class="ft-long">' + floorLabelFor(i) + '</span><span class="ft-short">' + floorShortLabelFor(i) + '</span></button>';
     }
     wrap.innerHTML = html;
     Array.prototype.forEach.call(wrap.querySelectorAll('button'), function(btn){
@@ -5595,30 +5968,391 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   });
   document.getElementById('btnRecsAcceptAll').addEventListener('click', acceptAllRecommendations);
 
-  /* ============================= palette: room presets ============================= */
-  // Deliberately select-only, no revealProps(): the cascading offset above exists precisely
-  // so an agent can click the same preset several times in a row to drop in a few rooms of
-  // that type at once — forcing the properties panel open after each click would interrupt
-  // exactly that rapid-add flow. Double-click/double-tap the placed room on the canvas to
-  // rename it, same as any other room.
-  var roomCascade = 0;
+  /* ============================= palette: room presets — architectural placement =============================
+     A preset room is never just dropped at a fixed corner (where it used to land on top of
+     whatever room was already there). Instead it's placed where an architect would put it,
+     following the standard zoning of a home / shop / clinic plan:
+
+       • the public zone (living – dining – kitchen) is one connected group; the private zone
+         (bedrooms, bathrooms, ממ"ד) hangs off the corridor; wet rooms (bath, WC, kitchen)
+         prefer to share a wall so they share plumbing;
+       • outdoor spaces open off the room they serve and sit against an EXTERIOR wall: a
+         balcony/patio off the living room (ideally right in front of its big glazed opening),
+         a service balcony off the kitchen, a pool out in the garden a couple of meters from
+         the living room, parking by the street gate;
+       • in a shop the till sits by the sales floor and the stockroom behind it; in a clinic
+         treatment rooms and the office line the corridor next to reception;
+       • a new room never covers an existing one (an outdoor area may only be built INTO a
+         garden — a pool or patio in the yard — never onto a room), never blocks the front door
+         or an exterior door, avoids walling over a room's window, and stays inside the lot
+         (the perimeter fence, when there is one) and on the floor being edited.
+
+     Each room kind lists the kinds it should open off, strongest first (ROOM_ADJACENCY).
+     Candidate positions are generated flush against every side of every such room (start-
+     aligned, centred, end-aligned, both orientations), filtered by the hard rules above and
+     scored on: how strong the relationship is, how much wall it actually shares, secondary
+     relationships (e.g. a bathroom touching both bedroom and corridor), openings on the new
+     shared wall, and compactness. If nothing fits next to a related room, it falls back to
+     the nearest free spot that still touches the building, then to any free spot. */
+  var OUTDOOR_ROOM_KINDS = { balcony:1, pool:1, yard:1, parking:1 };
+  var WET_ROOM_KINDS = { bath:1, wc:1, kitchen:1 };
+  var ROOM_ADJACENCY = {
+    balcony:  ['living','dining','bedroom','kitchen'],
+    pool:     ['living','dining','yard'],
+    yard:     ['living','dining','kitchen'],
+    parking:  ['hall','living','kitchen','yard'],
+    kitchen:  ['dining','living','hall'],
+    dining:   ['kitchen','living'],
+    living:   ['dining','kitchen','hall'],
+    bedroom:  ['hall','bedroom','bath'],
+    bath:     ['bedroom','hall','wc'],
+    wc:       ['hall','living','dining','reception','sales'],
+    safe:     ['hall','bedroom','living'],
+    office:   ['hall','living','reception','bedroom'],
+    hall:     ['living','bedroom','reception','clinic'],
+    storage:  ['kitchen','sales','hall','checkout','parking'],
+    general:  ['hall','living','bedroom'],
+    sales:    ['checkout','reception','hall','storage'],
+    checkout: ['sales','hall'],
+    clinic:   ['hall','reception','clinic'],
+    reception:['hall','clinic','office'],
+    lab:      ['clinic','hall','office'],
+    generic:  ['hall','living']
+  };
+  // How each kind reads after "בצמוד ל…" in the placement note (ל + ה folds into ל in Hebrew,
+  // so these are written without the definite ה).
+  var ROOM_KIND_HE = {
+    living:'סלון', dining:'פינת האוכל', kitchen:'מטבח', hall:'מסדרון', bedroom:'חדר השינה', bath:'חדר הרחצה',
+    wc:'שירותים', reception:'קבלה', clinic:'חדר הטיפולים', office:'משרד', sales:'חלל המכירה', checkout:'קופה',
+    storage:'מחסן', yard:'חצר', parking:'חניה', balcony:'מרפסת', pool:'בריכה', safe:'ממ"ד', lab:'חדר הציוד'
+  };
+  // Like roomKind(), but an upper floor's "חלל מרכזי" (family lounge) and a basement's main
+  // space play the living room's part when deciding what a new room should open off.
+  function placementKind(r){
+    var k = roomKind(r);
+    if (k === 'generic' && /מרכזי|מרתף/.test(r.label || '')) return 'living';
+    return k;
+  }
+  function roomPx(r){ return { x:r.x, y:r.y, w:m2p(r.w), h:m2p(r.h) }; }
+  function pxOverlap(a, b){ return a.x < b.x + b.w - 1 && b.x < a.x + a.w - 1 && a.y < b.y + b.h - 1 && b.y < a.y + a.h - 1; }
+  function pxContains(host, a){ return a.x >= host.x - 0.5 && a.y >= host.y - 0.5 && a.x + a.w <= host.x + host.w + 0.5 && a.y + a.h <= host.y + host.h + 0.5; }
+  // The wall two touching rectangles share, as a segment (null if they don't touch along an edge).
+  function sharedWall(a, b){
+    var t = 2.5, lo, hi;
+    if (Math.abs(a.x + a.w - b.x) <= t || Math.abs(b.x + b.w - a.x) <= t) {
+      lo = Math.max(a.y, b.y); hi = Math.min(a.y + a.h, b.y + b.h);
+      if (hi - lo > 1) { var xv = Math.abs(a.x + a.w - b.x) <= t ? b.x : a.x; return { x1:xv, y1:lo, x2:xv, y2:hi, len:hi-lo, vertical:true }; }
+    }
+    if (Math.abs(a.y + a.h - b.y) <= t || Math.abs(b.y + b.h - a.y) <= t) {
+      lo = Math.max(a.x, b.x); hi = Math.min(a.x + a.w, b.x + b.w);
+      if (hi - lo > 1) { var yv = Math.abs(a.y + a.h - b.y) <= t ? b.y : a.y; return { x1:lo, y1:yv, x2:hi, y2:yv, len:hi-lo, vertical:false }; }
+    }
+    return null;
+  }
+  function openingsOnWall(seg){
+    if (!seg) return [];
+    return visibleOpenings().filter(function(o){
+      return seg.vertical
+        ? Math.abs(o.x - seg.x1) <= 7 && o.y >= seg.y1 - 3 && o.y <= seg.y2 + 3
+        : Math.abs(o.y - seg.y1) <= 7 && o.x >= seg.x1 - 3 && o.x <= seg.x2 + 3;
+    });
+  }
+  function rectGap(a, b){ // edge-to-edge distance between two rectangles (0 when touching/overlapping)
+    var dx = Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.w, b.x + b.w));
+    var dy = Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.h, b.y + b.h));
+    return Math.hypot(dx, dy);
+  }
+  function placementBounds(){
+    var off = (state.activeFloor||0) * FLOOR_Y_STRIDE;
+    var b = { x0:8, y0:off + 8, x1:992, y1:off + 672 };
+    var fs = visibleFences();
+    if (fs.length >= 3) { // a real perimeter — keep every addition inside the lot
+      var fx0 = Infinity, fy0 = Infinity, fx1 = -Infinity, fy1 = -Infinity;
+      fs.forEach(function(f){ fx0 = Math.min(fx0, f.x1, f.x2); fx1 = Math.max(fx1, f.x1, f.x2); fy0 = Math.min(fy0, f.y1, f.y2); fy1 = Math.max(fy1, f.y1, f.y2); });
+      if (fx1 - fx0 > 80 && fy1 - fy0 > 80) b = { x0:Math.max(b.x0, fx0 + 4), y0:Math.max(b.y0, fy0 + 4), x1:Math.min(b.x1, fx1 - 4), y1:Math.min(b.y1, fy1 - 4) };
+    }
+    return b;
+  }
+
+  // Finds where a new preset room should go. Returns { x, y, w, h (meters, possibly rotated),
+  // anchor (room or null), host (garden it was built into, or null), ok }.
+  function findArchitecturalPlacement(label, type, wM, hM){
+    var probe = { label:label, type:type };
+    var kind = roomKind(probe);
+    var outdoor = !!OUTDOOR_ROOM_KINDS[kind] || type === 'yard';
+    var rooms = visibleRooms().map(function(r){ return { r:r, px:roomPx(r), k:placementKind(r) }; });
+    var B = placementBounds();
+    var off = (state.activeFloor||0) * FLOOR_Y_STRIDE;
+    var W = m2p(wM), H = m2p(hM);
+    var sizes = [{ w:W, h:H, rot:false }];
+    if (Math.abs(W - H) > 2) sizes.push({ w:H, h:W, rot:true });
+
+    if (!rooms.length) return { x:40, y:off + 40, w:wM, h:hM, anchor:null, host:null, ok:true };
+
+    var indoor = rooms.filter(function(o){ return o.r.type !== 'yard'; });
+    var bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    (indoor.length ? indoor : rooms).forEach(function(o){ bx0 = Math.min(bx0, o.px.x); by0 = Math.min(by0, o.px.y); bx1 = Math.max(bx1, o.px.x + o.px.w); by1 = Math.max(by1, o.px.y + o.px.h); });
+    var bcx = (bx0 + bx1)/2, bcy = (by0 + by1)/2;
+    var gates = visibleFences().filter(function(f){ return f.type === 'gate'; });
+    // The street facade = the wall the main entrance is on. A till / reception desk belongs on
+    // it (customers meet it first); a stockroom, back office or equipment room belongs away
+    // from it, at the back of house.
+    var mainDoors = visibleOpenings().filter(function(o){ return o.type === 'door_main'; }).map(function(o){
+      return { x:o.x, y:o.y, orient:computeWallOrientation(o).orient };
+    });
+    function facadeDist(c){
+      if (!mainDoors.length) return null;
+      var cx = c.x + c.w/2, cy = c.y + c.h/2;
+      return Math.min.apply(null, mainDoors.map(function(d){
+        var perp = d.orient === 'h' ? Math.abs(cy - d.y) : Math.abs(cx - d.x);
+        return perp + 0.25 * Math.hypot(cx - d.x, cy - d.y);
+      }));
+    }
+    var frontOfHouse = (kind === 'checkout' || kind === 'reception');
+    var backOfHouse = (kind === 'storage' || kind === 'lab' || (kind === 'office' && /אחורי/.test(label || '')));
+
+    // Hard rules. An outdoor addition may be built into exactly one garden (it must then lie
+    // fully inside it); an indoor one may extend the house into a garden too, but is scored
+    // down for it so free ground is always preferred. Nothing may overlap a real room.
+    function validate(c){
+      if (c.x < B.x0 - 0.5 || c.y < B.y0 - 0.5 || c.x + c.w > B.x1 + 0.5 || c.y + c.h > B.y1 + 0.5) return null;
+      var host = null;
+      for (var i = 0; i < rooms.length; i++){
+        var o = rooms[i];
+        if (!pxOverlap(c, o.px)) continue;
+        var isGarden = o.r.type === 'yard' && (o.k === 'yard');
+        if (isGarden && kind !== 'yard' && !host && pxContains(o.px, c)) { host = o; continue; }
+        return null;
+      }
+      return { host:host };
+    }
+
+    function score(c, anchor, rank, host){
+      var cost = rank * 400;
+      var walls = [];
+      rooms.forEach(function(o){
+        if (o === host) return;
+        var seg = sharedWall(c, o.px);
+        if (seg) walls.push({ o:o, seg:seg });
+      });
+      var pref = ROOM_ADJACENCY[kind] || [];
+      walls.forEach(function(wl){
+        var o = wl.o, len = wl.seg.len, isAnchor = (o === anchor);
+        var ops = openingsOnWall(wl.seg);
+        if (isAnchor) cost -= len * 1.2;
+        if (outdoor) {
+          // an outdoor space touches the building only where it opens off its anchor
+          if (!isAnchor && o.r.type !== 'yard') cost += 40 + len * 0.4;
+          if (isAnchor) ops.forEach(function(op){
+            if (op.type === 'window_lg' || op.type === 'door_ext') cost -= 90; // right in front of the glazed opening
+            if (op.type === 'door_main' && kind !== 'parking') cost += 80;
+          });
+          if (o.r.type === 'yard' && o.k === 'parking' && kind !== 'parking') cost += 60;
+        } else {
+          if (!isAnchor && pref.indexOf(o.k) > -1) cost -= len * 0.5;
+          if (WET_ROOM_KINDS[kind] && WET_ROOM_KINDS[o.k]) cost -= len * 0.4;
+          if (o.r.type !== 'yard') ops.forEach(function(op){
+            // walling over what used to be an exterior wall: never the front door, avoid
+            // exterior doors and the room's windows
+            if (op.type === 'door_main') cost += 900;
+            else if (op.type === 'door_ext') cost += 260;
+            else if (op.type === 'window_lg') cost += 150;
+            else if (op.type === 'window') cost += 80;
+          });
+          if (o.r.type === 'yard') cost += 30; // backing onto a garden edge is fine, just not preferred
+        }
+      });
+      if (!outdoor) cost += Math.hypot(c.x + c.w/2 - bcx, c.y + c.h/2 - bcy) * 0.05;
+      if (host) {
+        cost += outdoor ? 20 : 140;
+        // keep the garden's own name (top-right) and size caption (bottom-left) readable
+        var hp = host.px, hlw = estRoomLabelW(host.r.label, hp.w);
+        if (pxOverlap(c, { x:hp.x + hp.w - 14 - hlw, y:hp.y, w:hlw + 14, h:32 })) cost += 260;
+        if (pxOverlap(c, { x:hp.x, y:hp.y + hp.h - 24, w:96, h:24 })) cost += 140;
+      }
+      if (c.rot) cost += 12;
+      // prefer the orientation in which the room's own name fits inside it
+      if (estRoomLabelW(label, c.w) > c.w - 18) cost += 70;
+      if (anchor) {
+        var a = anchor.px;
+        if (Math.abs(c.x - a.x) < 2 || Math.abs(c.x + c.w - (a.x + a.w)) < 2 || Math.abs(c.y - a.y) < 2 || Math.abs(c.y + c.h - (a.y + a.h)) < 2) cost -= 12;
+      }
+      if (kind === 'parking' && gates.length) {
+        var gd = Math.min.apply(null, gates.map(function(gf){ return distToSegment(c.x + c.w/2, c.y + c.h/2, gf.x1, gf.y1, gf.x2, gf.y2); }));
+        cost += gd * 0.6; // a driveway belongs by the vehicle gate
+      }
+      if (frontOfHouse || backOfHouse) {
+        var fd = facadeDist(c);
+        if (fd !== null) cost += frontOfHouse ? fd * 0.8 : Math.max(0, 340 - fd) * 1.0;
+      }
+      return cost;
+    }
+    // A room built against a wall that carries the front door or an exterior door would wall
+    // that door in — never allowed for an indoor room (a patio or driveway in front of a door
+    // is fine; that's what the door is for).
+    function blocksExteriorDoor(c){
+      if (outdoor) return false;
+      return rooms.some(function(o){
+        if (o.r.type === 'yard') return false;
+        return openingsOnWall(sharedWall(c, o.px)).some(function(op){ return op.type === 'door_main' || op.type === 'door_ext'; });
+      });
+    }
+
+    function flushCandidates(a){
+      var out = [];
+      sizes.forEach(function(s){
+        var xs = [a.x, a.x + (a.w - s.w)/2, a.x + a.w - s.w], ys = [a.y, a.y + (a.h - s.h)/2, a.y + a.h - s.h];
+        xs.forEach(function(x){ out.push({ x:x, y:a.y - s.h, w:s.w, h:s.h, rot:s.rot }); out.push({ x:x, y:a.y + a.h, w:s.w, h:s.h, rot:s.rot }); });
+        ys.forEach(function(y){ out.push({ x:a.x - s.w, y:y, w:s.w, h:s.h, rot:s.rot }); out.push({ x:a.x + a.w, y:y, w:s.w, h:s.h, rot:s.rot }); });
+      });
+      return out;
+    }
+
+    var best = null;
+    function consider(c, anchor, rank, extraCost){
+      var v = validate(c);
+      if (!v || blocksExteriorDoor(c)) return;
+      if (outdoor && kind !== 'pool' && !v.host && anchor && anchor.r.type !== 'yard') {
+        // must face outward: don't wedge a balcony/parking into a gap between two rooms
+        var touchingRooms = rooms.filter(function(o){ return o !== anchor && o.r.type !== 'yard' && sharedWall(c, o.px); }).length;
+        if (touchingRooms > 1) return;
+      }
+      var s = score(c, anchor, rank, v.host) + (extraCost || 0);
+      if (!best || s < best.cost) best = { c:c, cost:s, anchor:anchor, host:v.host ? v.host.r : null };
+    }
+
+    // 1) A pool belongs out in the garden, a couple of meters from the living room.
+    if (kind === 'pool') {
+      var livingRooms = rooms.filter(function(o){ return o.k === 'living' || o.k === 'dining'; });
+      rooms.filter(function(o){ return o.r.type === 'yard' && o.k === 'yard'; }).forEach(function(yd){
+        var y = yd.px, m = 12;
+        sizes.forEach(function(s){
+          for (var x = y.x + m; x <= y.x + y.w - s.w - m; x += 10){
+            for (var yy = y.y + m; yy <= y.y + y.h - s.h - m; yy += 10){
+              var c = { x:x, y:yy, w:s.w, h:s.h, rot:s.rot };
+              var houseGap = indoor.length ? Math.min.apply(null, indoor.map(function(o){ return rectGap(c, o.px); })) : 80;
+              var livGap = livingRooms.length ? Math.min.apply(null, livingRooms.map(function(o){ return rectGap(c, o.px); })) : houseGap;
+              var extra = -200 + Math.abs(houseGap - 70) * 1.2 + (houseGap < 24 ? 300 : 0) + livGap * 0.8;
+              consider(c, null, 0, extra);
+            }
+          }
+        });
+      });
+    }
+
+    // 2) Flush against the rooms it relates to, strongest relationship first.
+    var prefList = ROOM_ADJACENCY[kind] || ROOM_ADJACENCY.generic;
+    prefList.forEach(function(pk, rank){
+      rooms.filter(function(o){ return o.k === pk; }).forEach(function(a){
+        flushCandidates(a.px).forEach(function(c){ consider(c, a, rank, kind === 'pool' ? 120 : 0); });
+      });
+    });
+
+    // 3) Anywhere against the building.
+    if (!best) {
+      var generalRank = prefList.length + 1;
+      (outdoor ? rooms : indoor.length ? indoor : rooms).forEach(function(a){
+        flushCandidates(a.px).forEach(function(c){ consider(c, a, generalRank, 0); });
+      });
+    }
+
+    // 4) Any free spot on this floor, as close to the building as possible.
+    if (!best) {
+      sizes.forEach(function(s){
+        for (var x = B.x0; x <= B.x1 - s.w; x += 20){
+          for (var y = B.y0; y <= B.y1 - s.h; y += 20){
+            var c = { x:x, y:y, w:s.w, h:s.h, rot:s.rot };
+            var v = validate(c);
+            if (!v || blocksExteriorDoor(c)) continue;
+            var cost = 5000 + Math.hypot(x + s.w/2 - bcx, y + s.h/2 - bcy) + (v.host && !outdoor ? 140 : 0);
+            if (!best || cost < best.cost) best = { c:c, cost:cost, anchor:null, host:v.host ? v.host.r : null };
+          }
+        }
+      });
+    }
+
+    if (!best) return { x:40, y:off + 40, w:wM, h:hM, anchor:null, host:null, ok:false };
+    var c = best.c;
+    // For the placement note: of the rooms the new one actually shares a wall with, name the
+    // one it relates to most (which is the anchor unless it came from a fallback step).
+    var related = best.anchor ? best.anchor.r : null, relRank = Infinity;
+    rooms.forEach(function(o){
+      if (o.r === best.host || !sharedWall(c, o.px)) return;
+      var idx = prefList.indexOf(o.k);
+      if (idx > -1 && idx < relRank) { relRank = idx; related = o.r; }
+    });
+    return {
+      x: Math.round(c.x * 10) / 10, y: Math.round(c.y * 10) / 10,
+      w: c.rot ? hM : wM, h: c.rot ? wM : hM,
+      anchor: related, host: best.host, ok:true
+    };
+  }
+  // "בצמוד ל…" wording for a room: its kind's name, or its own label when the kind is
+  // generic (e.g. an upper floor's "חלל מרכזי").
+  function adjacencyName(r){
+    var k = roomKind(r);
+    return (k !== 'generic' && ROOM_KIND_HE[k]) ? ROOM_KIND_HE[k] : ('"' + (r.label || 'חדר') + '"');
+  }
+
+  var canvasToastTimer = null;
+  function showCanvasToast(msg, isWarn){
+    var t = document.getElementById('canvasToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.toggle('warn', !!isWarn);
+    t.hidden = false;
+    clearTimeout(canvasToastTimer);
+    canvasToastTimer = setTimeout(function(){ t.hidden = true; }, 4200);
+  }
+
   document.querySelectorAll('.room-preset-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var w = parseFloat(btn.dataset.w), h = parseFloat(btn.dataset.h);
-      var off = (roomCascade++ % 5) * 24;
-      // A preset is placed at a fixed corner rather than wherever the agent clicked (that's
-      // the whole point of a one-click preset), so — unlike free-draw/device placement, which
-      // derive their position from svgPoint() and land in the right floor's slice of the
-      // shared coordinate space automatically (see the FLOOR_Y_STRIDE/withFloor() comment) —
-      // this fixed corner has to be shifted into the CURRENT floor's slice by hand. Without
-      // this, clicking a preset on any floor above the ground floor still added the room (the
-      // count went up) but drew it inside floor 0's window, off the edge of whatever floor the
-      // agent was actually looking at — reading as "nothing happened" / "can't add rooms".
-      var floorOff = (state.activeFloor||0) * FLOOR_Y_STRIDE;
-      var r = addRoom({ x:40+off, y:40+off+floorOff, w:w, h:h, label: btn.dataset.label, type: btn.dataset.type });
+      var label = btn.dataset.label, type = btn.dataset.type;
+      var p = findArchitecturalPlacement(label, type, w, h);
+      // findArchitecturalPlacement works in the CURRENT floor's slice of the shared coordinate
+      // space (placementBounds() is offset by the active floor — see FLOOR_Y_STRIDE), so a
+      // room added on an upper floor always lands on that floor.
+      var r = addRoom({ x:p.x, y:p.y, w:p.w, h:p.h, label:label, type:type });
       selectItem('room', r.id);
+      if (!p.ok) {
+        showCanvasToast('אין מקום פנוי ל"' + label + '" בשרטוט — החדר נוסף בפינה; גררו אותו למקומו או פנו מקום', true);
+      } else {
+        var where = [];
+        if (p.anchor) where.push('בצמוד ל' + adjacencyName(p.anchor));
+        if (p.host) where.push('בתוך "' + (p.host.label || 'החצר') + '"');
+        showCanvasToast('✓ נוסף: ' + label + (where.length ? ' — ' + where.join(', ') : ''));
+      }
+      if (typeof isMobileLayout === 'function' && isMobileLayout()) closeMobilePanels();
     });
   });
+
+  // Palette thumbnails: each preset shows a miniature of exactly what it will draw on the
+  // plan — same floor texture, same furniture/illustration (a pool reads as a pool with its
+  // loungers, a sales floor as stocked shelving, a ממ"ד with its thick concrete walls).
+  function buildRoomPresetThumbs(){
+    document.querySelectorAll('.room-preset-btn').forEach(function(btn){
+      var sw = btn.querySelector('.room-preset-swatch');
+      if (!sw) return;
+      var wM = parseFloat(btn.dataset.w), hM = parseFloat(btn.dataset.h);
+      var r = { label:btn.dataset.label, type:btn.dataset.type, w:wM, h:hM };
+      var kind = roomKind(r);
+      var wpx = m2p(wM), hpx = m2p(hM), pad = 5;
+      var s = Math.min(46 / (wpx + 2*pad), 32 / (hpx + 2*pad));
+      var t = el('svg', { viewBox:(-pad) + ' ' + (-pad) + ' ' + (wpx + 2*pad) + ' ' + (hpx + 2*pad),
+        width:((wpx + 2*pad) * s).toFixed(1), height:((hpx + 2*pad) * s).toFixed(1), 'aria-hidden':'true' });
+      if (r.type !== 'yard') t.appendChild(el('rect', { x:-4, y:-4, width:wpx+8, height:hpx+8, rx:3, fill:'var(--wall)' }));
+      var floorAttrs = { x:0, y:0, width:wpx, height:hpx, rx:2, style:'fill:' + (FLOOR_PATTERN[kind] || FLOOR_PATTERN.generic) };
+      if (r.type === 'yard') { floorAttrs.stroke = '#8a9e78'; floorAttrs['stroke-width'] = 3; floorAttrs['stroke-dasharray'] = '9 6'; }
+      t.appendChild(el('rect', floorAttrs));
+      if (kind !== 'generic') t.appendChild(furnitureGroup(kind, wpx, hpx, r.label, { noShadow:true }));
+      sw.innerHTML = '';
+      sw.removeAttribute('style');
+      sw.className = 'room-preset-swatch room-thumb';
+      sw.appendChild(t);
+    });
+  }
+  buildRoomPresetThumbs();
 
   /* ============================= mobile: palette/inspector drawers ============================= */
   // At phone width the side panels become slide-in drawers instead of disappearing,
@@ -5654,7 +6388,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     else if (which === 'inspector') inspectorEl.classList.add('mobile-open');
     mobileBackdrop.hidden = false;
   }
-  document.getElementById('btnMobilePalette').addEventListener('click', function(){ openMobilePanel('palette'); });
+  // "1 סידור ואבזור": on a phone (or in fullscreen, where the side panels are hidden) it opens
+  // the palette drawer; on a desktop the palette is already open beside the plan, so it opens
+  // the structure category if nothing is open yet and briefly highlights the panel instead.
+  document.getElementById('btnMobilePalette').addEventListener('click', function(){
+    if (isMobileLayout() || document.getElementById('app').classList.contains('is-fullscreen')) { openMobilePanel('palette'); return; }
+    var groups = Array.prototype.slice.call(paletteEl.querySelectorAll('.cat-group'));
+    if (!groups.some(function(g){ return g.classList.contains('open'); }) && groups[0]) groups[0].querySelector('[data-cat-toggle]').click();
+    paletteEl.classList.add('attention');
+    clearTimeout(paletteEl._attnT);
+    paletteEl._attnT = setTimeout(function(){ paletteEl.classList.remove('attention'); }, 1300);
+  });
   document.getElementById('btnMobileInspector').addEventListener('click', function(){ openMobilePanel('inspector'); });
   document.getElementById('btnClosePalette').addEventListener('click', closeMobilePanels);
   document.getElementById('btnCloseInspector').addEventListener('click', closeMobilePanels);
@@ -5976,7 +6720,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var appEl = document.getElementById('app');
   var btnFullscreen = document.getElementById('btnFullscreen');
   function updateFsBtn(){
-    btnFullscreen.textContent = appEl.classList.contains('is-fullscreen') ? '⛶ יציאה ממסך מלא' : '⛶ מסך מלא';
+    var fs = appEl.classList.contains('is-fullscreen');
+    // keeps the icon + collapsible-label structure (see .tb-lbl) the toolbar markup uses
+    btnFullscreen.innerHTML = '⛶<span class="tb-lbl"> ' + (fs ? 'יציאה ממסך מלא' : 'מסך מלא') + '</span>';
+    btnFullscreen.setAttribute('aria-label', fs ? 'יציאה ממסך מלא' : 'מסך מלא');
   }
   btnFullscreen.addEventListener('click', function(){
     var goingFullscreen = !appEl.classList.contains('is-fullscreen');
@@ -6035,7 +6782,36 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.getElementById('fKind').addEventListener('change', function(){ state.kind = this.value; updatePaletteAvailability(); });
 
   function clearProject(){ disarmPalette(); state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 }; selected=null; roomEditId=null; resetRecommendationsView(); syncKindSelect(); render(); }
-  armConfirm(document.getElementById('btnClear'), 'נקה שרטוט', 'לאשר ניקוי? לחצו שוב', clearProject);
+  armConfirm(document.getElementById('btnClear'), '🗑️ נקה שרטוט', 'לאשר ניקוי? לחצו שוב', clearProject);
+
+  // "⋯ עוד" menu (project-file housekeeping: save / open / sample / help / clear). It closes on
+  // an outside click, Escape, or after any item runs — except while "נקה שרטוט" is armed for its
+  // confirming second click, so that click can actually land.
+  (function(){
+    var btn = document.getElementById('btnMoreMenu'), pop = document.getElementById('moreMenu');
+    if (!btn || !pop) return;
+    function setOpen(o){
+      pop.hidden = !o;
+      btn.setAttribute('aria-expanded', o ? 'true' : 'false');
+      if (!o) return;
+      // open toward whichever side has room — on a phone the button can sit anywhere in the
+      // wrapped toolbar, and a fixed anchor pushed the menu past the screen edge
+      var br = btn.getBoundingClientRect(), pw = pop.offsetWidth;
+      if (br.left + pw > window.innerWidth - 8) { pop.style.left = 'auto'; pop.style.right = '0'; }
+      else { pop.style.right = 'auto'; pop.style.left = '0'; }
+    }
+    btn.addEventListener('click', function(ev){ ev.stopPropagation(); setOpen(pop.hidden); });
+    // pointerdown (capture) rather than click: the plan's own pointer handlers (pan/drag) prevent
+    // the click event from ever firing on the canvas, which left the menu open over it.
+    document.addEventListener('pointerdown', function(ev){ if (!pop.hidden && !pop.contains(ev.target) && !btn.contains(ev.target)) setOpen(false); }, true);
+    document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') setOpen(false); });
+    pop.addEventListener('click', function(ev){
+      var item = ev.target.closest('button');
+      if (!item) return;
+      if (item.id === 'btnClear') { setTimeout(function(){ if (!item.classList.contains('btn-danger')) setOpen(false); }, 0); return; }
+      setOpen(false);
+    });
+  })();
   document.getElementById('btnLoadSample').onclick = function(){ disarmPalette(); loadSample(); };
 
   /* ============================= save / open project ============================= */
@@ -6224,17 +7000,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     var colRight = Math.max(topRowRight, bottomRowRight);
     var yardX = colRight + 52;
-    addRoom(withFloor(0, { x:yardX, y:40,  w:5.0, h:6.0, label:'חצר צדדית', type:'yard' }));
-    addRoom(withFloor(0, { x:yardX, y:320, w:5.0, h:3.0, label:'חניה',      type:'yard' }));
+    // Parking sits on the street side (top), right behind its own vehicle gate, with the side
+    // garden running from it down to the back garden — instead of parking halfway down the lot,
+    // away from any gate. A separate pedestrian gate opens straight onto the entry hall's door.
+    addRoom(withFloor(0, { x:yardX, y:40,  w:5.0, h:3.0, label:'חניה',      type:'yard' }));
+    addRoom(withFloor(0, { x:yardX, y:160, w:5.0, h:7.0, label:'חצר צדדית', type:'yard' }));
     var yardRight = yardX + m2p(5.0);
     var fenceRight = yardRight + 20;
     addRoom(withFloor(0, { x:40, y:440, w:p2m(yardRight - 40), h:5.0, label:'חצר אחורית', type:'yard' }));
     addFence(withFloor(0, { x1:16,  y1:16,  x2:16,  y2:656, type:'fence' }));
     addFence(withFloor(0, { x1:16,  y1:656, x2:fenceRight, y2:656, type:'fence' }));
     addFence(withFloor(0, { x1:fenceRight, y1:656, x2:fenceRight, y2:16, type:'fence' }));
-    addFence(withFloor(0, { x1:16,  y1:16,  x2:260, y2:16,  type:'fence' }));
-    addFence(withFloor(0, { x1:260, y1:16,  x2:360, y2:16,  type:'gate'  }));
-    addFence(withFloor(0, { x1:360, y1:16,  x2:fenceRight, y2:16, type:'fence' }));
+    var pedGateX0 = Math.max(24, mabuaCenter - 40), pedGateX1 = mabuaCenter + 40;
+    var carGateX0 = yardX + 20, carGateX1 = yardX + 180;
+    addFence(withFloor(0, { x1:16,        y1:16, x2:pedGateX0,  y2:16, type:'fence' }));
+    addFence(withFloor(0, { x1:pedGateX0, y1:16, x2:pedGateX1,  y2:16, type:'gate'  })); // pedestrian gate — entry hall
+    addFence(withFloor(0, { x1:pedGateX1, y1:16, x2:carGateX0,  y2:16, type:'fence' }));
+    addFence(withFloor(0, { x1:carGateX0, y1:16, x2:carGateX1,  y2:16, type:'gate'  })); // vehicle gate — parking
+    addFence(withFloor(0, { x1:carGateX1, y1:16, x2:fenceRight, y2:16, type:'fence' }));
 
     addOpening(withFloor(0, { x:mabuaCenter, y:40,  type:'door_main' })); // entry hall — main entrance
     bedCenters.forEach(function(c){ addOpening(withFloor(0, { x:c, y:40, type:'window' })); }); // bedroom exterior windows
@@ -6403,17 +7186,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       addRoom({ x:40,  y:224, w:6.0, h:4.6, label:'סלון',        type:'room' });
       addRoom({ x:280, y:224, w:3.2, h:3.2, label:'מטבח',        type:'room' });
       addRoom({ x:408, y:224, w:3.2, h:2.8, label:'פינת אוכל',    type:'room' });
-      addRoom({ x:536, y:224, w:2.7, h:1.8, label:'שירותים',      type:'room' }); // guest WC near the living area
-      // outdoor — a real perimeter yard rather than a single side lot: a side yard +
-      // driveway running the full height of the house (shifted to always clear the
-      // variable-width bedroom wing above it), meeting a full-width backyard below the
-      // living wing with no gap between them, so the two together wrap the house on its
-      // right side and along its whole back instead of sitting in one corner.
+      addRoom({ x:536, y:224, w:2.7, h:1.8, label:'שירותים',      type:'room' }); // guest WC, off the entry hall
+      // entry hall at the end of the social wing, facing the side garden/driveway: the front
+      // door is reached straight from the parking and the gate, opens into the public zone
+      // (dining → kitchen/living), and puts the guest WC right by the entrance — rather than a
+      // front door on the far wall facing a 60 cm strip along the fence.
+      addRoom({ x:536, y:296, w:2.7, h:2.8, label:'מבואת כניסה', type:'room' });
+      var hLivingWingRight = 536 + m2p(2.7);
+      // outdoor — a real perimeter yard rather than a single side lot: parking on the street
+      // side right behind the vehicle gate, then a side garden running the full height of the
+      // house (shifted to always clear the variable-width bedroom wing above it AND the
+      // living wing), meeting a full-width backyard below the living wing with no gap, so they
+      // wrap the house on its right side and along its whole back.
       var hYardGap = 32;
-      var hYardX = hWingRight + hYardGap;
+      var hYardX = Math.max(hWingRight, hLivingWingRight) + hYardGap;
       var houseBottom = 408; // bottom edge of the living/kitchen/dining/WC row
-      addRoom({ x:hYardX, y:40,  w:5.5, h:6.0, label:'חצר צדדית',  type:'yard' });
-      addRoom({ x:hYardX, y:280, w:5.5, h:3.2, label:'חניה',        type:'yard' });
+      addRoom({ x:hYardX, y:40,  w:5.5, h:3.2, label:'חניה',        type:'yard' });
+      addRoom({ x:hYardX, y:168, w:5.5, h:6.0, label:'חצר צדדית',  type:'yard' });
       // perimeter fence around the whole property — right edge tracks the yard, bottom edge
       // pushed well past the house to leave real depth for the backyard, the rest fixed
       var hFenceRight = hYardX + m2p(5.5) + 8;
@@ -6422,11 +7211,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       addFence({ x1:16,  y1:16,  x2:16,  y2:H_FENCE_BOTTOM, type:'fence' });
       addFence({ x1:16,  y1:H_FENCE_BOTTOM, x2:hFenceRight, y2:H_FENCE_BOTTOM, type:'fence' });
       addFence({ x1:hFenceRight, y1:H_FENCE_BOTTOM, x2:hFenceRight, y2:16,  type:'fence' });
-      addFence({ x1:16,  y1:16,  x2:260, y2:16,  type:'fence' });
-      addFence({ x1:260, y1:16,  x2:360, y2:16,  type:'gate'  });
-      addFence({ x1:360, y1:16,  x2:hFenceRight, y2:16, type:'fence' });
-      // main entrance — into the living room from the street-facing side
-      addOpening({ x:40, y:316, type:'door_main' });
+      addFence({ x1:16,  y1:16,  x2:hYardX + 20,  y2:16,  type:'fence' });
+      addFence({ x1:hYardX + 20,  y1:16,  x2:hYardX + 200, y2:16,  type:'gate'  }); // vehicle + pedestrian gate by the parking
+      addFence({ x1:hYardX + 200, y1:16,  x2:hFenceRight, y2:16, type:'fence' });
+      // main entrance — the entry hall's door onto the side garden / driveway
+      addOpening({ x:hLivingWingRight, y:352, type:'door_main' });
+      addOpening({ x:536, y:316, type:'door_int' }); // entry hall <-> dining (into the public zone)
+      addOpening({ x:40, y:316, type:'window' });    // living room side window (where the front door used to be)
       // bedroom-wing windows (all on the shared exterior/street wall) — one per room in the wing
       addOpening({ x:hMasterCenter, y:40, type:'window' });
       hExtraCenters.forEach(function(cx){ addOpening({ x:cx, y:40, type:'window' }); });
@@ -6444,8 +7235,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       addOpening({ x:160, y:408, type:'window_lg' }); // living room — large window/sliding door to the yard
       addOpening({ x:344, y:352, type:'door_ext'  }); // kitchen — side/service door to the yard
       addOpening({ x:472, y:336, type:'window_lg' }); // dining nook window
-      // dining <-> guest WC
-      addOpening({ x:536, y:260, type:'door_int' });
+      // entry hall <-> guest WC
+      addOpening({ x:590, y:296, type:'door_int' });
     } else if (kind === 'apartment') {
       // bedroom wing — parametric on the agent's answered bedroom count (master + N
       // additional bedrooms), same approach as the house template above. Living/kitchen and
@@ -6473,7 +7264,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // living / social area — unaffected by bedroom count
       addRoom({ x:40,  y:216, w:5.5, h:4.2, label:'סלון', type:'room' });
       addRoom({ x:260, y:216, w:3.0, h:3.0, label:'מטבח', type:'room' });
-      addRoom({ x:40,  y:384, w:8.5, h:1.5, label:'מרפסת', type:'yard' });
+      // balcony — exactly as wide as the living room it opens off (a typical מרפסת שמש), not
+      // overhanging past the kitchen
+      addRoom({ x:40,  y:384, w:5.5, h:1.5, label:'מרפסת', type:'yard' });
       // main entrance — into the living room
       addOpening({ x:40, y:300, type:'door_main' });
       // bedroom-wing windows — one per room in the wing
