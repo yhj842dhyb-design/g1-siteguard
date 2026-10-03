@@ -231,6 +231,9 @@
   .pal-item span{ font-size:10.5px; line-height:1.25; color:var(--ink-on-dark); }
   .pal-item.dragging{ opacity:.4; }
   .pal-item.pal-locked{ opacity:.4; cursor:not-allowed; }
+  .pal-item.pal-single-done{ opacity:.5; }
+  .pal-item.pal-single-done::after{ content:'✓ הוצב'; font-size:9.5px; font-weight:700; color:var(--accent-2-text); margin-inline-start:auto; }
+  .pal-item.armed.repeat{ box-shadow:0 0 0 2px rgba(0,170,231,.55); }
   .pal-item.pal-locked:hover{ border-color:var(--line); background:var(--panel-2); }
 
   .room-presets{ display:flex; flex-direction:column; gap:7px; }
@@ -505,6 +508,16 @@
      even over the wood/deck floor textures */
   .fov-cone{ fill:url(#pCovCam); stroke:#1f7266; stroke-opacity:.7; stroke-width:1.2; stroke-dasharray:5 3; stroke-linejoin:round; pointer-events:none; }
   .fov-cone.alarm{ fill:url(#pCovAlarm); stroke:#a85f17; }
+  /* Quick-place flash: right after a detector/camera is (re)positioned by a quick-place button,
+     its coverage and mount point light up for ~2.6 s, then ease back to the normal pattern. */
+  @keyframes fovFlash{
+    0%,55%{ fill:rgba(0,170,231,.38); stroke:#00AAE7; stroke-width:3; stroke-opacity:1; stroke-dasharray:none; }
+    100%{ fill-opacity:1; }
+  }
+  .fov-cone.flash{ animation:fovFlash 2.6s ease-out both; }
+  @keyframes devFlash{ 0%{ r:15; stroke-opacity:1; stroke-width:4; } 50%{ r:30; stroke-opacity:.6; stroke-width:3; } 100%{ r:42; stroke-opacity:0; stroke-width:1; } }
+  .dev-flash-ring{ fill:none; stroke:#00AAE7; pointer-events:none; animation:devFlash 1.1s ease-out 3 both; }
+  @media (prefers-reduced-motion: reduce){ .fov-cone.flash{ animation-duration:.01s; } .dev-flash-ring{ animation:none; display:none; } }
   .fov-cone.intercom{ fill:url(#pCovIntercom); stroke:#5c4ba3; }
   .fov-cone.smart{ fill:url(#pCovSmart); stroke:#2c7a41; }
   .glass-radius{ fill:none; stroke:var(--accent); opacity:.35; stroke-width:1; stroke-dasharray:2 3; pointer-events:none; }
@@ -1062,7 +1075,18 @@
      palette/inspector drawer buttons (so adding a device or checking a room's properties still
      works without leaving fullscreen) — freeing the rest of the toolbar's and panels' space for
      the drawing itself. */
-  .app.is-fullscreen{ position:fixed; inset:0; z-index:9999; background:var(--bg); }
+  .app.is-fullscreen{ position:fixed; inset:0; z-index:9999; background:var(--bg); box-sizing:border-box;
+    padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); }
+  /* Always-reachable way out of fullscreen (iPhone has no Esc key and no system "exit" control
+     for this CSS fullscreen) — a large pill above the home indicator. */
+  .fs-exit-fab{
+    position:fixed; z-index:10020; left:calc(12px + env(safe-area-inset-left,0px)); bottom:calc(14px + env(safe-area-inset-bottom,0px));
+    display:inline-flex; align-items:center; gap:6px; min-height:44px; padding:0 16px; border-radius:999px;
+    background:var(--ink-on-dark); color:#fff; border:2px solid rgba(255,255,255,.85); font:700 13.5px var(--font-body);
+    box-shadow:0 6px 20px rgba(0,0,0,.35); cursor:pointer;
+  }
+  .fs-exit-fab[hidden]{ display:none; }
+  .app.is-fullscreen #btnFullscreen .tb-lbl{ display:inline !important; }
   .app.is-fullscreen .topbar{ display:none; }
   /* :not(.mobile-open) is the fix for a real bug: the palette/inspector drawers are supposed to
      stay reachable in fullscreen via the 🧰 אביזרים / 📋 מאפיינים buttons right below (that's the
@@ -1134,6 +1158,37 @@
     display:flex; align-items:center; gap:8px; text-align:center;
   }
   .canvas-hint[hidden]{ display:none; }
+  .canvas-hint button.finish{ width:auto; padding:0 12px; border-radius:999px; font-weight:700; background:#00AAE7; color:#fff; }
+  /* quick-place bar: floats over the bottom of the plan while a detector/camera is selected */
+  .canvas-quick{
+    position:absolute; z-index:16; left:50%; transform:translateX(-50%); bottom:calc(10px + env(safe-area-inset-bottom,0px));
+    max-width:calc(100% - 24px); display:flex; flex-direction:column; gap:6px; align-items:stretch;
+    background:rgba(16,22,32,.92); color:#fff; border-radius:14px; padding:8px 10px; box-shadow:0 8px 24px rgba(0,0,0,.3); direction:rtl;
+  }
+  .canvas-quick[hidden]{ display:none; }
+  .app.is-fullscreen .canvas-quick{ bottom:calc(68px + env(safe-area-inset-bottom,0px)); }
+  .canvas-quick .cq-title{ font-size:11.5px; font-weight:700; opacity:.85; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .canvas-quick .cq-title button{ background:none; border:0; color:#fff; font-size:15px; cursor:pointer; padding:0 4px; }
+  .canvas-quick .cq-chips{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .canvas-quick .cq-chips::-webkit-scrollbar{ display:none; }
+  .qp-chip{
+    flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; min-height:38px; padding:0 12px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); color:inherit; font:600 12.5px var(--font-body); cursor:pointer; white-space:nowrap;
+  }
+  .qp-chip .pct{ font-family:var(--font-mono); font-size:11px; opacity:.8; }
+  .qp-chip.rec{ border-color:#00AAE7; background:rgba(0,170,231,.22); }
+  .qp-chip.active{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .qp-chip:focus-visible{ outline:2px solid #00AAE7; outline-offset:2px; }
+  /* same chips inside the light properties panel */
+  .qp-section{ margin-top:12px; padding-top:10px; border-top:1px dashed var(--line); }
+  .qp-section h5{ margin:0 0 6px; font-size:12px; }
+  .qp-section p{ margin:0 0 8px; font-size:11px; color:var(--ink-dim); line-height:1.5; }
+  .qp-section .qp-dev{ margin-bottom:10px; }
+  .qp-section .qp-dev b{ font-size:11.5px; display:block; margin-bottom:5px; }
+  .qp-section .qp-wrap{ display:flex; flex-wrap:wrap; gap:6px; }
+  .qp-section .qp-chip{ color:var(--ink-on-dark); border-color:var(--line); background:var(--panel-2); min-height:34px; font-size:12px; }
+  .qp-section .qp-chip.rec{ border-color:#00AAE7; background:rgba(0,170,231,.14); }
+  .qp-section .qp-chip.add{ border-style:dashed; }
   .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
   .canvas-toast span{
     background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600; padding:8px 16px;
@@ -1484,7 +1539,7 @@
     </aside>
 
     <!-- Center: canvas -->
-    <main class="canvas-wrap">
+    <main class="canvas-wrap" style="position:relative">
       <!-- Canvas toolbar, laid out in the order the work is actually done, so the agent never has
            to hunt (or swipe) for the next button:
              row 1 — the three work steps: 1 סידור ואבזור (rooms + equipment, with the guidance
@@ -1704,6 +1759,7 @@
         <span><i style="background:var(--danger)"></i>פער הגנה קריטי</span>
         <span style="color:var(--ink-dim)">מספור האביזרים בשרטוט תואם לטבלת כתב הכמויות (מדריך התקנה ←)</span>
       </div>
+      <div class="canvas-quick" id="canvasQuick" hidden></div>
     </main>
 
     <!-- Left: inspector / guidance / bom -->
@@ -1957,6 +2013,8 @@
     </div>
   </div>
 </div>
+
+<button type="button" class="fs-exit-fab" id="fsExitFab" hidden aria-label="יציאה ממסך מלא">✕ יציאה ממסך מלא</button>
 
 <!-- Send / share sheet: opens once the PDF is ready. Every send action here is its own tap, so
      the phone's share sheet (WhatsApp, Outlook, Mail, "Save to Files") can open with the finished
@@ -3985,7 +4043,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var coneClass = 'fov-cone ' + (def.cat==='intercom' ? 'intercom' : def.cat==='alarm' ? 'alarm' : def.cat==='smart' ? 'smart' : '');
         // line of sight: the coverage ends at the first wall, never passes through it
         var coneD = sightPathD(d.x, d.y, d.rot, def.fov, m2p(def.range), walls);
-        if (coneD) g.appendChild(el('path', { d: coneD, class: coneClass }));
+        var flashing = flashState.id === d.id && Date.now() < flashState.until;
+        if (coneD) g.appendChild(el('path', flashing
+          ? { d: coneD, class: coneClass + ' flash', style:'animation-delay:-' + (2600 - (flashState.until - Date.now())) + 'ms' }
+          : { d: coneD, class: coneClass }));
       }
       if (def.radius) {
         if (def.cat === 'network') {
@@ -3999,6 +4060,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       var ring = el('circle', { cx:0, cy:0, r:15, fill:'none', class:'item-ring' });
       g.appendChild(ring);
+      if (flashState.id === d.id && Date.now() < flashState.until && !g.querySelector('.dev-flash-ring')) g.appendChild(el('circle', { cx:0, cy:0, r:15, class:'dev-flash-ring' }));
       g.appendChild(deviceBadgeShape(def.cat));
       var icon = el('g', { color:def.color, transform:'translate(-7,-7) scale(0.58)' });
       icon.innerHTML = deviceIconSvg(d.type);
@@ -5512,6 +5574,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // draggable/clickable) rather than hidden outright, so it's still visible as a hint that the
   // answer can be changed by starting the project over.
   function updatePaletteAvailability(){
+    Object.keys(SINGLETON_TYPES).forEach(function(t){
+      var it = document.querySelector('.pal-item[data-type="' + t + '"]');
+      if (!it) return;
+      var done = singletonPlaced(t);
+      it.classList.toggle('pal-locked', done);
+      it.classList.toggle('pal-single-done', done);
+      it.draggable = !done;
+      it.title = done ? singletonMsg(t) : '';
+      if (done && armedType === t) disarmPalette();
+    });
     var safeItem = document.getElementById('palSafeSensor');
     if (safeItem) {
       var safeAvailable = !!state.hasSafe;
@@ -6062,8 +6134,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!armedType) return;
     ev.preventDefault();
     ev.stopPropagation();
-    placeAtPoint(armedType, svgPoint(ev));
-    disarmPalette();
+    var placedItem = placeAtPoint(armedType, svgPoint(ev));
+    if (placedItem && REPEAT_PLACE_TYPES[armedType]) { armedCount++; updateArmHint(); updateCanvasQuick(); }
+    else disarmPalette();
     suppressNextSvgClick = true;
     setTimeout(function(){ suppressNextSvgClick = false; }, 400);
   }, true);
@@ -6197,9 +6270,193 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (mobileBtn) mobileBtn.classList.toggle('has-selection', has);
   }
 
+  /* ============================= quick placement in a room =============================
+     Dragging a detector into the exact optimal corner with a finger is fiddly, so every
+     detector/camera inside a room gets ready-made positions computed from that room's real
+     geometry and openings: corner facing the door, corner facing the window, the door-wall
+     corner, the centre of the wall opposite the door (curtain detectors: along the window /
+     door wall). Each option shows how much of the room it actually covers (line of sight,
+     walls block), the best one is marked, and one tap moves + aims the device and flashes its
+     coverage for a moment so the agent sees the result at once. */
+  var QP_TYPES = { pir:1, pir_pet:1, curtain_in:1, cam_in:1, cam_in_analytics:1, smart_cam:1 };
+  var CORNER_COMPASS = ['פינה צפון-מערבית', 'פינה צפון-מזרחית', 'פינה דרום-מערבית', 'פינה דרום-מזרחית']; // roomCornersWithBisector order
+  function roomOfDevice(d){ return roomContainingPoint({ x:d.x, y:d.y }); }
+  function roomOpeningsInfo(r){
+    var b = roomBBoxPx(r), floor = r.floor || 0;
+    var near = state.openings.filter(function(o){ return (o.floor || 0) === floor && pointInBBox({ x:o.x, y:o.y }, b, m2p(0.4)); });
+    var doors = near.filter(function(o){ return OPENING_DEFS[o.type].kind === 'door'; });
+    var windows = near.filter(function(o){ return OPENING_DEFS[o.type].kind === 'window'; });
+    var entry = doors.filter(function(o){ return o.type === 'door_main'; })[0] || doors.filter(function(o){ return OPENING_DEFS[o.type].exterior; })[0] || doors[0] || null;
+    var mainWin = windows.slice().sort(function(a, c){ return OPENING_DEFS[c.type].w - OPENING_DEFS[a.type].w; })[0] || null;
+    return { b:b, doors:doors, windows:windows, entry:entry, mainWin:mainWin };
+  }
+  // Which wall of the room an opening sits on: inward normal n, along-wall t, and its two corners.
+  function roomWallOf(o, b){
+    var sides = [
+      { key:'top',    d:Math.abs(o.y - b.y1), n:{ x:0, y:1 },  t:{ x:1, y:0 }, a:{ x:b.x1, y:b.y1 }, c:{ x:b.x2, y:b.y1 } },
+      { key:'bottom', d:Math.abs(o.y - b.y2), n:{ x:0, y:-1 }, t:{ x:1, y:0 }, a:{ x:b.x1, y:b.y2 }, c:{ x:b.x2, y:b.y2 } },
+      { key:'left',   d:Math.abs(o.x - b.x1), n:{ x:1, y:0 },  t:{ x:0, y:1 }, a:{ x:b.x1, y:b.y1 }, c:{ x:b.x1, y:b.y2 } },
+      { key:'right',  d:Math.abs(o.x - b.x2), n:{ x:-1, y:0 }, t:{ x:0, y:1 }, a:{ x:b.x2, y:b.y1 }, c:{ x:b.x2, y:b.y2 } }
+    ];
+    return sides.reduce(function(m, s){ return s.d < m.d ? s : m; });
+  }
+  // Share of the room's floor (0.5 m grid) a device at m would really see.
+  function roomCoveragePct(type, r, m){
+    var def = DEVICE_DEFS[type], b = roomBBoxPx(r), step = m2p(0.5), pts = [];
+    for (var y = b.y1 + step/2; y < b.y2; y += step) for (var x = b.x1 + step/2; x < b.x2; x += step) pts.push({ x:x, y:y });
+    if (!pts.length || !def.fov) return 0;
+    var segs = wallSegsForRooms(walledRoomsOnFloor(r.floor || 0));
+    var seen = camSeesTargets({ x:m.x, y:m.y, rot:m.rot, fov:def.fov, range:m2p(def.range) }, pts, segs).length;
+    return Math.round(seen / pts.length * 100);
+  }
+  function quickPlaceOptions(type, r){
+    if (!QP_TYPES[type] || !r) return [];
+    var info = roomOpeningsInfo(r), b = info.b, ins = m2p(CORNER_INSET_M);
+    var corners = roomCornersWithBisector(r);
+    var opts = [];
+    function add(key, label, m, note){
+      if (m.x < b.x1 || m.x > b.x2 || m.y < b.y1 || m.y > b.y2) return;
+      if (opts.some(function(o){ return dist(o.x, o.y, m.x, m.y) < m2p(0.3) && Math.abs(o.rot - m.rot) < 1; })) return;
+      opts.push({ key:key, label:label, x:Math.round(m.x), y:Math.round(m.y), rot:m.rot, note:note || '' });
+    }
+    function cornerFarFrom(p){ return corners.reduce(function(a, c){ return dist(c.cx, c.cy, p.x, p.y) > dist(a.cx, a.cy, p.x, p.y) ? c : a; }); }
+    function cornerOpt(c){ return { x:c.x, y:c.y, rot:dirRot(c.dx, c.dy) }; }
+    if (type === 'curtain_in'){
+      // a narrow curtain runs ALONG a wall: mount it at one end, aimed down the wall
+      function alongWall(o, label){
+        var w = roomWallOf(o, b);
+        var ends = [w.a, w.c].map(function(e){ return { e:e, d:dist(e.x, e.y, o.x, o.y) }; }).sort(function(p, q){ return p.d - q.d; });
+        var start = ends[0].e, other = ends[1].e; // start beside the opening, look along the wall
+        var tx = Math.sign(other.x - start.x), ty = Math.sign(other.y - start.y);
+        add('wall-' + w.key, label, { x:start.x + w.n.x*m2p(0.15) + tx*ins, y:start.y + w.n.y*m2p(0.15) + ty*ins, rot:dirRot(tx, ty) });
+      }
+      info.windows.forEach(function(o){ alongWall(o, 'לאורך קיר החלון'); });
+      if (info.entry) alongWall(info.entry, 'לאורך קיר הדלת');
+      corners.forEach(function(c, i){
+        var w = (b.x2 - b.x1) >= (b.y2 - b.y1);
+        add('corner-' + i, CORNER_COMPASS[i] + ' — לאורך הקיר הארוך', { x:c.x, y:c.y, rot: w ? dirRot(c.dx, 0) : dirRot(0, c.dy) });
+      });
+    } else {
+      if (info.entry) add('door', 'פינה מול הדלת', cornerOpt(cornerFarFrom(info.entry)));
+      var bc = bestDetectorCorner(r, state.openings);
+      add('best', 'פינה מומלצת (רחוק מחלונות)', bc);
+      if (info.mainWin) add('window', 'פינה מול החלון', cornerOpt(cornerFarFrom(info.mainWin)),
+        (type === 'pir' || type === 'pir_pet') ? 'שמש ישירה מהחלון עלולה לגרום להתראות שווא' : '');
+      if (info.entry){
+        var dw = roomWallOf(info.entry, b);
+        var onDoorWall = corners.filter(function(c){ return (dw.key === 'top' && c.cy === b.y1) || (dw.key === 'bottom' && c.cy === b.y2) || (dw.key === 'left' && c.cx === b.x1) || (dw.key === 'right' && c.cx === b.x2); })
+          .filter(function(c){ return dist(c.cx, c.cy, info.entry.x, info.entry.y) > m2p(1.0); })
+          .sort(function(p, q){ return dist(q.cx, q.cy, info.entry.x, info.entry.y) - dist(p.cx, p.cy, info.entry.x, info.entry.y); });
+        if (onDoorWall[0]) add('doorwall', 'פינה בקיר הדלת', cornerOpt(onDoorWall[0]));
+        // centre of the wall opposite the door, looking straight in
+        var opp = { top:'bottom', bottom:'top', left:'right', right:'left' }[dw.key];
+        var cx = (b.x1 + b.x2)/2, cy = (b.y1 + b.y2)/2, wi = m2p(0.2);
+        var wc = opp === 'top' ? { x:cx, y:b.y1 + wi, rot:dirRot(0, 1) } : opp === 'bottom' ? { x:cx, y:b.y2 - wi, rot:dirRot(0, -1) } :
+                 opp === 'left' ? { x:b.x1 + wi, y:cy, rot:dirRot(1, 0) } : { x:b.x2 - wi, y:cy, rot:dirRot(-1, 0) };
+        add('oppwall', 'מרכז הקיר מול הדלת', wc);
+      }
+      corners.forEach(function(c, i){ if (opts.length < 4) add('corner-' + i, CORNER_COMPASS[i], cornerOpt(c)); });
+    }
+    opts.forEach(function(o){ o.pct = roomCoveragePct(type, r, o); });
+    // recommended: best coverage (a PIR staring at a window doesn't qualify); ties keep order
+    var cand = opts.filter(function(o){ return !o.note; });
+    var best = (cand.length ? cand : opts).reduce(function(a, o){ return !a || o.pct > a.pct + 2 ? o : a; }, null);
+    if (best) best.rec = true;
+    return opts.slice(0, 5);
+  }
+  // Flash a device's coverage + mount point for a moment (see .fov-cone.flash / .dev-flash-ring).
+  var flashState = { id:null, until:0 };
+  function flashDevice(id){
+    flashState = { id:id, until:Date.now() + 2600 };
+    clearTimeout(flashDevice._t);
+    flashDevice._t = setTimeout(function(){ flashState = { id:null, until:0 }; }, 2700);
+  }
+  function applyQuickPlace(d, opt){
+    d.x = opt.x; d.y = opt.y; d.rot = opt.rot;
+    selected = { kind:'device', id:d.id };
+    flashDevice(d.id);
+    render();
+    showCanvasToast('✓ ' + DEVICE_DEFS[d.type].label + ' — ' + opt.label + ' · מכסה כ-' + opt.pct + '% מהחדר' + (opt.note ? ' (' + opt.note + ')' : ''), !!opt.note);
+  }
+  function quickAddInRoom(type, r){
+    var opts = quickPlaceOptions(type, r);
+    var opt = opts.filter(function(o){ return o.rec; })[0] || opts[0];
+    if (!opt) return;
+    var d = addDevice({ type:type, x:opt.x, y:opt.y, rot:opt.rot, floor:r.floor || 0 });
+    applyQuickPlace(d, opt);
+  }
+  function qpChipHtml(o, cls){
+    return '<button type="button" class="qp-chip' + (o.rec ? ' rec' : '') + (cls ? ' ' + cls : '') + '" data-qp="' + o.key + '" title="' + escapeHtml(o.note || o.label) + '">' +
+      (o.rec ? '★ ' : o.note ? '⚠ ' : '') + escapeHtml(o.label) + ' <span class="pct">' + o.pct + '%</span></button>';
+  }
+  function bindQpChips(container, d, opts){
+    Array.prototype.forEach.call(container.querySelectorAll('.qp-chip[data-qp]'), function(btn){
+      btn.addEventListener('click', function(ev){ ev.stopPropagation(); var o = opts.filter(function(x){ return x.key === btn.dataset.qp; })[0]; if (o) applyQuickPlace(d, o); });
+    });
+  }
+  function isAtOption(d, o){ return dist(d.x, d.y, o.x, o.y) < 2 && Math.abs((((d.rot - o.rot) % 360) + 360) % 360) < 1; }
+  // Props-panel section for a selected detector/camera.
+  function deviceQuickPlaceHtml(d){
+    var r = roomOfDevice(d);
+    var opts = r ? quickPlaceOptions(d.type, r) : [];
+    if (!opts.length) return { html:'', opts:[] };
+    return { opts:opts, html: '<div class="qp-section" id="qpDevice"><h5>⚡ מיקום מהיר ב"' + escapeHtml(r.label || 'חדר') + '"</h5>' +
+      '<p>לחיצה אחת מציבה ומכוונת את האביזר; האחוז = חלק החדר שבטווח הגילוי (הקירות חוסמים). ★ = מומלץ.</p>' +
+      '<div class="qp-wrap">' + opts.map(function(o){ return qpChipHtml(o, isAtOption(d, o) ? 'active' : ''); }).join('') + '</div></div>' };
+  }
+  // Props-panel section for a selected room: its detectors with quick positions + quick add.
+  function roomQuickPlaceHtml(r){
+    if (r.type === 'yard') return { html:'', bind:function(){} };
+    var b = roomBBoxPx(r);
+    var tags = computeDeviceTags();
+    var devs = state.devices.filter(function(d){ return QP_TYPES[d.type] && (d.floor || 0) === (r.floor || 0) && d.x >= b.x1 && d.x <= b.x2 && d.y >= b.y1 && d.y <= b.y2; });
+    var info = roomOpeningsInfo(r);
+    var html = '<div class="qp-section" id="qpRoom"><h5>⚡ גלאים ומצלמות בחדר</h5>';
+    var devOpts = {};
+    if (devs.length){
+      html += '<p>בחרו מיקום — האביזר יוצב ויכוון מיד, והכיסוי יודגש לרגע.</p>';
+      devs.forEach(function(d){
+        var opts = quickPlaceOptions(d.type, r); devOpts[d.id] = opts;
+        html += '<div class="qp-dev" data-dev="' + d.id + '"><b>' + escapeHtml(DEVICE_DEFS[d.type].label) + ' (' + (DEVICE_CODE[d.type] || '') + '-' + tags[d.id] + ')</b><div class="qp-wrap">' +
+          opts.map(function(o){ return qpChipHtml(o, isAtOption(d, o) ? 'active' : ''); }).join('') + '</div></div>';
+      });
+    } else {
+      html += '<p>אין עדיין גלאי או מצלמה בחדר — הוספה מהירה במיקום המומלץ:</p>';
+    }
+    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'cam_in'];
+    if (info.windows.length) addTypes.push('curtain_in');
+    html += '<div class="qp-wrap" style="margin-top:4px">' + addTypes.map(function(t){
+      return '<button type="button" class="qp-chip add" data-qadd="' + t + '">➕ ' + escapeHtml(DEVICE_DEFS[t].label) + '</button>';
+    }).join('') + '</div></div>';
+    return { html:html, bind:function(box){
+      devs.forEach(function(d){ var row = box.querySelector('.qp-dev[data-dev="' + d.id + '"]'); if (row) bindQpChips(row, d, devOpts[d.id]); });
+      Array.prototype.forEach.call(box.querySelectorAll('.qp-chip[data-qadd]'), function(btn){
+        btn.addEventListener('click', function(){ quickAddInRoom(btn.dataset.qadd, r); });
+      });
+    }};
+  }
+  // Floating bar over the plan (phones especially): the same quick positions for the selected
+  // detector/camera, without opening the side panel.
+  var canvasQuickDismissed = null;
+  function updateCanvasQuick(){
+    var bar = document.getElementById('canvasQuick');
+    if (!bar) return;
+    var d = (selected && selected.kind === 'device') ? findById('device', selected.id) : null;
+    if (!d || !QP_TYPES[d.type] || armedType || canvasQuickDismissed === d.id) { bar.hidden = true; return; }
+    var r = roomOfDevice(d), opts = r ? quickPlaceOptions(d.type, r) : [];
+    if (!opts.length) { bar.hidden = true; return; }
+    bar.innerHTML = '<div class="cq-title"><span>⚡ מיקום מהיר — ' + escapeHtml(DEVICE_DEFS[d.type].label) + ' ב"' + escapeHtml(r.label || 'חדר') + '"</span><button type="button" aria-label="סגירה">✕</button></div>' +
+      '<div class="cq-chips">' + opts.map(function(o){ return qpChipHtml(o, isAtOption(d, o) ? 'active' : ''); }).join('') + '</div>';
+    bar.querySelector('.cq-title button').onclick = function(){ canvasQuickDismissed = d.id; bar.hidden = true; };
+    bindQpChips(bar, d, opts);
+    bar.hidden = false;
+  }
+  ['pointerdown', 'click'].forEach(function(evt){ document.getElementById('canvasQuick').addEventListener(evt, function(ev){ ev.stopPropagation(); }); });
+
   function renderProps(){
     var box = document.getElementById('propsContent');
     updateSelectionIndicator();
+    updateCanvasQuick();
     if (!selected) {
       box.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8"/></svg>בחרו חדר או אביזר בשרטוט כדי לערוך את מאפייניו כאן</div>';
       return;
@@ -6207,6 +6464,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (selected.kind === 'room') {
       var r = findById('room', selected.id);
       if (!r){ selected=null; return renderProps(); }
+      var roomQP = roomQuickPlaceHtml(r);
       box.innerHTML =
         '<div class="prop-card"><div class="prop-title">🏷️ ' + escapeHtml(r.label) + '</div>' +
         '<div class="field"><label>שם החדר/האזור</label><input type="text" id="pLabel" value="' + escapeHtml(r.label) + '"></div>' +
@@ -6214,8 +6472,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<div class="field"><label>רוחב (מ׳)</label><input type="number" id="pW" value="' + r.w.toFixed(1) + '" step="0.1" min="0.5"></div>' +
         '<div class="field"><label>עומק (מ׳)</label><input type="number" id="pH" value="' + r.h.toFixed(1) + '" step="0.1" min="0.5"></div>' +
         '</div>' +
-        '<button class="btn btn-danger btn-sm" id="pDelete" style="width:100%;justify-content:center">מחק חדר</button>' +
+        roomQP.html +
+        '<button class="btn btn-danger btn-sm" id="pDelete" style="width:100%;justify-content:center;margin-top:12px">מחק חדר</button>' +
         '</div>';
+      roomQP.bind(box);
       // Update the canvas only (not the whole props panel) while typing, so the
       // input never loses focus mid-word — room size/name don't affect guidance or BOM.
       document.getElementById('pLabel').oninput = function(){ r.label = this.value; renderRooms(); };
@@ -6254,8 +6514,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var d = findById('device', selected.id);
       if (!d){ selected=null; return renderProps(); }
       var dd = DEVICE_DEFS[d.type];
+      var devQP = deviceQuickPlaceHtml(d);
       box.innerHTML =
         '<div class="prop-card"><div class="prop-title" style="color:' + dd.color + '">' + dd.label + '</div>' +
+        devQP.html +
         (dd.rotatable ?
           '<div class="field"><label>כיוון צפייה — לכל הכיוונים</label>' +
           '<div class="compass-grid" id="pCompass">' + COMPASS_BTNS.map(function(c){
@@ -6282,6 +6544,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         });
         updateRotUi();
       }
+      if (devQP.opts.length) bindQpChips(document.getElementById('qpDevice'), d, devQP.opts);
       document.getElementById('pDelete').onclick = function(){ removeById('device', d.id); render(); };
     }
   }
@@ -7186,26 +7449,53 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // arm, tap the sketch to place" flow, since HTML5 drag-and-drop has no touch counterpart
   // in mobile browsers — without this, agents on a tablet or phone could not add any
   // door/window/device to the sketch at all.
-  var armedType = null, armedItemEl = null;
+  var armedType = null, armedItemEl = null, armedCount = 0;
   var canvasHint = document.getElementById('canvasHint');
   var canvasHintLabel = document.getElementById('canvasHintLabel');
+  // One per project: the alarm hub, the recorder, the comms cabinet and the intercom units —
+  // a second one is never needed, so the palette locks them once placed.
+  var SINGLETON_TYPES = { hub:1, nvr:1, comm_cabinet:1, intercom_ext:1, intercom_int:1, intercom_pal:1 };
+  // Detectors and cameras usually go in several at a time: one tap on the palette item keeps it
+  // "armed", and every tap on the plan places another one, until "✓ סיום" (or Esc / tapping the
+  // item again).
+  var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
+    cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1, smart_cam:1, speaker_in:1, speaker_out:1,
+    ap_in:1, ap_out:1, net_point:1, smart_switch:1, smart_shutter:1, window:1, window_lg:1, door_int:1 };
+  function singletonPlaced(type){ return !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
+  function singletonMsg(type){ return 'כבר יש בפרויקט ' + DEVICE_DEFS[type].label + ' — אין צורך ביותר מאחד. להזזה, גררו את הקיים בשרטוט.'; }
+  function updateArmHint(){
+    var cancelBtn = document.getElementById('canvasHintCancel');
+    var repeat = !!REPEAT_PLACE_TYPES[armedType];
+    canvasHintLabel.textContent = repeat
+      ? ('📍 ' + paletteItemLabel(armedType) + ' — הצבה רציפה: הקישו בכל מקום להוספה' + (armedCount ? ' · הוצבו ' + armedCount : ''))
+      : ('📍 ' + paletteItemLabel(armedType) + ' — הקישו על מיקום בשרטוט להוספה');
+    cancelBtn.textContent = repeat ? '✓ סיום' : '✕';
+    cancelBtn.classList.toggle('finish', repeat);
+    cancelBtn.setAttribute('aria-label', repeat ? 'סיום הצבה רציפה' : 'ביטול הוספה');
+    if (armedItemEl) armedItemEl.classList.toggle('repeat', repeat);
+  }
   function paletteItemLabel(type){
     var def = OPENING_DEFS[type] || DEVICE_DEFS[type];
     return def ? def.label : type;
   }
   function disarmPalette(){
-    if (armedItemEl) armedItemEl.classList.remove('armed');
-    armedType = null; armedItemEl = null;
+    if (armedItemEl) armedItemEl.classList.remove('armed', 'repeat');
+    var hadType = armedType, placedCount = armedCount;
+    armedType = null; armedItemEl = null; armedCount = 0;
     canvasHint.hidden = true;
+    if (hadType && REPEAT_PLACE_TYPES[hadType] && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
+    if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
   }
   function armPalette(type, itemEl){
     if (armedType === type) { disarmPalette(); return; }
-    if (armedItemEl) armedItemEl.classList.remove('armed');
-    armedType = type; armedItemEl = itemEl;
+    if (singletonPlaced(type)) { showCanvasToast(singletonMsg(type), true); return; }
+    if (armedItemEl) armedItemEl.classList.remove('armed', 'repeat');
+    armedType = type; armedItemEl = itemEl; armedCount = 0;
     itemEl.classList.add('armed');
     setDrawMode(false); setFenceDrawMode(false);
-    canvasHintLabel.textContent = '📍 ' + paletteItemLabel(type) + ' — הקישו על מיקום בשרטוט להוספה';
+    updateArmHint();
     canvasHint.hidden = false;
+    if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (isMobileLayout()) closeMobilePanels();
   }
   // Default rotation for a newly-placed interior detector/camera: aim it from its drop point
@@ -7221,7 +7511,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (OPENING_DEFS[type]) {
       var o = addOpening({ type:type, x:p.x, y:p.y });
       selectItem('opening', o.id);
+      return o;
     } else if (DEVICE_DEFS[type]) {
+      if (singletonPlaced(type)) { showCanvasToast(singletonMsg(type), true); return null; }
       var rot = type.indexOf('out')>-1 ? 180 : 0, x = p.x, y = p.y;
       if (ROOM_FIT_FOV_TYPES.indexOf(type) > -1) {
         var room = roomContainingPoint(p);
@@ -7232,7 +7524,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (mount) { x = mount.x; y = mount.y; rot = mount.rot; if (SMART_MOUNT_NOTE[mount.how]) showCanvasToast(SMART_MOUNT_NOTE[mount.how]); }
       var d = addDevice({ type:type, x:x, y:y, rot: rot });
       selectItem('device', d.id);
+      return d;
     }
+    return null;
   }
   document.querySelectorAll('.pal-item').forEach(function(item){
     item.addEventListener('dragstart', function(ev){
@@ -7241,7 +7535,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       item.classList.add('dragging');
     });
     item.addEventListener('dragend', function(){ item.classList.remove('dragging'); });
-    item.addEventListener('click', function(){ if (item.classList.contains('pal-locked')) return; armPalette(item.dataset.type, item); });
+    item.addEventListener('click', function(){
+      if (item.classList.contains('pal-locked')) { if (item.title) showCanvasToast(item.title, true); return; }
+      armPalette(item.dataset.type, item);
+    });
   });
 
   /* ============================= accessories accordion =============================
@@ -7499,31 +7796,42 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // top on a best-effort basis where the browser/host actually allows it.
   var appEl = document.getElementById('app');
   var btnFullscreen = document.getElementById('btnFullscreen');
+  var fsExitFab = document.getElementById('fsExitFab');
+  // Leaving fullscreen must always be possible: the toolbar button (now labelled), a large
+  // floating "✕ יציאה" pill, Esc, and the phone's back gesture (an entry is pushed to history).
+  function setFullscreen(on){
+    var was = appEl.classList.contains('is-fullscreen');
+    appEl.classList.toggle('is-fullscreen', on);
+    try {
+      if (on && document.documentElement.requestFullscreen && !isIOSDevice()) {
+        document.documentElement.requestFullscreen().catch(function(){});
+      } else if (!on && document.fullscreenElement) {
+        document.exitFullscreen().catch(function(){});
+      }
+    } catch(e) {}
+    try {
+      if (on && !was) history.pushState({ g1fs:1 }, '');
+      else if (!on && was && history.state && history.state.g1fs) history.back();
+    } catch(e) {}
+    updateFsBtn();
+  }
+  window.addEventListener('popstate', function(){ if (appEl.classList.contains('is-fullscreen')) { appEl.classList.remove('is-fullscreen'); updateFsBtn(); } });
+  fsExitFab.addEventListener('click', function(){ setFullscreen(false); });
   function updateFsBtn(){
     var fs = appEl.classList.contains('is-fullscreen');
+    fsExitFab.hidden = !fs;
     // keeps the icon + collapsible-label structure (see .tb-lbl) the toolbar markup uses
     btnFullscreen.innerHTML = '⛶<span class="tb-lbl"> ' + (fs ? 'יציאה ממסך מלא' : 'מסך מלא') + '</span>';
     btnFullscreen.setAttribute('aria-label', fs ? 'יציאה ממסך מלא' : 'מסך מלא');
   }
-  btnFullscreen.addEventListener('click', function(){
-    var goingFullscreen = !appEl.classList.contains('is-fullscreen');
-    appEl.classList.toggle('is-fullscreen', goingFullscreen);
-    try {
-      if (goingFullscreen && document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(function(){});
-      } else if (!goingFullscreen && document.fullscreenElement) {
-        document.exitFullscreen().catch(function(){});
-      }
-    } catch(e) {}
-    updateFsBtn();
-  });
+  btnFullscreen.addEventListener('click', function(){ setFullscreen(!appEl.classList.contains('is-fullscreen')); });
   document.addEventListener('fullscreenchange', function(){
-    if (!document.fullscreenElement) appEl.classList.remove('is-fullscreen');
-    updateFsBtn();
+    if (!document.fullscreenElement && appEl.classList.contains('is-fullscreen')) setFullscreen(false);
+    else updateFsBtn();
   });
   document.addEventListener('keydown', function(ev){
     if (ev.key === 'Escape' && appEl.classList.contains('is-fullscreen') && !document.fullscreenElement) {
-      appEl.classList.remove('is-fullscreen'); updateFsBtn();
+      setFullscreen(false);
     }
     if (ev.key === 'Escape') {
       disarmPalette();

@@ -4,7 +4,7 @@
 // precaches the page itself (everything the app needs — including the PDF-export libraries —
 // is inlined in that one document, so caching it is enough for full offline use) and serves
 // it from cache on every later visit, falling back to a fresh network copy when one is reachable.
-const CACHE_NAME = 'g1-siteguard-v73';
+const CACHE_NAME = 'g1-siteguard-v74';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
