@@ -933,6 +933,14 @@
   .sg-ltr{ direction:ltr; unicode-bidi:embed; display:inline-block; }
   .q-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; background:rgba(0,170,231,.04); }
   .q-approval-title{ font-weight:700; color:#0b1220; margin-bottom:4px; font-size:13px; }
+  .q-item-name{ font-weight:600; }
+  .plan-table{ margin:6px 0 8px; font-size:11.5px; } .plan-table td{ vertical-align:top; }
+  .zone-list{ display:flex; flex-wrap:wrap; gap:4px 6px; margin:4px 0 8px; font-size:10.5px; }
+  .zone-list span{ border:1px solid rgba(0,170,231,.35); border-radius:6px; padding:1px 6px; background:rgba(0,170,231,.06); white-space:nowrap; }
+  .zone-list b{ color:#0077a8; margin-inline-end:3px; }
+  .plan-concl{ margin:6px 0 0; padding-inline-start:18px; font-size:11.5px; line-height:1.6; } .plan-concl li{ margin-bottom:3px; }
+  .q-item-desc, .sg-desc{ display:block; font-size:11px; line-height:1.5; color:var(--ink-dim); font-weight:400; margin-top:2px; max-width:520px; }
+  .sg-desc{ color:#5a6270; }
   .q-approval-terms, .sg-terms-note{ font-size:11.5px; font-weight:700; color:#0b1220; background:rgba(0,170,231,.08); border-inline-start:3px solid #00AAE7; padding:8px 10px 9px; margin:0 0 12px; line-height:1.75; border-radius:4px; }
   .q-approval-decl{ font-size:11.5px; color:var(--ink-dim); margin:0 0 10px; }
   .q-approval-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; font-size:12px; }
@@ -1686,7 +1694,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 85</div>
+              <div class="app-version" id="appVersion">גרסה 86</div>
             </div>
           </div>
         </div>
@@ -1902,6 +1910,10 @@
             <input type="checkbox" id="alarmWirelessToggle">
             <label for="alarmWirelessToggle">מערכת אזעקה אלחוטית (ללא צורך בכבילת אזעקה)</label>
           </div>
+          <div class="checkbox-row floor-conc-row" hidden>
+            <input type="checkbox" id="floorConcToggle" checked>
+            <label for="floorConcToggle">ריכוז קומתי — מרחיב אזורים ומתג PoE בכל קומה (מומלץ בבית קומות)</label>
+          </div>
 
           <div class="section-title">כבילה מוערכת</div>
           <table class="bom" id="bomCableTable"><thead><tr><th>סוג כבל</th><th class="num">מ״א מוערך</th></tr></thead><tbody></tbody></table>
@@ -2046,6 +2058,10 @@
         <input type="checkbox" id="qAlarmWirelessToggle">
         <label for="qAlarmWirelessToggle">מערכת אזעקה אלחוטית (ללא צורך בכבילת אזעקה)</label>
       </div>
+      <div class="checkbox-row price-line floor-conc-row" hidden>
+        <input type="checkbox" id="qFloorConcToggle" checked>
+        <label for="qFloorConcToggle">ריכוז קומתי — מרחיב אזורים ומתג PoE בכל קומה</label>
+      </div>
       <table class="bom" id="qCableTable"><thead><tr><th>סוג כבל</th><th class="num">מ״א</th><th class="num price-col">מחיר למ״א (₪)</th><th class="num price-col">סה״כ (₪)</th></tr></thead><tbody></tbody></table>
 
       <div class="rate-row price-line" style="margin-top:14px"><span>עלות התקנה (צוות התקנות)</span><span class="num"><input type="number" id="qInstallCost" min="0" placeholder="0" style="width:76px;text-align:center"></span></div>
@@ -2175,6 +2191,10 @@
         <div class="sketch-section" id="sketchInfraSection" hidden>
           <h4>תשתית חשמל ותקשורת להכנה</h4>
           <div id="sketchInfraInfo"></div>
+        </div>
+        <div class="sketch-section" id="sketchPlanSection" hidden>
+          <h4>תכנון המערכת — אזורים ומתגים</h4>
+          <div id="sketchPlanInfo"></div>
         </div>
         <div class="sketch-section" id="sketchFenceSection" hidden>
           <h4>גדר והיקף (מידע כללי)</h4>
@@ -2857,7 +2877,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     smart_shutter:{ label:'מתג תריסים חכם',          cat:'smart',    color:'var(--accent-6)' },
     smart_switch: { label:'מתג חשמל חכם',            cat:'smart',    color:'var(--accent-6)' },
     smart_cam:    { label:'מצלמת SMART אלחוטית',     cat:'smart',    color:'var(--accent-6)',  rotatable:true, fov:100, range:6 },
-    smart_water_heater: { label:'דוד שמש (מפסק חכם)', cat:'smart',   color:'var(--accent-6)' }
+    smart_water_heater: { label:'דוד שמש (מפסק חכם)', cat:'smart',   color:'var(--accent-6)' },
+    // System modules the app sizes by itself from the drawing (zone expanders for the alarm
+    // panel, PoE switches for the cameras) — they appear in the BOM/quote, never on the palette.
+    zexp_int:     { label:'מרחיב אזורים פנימי — 8 אזורים',   cat:'alarm',  color:'var(--accent)',   derived:true },
+    zexp8:        { label:'מרחיב אזורים חיצוני — 8 אזורים',  cat:'alarm',  color:'var(--accent)',   derived:true },
+    zexp16:       { label:'מרחיב אזורים חיצוני — 16 אזורים', cat:'alarm',  color:'var(--accent)',   derived:true },
+    poe4:         { label:'מתג PoE ‏4 פורטים',               cat:'camera', color:'var(--accent-2)', derived:true },
+    poe8:         { label:'מתג PoE ‏8 פורטים',               cat:'camera', color:'var(--accent-2)', derived:true },
+    poe16:        { label:'מתג PoE ‏16 פורטים',              cat:'camera', color:'var(--accent-2)', derived:true }
   };
 
   var TIPS = {
@@ -3148,7 +3176,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     spider_ctrl:       { power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
     spider_ctrl_2relay:{ power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
     cam_lpr:           { power:1, net:0, text:'נקודת חשמל בלבד — אינה מחייבת נקודת רשת (מודול סלולרי מובנה, ללא חיבור ל-NVR).' },
-    smart_cam:         { power:1, net:0, text:'נקודת חשמל (או סוללה לפי הדגם) וקליטת Wi-Fi טובה — ללא נקודת רשת.' }
+    smart_cam:         { power:1, net:0, text:'נקודת חשמל (או סוללה לפי הדגם) וקליטת Wi-Fi טובה — ללא נקודת רשת.' },
+    poe4:              { power:1, net:0, cabinet:true, text:'שקע חשמל בנקודת הריכוז; כבל Uplink אחד למערכת ההקלטה.' },
+    poe8:              { power:1, net:0, cabinet:true, text:'שקע חשמל בנקודת הריכוז; כבל Uplink אחד למערכת ההקלטה.' },
+    poe16:             { power:1, net:0, cabinet:true, text:'שקע חשמל בנקודת הריכוז; כבל Uplink אחד למערכת ההקלטה.' }
   };
   // Totals for the current project: power/network points the site must provide.
   function computeInfraRequirements(deviceList){
@@ -3163,6 +3194,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       lines[d.type] = (lines[d.type] || 0) + 1;
       power += req.power; net += req.net;
     });
+    // PoE switches sized by the system plan: in the cabinet when it's on their floor, otherwise
+    // each concentration point needs its own power outlet
+    var vplan = computeSystemPlan(deviceList).video;
+    if (vplan) vplan.switches.forEach(function(sw){
+      if (hasCabinet && sw.floor === vplan.nvrFloor) { inCabinetNet += 1; return; }
+      lines[sw.type] = (lines[sw.type] || 0) + 1; power += 1;
+    });
     var cab = null;
     if (hasCabinet){
       var cabCount = deviceList.filter(function(d){ return d.type === 'comm_cabinet'; }).length;
@@ -3170,6 +3208,56 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       power += cab.power; net += cab.net;
     }
     return { lines:lines, cabinet:cab, power:power, net:net };
+  }
+  // "תכנון המערכת" — zone plan, expanders, PoE switches and the installation method that
+  // follows from them (install guide + printed sketch).
+  function systemPlanHtml(){
+    var P = computeSystemPlan(), A = P.alarm, V = P.video, h = '';
+    if (!A && !V) return '';
+    var e = escapeHtml, fl = function(f){ return usesMultiFloor() ? floorLabelFor(f) : ''; };
+    var room = function(d){ var r = roomOfDevice(d); return r && r.label ? r.label : ''; };
+    var MOD = { onboard:'רכזת — 8 אזורים מובנים', zexp_int:'מרחיב אזורים פנימי (בתוך הרכזת)', zexp8:'מרחיב אזורים חיצוני — 8', zexp16:'מרחיב אזורים חיצוני — 16' };
+    var conc = [];
+    if (A){
+      if (A.wireless){
+        h += '<p><b>מערכת אזעקה אלחוטית:</b> ' + A.zoneCount + ' אביזרים נרשמים אלחוטית לרכזת — אין צורך במרחיבי אזורים ובכבילת אזעקה. לוחות מקשים: ' + A.keypads + '.</p>';
+      } else {
+        h += '<table class="bom plan-table"><thead><tr><th>מודול</th><th>מיקום</th><th class="num">אזורים</th><th>גלאים מחוברים</th></tr></thead><tbody>' +
+          A.modules.map(function(m){
+            var loc = m.type === 'onboard' || m.type === 'zexp_int' ? (fl(m.floor) ? fl(m.floor) + ' · ' : '') + (m.type === 'onboard' ? 'מיקום הרכזת' : 'בתוך הרכזת')
+              : (P.conc && m.floor !== A.hubFloor ? 'ריכוז קומתי · ' + fl(m.floor) : (fl(m.floor) ? fl(m.floor) + ' · ' : '') + 'ליד הרכזת');
+            return '<tr><td>' + MOD[m.type] + '</td><td>' + e(loc) + '</td><td class="num"><span dir="ltr">' + m.first + '–' + (m.first + m.cap - 1) + '</span></td><td>' +
+              (m.devs.length ? m.devs.length + ': ' + e(A.zones.filter(function(z){ return z.module === m.type && z.zone >= m.first && z.zone < m.first + m.cap; }).map(function(z){ return z.tag; }).join(', ')) : '—') + '</td></tr>';
+          }).join('') + '</tbody></table>';
+        if (A.zones.length) h += '<div class="zone-list">' + A.zones.map(function(z){ return '<span><b>' + z.zone + '</b> ' + e(z.tag) + (room(z.dev) ? ' · ' + e(room(z.dev)) : '') + '</span>'; }).join('') + '</div>';
+        var free = Math.max(0, PANEL_MAX_ZONES - A.capacity);
+        conc.push('נדרשים <b>' + A.zoneCount + '</b> אזורי גילוי (גלאי אחד = אזור אחד). ' + (A.zoneCount <= 8 ? 'כל הגלאים נכנסים ל-8 האזורים המובנים ברכזת — אין צורך במרחיב.' :
+          'מעבר ל-8 האזורים המובנים: ' + A.modules.filter(function(m){ return m.type !== 'onboard'; }).map(function(m){ return MOD[m.type]; }).join(' + ') + '.') +
+          (A.overflow ? ' <b style="color:#b4231a">חריגה מ-32 אזורים — נדרשת רכזת בקיבולת גבוהה יותר או פיצול למערכות.</b>' : ' נותרו ' + free + ' אזורים להרחבה עתידית (עד 32).'));
+        if (A.modules.some(function(m){ return m.type === 'zexp_int'; })) conc.push('בבית פרטי ההרחבה הראשונה היא <b>מרחיב פנימי של 8 אזורים</b> המותקן בתוך הרכזת — הזול והפשוט ביותר, ללא קופסה וכבילה נוספות.');
+        if (A.keypads) conc.push(A.keypads + ' לוח/ות מקשים מתחברים לפס התקשורת (BUS) של הרכזת ואינם תופסים אזור גילוי. סירנות מתחברות ליציאות הסירנה.');
+        if (A.modules.some(function(m){ return m.type === 'zexp8' || m.type === 'zexp16'; })) conc.push('מרחיב חיצוני מתחבר לרכזת בכבל BUS יחיד (4 גידים: מתח + תקשורת) ומקבל ממנה הזנה' + (A.modules.some(function(m){ return m.type === 'zexp16'; }) ? '; במרחיב 16 עמוס גלאים — מומלץ ספק כוח עזר.' : '.'));
+      }
+    }
+    if (V){
+      h += '<table class="bom plan-table"><thead><tr><th>מתג PoE</th><th>מיקום</th><th class="num">פורטים</th><th>מצלמות מחוברות</th></tr></thead><tbody>' +
+        V.switches.map(function(sw){
+          var loc = P.conc && sw.floor !== V.nvrFloor ? 'ריכוז קומתי · ' + fl(sw.floor) : (fl(sw.floor) ? fl(sw.floor) + ' · ' : '') + 'ליד מערכת ההקלטה';
+          return '<tr><td>' + DEVICE_DEFS[sw.type].label + '</td><td>' + e(loc) + '</td><td class="num">' + sw.used + '/' + sw.ports + '</td><td>' + e(sw.devs.join(', ')) + '</td></tr>';
+        }).join('') + '</tbody></table>';
+      conc.push('מערכת ההקלטה (' + V.channels + ' ערוצים, ' + V.cams + ' מצלמות) אינה מזינה מצלמות — ' + (V.switches.length > 1 ? 'מתגי ה-PoE מזינים' : 'מתג ה-PoE מזין') + ' כל מצלמה בחשמל ונתונים בכבל רשת יחיד, ומתחבר/ים למערכת ההקלטה בפורט Uplink. צריכה טיפוסית כ-6–8W למצלמה — בתוך תקציב ההספק של המתג.');
+      conc.push('אורך כל ריצת כבל רשת (מצלמה ← מתג) עד 90–100 מ׳.');
+    }
+    var remote = (A && A.modules.some(function(m){ return m.floor !== A.hubFloor; })) || (V && V.switches.some(function(sw){ return sw.floor !== V.nvrFloor; }));
+    if (P.conc && !remote){
+      conc.push('ריכוז קומתי פעיל — כרגע כל הגלאים והמצלמות נמצאים בקומת הרכזת. אביזרים שיוצבו בקומות האחרות יחוברו לנקודת ריכוז קומתית (מרחיב / מתג) בקומה שלהם.');
+    } else if (P.conc){
+      conc.push('<b>ריכוז קומתי:</b> בכל קומה נקודת ריכוז אחת — ישירות מעל/מתחת לרכזת ולמערכת ההקלטה (בפיר משותף). הגלאים והמצלמות של הקומה מחווטים רק עד נקודת הריכוז שלה, ומכל נקודה עולה כבל אחד לכל מערכת: BUS לרכזת ו-Cat6 (Uplink) למערכת ההקלטה. כבילה קצרה בהרבה, התקנה מהירה ותחזוקה פשוטה.');
+      conc.push('בכל נקודת ריכוז קומתית יש להכין קופסה/ארונית קטנה' + (V && V.switches.some(function(sw){ return sw.floor !== V.nvrFloor; }) ? ' ושקע חשמל למתג' : '') + '.');
+    } else if (usesMultiFloor()){
+      conc.push('ריכוז קומתי כבוי — כל גלאי ומצלמה מחווטים ישירות עד הרכזת / מערכת ההקלטה דרך הפיר.');
+    }
+    return h + (conc.length ? '<ul class="plan-concl">' + conc.map(function(c){ return '<li>' + c + '</li>'; }).join('') + '</ul>' : '');
   }
   function infraSummaryHtml(){
     var R = computeInfraRequirements();
@@ -5023,7 +5111,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var targetKey = cableAnchorKey(def.cable);
       var target = anchors[targetKey];
       if (!target) { missingAnchor = true; return; }
-      var meters = p2m(Math.abs(r.x-target.x) + Math.abs(r.y-target.y)) * 1.3 + 2.2;
+      var meters = cableRunMeters(r, target);
       cableTotals[def.cable] += meters;
     });
     return { totals: cableTotals, missingAnchor: missingAnchor };
@@ -7145,6 +7233,143 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return DEVICE_DEFS.nvr.label + ' (' + channels + ' ערוצים)';
   }
 
+  /* ============================= system plan: zones, expanders, PoE switches =============================
+     Alarm panel: 8 zones on the board, expandable to 32 — first an internal 8-zone card that
+     plugs into the panel itself (cheapest, no extra box or cable — always the first step in a
+     private house), then remote 8 / 16-zone expanders on the panel's BUS. Every wired detector
+     takes one zone; keypads sit on the BUS and take none; sirens use the siren outputs.
+     Cameras: the NVR has no PoE ports of its own, so the cameras are powered by PoE switches
+     (4 / 8 / 16 ports, the smallest that fits).
+     Multi-floor house — floor concentration (default): each floor gets its own concentration
+     point (directly above/below the panel / recorder, on the shared riser): a remote zone
+     expander for that floor's detectors and a PoE switch for its cameras. The detectors and
+     cameras run only to their floor's point, and ONE cable per system climbs the riser —
+     much shorter runs, faster installation, easier maintenance. */
+  var ZONE_TYPES = { pir:1, pir_pet:1, pir_ceiling:1, pir_ceiling_ind:1, contact:1, glassbreak:1, curtain_in:1, curtain_out:1, smoke:1, flood:1, fence_sensor:1, safe_sensor:1 };
+  var POE_CAM_TYPES = { cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1 };
+  var PANEL_MAX_ZONES = 32, FLOOR_HEIGHT_M = 3.2;
+  function floorConcentrationOn(){ return usesMultiFloor() && state.floorConcentration !== false; }
+  function devFloor(d){ return d.floor != null ? (d.floor || 0) : Math.max(0, Math.floor((d.y || 0) / FLOOR_Y_STRIDE)); }
+  function poeSwitchFor(n){ return n <= 4 ? 4 : n <= 8 ? 8 : 16; }
+  function computeSystemPlan(deviceList){
+    var devs = deviceList || state.devices, conc = floorConcentrationOn();
+    var tags = computeDeviceTags(), totals = {};
+    devs.forEach(function(d){ totals[d.type] = (totals[d.type] || 0) + 1; });
+    var tagOf = function(d){ return deviceTagLabel(d.type, tags[d.id], totals[d.type]); };
+    var sortDevs = function(arr){ return arr.slice().sort(function(p, q){ return devFloor(p) - devFloor(q) || p.y - q.y || p.x - q.x; }); };
+    var plan = { conc:conc, alarm:null, video:null };
+    var hub = devs.filter(function(d){ return d.type === 'hub'; })[0];
+    var zdevs = devs.filter(function(d){ return ZONE_TYPES[d.type]; });
+    if (hub || zdevs.length){
+      var hubF = hub ? devFloor(hub) : 0;
+      var A = { wireless:!!state.alarmWireless, hubFloor:hubF, zoneCount:zdevs.length, keypads:totals.keypad || 0, modules:[], zones:[], capacity:0, overflow:false };
+      if (!A.wireless){
+        var byFloor = {};
+        zdevs.forEach(function(d){ var f = devFloor(d); (byFloor[f] = byFloor[f] || []).push(d); });
+        var local = sortDevs(conc ? (byFloor[hubF] || []) : zdevs);
+        var start = 1;
+        var add = function(type, floor, cap, list){ A.modules.push({ type:type, floor:floor, cap:cap, first:start, devs:list }); list.forEach(function(d, i){ A.zones.push({ zone:start + i, dev:d, tag:tagOf(d), floor:devFloor(d), module:type }); }); start += cap; };
+        add('onboard', hubF, 8, local.splice(0, 8));
+        if (local.length) add('zexp_int', hubF, 8, local.splice(0, 8));
+        while (local.length){ var c = local.length > 8 ? 16 : 8; add('zexp' + c, hubF, c, local.splice(0, c)); }
+        if (conc) Object.keys(byFloor).map(Number).filter(function(f){ return f !== hubF; }).sort(function(x, y){ return x - y; }).forEach(function(f){
+          var R = sortDevs(byFloor[f]);
+          while (R.length){ var c2 = R.length > 8 ? 16 : 8; add('zexp' + c2, f, c2, R.splice(0, c2)); }
+        });
+        A.capacity = start - 1;
+        A.overflow = A.capacity > PANEL_MAX_ZONES;
+      }
+      plan.alarm = A;
+    }
+    var nvr = devs.filter(function(d){ return d.type === 'nvr'; })[0];
+    var cams = devs.filter(function(d){ return POE_CAM_TYPES[d.type]; });
+    if (cams.length){
+      var nvrF = nvr ? devFloor(nvr) : 0, groups = {};
+      cams.forEach(function(d){ var f = conc ? devFloor(d) : nvrF; (groups[f] = groups[f] || []).push(d); });
+      var V = { nvrFloor:nvrF, cams:cams.length, channels:nvrChannelsNeeded(cams.length), switches:[] };
+      Object.keys(groups).map(Number).sort(function(x, y){ return (x === nvrF ? -1 : y === nvrF ? 1 : x - y); }).forEach(function(f){
+        var list = sortDevs(groups[f]);
+        while (list.length){ var n = poeSwitchFor(list.length), part = list.splice(0, n); V.switches.push({ type:'poe' + n, floor:f, ports:n, used:part.length, devs:part.map(tagOf) }); }
+      });
+      plan.video = V;
+    }
+    return plan;
+  }
+  var HDD_BY_CHANNELS = { 4:'1TB', 8:'1TB', 16:'2TB', 32:'4TB' };
+  // Professional one-line spec for each quote line (shown under the item name in the quote,
+  // the client PDF and the customer's signing page).
+  function quoteItemDesc(t, opt){
+    opt = opt || {};
+    var conc = opt.conc != null ? opt.conc : floorConcentrationOn();
+    var wireless = opt.wireless != null ? opt.wireless : state.alarmWireless;
+    var D = {
+      hub: wireless
+        ? 'רכזת אזעקה אלחוטית ממוחשבת — קליטת עד 32 אביזרים אלחוטיים בתקשורת מוצפנת דו-כיוונית · חיבור למוקד ולאפליקציה (סלולר / IP) · סוללת גיבוי מובנית'
+        : 'רכזת אזעקה ממוחשבת בעלת 8 אזורי גילוי, מתרחבת עד 32 אזורים · חלוקה לאזורי דריכה · חיבור למוקד ולאפליקציה (סלולר / IP) · ספק כוח וסוללת גיבוי מובנים',
+      keypad: 'לוח מקשים עם תצוגה ומקשי מצב (בית / לילה / יציאה) לדריכה וניטרול · מתחבר לפס התקשורת (BUS) של הרכזת ואינו תופס אזור גילוי',
+      zexp_int: 'כרטיס הרחבה המותקן בתוך הרכזת — מוסיף 8 אזורי גילוי (אזורים 9–16), ללא קופסה נוספת וללא כבילה נוספת',
+      zexp8: 'מרחיב אזורים מרוחק בקופסה עצמאית — 8 אזורי גילוי, מתחבר לרכזת בכבל BUS יחיד' + (conc ? ' · מותקן כנקודת ריכוז קומתית לקיצור הכבילה' : ''),
+      zexp16: 'מרחיב אזורים מרוחק בקופסה עצמאית — 16 אזורי גילוי, מתחבר לרכזת בכבל BUS יחיד' + (conc ? ' · מותקן כנקודת ריכוז קומתית לקיצור הכבילה' : ''),
+      pir: 'גלאי נפח פסיבי (PIR) דיגיטלי עם עיבוד אותות חכם למניעת התראות שווא · זווית כיסוי כ-90–110° וטווח כ-8–12 מ׳ · מגן חבלה (Tamper)',
+      pir_pet: 'גלאי נפח פסיבי דיגיטלי מתעלם מחיות מחמד (Pet Immune, עד כ-25 ק״ג) · טווח כ-8–12 מ׳ · מגן חבלה (Tamper)',
+      pir_ceiling: 'גלאי נפח תקרתי 360° — כיסוי בקוטר כ-12 מ׳ בגובה 2.4–4 מ׳ · התקנה נסתרת ואסתטית במרכז התקרה',
+      pir_ceiling_ind: 'גלאי תקרתי תעשייתי משולב PIR + מיקרוגל (Dual-Tech) עם הגנת אנטי-מסק · כיסוי בקוטר כ-18 מ׳ בגובה עד 8.6 מ׳ · לחללים גדולים',
+      contact: 'גלאי מגע מגנטי לדלת / חלון — התראה מיידית בפתיחה, עוד לפני הכניסה · מאפשר דריכה היקפית בזמן שהות בבית',
+      glassbreak: 'גלאי שבירת זכוכית אקוסטי — מזהה את תדר שבירת הזכוכית בטווח כ-6–7.5 מ׳ · הגנה על חלונות וויטרינות גדולות',
+      curtain_in: 'גלאי וילון פנימי — אלומת גילוי צרה (כ-16°) לאורך חלונות ופתחים, טווח כ-9 מ׳ · תנועה חופשית בבית בזמן דריכה היקפית',
+      curtain_out: 'גלאי וילון חיצוני עמיד מים — אלומה צרה לאורך חזית וחלונות, טווח כ-12 מ׳ · גילוי מוקדם עוד לפני ניסיון החדירה',
+      smoke: 'גלאי עשן אופטי — התראה מוקדמת על שריפה, מחובר לרכזת ולמוקד 24/7',
+      flood: 'גלאי הצפה — התראה מיידית על נזילת מים (מטבח, חדר מכונות, דוד) לצמצום נזקים',
+      siren_in: 'סירנה פנימית בעוצמה של כ-100–110 dB — מרתיעה ומשבשת את פעולת הפורץ',
+      siren_out: 'סירנה חיצונית עם נצנץ ומגן חבלה, עוצמה כ-110–120 dB · סוללת גיבוי עצמאית — ממשיכה לפעול גם בניתוק כבל',
+      fence_sensor: 'גלאי קרניים אקטיבי (IR) להגנה היקפית — טווח כ-20–60 מ׳ בין משדר למקלט · גילוי מוקדם בקו הגדר',
+      safe_sensor: 'גלאי כספת (רטט / מגע) — מזהה ניסיון פריצה, קידוח או הזזה של הכספת',
+      cam_in: 'מצלמת IP פנימית 4MP · עדשה רחבת זווית וראיית לילה IR · הזנת PoE בכבל רשת יחיד',
+      cam_out: 'מצלמת IP חיצונית 4MP עמידה במים ובאבק (IP67) · ראיית לילה IR · עדשה 2.8 מ״מ · הזנת PoE בכבל רשת יחיד',
+      cam_in_analytics: 'מצלמת IP פנימית 4MP עם אנליטיקה מבוססת AI — הבחנה בין אדם / רכב לתנועה רגילה וצמצום התראות שווא · PoE',
+      cam_out_analytics: 'מצלמת IP חיצונית 4MP עם אנליטיקה מבוססת AI (חציית קו, כניסה לאזור, זיהוי אדם / רכב) · IP67 · ראיית לילה IR · PoE',
+      cam_lpr: 'מצלמת זיהוי לוחיות רישוי (LPR) של PAL — פתיחת שער אוטומטית לרכבים מורשים · מודול סלולרי מובנה',
+      poe4: 'מתג רשת PoE ‏4 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · פורט Uplink למערכת ההקלטה · תקציב הספק כ-60W',
+      poe8: 'מתג רשת PoE ‏8 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · פורט Uplink למערכת ההקלטה · תקציב הספק כ-120W',
+      poe16: 'מתג רשת PoE ‏16 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · 2 פורטי Uplink · תקציב הספק כ-230W',
+      comm_cabinet: 'ארון תקשורת 6U לריכוז מסודר ומאוורר של מערכת ההקלטה, המתגים ואל-הפסק',
+      ups: 'אל-פסק (UPS) — גיבוי חשמל למערכת ההקלטה ולמתגים בעת הפסקת חשמל',
+      intercom_ext: 'יחידת אינטרקום חיצונית עם מצלמה, עמידה בתנאי חוץ · פתיחת דלת / שער',
+      intercom_int: 'צג אינטרקום פנימי — שיחה, צפייה ופתיחת דלת',
+      intercom_pal: 'אינטרקום סלולרי PAL — השיחה מגיעה ישירות לטלפון הנייד באפליקציה, ללא יחידת מסך פנימית',
+      spider_ctrl: 'בקר סלולרי PAL Spider (ממסר אחד) — פתיחת שער / מחסום מהטלפון, ניהול הרשאות ויומן כניסות',
+      spider_ctrl_2relay: 'בקר סלולרי PAL Spider (2 ממסרים) — שליטה בשני שערים / מחסומים מהטלפון, ניהול הרשאות ויומן כניסות',
+      amplifier: 'מגבר אודיו להפעלת מערכת הרמקולים בבית ובחצר',
+      speaker_in: 'רמקול פנימי שקוע תקרה / קיר',
+      speaker_out: 'רמקול חיצוני עמיד מים',
+      switch: 'מתג רשת לחיבור נקודות הרשת ונקודות הגישה',
+      ap_in: 'נקודת גישה Wi-Fi פנימית מוזנת PoE — כיסוי אלחוטי יציב בכל הבית',
+      ap_out: 'נקודת גישה Wi-Fi חיצונית עמידה בתנאי חוץ, מוזנת PoE'
+    };
+    if (t === 'nvr'){
+      var ch = opt.channels || 8;
+      return 'מערכת הקלטה דיגיטלית (NVR) ' + ch + ' ערוצים · דחיסת H.265+ · זיכרון ' + (HDD_BY_CHANNELS[ch] || '2TB') + ' · אנליטיקה מובנית (זיהוי אדם / רכב) · צפייה והתראות מרחוק באפליקציה';
+    }
+    return D[t] || '';
+  }
+  // Cable length of one run, in metres. A device on another floor than its panel/recorder
+  // runs to the riser point on its own floor (directly above/below the anchor); with floor
+  // concentration that point IS its floor's expander/switch (the riser cable is added once per
+  // floor, see riserRuns), otherwise the run continues up the riser to the anchor.
+  function cableRunMeters(d, target){
+    var df = devFloor(d), tf = devFloor(target), ty = target.y + (df - tf) * FLOOR_Y_STRIDE;
+    var m = p2m(Math.abs(d.x - target.x) + Math.abs(d.y - ty)) * 1.3 + 2.2;
+    if (df !== tf && !floorConcentrationOn()) m += Math.abs(df - tf) * FLOOR_HEIGHT_M;
+    return m;
+  }
+  // One riser cable per remote floor and system (expander BUS / switch uplink) under floor concentration.
+  function riserRuns(list, cableType, target){
+    if (!floorConcentrationOn() || !target) return 0;
+    var tf = devFloor(target), floors = {};
+    list.forEach(function(d){ var def = DEVICE_DEFS[d.type]; if (def && def.cable === cableType && devFloor(d) !== tf) floors[devFloor(d)] = 1; });
+    return Object.keys(floors).reduce(function(sum, f){ return sum + Math.abs(+f - tf) * FLOOR_HEIGHT_M + 3; }, 0);
+  }
+
   function computeBom(){
     var counts = {};
     state.devices.forEach(function(d){ counts[d.type] = (counts[d.type]||0)+1; });
@@ -7168,25 +7393,47 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var targetKey = cableAnchorKey(def.cable);
       var target = anchors[targetKey];
       if (!target) { warnings.push(def.label + ': חסרה נקודת עוגן לחישוב כבילה'); return; }
-      var meters = p2m(Math.abs(d.x-target.x) + Math.abs(d.y-target.y)) * 1.3 + 2.2;
+      var meters = cableRunMeters(d, target);
       cableTotals[def.cable] += meters;
       if (def.cable === 'cat6' && meters > 90) warnings.push(def.label + ': מרחק כבילה ' + meters.toFixed(0) + ' מ׳ חורג ממגבלת PoE — נדרש מתג/מגביר ביניים');
     });
+    if (!state.alarmWireless) cableTotals.alarm += riserRuns(state.devices, 'alarm', anchors.hub);
+    cableTotals.cat6 += riserRuns(state.devices, 'cat6', anchors.nvr);
     var waste = 1 + (parseFloat(document.getElementById('rateWaste').value)||0)/100;
     Object.keys(cableTotals).forEach(function(k){ cableTotals[k] = Math.ceil(cableTotals[k]*waste); });
 
-    return { counts:counts, cableTotals:cableTotals, warnings:warnings, refs:refs };
+    // zone expanders right after the panel, PoE switches right after the recorder
+    var plan = computeSystemPlan(), extra = {};
+    var where = function(f){ return plan.conc ? 'ריכוז קומתי — ' + floorLabelFor(f) : (usesMultiFloor() ? floorLabelFor(f) : 'ליד הרכזת / מערכת ההקלטה'); };
+    if (plan.alarm) plan.alarm.modules.forEach(function(m){ if (m.type === 'onboard') return; extra.hub = extra.hub || []; extra.hub.push([m.type, m.type === 'zexp_int' ? 'בתוך הרכזת' : where(m.floor)]); });
+    if (plan.video) plan.video.switches.forEach(function(sw){ extra.nvr = extra.nvr || []; extra.nvr.push([sw.type, where(sw.floor)]); });
+    if (plan.alarm && plan.alarm.overflow) warnings.push('נדרשים ' + plan.alarm.capacity + ' אזורים — מעל ' + PANEL_MAX_ZONES + ' אזורים יש לבחור רכזת בקיבולת גבוהה יותר (64/96 אזורים) או לפצל למערכות');
+    var ordered = {};
+    var push = function(t, ref){ ordered[t] = (ordered[t] || 0) + 1; refs[t] = refs[t] || []; if (ref && refs[t].indexOf(ref) < 0) refs[t].push(ref); };
+    Object.keys(counts).forEach(function(t){
+      ordered[t] = counts[t];
+      var anchorKey = t === 'hub' ? 'hub' : t === 'nvr' ? 'nvr' : null;
+      if (anchorKey && extra[anchorKey]) { extra[anchorKey].forEach(function(x){ push(x[0], x[1]); }); delete extra[anchorKey]; }
+    });
+    Object.keys(extra).forEach(function(k){ extra[k].forEach(function(x){ push(x[0], x[1]); }); }); // no panel/recorder drawn yet
+    return { counts:ordered, cableTotals:cableTotals, warnings:warnings, refs:refs, plan:plan };
   }
 
+  function syncFloorConcToggles(){
+    var multi = usesMultiFloor();
+    Array.prototype.forEach.call(document.querySelectorAll('.floor-conc-row'), function(r){ r.hidden = !multi; });
+    ['floorConcToggle', 'qFloorConcToggle'].forEach(function(id){ var el = document.getElementById(id); if (el) el.checked = state.floorConcentration !== false; });
+  }
   function runBom(){
     document.getElementById('alarmWirelessToggle').checked = state.alarmWireless;
+    syncFloorConcToggles();
     var bom = computeBom();
     var equipBody = document.getElementById('bomEquipTable').querySelector('tbody');
     var rows = Object.keys(bom.counts);
     equipBody.innerHTML = rows.length ? rows.map(function(t){
       var label = (t === 'nvr') ? nvrLabelWithChannels(bom.counts) : DEVICE_DEFS[t].label;
       return '<tr><td>' + label +
-        '<br><span class="bom-tags">תיוג בשרטוט: ' + (bom.refs[t]||[]).join(', ') + '</span></td>' +
+        '<br><span class="bom-tags">' + (DEVICE_DEFS[t].derived ? 'מיקום: ' : 'תיוג בשרטוט: ') + (bom.refs[t]||[]).join(', ') + '</span></td>' +
         '<td class="num">' + bom.counts[t] + '</td></tr>';
     }).join('') : '<tr><td colspan="2" style="color:var(--ink-dim);text-align:center">אין אביזרים בשרטוט עדיין</td></tr>';
 
@@ -7232,7 +7479,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // with real unit prices once they're set.
       cam_in:420, cam_out:620, cam_in_analytics:780, cam_out_analytics:1050, nvr:1400, comm_cabinet:900, ups:1100, intercom_ext:950, intercom_int:750, spider_ctrl:1800, fence_sensor:260, safe_sensor:340,
       amplifier:1600, speaker_in:280, speaker_out:420, switch:650, net_point:150, ap_in:480, ap_out:680,
-      smart_lock:550, smart_shutter:280, smart_switch:180, smart_cam:380, smart_water_heater:320 };
+      smart_lock:550, smart_shutter:280, smart_switch:180, smart_cam:380, smart_water_heater:320,
+      zexp_int:220, zexp8:380, zexp16:560, poe4:350, poe8:550, poe16:1100 };
     var equipCost = 0;
     Object.keys(bom.counts).forEach(function(t){ equipCost += (unitPrices[t]||150) * bom.counts[t]; });
     var cableCost = bom.cableTotals.alarm*pAlarmCable + bom.cableTotals.cat6*pCat + bom.cableTotals.power*pPower + bom.cableTotals.intercom*pIntercomCable + bom.cableTotals.speaker*pSpeakerCable + bom.cableTotals.network*pNetworkCable;
@@ -7252,6 +7500,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // The same wireless/wired choice is also exposed directly inside the client quote modal
   // (agents build a quote without necessarily having visited the sidebar's BOM tab first),
   // kept in sync both ways with the sidebar toggle above.
+  document.getElementById('floorConcToggle').addEventListener('change', function(){ state.floorConcentration = this.checked; runBom(); });
+  document.getElementById('qFloorConcToggle').addEventListener('change', function(){
+    state.floorConcentration = this.checked;
+    var captured = captureQuoteInputs();
+    var r = runBom();
+    buildQuote(r.bom);
+    restoreQuoteInputs(captured);
+  });
   document.getElementById('qAlarmWirelessToggle').addEventListener('change', function(){
     state.alarmWireless = this.checked;
     document.getElementById('alarmWirelessToggle').checked = state.alarmWireless;
@@ -8325,7 +8581,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // A project saved before quote numbering existed has no quoteNumber — defaulting to null
       // here means reopening an old file simply issues it a fresh number the next time a quote
       // from it is sent/printed, exactly like a brand-new project (see ensureQuoteNumber()).
-      quoteNumber: data.state.quoteNumber || null
+      quoteNumber: data.state.quoteNumber || null,
+      floorConcentration: data.state.floorConcentration !== false
     };
     selected = null;
     roomEditId = null;
@@ -9009,7 +9266,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<p>מצלמה ויחידת הקלטה (NVR) מחייבות כל אחת <b>נקודת חשמל ונקודת רשת</b>. אם יש <b>ארון תקשורת</b> — לחילופין נדרשים בו <b>לפחות 3 שקעי חשמל ו-2 נקודות תקשורת</b> (יותר לפי כמות האביזרים צורכי הרשת). <b>בקר PAL ואינטרקום PAL</b> — חשמל בלבד, ללא נקודת רשת (מודול סלולרי מובנה).</p>' +
       (infraHtml ? '<h4 style="margin-top:10px">בפרויקט הנוכחי</h4>' + infraHtml : '<p style="color:#8a8170">טרם הוצבו בשרטוט אביזרים הדורשים נקודות חשמל/רשת.</p>') +
       '</div>';
-    body.innerHTML = intro + basementNote + conventions + infraBlock + LEGEND_SECTIONS.map(function(sec){
+    var planInner = systemPlanHtml();
+    var planBlock = planInner ? '<div class="legend-conventions infra-block plan-block"><h4>תכנון המערכת — אזורים, מרחיבים ומתגי PoE</h4>' + planInner + '</div>' : '';
+    body.innerHTML = intro + basementNote + conventions + infraBlock + planBlock + LEGEND_SECTIONS.map(function(sec){
       var rows = sec.types.map(function(t){
         var isOpening = !!OPENING_DEFS[t];
         var isStruct = t === 'room' || t === 'yard';
@@ -9163,11 +9422,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // unit prices, the install cost, VAT rate or monitoring selections the agent already typed
   // in. These two helpers snapshot those values (keyed by each row's own label, which is
   // stable across a rebuild) before a mid-quote rebuild and restore them right after.
+  function qRowName(tr){ return (tr.querySelector('.q-item-name') || tr.cells[0]).textContent.trim(); }
   function captureQuoteInputs(){
     var captured = { equip:{}, cable:{}, install:null, vat:null, monitor:{}, discountOn:false, discountType:null, discountValue:null, paymentTerms:null };
     document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]').forEach(function(tr){
       var priceInput = tr.querySelector('.q-price');
-      if (priceInput && priceInput.value) captured.equip[tr.cells[0].textContent] = priceInput.value;
+      if (priceInput && priceInput.value) captured.equip[qRowName(tr)] = priceInput.value;
     });
     document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]').forEach(function(tr){
       var priceInput = tr.querySelector('.q-price');
@@ -9193,7 +9453,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function restoreQuoteInputs(captured){
     document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]').forEach(function(tr){
-      var v = captured.equip[tr.cells[0].textContent];
+      var v = captured.equip[qRowName(tr)];
       if (v !== undefined) tr.querySelector('.q-price').value = v;
     });
     document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]').forEach(function(tr){
@@ -9232,7 +9492,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var rows = Object.keys(bom.counts);
     document.getElementById('qEquipTable').querySelector('tbody').innerHTML = rows.length ? rows.map(function(t){
       var label = (t === 'nvr') ? nvrLabelWithChannels(bom.counts) : DEVICE_DEFS[t].label;
-      return '<tr data-row="equip" data-type="' + t + '" data-qty="' + bom.counts[t] + '"><td>' + label + '</td>' +
+      var desc = quoteItemDesc(t, { channels: nvrChannelsNeeded(Math.max(cameraChannelCount(bom.counts), 1)) });
+      return '<tr data-row="equip" data-type="' + t + '" data-qty="' + bom.counts[t] + '"><td><span class="q-item-name">' + label + '</span>' + (desc ? '<span class="q-item-desc">' + escapeHtml(desc) + '</span>' : '') + '</td>' +
         '<td class="num">' + bom.counts[t] + '</td>' +
         '<td class="num price-col"><input type="number" class="q-price" min="0" placeholder="0" style="width:76px;text-align:center"></td>' +
         '<td class="num q-linetotal price-col">—</td></tr>';
@@ -10340,7 +10601,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var c = getCustomerContact(), txt = function(id){ var e = document.getElementById(id); return e ? e.textContent.trim() : ''; };
     var num = function(t){ return String(t).replace(/[^\d.\-]/g, ''); };
     var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){
-      var t = tr.dataset.type, lbl = tr.cells[0].textContent.trim(), qty = +tr.cells[1].textContent.trim() || tr.cells[1].textContent.trim();
+      var t = tr.dataset.type, lbl = qRowName(tr), qty = +tr.cells[1].textContent.trim() || tr.cells[1].textContent.trim();
+      if (t === 'nvr') { var chm = lbl.match(/(\d+)\s*ערוצים/); if (chm && lbl === DEVICE_DEFS.nvr.label + ' (' + chm[1] + ' ערוצים)') return ['@nvr' + chm[1], qty]; }
       return [(t && DEVICE_DEFS[t] && DEVICE_DEFS[t].label === lbl) ? '@' + t : lbl, qty];
     });
     var cables = Array.prototype.map.call(document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]'), function(tr){
@@ -10368,6 +10630,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       it:items, tt:num(txt('qTotal')), t:tot
     };
     if (cables.length) o.cb = cables;
+    if (state.alarmWireless) o.w = 1;
+    if (floorConcentrationOn()) o.fc = 1;
     if (mon.length && mt !== '₪0') { o.m = mon; o.mt = num(mt); }
     var pt = document.getElementById('qPaymentTerms').value.trim(); if (pt) o.pt = pt;
     return o;
@@ -10385,7 +10649,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       v:2, ch:o.ch, n:o.n, d:o.d,
       c:{ n:c[0] || '', a:c[1] || '', p:c[2] || '', e:c[3] || '', it:c[4] || '', id:c[5] || '' },
       ag:{ n:ag[0] || '', p:ag[1] || '', b:ag[2] || '', e:ag[3] || '' },
-      it:(o.it || []).map(function(r){ return [name(r[0], dev), String(r[1])]; }),
+      it:(o.it || []).map(function(r){
+        var code = typeof r[0] === 'string' && r[0].charAt(0) === '@' ? r[0].slice(1) : null, nv = code && code.match(/^nvr(\d+)$/);
+        if (nv) return [DEVICE_DEFS.nvr.label + ' (' + nv[1] + ' ערוצים)', String(r[1]), quoteItemDesc('nvr', { channels:+nv[1] })];
+        return [name(r[0], dev), String(r[1]), code ? quoteItemDesc(code, { wireless:!!o.w, conc:!!o.fc }) : ''];
+      }),
       cb:(o.cb || []).map(function(r){ return [name(r[0], cab), r[1] + ' מ׳']; }),
       t:(o.t || []).map(function(r){ return r[0] === 'v' ? ['מע״מ (' + (r[2] || '') + '%)', ils(r[1])] : [SIGN_TOTAL_CODES[r[0]] || r[0], ils(r[1])]; }),
       tt:ils(o.tt), m:(o.m || []).map(function(r){ return [name(r[0], svc), r[1] != null ? String(r[1]) : '']; }), mt:o.mt ? ils(o.mt) : '', pt:o.pt || ''
@@ -10414,7 +10682,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     h += '<h1 class="sg-title">' + (o.signed ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + e(String(q.n)) + '</h1>';
     h += '<p class="sg-sub">' + e(q.c.n || '') + (q.c.a ? ' · ' + e(q.c.a) : '') + ' · הופקה ' + e(q.d) + '</p>';
     h += '<h3>התקנה חד-פעמית — אביזרים</h3><table class="sg-t"><tr><th>אביזר</th><th>כמות</th></tr>' +
-      q.it.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
+      q.it.map(function(r){ return '<tr><td>' + e(r[0]) + (r[2] ? '<span class="sg-desc">' + e(r[2]) + '</span>' : '') + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
     if (q.cb && q.cb.length) h += '<h3>כבילה נדרשת (אומדן)</h3><table class="sg-t"><tr><th>סוג כבל</th><th>מ״א</th></tr>' +
       q.cb.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
     h += '<table class="sg-t sg-tot">' + q.t.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') +
@@ -10937,6 +11205,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     var infraSec = document.getElementById('sketchInfraSection'), infraInner = infraSummaryHtml();
     if (infraSec){ infraSec.hidden = !infraInner; document.getElementById('sketchInfraInfo').innerHTML = infraInner; }
+    var planSec = document.getElementById('sketchPlanSection'), planInner2 = systemPlanHtml();
+    if (planSec){ planSec.hidden = !planInner2; document.getElementById('sketchPlanInfo').innerHTML = planInner2; }
 
     var fenceSummary = computeFenceSummary();
     var fenceSection = document.getElementById('sketchFenceSection');
