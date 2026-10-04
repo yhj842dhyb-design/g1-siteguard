@@ -934,6 +934,13 @@
   .q-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; background:rgba(0,170,231,.04); }
   .q-approval-title{ font-weight:700; color:#0b1220; margin-bottom:4px; font-size:13px; }
   .q-item-name{ font-weight:600; }
+  .zone-table{ font-size:10.5px; } .zone-table th, .zone-table td{ padding:3px 4px; vertical-align:top; }
+  .zone-table .zl-num{ font-weight:700; color:#fff; text-align:center; width:22px; }
+  .zone-table .zl-num{ background:#c0392b; border-radius:4px; }
+  .zone-table .zl-tag{ font-family:var(--font-mono); white-space:nowrap; font-weight:600; }
+  .zone-table .zl-where{ display:block; color:var(--ink-dim); font-size:9.5px; }
+  .zone-table .zl-conn{ white-space:nowrap; color:var(--ink-dim); }
+  .zl-note{ font-size:10px; color:var(--ink-dim); margin:4px 0 0; line-height:1.5; }
   .plan-table{ margin:6px 0 8px; font-size:11.5px; } .plan-table td{ vertical-align:top; }
   .zone-list{ display:flex; flex-wrap:wrap; gap:4px 6px; margin:4px 0 8px; font-size:10.5px; }
   .zone-list span{ border:1px solid rgba(0,170,231,.35); border-radius:6px; padding:1px 6px; background:rgba(0,170,231,.06); white-space:nowrap; }
@@ -1214,7 +1221,14 @@
   body.pdf-export .sketch-body{ overflow:visible; }
   body.pdf-export .sketch-plan-wrap, body.pdf-export .sketch-side{ overflow:visible; }
   body.pdf-export .sketch-head-actions{ display:none; }
-  body.pdf-export .sketch-side{ flex:0 0 300px; }
+  /* PDF: the drawing full-width on top (as large as possible), the legend / zone list / cabling /
+     system plan laid out underneath in columns — instead of one tall narrow column beside it */
+  body.pdf-export .sketch-body{ flex-direction:column; }
+  body.pdf-export .sketch-plan-wrap{ flex:none; align-items:flex-start; padding:14px 18px 6px; }
+  body.pdf-export .sketch-plan-wrap svg{ height:auto; max-height:1050px; }
+  body.pdf-export .sketch-side{ flex:none; border-inline-start:0; border-top:1px solid var(--paper-line); display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); grid-auto-flow:row dense; gap:4px 24px; align-items:start; }
+  body.pdf-export .sketch-side > .sketch-section:first-child{ grid-row:span 4; }
+  body.pdf-export .sketch-side > #sketchPlanSection{ grid-column:span 2; }
   /* The "we tried to open your mail app…" status panel and the raw client-email input box
      are working UI for the agent, not part of the document itself — never let them show up
      inside the exported quote/sketch PDF, however they happened to be visible on screen. */
@@ -1694,7 +1708,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 86</div>
+              <div class="app-version" id="appVersion">גרסה 87</div>
             </div>
           </div>
         </div>
@@ -2183,6 +2197,10 @@
         <div class="sketch-section">
           <h4>מקרא אביזרים בשרטוט זה</h4>
           <div class="sketch-legend" id="sketchLegend"></div>
+        </div>
+        <div class="sketch-section" id="sketchZoneSection" hidden>
+          <h4>רשימת אזורי אזעקה</h4>
+          <div id="sketchZoneInfo"></div>
         </div>
         <div class="sketch-section">
           <h4>סיכום כבילה נדרשת (כולל רזרבה)</h4>
@@ -3211,7 +3229,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // "תכנון המערכת" — zone plan, expanders, PoE switches and the installation method that
   // follows from them (install guide + printed sketch).
-  function systemPlanHtml(){
+  function systemPlanHtml(opts){
+    opts = opts || {};
     var P = computeSystemPlan(), A = P.alarm, V = P.video, h = '';
     if (!A && !V) return '';
     var e = escapeHtml, fl = function(f){ return usesMultiFloor() ? floorLabelFor(f) : ''; };
@@ -3229,7 +3248,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
             return '<tr><td>' + MOD[m.type] + '</td><td>' + e(loc) + '</td><td class="num"><span dir="ltr">' + m.first + '–' + (m.first + m.cap - 1) + '</span></td><td>' +
               (m.devs.length ? m.devs.length + ': ' + e(A.zones.filter(function(z){ return z.module === m.type && z.zone >= m.first && z.zone < m.first + m.cap; }).map(function(z){ return z.tag; }).join(', ')) : '—') + '</td></tr>';
           }).join('') + '</tbody></table>';
-        if (A.zones.length) h += '<div class="zone-list">' + A.zones.map(function(z){ return '<span><b>' + z.zone + '</b> ' + e(z.tag) + (room(z.dev) ? ' · ' + e(room(z.dev)) : '') + '</span>'; }).join('') + '</div>';
+        if (A.zones.length && !opts.noZones) h += '<div class="zone-list">' + A.zones.map(function(z){ return '<span><b>' + z.zone + '</b> ' + e(z.tag) + (room(z.dev) ? ' · ' + e(room(z.dev)) : '') + '</span>'; }).join('') + '</div>';
         var free = Math.max(0, PANEL_MAX_ZONES - A.capacity);
         conc.push('נדרשים <b>' + A.zoneCount + '</b> אזורי גילוי (גלאי אחד = אזור אחד). ' + (A.zoneCount <= 8 ? 'כל הגלאים נכנסים ל-8 האזורים המובנים ברכזת — אין צורך במרחיב.' :
           'מעבר ל-8 האזורים המובנים: ' + A.modules.filter(function(m){ return m.type !== 'onboard'; }).map(function(m){ return MOD[m.type]; }).join(' + ') + '.') +
@@ -3258,6 +3277,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       conc.push('ריכוז קומתי כבוי — כל גלאי ומצלמה מחווטים ישירות עד הרכזת / מערכת ההקלטה דרך הפיר.');
     }
     return h + (conc.length ? '<ul class="plan-concl">' + conc.map(function(c){ return '<li>' + c + '</li>'; }).join('') + '</ul>' : '');
+  }
+  // "רשימת אזורי אזעקה" — one row per zone: number, tag on the drawing, what it is, where it
+  // is and what it's wired to (panel / internal expander / which floor expander).
+  function zoneListHtml(floorOnly){
+    var P = computeSystemPlan(), A = P.alarm;
+    if (!A || !A.zones.length) return '';
+    var e = escapeHtml, multi = usesMultiFloor();
+    var zones = floorOnly != null && multi ? A.zones.filter(function(z){ return z.floor === floorOnly; }) : A.zones;
+    if (!zones.length) return '<p class="zl-note">אין גלאים מחווטים בקומה זו.</p>';
+    var CONN = { onboard:'רכזת', zexp_int:'מרחיב פנימי', zexp8:'מרחיב 8', zexp16:'מרחיב 16', wireless:'אלחוטי' };
+    var rows = zones.map(function(z){
+      var r = roomOfDevice(z.dev), where = (r && r.label ? r.label : (DEVICE_DEFS[z.dev.type].label.indexOf('חיצוני') > -1 ? 'חוץ' : '—'));
+      var conn = CONN[z.module] + ((z.module === 'zexp8' || z.module === 'zexp16') && P.conc && z.floor !== A.hubFloor ? ' · ' + floorShortLabelFor(z.floor) : '');
+      return '<tr><td class="zl-num">' + z.zone + '</td><td class="zl-tag">' + e(z.tag) + '</td><td>' + e(DEVICE_DEFS[z.dev.type].label) + '<span class="zl-where">' + e(where) + '</span></td><td class="zl-conn">' + e(conn) + '</td></tr>';
+    }).join('');
+    return '<table class="bom zone-table"><thead><tr><th class="num">אז׳</th><th>תיוג</th><th>אביזר · מיקום</th><th>חיבור</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<p class="zl-note">' + (A.wireless ? 'אזורים אלחוטיים — לפי סדר הרישום ברכזת.' : 'סה״כ ' + A.zoneCount + ' אזורים בשימוש (קיבולת הרכזת עד ' + PANEL_MAX_ZONES + ').') + ' המספר בעיגול האדום ליד כל גלאי בשרטוט = מספר האזור ברכזת.' +
+      (floorOnly != null && multi && zones.length < A.zones.length ? ' (מוצגים אזורי ' + floorLabelFor(floorOnly) + ' בלבד; ' + A.zones.length + ' אזורים בכל הבית.)' : '') + '</p>';
   }
   function infraSummaryHtml(){
     var R = computeInfraRequirements();
@@ -4249,7 +4286,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     visibleDevices().forEach(function(d){
       var def = DEVICE_DEFS[d.type];
       var isSel = selected && selected.kind==='device' && selected.id===d.id;
-      var g = el('g', { class:'item-g' + (isSel?' selected':''), transform:'translate(' + d.x + ',' + d.y + ')' });
+      var g = el('g', { class:'item-g' + (isSel?' selected':''), transform:'translate(' + d.x + ',' + d.y + ')', 'data-id': d.id });
 
       if (def.fov) {
         var coneClass = 'fov-cone ' + (def.cat==='intercom' ? 'intercom' : def.cat==='alarm' ? 'alarm' : def.cat==='smart' ? 'smart' : '');
@@ -7278,6 +7315,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         });
         A.capacity = start - 1;
         A.overflow = A.capacity > PANEL_MAX_ZONES;
+      } else {
+        sortDevs(zdevs).forEach(function(d, i){ A.zones.push({ zone:i + 1, dev:d, tag:tagOf(d), floor:devFloor(d), module:'wireless' }); });
       }
       plan.alarm = A;
     }
@@ -11102,6 +11141,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // placement — they must never reach the sketch handed to the client/installer.
     var recsClone = clone.querySelector('#recsLayer');
     if (recsClone) recsClone.parentNode.removeChild(recsClone);
+    // zone number badge next to every wired/wireless detector (matches "רשימת אזורי אזעקה")
+    var zplan = computeSystemPlan().alarm;
+    if (zplan) zplan.zones.forEach(function(z){
+      var g = clone.querySelector('#devicesLayer [data-id="' + z.dev.id + '"]') || clone.querySelector('[data-id="' + z.dev.id + '"]');
+      if (!g) return;
+      var ns = 'http://www.w3.org/2000/svg', b = document.createElementNS(ns, 'g');
+      b.setAttribute('class', 'zone-badge'); b.setAttribute('transform', 'translate(13,-13)');
+      var c = document.createElementNS(ns, 'circle'); c.setAttribute('r', z.zone > 9 ? '8' : '7'); c.setAttribute('fill', '#c0392b'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', '1.5');
+      var t = document.createElementNS(ns, 'text'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('dy', '3.2'); t.setAttribute('font-size', '9'); t.setAttribute('font-weight', '700'); t.setAttribute('fill', '#fff'); t.setAttribute('font-family', 'Arial, sans-serif');
+      t.textContent = String(z.zone);
+      b.appendChild(c); b.appendChild(t); g.appendChild(b);
+    });
     // The clone's <defs> (floor-texture patterns, the drop-shadow filter) share ids with
     // the live canvas's defs. Once the live app is hidden for print those ids resolve to
     // non-rendered elements first (document order), so every fill="url(#pWood)" etc. in
@@ -11205,7 +11256,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     var infraSec = document.getElementById('sketchInfraSection'), infraInner = infraSummaryHtml();
     if (infraSec){ infraSec.hidden = !infraInner; document.getElementById('sketchInfraInfo').innerHTML = infraInner; }
-    var planSec = document.getElementById('sketchPlanSection'), planInner2 = systemPlanHtml();
+    var zoneSec = document.getElementById('sketchZoneSection'), zoneInner = zoneListHtml(usesMultiFloor() ? sketchActiveFloor : null);
+    if (zoneSec){ zoneSec.hidden = !zoneInner; document.getElementById('sketchZoneInfo').innerHTML = zoneInner; }
+    var planSec = document.getElementById('sketchPlanSection'), planInner2 = systemPlanHtml({ noZones:true });
     if (planSec){ planSec.hidden = !planInner2; document.getElementById('sketchPlanInfo').innerHTML = planInner2; }
 
     var fenceSummary = computeFenceSummary();
