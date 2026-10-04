@@ -884,6 +884,13 @@
   .share-btn.done::after{ content:'✓'; font-weight:800; }
   .share-note{ font-size:11.5px; color:#1f5c4c; background:#eaf3ef; border:1px solid #bcdccf; border-radius:8px; padding:7px 10px; line-height:1.5; }
   .share-note.warn{ color:#7a4a0c; background:#fff5e2; border-color:#f1d49b; }
+  .sk-who{ display:flex; gap:6px; }
+  .sk-who button{ flex:1 1 0; border:1px solid var(--paper-line); background:#fff; border-radius:10px; padding:9px 8px; font:700 13px var(--font-body); color:var(--ink-on-paper); cursor:pointer; }
+  .sk-who button.on{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .sk-fields{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .sk-fields label{ display:flex; flex-direction:column; gap:3px; font-size:11.5px; font-weight:600; color:var(--ink-dim); }
+  .sk-fields input{ border:1px solid var(--paper-line); border-radius:9px; padding:9px 10px; font-size:15px; font-family:inherit; background:#fff; color:var(--ink-on-paper); min-width:0; }
+  @media (max-width:520px){ .sk-fields{ grid-template-columns:1fr; } }
   .share-copy-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .share-copy-row .share-btn{ flex:1; min-height:40px; font-size:12.5px; }
   /* Hebrew-lettered terms list (א. ב. ג. ד.) on the quote / PDF */
@@ -1221,6 +1228,8 @@
   body.pdf-export .sketch-body{ overflow:visible; }
   body.pdf-export .sketch-plan-wrap, body.pdf-export .sketch-side{ overflow:visible; }
   body.pdf-export .sketch-head-actions{ display:none; }
+  body.pdf-export .sketch-floor-tabs{ display:none !important; }
+  body.sk-floor-part #sketchInfraSection, body.sk-floor-part #sketchPlanSection, body.sk-floor-part #sketchFenceSection, body.sk-floor-part .sketch-section.sk-cable{ display:none !important; }
   /* PDF: the drawing full-width on top (as large as possible), the legend / zone list / cabling /
      system plan laid out underneath in columns — instead of one tall narrow column beside it */
   body.pdf-export .sketch-body{ flex-direction:column; }
@@ -1669,6 +1678,7 @@
           <div class="pal-item" draggable="true" data-type="keypad"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="8" r="1"/><circle cx="14.5" cy="8" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="14.5" cy="12" r="1"/></svg><span>לוח מקשים</span></div>
           <div class="pal-item" draggable="true" data-type="pir"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg><span>גלאי נפח א.א. פאסיבי</span></div>
           <div class="pal-item" id="palPirPet" draggable="true" data-type="pir_pet" title="מומלץ/נדרש כשיש חיית מחמד בנכס"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="1.5" fill="currentColor"/><path d="M7 18.5 L17 18.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/></svg><span>PIR מתעלם מחיות</span></div>
+          <div class="pal-item" draggable="true" data-type="pir_am" title="גלאי נפח אנטי-מאסק Dual-Tech (PIR + MW) · דרגה 3 · טווח 15 מ׳ — לעסקים ולאזורים בסיכון גבוה"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="currentColor"/><path d="M3 3 L21 21" stroke="currentColor" stroke-width="1.6"/></svg><span>גלאי נפח אנטי-מאסק</span></div>
           <div class="pal-item" draggable="true" data-type="pir_ceiling" title="גלאי נפח תקרתי 360° — מותקן במרכז התקרה (2.4–4 מ׳), כיסוי בקוטר כ-12 מ׳"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg><span>גלאי נפח תקרתי 360°</span></div>
           <div class="pal-item" draggable="true" data-type="pir_ceiling_ind" title="גלאי תקרתי תעשייתי (PIR+MW, אנטי-מסק) — לחללים גדולים בלבד: מחסנים, אולמות, חללי מכירה. גובה 2.7–8.6 מ׳, קוטר כ-18 מ׳"><svg viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="7" height="7" rx="1.5" fill="currentColor"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg><span>גלאי תקרתי תעשייתי</span></div>
           <div class="pal-item" draggable="true" data-type="contact"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="6" height="4" fill="currentColor"/><rect x="15" y="10" width="6" height="4" fill="currentColor"/></svg><span>גלאי מגע דלת/חלון</span></div>
@@ -1821,7 +1831,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 88</div>
+              <div class="app-version" id="appVersion">גרסה 92</div>
             </div>
           </div>
         </div>
@@ -2293,8 +2303,8 @@
         <p class="sketch-date" id="skDate">—</p>
       </div>
       <div class="sketch-head-actions">
-        <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
-        <button class="btn btn-ghost btn-sm" id="btnSketchEmail">📧 שלח באאוטלוק</button>
+        <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" hidden style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
+        <button class="btn btn-primary btn-sm" id="btnSketchEmail">📤 שליחה — מייל / וואטסאפ</button>
         <button class="btn btn-ghost btn-sm" id="btnSketchPrint">💾 שמירה כ-PDF</button>
         <button class="modal-close" id="sketchClose" aria-label="סגור">✕</button>
       </div>
@@ -2315,7 +2325,7 @@
           <h4>רשימת אזורי אזעקה</h4>
           <div id="sketchZoneInfo"></div>
         </div>
-        <div class="sketch-section">
+        <div class="sketch-section sk-cable">
           <h4>סיכום כבילה נדרשת (כולל רזרבה)</h4>
           <table class="bom" id="sketchCableTable"><thead><tr><th>סוג כבל</th><th class="num">מ״א</th></tr></thead><tbody></tbody></table>
         </div>
@@ -2952,6 +2962,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     keypad:       { label:'לוח מקשים',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     pir:          { label:'גלאי נפח א.א. פאסיבי',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:110, range:8 },
     pir_pet:      { label:'גלאי נפח מתעלם מחיות',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:100, range:8 },
+    pir_am:       { label:'גלאי נפח אנטי-מאסק (Dual-Tech)', cat:'alarm', color:'var(--accent)', cable:'alarm', rotatable:true, fov:90, range:10 },
     pir_ceiling:  { label:'גלאי נפח תקרתי 360°',   cat:'alarm',    color:'var(--accent)',    cable:'alarm', fov:360, range:6 },
     pir_ceiling_ind: { label:'גלאי תקרתי תעשייתי (PIR+MW, אנטי-מסק)', cat:'alarm', color:'var(--accent)', cable:'alarm', fov:360, range:9 },
     contact:      { label:'גלאי מגע דלת/חלון',      cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
@@ -3030,6 +3041,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     hub:        'מוח המערכת — למקם במקום מוסתר ולא נגיש מהכניסה, עם גיבוי סוללה. משמש גם כנקודת עוגן לחישוב כבילת האזעקה.',
     keypad:     'להצבה בטווח קצר מהכניסה הראשית, בתוך זמן הכניסה המוגן — ולא נראית/נגישה מבחוץ דרך זכוכית.',
     pir:        'גלאי תנועה — בפינת חדר, בגובה כ-2–3 מ׳, הרחק מחלונות ומיזוג אוויר כדי למנוע התראות שווא.',
+    pir_am:     'גלאי נפח אנטי-מאסק — PIR + מיקרוגל עם IR אקטיבי שמזהה כיסוי, ריסוס או הסתרה של העדשה ומדווח לרכזת. דרגה 3, טווח 15 מ׳; לעסקים, חנויות, מרפאות וחדרי כספת.',
     pir_ceiling:'גלאי נפח תקרתי 360° — מותקן במרכז התקרה ורואה את כל החלל מלמעלה; מתאים לחדרים עם רהיטים גבוהים, מחיצות או צורה לא סדורה, ולתקרות 2.4–4 מ׳. כיסוי בקוטר כ-12 מ׳.',
     pir_ceiling_ind:'גלאי תקרתי תעשייתי — טכנולוגיה כפולה (PIR + מיקרוגל) עם אנטי-מסק, לחללים גדולים וגבוהים (מחסן, אולם, חלל מכירה) בגובה 2.7–8.6 מ׳; כיסוי בקוטר כ-18 מ׳.',
     pir_pet:    'גלאי נפח מתעלם מחיות (Pet Immune) — לבתים עם כלב/חתול. דגמים נפוצים מספקים חסינות לחיה במשקל של עד כ-25 ק״ג, ויש דגמים מקצועיים המגיעים עד כ-36 ק״ג — יש לוודא מול גיליון הנתונים של הדגם הנבחר מהו משקל החיה המרבי הנתמך בפועל. רוב הדגמים אינם דורשים כיול גובה מיוחד, אך היצרנים מדגישים במפורש להימנע מהתקנה במקום שבו החיה עלולה "לטפס כלפי מעלה" — ליד רהיטים, מדרגות או מדפים שיקרבו אותה לגובה הגלאי.',
@@ -3092,6 +3104,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       use: 'הגלאי הבסיסי והנפוץ ביותר להגנה על חלל — מזהה תנועה של גוף חם (אדם) בטווח הכיסוי שלו ומפעיל אזעקה כשהמערכת דרוכה.',
       range: 'טווח גילוי אופייני כ-8–12 מ׳ בזווית כיסוי של כ-90–110 מעלות (חרוט הכיסוי המסומן בשרטוט).',
       install: 'בפינת החדר, בגובה כ-2.0–2.4 מ׳, מכוון אל מרכז החלל; יש להימנע ממול חלון, מזגן, תנור או כל מקור חום/זרימת אוויר שעלול לגרום להתראות שווא.'
+    },
+    pir_am: {
+      use: 'גלאי נפח לאזורים בסיכון גבוה — עסקים פתוחים לקהל, חנויות, מרפאות, משרדים וחדרי כספת. טכנולוגיה כפולה (PIR + מיקרוגל) נגד התראות שווא, ומנגנון אנטי-מאסק (IR אקטיבי) שמזהה ניסיון לכסות, לרסס או לחסום את הגלאי בשעות שהמערכת מנוטרלת — ומדווח עליו לרכזת ולמוקד לפני הדריכה.',
+      range: 'טווח גילוי עד כ-15 מ׳ בזווית כ-90° (למשל Risco iWISE DT AM, Texecom Premier Elite AMDT — דרגה 3 לפי EN50131); טווח זיהוי המיסוך כ-0–1 מ׳ מול העדשה.',
+      install: 'בפינת החדר, בגובה כ-2.0–2.4 מ׳, מכוון לאלכסון החלל; ללא מכשולים בטווח 1 מ׳ מול הגלאי (מדף, שלט, צמח) — הם יזוהו כמיסוך. להרחיק ממזגן ומנורות פלורסנט (מיקרוגל). חיווט: אזור עם נגדי סוף-קו ייעודיים או יציאת "מיסוך" נפרדת לרכזת, לפי הדגם.'
     },
     pir_ceiling: {
       use: 'גלאי נפח שמותקן בתקרה ומכסה 360° סביבו — רואה את החדר מלמעלה ולכן לא "מוסתר" ע״י רהיטים גבוהים, ארונות או מחיצות נמוכות; מתאים לחללים פתוחים, לחדרים בצורה לא סדורה ולמקומות שאין בהם פינה פנויה מתאימה.',
@@ -3352,7 +3369,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var conc = [];
     if (A){
       if (A.wireless){
-        h += '<p><b>מערכת אזעקה אלחוטית:</b> ' + A.zoneCount + ' אביזרים נרשמים אלחוטית לרכזת — אין צורך במרחיבי אזורים ובכבילת אזעקה. לוחות מקשים: ' + A.keypads + '.</p>';
+        h += '<p><b>מערכת אזעקה אלחוטית:</b> ' + A.zoneCount + ' גלאים אלחוטיים נרשמים ישירות לרכזת (עד ' + PANEL_MAX_ZONES + ') — ללא מרחיבי אזורים וללא כבילת אזעקה. לוחות מקשים: ' + A.keypads + '.</p>';
+        conc.push(A.overflow ? '<b style="color:#b4231a">' + A.zoneCount + ' גלאים — מעל ' + PANEL_MAX_ZONES + ' הנתמכים ברכזת אלחוטית: יש לפצל לשתי מערכות או לעבור למערכת קווית / היברידית.</b>'
+          : 'רכזת אלחוטית: ' + A.zoneCount + ' מתוך ' + PANEL_MAX_ZONES + ' גלאים — נותרו ' + (PANEL_MAX_ZONES - A.zoneCount) + ' להרחבה עתידית. אין צורך במרחיבי אזורים.');
       } else {
         h += '<table class="bom plan-table"><thead><tr><th>מודול</th><th>מיקום</th><th class="num">אזורים</th><th>גלאים מחוברים</th></tr></thead><tbody>' +
           A.modules.map(function(m){
@@ -3384,7 +3403,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (P.conc && !remote){
       conc.push('ריכוז קומתי פעיל — כרגע כל הגלאים והמצלמות נמצאים בקומת הרכזת. אביזרים שיוצבו בקומות האחרות יחוברו לנקודת ריכוז קומתית (מרחיב / מתג) בקומה שלהם.');
     } else if (P.conc){
-      conc.push('<b>ריכוז קומתי:</b> בכל קומה נקודת ריכוז אחת — ישירות מעל/מתחת לרכזת ולמערכת ההקלטה (בפיר משותף). הגלאים והמצלמות של הקומה מחווטים רק עד נקודת הריכוז שלה, ומכל נקודה עולה כבל אחד לכל מערכת: BUS לרכזת ו-Cat6 (Uplink) למערכת ההקלטה. כבילה קצרה בהרבה, התקנה מהירה ותחזוקה פשוטה.');
+      conc.push('<b>ריכוז קומתי:</b> בכל קומה נקודת ריכוז אחת — ישירות מעל/מתחת לרכזת ולמערכת ההקלטה (בפיר משותף). הגלאים והמצלמות של הקומה מחווטים רק עד נקודת הריכוז שלה, ומכל נקודה עולה כבל אחד לכל מערכת: ' + (A && A.wireless ? 'Cat6 (Uplink) למערכת ההקלטה (האזעקה אלחוטית — ללא כבל BUS)' : 'BUS לרכזת ו-Cat6 (Uplink) למערכת ההקלטה') + '. כבילה קצרה בהרבה, התקנה מהירה ותחזוקה פשוטה.');
       conc.push('בכל נקודת ריכוז קומתית יש להכין קופסה/ארונית קטנה' + (V && V.switches.some(function(sw){ return sw.floor !== V.nvrFloor; }) ? ' ושקע חשמל למתג' : '') + '.');
     } else if (usesMultiFloor()){
       conc.push('ריכוז קומתי כבוי — כל גלאי ומצלמה מחווטים ישירות עד הרכזת / מערכת ההקלטה דרך הפיר.');
@@ -3427,7 +3446,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { title:'מבנה — חדרים ואזורים', dot:'var(--ink-dim)', types:['room','yard'] },
     { title:'פתחים במבנה', dot:'var(--ink-on-paper)', types:['door_main','door_ext','door_int','window','window_lg'] },
     { title:'גדר היקפית', dot:'var(--wall)', types:['fence','gate'] },
-    { title:'מערכת אזעקה', dot:'var(--accent)', types:['hub','keypad','pir','pir_pet','pir_ceiling','pir_ceiling_ind','contact','glassbreak','curtain_in','curtain_out','smoke','flood','siren_in','siren_out','safe_sensor','fence_sensor'] },
+    { title:'מערכת אזעקה', dot:'var(--accent)', types:['hub','keypad','pir','pir_pet','pir_am','pir_ceiling','pir_ceiling_ind','contact','glassbreak','curtain_in','curtain_out','smoke','flood','siren_in','siren_out','safe_sensor','fence_sensor'] },
     { title:'מצלמות (CCTV)', dot:'var(--accent-2)', types:['cam_in','cam_out','cam_in_analytics','cam_out_analytics','cam_lpr','nvr','comm_cabinet','ups'] },
     { title:'אינטרקום', dot:'var(--accent-3)', types:['intercom_ext','intercom_int','intercom_pal','spider_ctrl','spider_ctrl_2relay'] },
     { title:'מערכת מוזיקה', dot:'var(--accent-4)', types:['amplifier','speaker_in','speaker_out'] },
@@ -3436,7 +3455,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   ];
 
   var DEVICE_CODE = {
-    hub:'HUB', keypad:'KP', pir:'PIR', pir_pet:'PIR-P', pir_ceiling:'PIR-C', pir_ceiling_ind:'PIR-CI', contact:'מגע', glassbreak:'זכו׳',
+    hub:'HUB', keypad:'KP', pir:'PIR', pir_pet:'PIR-P', pir_am:'PIR-AM', pir_ceiling:'PIR-C', pir_ceiling_ind:'PIR-CI', contact:'מגע', glassbreak:'זכו׳',
     curtain_in:'וילון-פ', curtain_out:'וילון-ח', smoke:'עשן', flood:'הצפה',
     siren_in:'סי-פ', siren_out:'סי-ח', cam_in:'מצ-פ', cam_out:'מצ-ח', cam_in_analytics:'אנל-פ', cam_out_analytics:'אנל-ח', cam_lpr:'LPR', nvr:'NVR', comm_cabinet:'ארון',
     intercom_ext:'אינ-ח', intercom_int:'אינ-פ', intercom_pal:'אינ-P', spider_ctrl:'PAL', spider_ctrl_2relay:'PAL-2', fence_sensor:'קרן', safe_sensor:'כספת',
@@ -4472,7 +4491,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // on the sketch. Exterior types (cam_out, curtain_out, intercom_ext) are excluded: there's
   // no enclosing wall to clip against outdoors, and their cones already read fine unclipped.
   // The same list also gets a "fit the room" default rotation on placement (see placeAtPoint).
-  var ROOM_FIT_FOV_TYPES = ['pir','pir_pet','curtain_in','cam_in','cam_in_analytics','smart_cam'];
+  var ROOM_FIT_FOV_TYPES = ['pir','pir_pet','pir_am','curtain_in','cam_in','cam_in_analytics','smart_cam'];
 
   // The room (walled, non-yard) whose rectangle strictly contains point p, or null. Rooms
   // are always stored/rendered as plain axis-aligned rectangles in absolute canvas pixels
@@ -4604,6 +4623,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       keypad:'<rect x="4" y="1" width="16" height="22" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="8" r="1.3" fill="currentColor"/><circle cx="15" cy="8" r="1.3" fill="currentColor"/><circle cx="9" cy="13" r="1.3" fill="currentColor"/><circle cx="15" cy="13" r="1.3" fill="currentColor"/>',
       pir:'<path d="M12 1 L22 22 L2 22 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="2.6" fill="currentColor"/>',
       pir_pet:'<path d="M12 1 L22 22 L2 22 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="14" r="1.8" fill="currentColor"/><path d="M7.5 19 L16.5 19" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/>',
+      pir_am:'<path d="M12 1 L22 22 L2 22 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="2.6" fill="currentColor"/><path d="M1.5 1.5 L22.5 22.5" stroke="currentColor" stroke-width="2"/>',
       pir_ceiling:'<circle cx="12" cy="12" r="3.4" fill="currentColor"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.6 2"/>',
       pir_ceiling_ind:'<rect x="8.3" y="8.3" width="7.4" height="7.4" rx="1.5" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="11.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.6 2"/>',
       contact:'<rect x="1" y="9" width="8" height="6" fill="currentColor"/><rect x="15" y="9" width="8" height="6" fill="currentColor"/>',
@@ -5385,17 +5405,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // A pet in the house (confirmed in the guiding questions) means every recommended PIR
     // has to be the pet-immune variant instead of the standard one — a regular PIR would
     // false-alarm on a dog/cat moving through its field of view.
-    var pirType = state.hasPet ? 'pir_pet' : 'pir';
+    var pirType = defaultPirType();
     pirRoomsToCover.forEach(function(r){
       var bb = roomBBoxPx(r);
       var margin = m2p(0.3);
-      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
+      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_am'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
       if (covered) return;
       // Corner mount aimed along the corner's bisector (see bestDetectorCorner): the 90° between
       // the two walls is the whole room, so the detector's field of view covers all of it.
       var pm = bestDetectorCorner(r, openings);
-      push(pirType, pm.x, pm.y, pm.rot, 'warning', (state.hasPet ? 'גלאי נפח מתעלם מחיות — ' : 'גלאי נפח — ') + (r.label||'חדר'),
-        'אזור מפתח למעבר/שהייה — מוצע ' + (state.hasPet ? 'גלאי נפח מתעלם מחיות (בהתאם למגבלות היצרן — משקל/גובה התקנה)' : 'גלאי נפח') + ' ב"' + (r.label||'חדר') + '"' +
+      push(pirType, pm.x, pm.y, pm.rot, 'warning', (pirType === 'pir_pet' ? 'גלאי נפח מתעלם מחיות — ' : pirType === 'pir_am' ? 'גלאי נפח אנטי-מאסק — ' : 'גלאי נפח — ') + (r.label||'חדר'),
+        'אזור מפתח למעבר/שהייה — מוצע ' + (pirType === 'pir_pet' ? 'גלאי נפח מתעלם מחיות (בהתאם למגבלות היצרן — משקל/גובה התקנה)' : pirType === 'pir_am' ? 'גלאי נפח אנטי-מאסק (עסק פתוח לקהל — הגנה מפני כיסוי/ריסוס הגלאי בשעות הפעילות)' : 'גלאי נפח') + ' ב"' + (r.label||'חדר') + '"' +
         ' בפינת החדר' + (pm.entry ? ' מול הכניסה' : '') + ', מכוון באלכסון (45°) — זווית הגילוי מכסה את כל החדר.');
     });
 
@@ -5965,13 +5985,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // detector placed has to be the pet-immune model — the regular PIR palette item is
     // locked out (not just discouraged) so the sketch can't quietly end up with a sensor
     // that will false-alarm on the resident dog/cat.
-    var pirItem = document.querySelector('.pal-item[data-type="pir"]');
-    if (pirItem) {
+    Array.prototype.forEach.call(document.querySelectorAll('.pal-item[data-type="pir"], .pal-item[data-type="pir_am"]'), function(pirItem){
       var pirLocked = !!state.hasPet;
+      if (pirItem._title == null) pirItem._title = pirItem.title || '';
       pirItem.classList.toggle('pal-locked', pirLocked);
       pirItem.draggable = !pirLocked;
-      pirItem.title = pirLocked ? 'יש חיית מחמד בנכס — יש להשתמש בגלאי נפח מתעלם מחיות (PIR-P) במקום' : '';
-    }
+      pirItem.title = pirLocked ? 'יש חיית מחמד בנכס — יש להשתמש בגלאי נפח מתעלם מחיות (PIR-P) במקום' : pirItem._title;
+    });
     updateRoomPresetGroupsForKind();
   }
   // Shows/hides each room-preset sub-menu group (see the markup comment above .room-presets)
@@ -6671,7 +6691,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      door wall). Each option shows how much of the room it actually covers (line of sight,
      walls block), the best one is marked, and one tap moves + aims the device and flashes its
      coverage for a moment so the agent sees the result at once. */
-  var QP_TYPES = { pir:1, pir_pet:1, curtain_in:1, cam_in:1, cam_in_analytics:1, smart_cam:1, pir_ceiling:1, pir_ceiling_ind:1 };
+  // Default volumetric detector for this project: pet-immune when there's a pet; anti-mask in a
+  // business open to the public (a detector can be covered or sprayed during opening hours).
+  function defaultPirType(){ return state.hasPet ? 'pir_pet' : (state.kind === 'store' || state.kind === 'clinic') ? 'pir_am' : 'pir'; }
+  var QP_TYPES = { pir:1, pir_pet:1, pir_am:1, curtain_in:1, cam_in:1, cam_in_analytics:1, smart_cam:1, pir_ceiling:1, pir_ceiling_ind:1 };
   var CORNER_COMPASS = ['פינה צפון-מערבית', 'פינה צפון-מזרחית', 'פינה דרום-מערבית', 'פינה דרום-מזרחית']; // roomCornersWithBisector order
   function roomOfDevice(d){ return roomContainingPoint({ x:d.x, y:d.y }); }
   function roomOpeningsInfo(r){
@@ -6746,7 +6769,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var bc = bestDetectorCorner(r, state.openings);
       add('best', 'פינה מומלצת (רחוק מחלונות)', bc);
       if (info.mainWin) add('window', 'פינה מול החלון', cornerOpt(cornerFarFrom(info.mainWin)),
-        (type === 'pir' || type === 'pir_pet') ? 'שמש ישירה מהחלון עלולה לגרום להתראות שווא' : '');
+        (type === 'pir' || type === 'pir_pet' || type === 'pir_am') ? 'שמש ישירה מהחלון עלולה לגרום להתראות שווא' : '');
       if (info.entry){
         var dw = roomWallOf(info.entry, b);
         var onDoorWall = corners.filter(function(c){ return (dw.key === 'top' && c.cy === b.y1) || (dw.key === 'bottom' && c.cy === b.y2) || (dw.key === 'left' && c.cx === b.x1) || (dw.key === 'right' && c.cx === b.x2); })
@@ -6861,7 +6884,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     // Add straight from the room box: pick the device, then the position — it is placed,
     // aimed, and its coverage flashes on the plan.
-    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'pir_ceiling'].concat(isLargeSpace(r) ? ['pir_ceiling_ind'] : [], ['curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam']);
+    var addTypes = [defaultPirType(), defaultPirType() === 'pir_am' ? 'pir' : 'pir_am', 'pir_ceiling'].concat(isLargeSpace(r) ? ['pir_ceiling_ind'] : [], ['curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam']);
     var addType = roomAddType[r.id] && addTypes.indexOf(roomAddType[r.id]) > -1 ? roomAddType[r.id] : addTypes[0];
     var addOpts = quickPlaceOptions(addType, r);
     var addFam = ROOM_FAMILY[addType], addCap = addFam ? typeCapacity(addType, r) : 99;
@@ -6917,7 +6940,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      hall or a sales floor can need more: capacity follows the space's real size (volumetric
      detectors no more than ~9 m apart and ~45 m² each, cameras ~7 m / 35 m², smoke ~40 m²).
      Curtain detectors: one per wall that has windows. */
-  var ROOM_FAMILY = { pir:'vol', pir_pet:'vol', pir_ceiling:'vol', pir_ceiling_ind:'vol', cam_in:'cam', cam_in_analytics:'cam', smart_cam:'cam', glassbreak:'glass', smoke:'smoke', curtain_in:'curtain' };
+  var ROOM_FAMILY = { pir:'vol', pir_pet:'vol', pir_am:'vol', pir_ceiling:'vol', pir_ceiling_ind:'vol', cam_in:'cam', cam_in_analytics:'cam', smart_cam:'cam', glassbreak:'glass', smoke:'smoke', curtain_in:'curtain' };
   var ROOM_FAMILY_LABEL = { vol:'גלאי נפח', cam:'מצלמה פנימית', glass:'גלאי שבירת זכוכית', smoke:'גלאי עשן', curtain:'גלאי וילון' };
   function roomFamilyCapacity(fam, r){
     var w = r.w, h = r.h, area = w * h, long = Math.max(w, h);
@@ -7159,7 +7182,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
 
     // R: PIR too close to opening (applies equally to the pet-immune variant)
-    devices.filter(function(d){ return d.type==='pir'||d.type==='pir_pet'; }).forEach(function(d){
+    devices.filter(function(d){ return d.type==='pir'||d.type==='pir_pet'||d.type==='pir_am'; }).forEach(function(d){
       var tooClose = openings.some(function(o){ return dist(d.x,d.y,o.x,o.y) < m2p(1.0); });
       checks.push({
         sev: tooClose ? 'warning' : 'ok', weight:2, cat:'alarm',
@@ -7175,11 +7198,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // with a sensor-per-room count nobody actually installs.
     var pirRoomsChk = priorityPirRooms(rooms);
     if (restrictToDoorAndPir) pirRoomsChk = pirRoomsChk.slice(0, 1);
-    var pirFixLabel = state.hasPet ? 'גלאי נפח מתעלם מחיות (PIR-P)' : 'גלאי נפח (PIR)';
+    var pirFixLabel = state.hasPet ? 'גלאי נפח מתעלם מחיות (PIR-P)' : defaultPirType() === 'pir_am' ? 'גלאי נפח אנטי-מאסק (PIR-AM)' : 'גלאי נפח (PIR)';
     pirRoomsChk.forEach(function(r){
       var bb = roomBBoxPx(r);
       var margin = m2p(0.3);
-      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
+      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_am'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
       checks.push({
         sev: covered ? 'ok' : 'warning', weight:2, cat:'alarm',
         text: covered ? ('כיסוי גלאי נפח תקין ב"' + (r.label||'חדר') + '"') : ('אין גלאי נפח בטווח סביר ב"' + (r.label||'חדר') + '"'),
@@ -7396,7 +7419,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      expander for that floor's detectors and a PoE switch for its cameras. The detectors and
      cameras run only to their floor's point, and ONE cable per system climbs the riser —
      much shorter runs, faster installation, easier maintenance. */
-  var ZONE_TYPES = { pir:1, pir_pet:1, pir_ceiling:1, pir_ceiling_ind:1, contact:1, glassbreak:1, curtain_in:1, curtain_out:1, smoke:1, flood:1, fence_sensor:1, safe_sensor:1 };
+  var ZONE_TYPES = { pir:1, pir_pet:1, pir_am:1, pir_ceiling:1, pir_ceiling_ind:1, contact:1, glassbreak:1, curtain_in:1, curtain_out:1, smoke:1, flood:1, fence_sensor:1, safe_sensor:1 };
   var POE_CAM_TYPES = { cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1 };
   var PANEL_MAX_ZONES = 32, FLOOR_HEIGHT_M = 3.2;
   function floorConcentrationOn(){ return usesMultiFloor() && state.floorConcentration !== false; }
@@ -7430,7 +7453,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         A.capacity = start - 1;
         A.overflow = A.capacity > PANEL_MAX_ZONES;
       } else {
+        // wireless panel: up to 32 wireless detectors register directly to it — no zone expanders
         sortDevs(zdevs).forEach(function(d, i){ A.zones.push({ zone:i + 1, dev:d, tag:tagOf(d), floor:devFloor(d), module:'wireless' }); });
+        A.capacity = PANEL_MAX_ZONES;
+        A.overflow = zdevs.length > PANEL_MAX_ZONES;
       }
       plan.alarm = A;
     }
@@ -7465,6 +7491,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       zexp16: 'מרחיב אזורים 16 · קופסה עצמאית · חיבור BUS' + (conc ? ' · ריכוז קומתי' : ''),
       pir: 'PIR דיגיטלי · 90–110° · טווח 12 מ׳ · מגן חבלה',
       pir_pet: 'PIR דיגיטלי Pet Immune עד 25 ק״ג · טווח 12 מ׳ · מגן חבלה',
+      pir_am: 'גלאי נפח Dual-Tech (PIR + MW) · אנטי-מאסק IR אקטיבי · דרגה 3 · 90° · טווח 15 מ׳',
       pir_ceiling: 'PIR תקרתי 360° · קוטר 12 מ׳ · גובה התקנה 2.4–4 מ׳',
       pir_ceiling_ind: 'גלאי תקרתי Dual-Tech (PIR + MW) · אנטי-מסק · קוטר 18 מ׳ · גובה עד 8.6 מ׳',
       contact: 'מגע מגנטי · דלת / חלון · מגן חבלה',
@@ -7560,7 +7587,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var where = function(f){ return plan.conc ? 'ריכוז קומתי — ' + floorLabelFor(f) : (usesMultiFloor() ? floorLabelFor(f) : 'ליד הרכזת / מערכת ההקלטה'); };
     if (plan.alarm) plan.alarm.modules.forEach(function(m){ if (m.type === 'onboard') return; extra.hub = extra.hub || []; extra.hub.push([m.type, m.type === 'zexp_int' ? 'בתוך הרכזת' : where(m.floor)]); });
     if (plan.video) plan.video.switches.forEach(function(sw){ extra.nvr = extra.nvr || []; extra.nvr.push([sw.type, where(sw.floor)]); });
-    if (plan.alarm && plan.alarm.overflow) warnings.push('נדרשים ' + plan.alarm.capacity + ' אזורים — מעל ' + PANEL_MAX_ZONES + ' אזורים יש לבחור רכזת בקיבולת גבוהה יותר (64/96 אזורים) או לפצל למערכות');
+    if (plan.alarm && plan.alarm.overflow && plan.alarm.wireless) warnings.push(plan.alarm.zoneCount + ' גלאים אלחוטיים — מעל ' + PANEL_MAX_ZONES + ' הנתמכים ברכזת אלחוטית: יש לפצל לשתי מערכות או לעבור למערכת קווית / היברידית');
+    else if (plan.alarm && plan.alarm.overflow) warnings.push('נדרשים ' + plan.alarm.capacity + ' אזורים — מעל ' + PANEL_MAX_ZONES + ' אזורים יש לבחור רכזת בקיבולת גבוהה יותר (64/96 אזורים) או לפצל למערכות');
     var ordered = {};
     var push = function(t, ref){ ordered[t] = (ordered[t] || 0) + 1; refs[t] = refs[t] || []; if (ref && refs[t].indexOf(ref) < 0) refs[t].push(ref); };
     Object.keys(counts).forEach(function(t){
@@ -7625,7 +7653,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var pSpeakerCable = parseFloat(document.getElementById('rateSpeakerCable').value)||0;
     var pNetworkCable = parseFloat(document.getElementById('rateNetworkCable').value)||0;
     var pLabor = parseFloat(document.getElementById('rateLabor').value)||0;
-    var unitPrices = { hub:850, keypad:280, pir:180, pir_pet:260, pir_ceiling:240, pir_ceiling_ind:780, contact:90, glassbreak:220, siren_in:150, siren_out:320,
+    var unitPrices = { hub:850, keypad:280, pir:180, pir_pet:260, pir_am:420, pir_ceiling:240, pir_ceiling_ind:780, contact:90, glassbreak:220, siren_in:150, siren_out:320,
       // cam_lpr, intercom_pal and spider_ctrl_2relay are new PAL products with no agreed
       // price yet — deliberately left out of this table so they fall through to the
       // generic ||150 default below rather than carry an invented number; update this line
@@ -8225,7 +8253,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Detectors and cameras usually go in several at a time: one tap on the palette item keeps it
   // "armed", and every tap on the plan places another one, until "✓ סיום" (or Esc / tapping the
   // item again).
-  var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, pir_ceiling:1, pir_ceiling_ind:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
+  var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, pir_am:1, pir_ceiling:1, pir_ceiling_ind:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
     cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1, smart_cam:1, speaker_in:1, speaker_out:1,
     ap_in:1, ap_out:1, net_point:1, smart_switch:1, smart_shutter:1, window:1, window_lg:1, door_int:1 };
   function singletonPlaced(type){ return !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
@@ -10254,34 +10282,40 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // number, customer, agent, "page x of n") — so page 2 looks like part of the same document.
     opts = opts || {};
     var bg = opts.bg || [255, 255, 255];
-    var footerH = opts.footer ? 8 : 0;
+    // A document can be made of several sections (e.g. the sketch of every floor): each section
+    // starts on a new page, keeps its own footer text, and the page count runs across all of them.
+    var sections = opts.sections || [{ canvas:canvas, breaks:opts.breaks, keep:opts.keep, footer:opts.footer }];
+    var anyFooter = sections.some(function(sec){ return !!sec.footer; });
+    var footerH = anyFooter ? 8 : 0;
     var usableH2 = usableH - footerH;
-    var pxPerMm = canvas.width / usableW;
-    var pagePx = Math.floor(usableH2 * pxPerMm);
-    var total = canvas.height;
-    var slices = [];
-    if (total <= pagePx * 1.22) {
-      slices.push([0, total]);
-    } else {
-      // keep-together blocks (the customer-approval box, the signature): never cut inside one —
-      // the page ends just above it and the whole block moves to the next page.
-      var keeps = (opts.keep || []).filter(function(k){ return k[1] - k[0] < pagePx * 0.9; });
-      var inKeep = function(v){ return keeps.some(function(k){ return v > k[0] + 1 && v < k[1] - 1; }); };
-      var keepTops = keeps.map(function(k){ return k[0]; });
-      var breaks = (opts.breaks || []).filter(function(v){ return v > 0 && v < total && !inKeep(v); }).sort(function(x, y){ return x - y; });
-      var y0 = 0;
-      while (y0 < total - 2) {
-        var limit = y0 + pagePx, end;
-        if (limit >= total) end = total;
-        else {
-          var ok = breaks.filter(function(v){ return v > y0 + pagePx * 0.45 && v <= limit; });
-          var kt = keepTops.filter(function(v){ return v > y0 + pagePx * 0.2 && v <= limit && inKeep(limit); });
-          end = kt.length ? kt[kt.length - 1] : ok.length ? ok[ok.length - 1] : limit;
+    function sliceSection(sec){
+      var cv = sec.canvas, pxPerMm = cv.width / usableW, pagePx = Math.floor(usableH2 * pxPerMm), total = cv.height, slices = [];
+      if (total <= pagePx * 1.22) {
+        slices.push([0, total]);
+      } else {
+        // keep-together blocks (the customer-approval box, the signature): never cut inside one —
+        // the page ends just above it and the whole block moves to the next page.
+        var keeps = (sec.keep || []).filter(function(k){ return k[1] - k[0] < pagePx * 0.9; });
+        var inKeep = function(v){ return keeps.some(function(k){ return v > k[0] + 1 && v < k[1] - 1; }); };
+        var keepTops = keeps.map(function(k){ return k[0]; });
+        var breaks = (sec.breaks || []).filter(function(v){ return v > 0 && v < total && !inKeep(v); }).sort(function(x, y){ return x - y; });
+        var y0 = 0;
+        while (y0 < total - 2) {
+          var limit = y0 + pagePx, end;
+          if (limit >= total) end = total;
+          else {
+            var ok = breaks.filter(function(v){ return v > y0 + pagePx * 0.45 && v <= limit; });
+            var kt = keepTops.filter(function(v){ return v > y0 + pagePx * 0.2 && v <= limit && inKeep(limit); });
+            end = kt.length ? kt[kt.length - 1] : ok.length ? ok[ok.length - 1] : limit;
+          }
+          slices.push([y0, end]);
+          y0 = end;
         }
-        slices.push([y0, end]);
-        y0 = end;
       }
+      return { sec:sec, slices:slices, pxPerMm:pxPerMm };
     }
+    var plan = sections.map(sliceSection);
+    var totalPages = plan.reduce(function(n, p){ return n + p.slices.length; }, 0);
     function footerImage(text){
       var fc = document.createElement('canvas'); fc.width = 1800; fc.height = 64;
       var fx = fc.getContext('2d');
@@ -10292,21 +10326,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       fx.textAlign = 'right'; fx.fillText(text, fc.width - 6, 36);
       return fc.toDataURL('image/png');
     }
-    var sliceCanvas = document.createElement('canvas');
-    sliceCanvas.width = canvas.width;
-    var sctx = sliceCanvas.getContext('2d');
-    slices.forEach(function(sl, i){
-      var sy = sl[0], sh = sl[1] - sl[0];
-      sliceCanvas.height = sh;
-      sctx.fillStyle = 'rgb(' + bg.join(',') + ')';
-      sctx.fillRect(0, 0, sliceCanvas.width, sh);
-      sctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-      if (i > 0) doc.addPage();
-      doc.setFillColor(bg[0], bg[1], bg[2]); doc.rect(0, 0, pageW, pageH, 'F');
-      var hmm = sh / pxPerMm, wmm = usableW, xmm = margin;
-      if (hmm > usableH2) { wmm = usableW * usableH2 / hmm; hmm = usableH2; xmm = margin + (usableW - wmm) / 2; } // shrink-to-one-page
-      doc.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', xmm, margin, wmm, hmm);
-      if (opts.footer) doc.addImage(footerImage(opts.footer + (slices.length > 1 ? '   ·   עמוד ' + (i + 1) + ' מתוך ' + slices.length : '')), 'PNG', margin, pageH - margin - footerH + 1.5, usableW, usableW * 64 / 1800);
+    var pageNo = 0;
+    plan.forEach(function(p){
+      var cv = p.sec.canvas;
+      var sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = cv.width;
+      var sctx = sliceCanvas.getContext('2d');
+      p.slices.forEach(function(sl){
+        var sy = sl[0], sh = sl[1] - sl[0];
+        sliceCanvas.height = sh;
+        sctx.fillStyle = 'rgb(' + bg.join(',') + ')';
+        sctx.fillRect(0, 0, sliceCanvas.width, sh);
+        sctx.drawImage(cv, 0, sy, cv.width, sh, 0, 0, cv.width, sh);
+        if (pageNo > 0) doc.addPage();
+        pageNo++;
+        doc.setFillColor(bg[0], bg[1], bg[2]); doc.rect(0, 0, pageW, pageH, 'F');
+        var hmm = sh / p.pxPerMm, wmm = usableW, xmm = margin;
+        if (hmm > usableH2) { wmm = usableW * usableH2 / hmm; hmm = usableH2; xmm = margin + (usableW - wmm) / 2; } // shrink-to-one-page
+        doc.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', xmm, margin, wmm, hmm);
+        if (p.sec.footer) doc.addImage(footerImage(p.sec.footer + (totalPages > 1 ? '   ·   עמוד ' + pageNo + ' מתוך ' + totalPages : '')), 'PNG', margin, pageH - margin - footerH + 1.5, usableW, usableW * 64 / 1800);
+      });
     });
     return doc.output('blob');
   }
@@ -11481,66 +11520,210 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   };
   document.getElementById('sketchClose').onclick = closeSketchModal;
   sketchBackdrop.addEventListener('click', function(ev){ if (ev.target === sketchBackdrop) closeSketchModal(); });
-  document.getElementById('btnSketchPrint').onclick = function(){
-    var customer = document.getElementById('fCustomer').value || 'לקוח';
-    var floorSuffix = usesMultiFloor() ? (' - ' + floorLabelFor(sketchActiveFloor)) : '';
-    exportPanelToPdf('#sketchBackdrop .sketch-sheet', 'G1-Sketch-' + (state.quoteNumber || fileStamp()) + (usesMultiFloor() ? '-floor' + sketchActiveFloor : '') + '.pdf', document.getElementById('btnSketchPrint'), { title:'סקיצת המיגון מוכנה' });
-  };
-  document.getElementById('btnSketchEmail').onclick = function(){
-    var customer = document.getElementById('fCustomer').value || 'הלקוח';
-    var toEmail = document.getElementById('skCustomerEmail').value;
-    var cableSummary = Array.prototype.map.call(
-      document.querySelectorAll('#sketchCableTable tbody tr'),
-      function(tr){ return tr.textContent.replace(/\s+/g,' ').trim(); }
-    ).filter(Boolean);
-    var lines = [];
-    lines.push('שלום ' + customer + ',');
-    lines.push('');
-    lines.push('רצ״ב (ראו קובץ PDF מצורף) סקיצת המיגון עבור הכתובת: ' + (document.getElementById('fAddress').value || ''));
-    lines.push('');
-    if (cableSummary.length){
-      lines.push('סיכום כבילה נדרשת:');
-      cableSummary.forEach(function(l){ lines.push('• ' + l); });
-      lines.push('');
+  // The sketch PDF: one section per floor (entry floor, upper floors, basement), each starting on
+  // its own page with that floor's drawing, legend and zone list; the whole-house parts (system
+  // plan, infrastructure, cabling) close the document on the last floor's page.
+  function sketchFloorsToExport(){
+    if (!usesMultiFloor()) return [sketchActiveFloor];
+    var out = [];
+    for (var f = 0; f < (state.floorCount || 1); f++){
+      var hasContent = state.rooms.some(function(r){ return (r.floor || 0) === f; }) || state.devices.some(function(d){ return devFloor(d) === f; });
+      if (hasContent) out.push(f);
     }
-    lines.push('בברכה,');
-    if (agentInfo.name) lines.push(agentInfo.name);
-    lines.push('יועץ מיגון סניף ' + (agentInfo.branch || '—'));
-    if (agentInfo.phone) lines.push(agentInfo.phone);
-    var sketchSubject = 'סקיצת מיגון G1 עבור ' + customer;
-    var sketchMailtoUrl = buildMailto(toEmail, sketchSubject, lines);
-    // Open the mail draft first, synchronously within this click — see the identical comment
-    // on btnConfirmSend above for why the PDF capture (async) happens only after this.
-    openMailto(sketchMailtoUrl);
-    var sketchSendOk = document.getElementById('sketchSendOk');
-    var sketchPdfFilename = 'G1-Sketch-' + (state.quoteNumber || fileStamp()) + (usesMultiFloor() ? '-floor' + sketchActiveFloor : '') + '.pdf';
-    sketchSendOk.innerHTML =
-      '<div class="send-ok-msg">ניסינו לפתוח טיוטת מייל באפליקציית המייל שלכם' + (toEmail ? (' אל ' + escapeHtml(toEmail)) : '') +
-      '. אם לא נפתח אוטומטית, השתמשו באחת האפשרויות למטה.</div>' +
-      '<div class="send-ok-msg" id="sketchPdfStatusNote">⏳ מכינים את קובץ ה-PDF של הסקיצה לצירוף…</div>' +
-      '<div class="send-ok-actions">' +
-      '<a class="btn btn-primary btn-sm" href="' + sketchMailtoUrl + '" target="_blank" rel="noopener">📧 פתיחה ידנית באפליקציית המייל</a>' +
-      '<button type="button" class="btn btn-ghost btn-sm" id="btnCopySketchMail">📋 העתקת תוכן המייל</button>' +
-      '</div>' +
-      '<div class="send-ok-copied" id="sketchMailCopiedNote" style="display:none"></div>';
-    sketchSendOk.classList.add('show', 'expanded');
-    document.getElementById('btnCopySketchMail').onclick = function(){
-      var text = 'אל: ' + (toEmail || '') + '\nנושא: ' + sketchSubject + '\n\n' + lines.join('\n');
-      copyToClipboard(text, function(ok){
-        var note = document.getElementById('sketchMailCopiedNote');
-        note.style.display = 'block';
-        note.textContent = ok ? '✓ תוכן המייל הועתק ללוח — פתחו מייל חדש ידנית והדביקו (Ctrl+V)' : 'ההעתקה נכשלה בדפדפן זה — יש להעתיק את הפרטים ידנית';
-      });
-    };
-    exportPanelToPdf('#sketchBackdrop .sketch-sheet', sketchPdfFilename, null, {silent:true, title:'סקיצת המיגון מוכנה'}).then(function(status){
-      var note = document.getElementById('sketchPdfStatusNote');
-      if (!note) return;
-      note.textContent = status === 'sheet'
-        ? ('✓ קובץ ה-PDF של הסקיצה מוכן — בחלון שנפתח בחרו Outlook / Mail / WhatsApp או "שמירה בקבצים".')
-        : status
-        ? ('✓ קובץ ה-PDF של הסקיצה נשמר (' + sketchPdfFilename + ') — צרפו אותו לטיוטת המייל שנפתחה.')
-        : '⚠ לא הצלחנו להפיק את קובץ ה-PDF כעת. לחצו "שמירה כ-PDF" למעלה ונסו שוב, ואז צרפו אותו לטיוטת המייל.';
+    return out.length ? out : [sketchActiveFloor];
+  }
+  async function buildSketchPdfBlob(){
+    if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
+    var floors = sketchFloorsToExport(), back = sketchActiveFloor, secs = [];
+    var base = 'G1 — חטיבת המוקדים · סקיצת מיגון · ' + (document.getElementById('fCustomer').value || '');
+    try {
+      pdfExportMode(true);
+      for (var k = 0; k < floors.length; k++){
+        sketchActiveFloor = floors[k];
+        document.body.classList.toggle('sk-floor-part', k < floors.length - 1);
+        buildSketch();
+        await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
+        var panel = document.querySelector('#sketchBackdrop .sketch-sheet');
+        var canvas = await renderElementToCanvas(panel);
+        var lay = pdfLayoutOf(panel, canvas, '.sk-row, .sketch-section, .sketch-head, tr, p, li');
+        secs.push({ canvas:canvas, breaks:lay.breaks, keep:lay.keep, footer: base + (usesMultiFloor() ? ' · ' + floorLabelFor(floors[k]) : '') });
+      }
+      var bgm = (getComputedStyle(document.querySelector('#sketchBackdrop .sketch-sheet')).backgroundColor || '').match(/\d+/g);
+      return canvasToPdfBlob(null, null, { sections:secs, bg: bgm && bgm.length >= 3 ? bgm.slice(0, 3).map(Number) : [255, 255, 255] });
+    } catch(e){
+      try { console.error('sketch pdf', e); } catch(_) {}
+      return null;
+    } finally {
+      document.body.classList.remove('sk-floor-part');
+      pdfExportMode(false);
+      sketchActiveFloor = back;
+      buildSketch();
+    }
+  }
+  document.getElementById('btnSketchPrint').onclick = async function(){
+    var btn = this, label = btn.textContent;
+    if (btn.disabled) return;
+    btn.disabled = true; btn.textContent = '⏳ מפיק PDF…';
+    try {
+      var blob = await buildSketchPdfBlob();
+      if (!blob) { alert('הפקת ה-PDF נכשלה. נסו שוב.'); return; }
+      var name = sketchPdfFilename(), file = pdfFileFrom(blob, name);
+      if (prefersShareSheet(file)) { renderFileShareSheet({ blob:blob, file:file, name:name }, 'סקיצת המיגון מוכנה'); return; }
+      await deliverPdfBlob(blob, name).catch(function(){});
+    } finally { btn.disabled = false; btn.textContent = label; }
+  };
+  /* ---------- send the sketch: ready e-mail (PDF attached) or WhatsApp — like the quote ----------
+     The recipient can be the customer or the installer (different greeting/summary); phone and
+     e-mail start from the customer's details and can be changed here (e.g. the installer's). */
+  var skShare = { who:'customer', phone:null, email:null, pdf:null };
+  function sketchPdfFilename(){
+    var cust = (document.getElementById('fCustomer').value || '').trim();
+    return ensurePdfName('G1-Sketch-' + (state.quoteNumber || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf');
+  }
+  function sketchSummary(){
+    var devs = state.devices;
+    var n = function(test){ return devs.filter(function(d){ return test(d.type); }).length; };
+    var bom = computeBom(), rows = [];
+    var addr = document.getElementById('fAddress').value.trim();
+    if (addr) rows.push(['כתובת', addr]);
+    if (usesMultiFloor()) rows.push(['קומות בסקיצה', sketchFloorsToExport().map(floorLabelFor).join(', ')]);
+    var z = n(function(t){ return ZONE_TYPES[t]; }), cams = n(function(t){ return DEVICE_DEFS[t] && DEVICE_DEFS[t].cat === 'camera' && !DEVICE_DEFS[t].anchor && t !== 'comm_cabinet' && t !== 'ups'; });
+    if (z) rows.push(['גלאי אזעקה', z + (state.alarmWireless ? ' (אלחוטי)' : '')]);
+    if (cams) rows.push(['מצלמות', String(cams)]);
+    QUOTE_CABLE_DEFS.forEach(function(c){ var m = bom.cableTotals[c[0]]; if (m > 0 && !(c[0] === 'alarm' && state.alarmWireless)) rows.push([c[1], m + ' מ׳']); });
+    if (bom.cableTotals.power > 0) rows.push(['כבל חשמל 220V', bom.cableTotals.power + ' מ׳']);
+    return rows;
+  }
+  function sketchMessage(channel){
+    var wa = channel === 'wa', b = function(t){ return wa ? '*' + t + '*' : t; };
+    var customer = document.getElementById('fCustomer').value.trim() || 'הלקוח';
+    var inst = skShare.who === 'installer', L = [];
+    L.push(inst ? 'שלום,' : 'שלום ' + customer + ',', '');
+    L.push('מצורפת ' + b('סקיצת המיגון') + ' (PDF)' + (inst ? ' לפרויקט ' + customer : '') + (usesMultiFloor() ? ' — כל הקומות, עמוד לכל קומה' : '') + '.', '');
+    sketchSummary().forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
+    L.push('');
+    if (inst) L.push('בקובץ: מקרא אביזרים, רשימת אזורי אזעקה, תכנון מרחיבים ומתגי PoE, תשתית חשמל ותקשורת וסיכום כבילה.', '');
+    L.push('בברכה,');
+    [agentInfo.name || '', 'יועץ מיגון סניף ' + (agentInfo.branch || '—'), agentInfo.phone || ''].filter(Boolean).forEach(function(x){ L.push(x); });
+    return L;
+  }
+  function sketchSubject(){
+    var customer = document.getElementById('fCustomer').value.trim() || 'הלקוח';
+    return 'סקיצת מיגון G1 — ' + customer + (usesMultiFloor() ? ' — כל הקומות' : '');
+  }
+  function sketchEmailHtml(){
+    var e = escapeHtml, font = "font-family:Arial,'Segoe UI',Helvetica,sans-serif;";
+    var customer = document.getElementById('fCustomer').value.trim() || 'הלקוח', inst = skShare.who === 'installer';
+    var h = '<div dir="rtl" style="' + font + 'font-size:14px;line-height:1.6;color:#1b1f24;text-align:right">';
+    h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">' + e(sketchSubject()) + '</p>';
+    h += '<p style="margin:0 0 10px">' + (inst ? 'שלום,' : 'שלום ' + e(customer) + ',') + '</p>';
+    h += '<p style="margin:0 0 14px">מצורפת בקובץ PDF <b>סקיצת המיגון</b>' + (inst ? ' לפרויקט ' + e(customer) : '') + '.</p>';
+    h += '<table dir="rtl" cellpadding="0" cellspacing="0" style="border-collapse:collapse;min-width:340px;max-width:560px;margin:0 0 16px;' + font + 'font-size:14px">';
+    h += '<tr><th colspan="2" style="background:#00AAE7;color:#ffffff;text-align:right;padding:9px 12px;font-size:14px">סיכום הסקיצה</th></tr>';
+    sketchSummary().forEach(function(r, i){
+      var bg = i % 2 ? '#f4f8fa' : '#ffffff';
+      h += '<tr><td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px;font-weight:bold">' + e(r[0]) + '</td><td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px">' + e(r[1]) + '</td></tr>';
     });
+    h += '</table>';
+    if (inst) h += '<p style="margin:0 0 14px">בקובץ: מקרא אביזרים, רשימת אזורי אזעקה, תכנון מרחיבים ומתגי PoE, תשתית חשמל ותקשורת וסיכום כבילה.</p>';
+    h += '<p style="margin:18px 0 2px">בברכה,</p>';
+    [agentInfo.name || '', 'יועץ מיגון סניף ' + (agentInfo.branch || '—'), agentInfo.phone || ''].filter(Boolean).forEach(function(x, i){ h += '<p style="margin:0;' + (i === 0 ? 'font-weight:bold;' : 'color:#4a5563;') + '">' + e(x) + '</p>'; });
+    return h + '</div>';
+  }
+  function renderSketchShareSheet(){
+    var pdf = skShare.pdf, mobile = prefersShareSheet(pdf.file);
+    document.getElementById('shareSheetTitle').textContent = '✓ הסקיצה מוכנה לשליחה';
+    document.getElementById('shareSheetSub').textContent = pdf.name;
+    var body = document.getElementById('shareSheetBody'); body.innerHTML = '';
+    // recipient
+    var rc = el2('div', 'share-card');
+    rc.appendChild(el2('h4', '', '👤 למי שולחים?'));
+    var who = el2('div', 'sk-who');
+    [['customer', 'ללקוח'], ['installer', 'למתקין / קבלן']].forEach(function(o){
+      var bt = el2('button', skShare.who === o[0] ? 'on' : '', o[1]); bt.type = 'button';
+      bt.onclick = function(){
+        if (skShare.who === o[0]) return;
+        skShare.who = o[0];
+        var c = getCustomerContact();
+        skShare.phone = o[0] === 'customer' ? c.phone : ''; skShare.email = o[0] === 'customer' ? (document.getElementById('skCustomerEmail').value.trim() || c.email) : '';
+        renderSketchShareSheet();
+      };
+      who.appendChild(bt);
+    });
+    rc.appendChild(who);
+    var f = el2('div', 'sk-fields');
+    f.innerHTML = '<label>טלפון נייד (וואטסאפ)<input type="tel" id="skSharePhone" dir="ltr" placeholder="05X-XXXXXXX"></label><label>אימייל<input type="email" id="skShareEmail" dir="ltr" placeholder="name@example.com"></label>';
+    rc.appendChild(f);
+    body.appendChild(rc);
+    var phoneIn = f.querySelector('#skSharePhone'), mailIn = f.querySelector('#skShareEmail');
+    phoneIn.value = skShare.phone || ''; mailIn.value = skShare.email || '';
+    phoneIn.addEventListener('change', function(){ skShare.phone = phoneIn.value.trim(); renderSketchShareSheet(); });
+    mailIn.addEventListener('change', function(){ skShare.email = mailIn.value.trim(); renderSketchShareSheet(); });
+    var ph = parsePhone(skShare.phone), phoneOk = ph && ph.mobile;
+    var mail = (skShare.email || '').trim(), mailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail);
+    var waText = sketchMessage('wa').join('\n'), mailLines = sketchMessage('mail');
+    // WhatsApp
+    var wa = el2('div', 'share-card');
+    wa.appendChild(el2('h4', '', '💬 וואטסאפ' + (phoneOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(ph.display) + '</span>' : '')));
+    if (phoneOk){
+      var st = el2('div', 'share-steps');
+      if (mobile){
+        st.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט', 'https://wa.me/' + ph.intl));
+        st.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הסקיצה (PDF) + הודעה', async function(b){ if ((await shareFile(pdf.file, { text: waText })) === 'shared') b.classList.add('done'); }));
+        wa.appendChild(st);
+        wa.appendChild(el2('p', '', 'שלב 1 פותח את הצ׳אט (גם אם המספר אינו שמור) — חזרו לכאן. בשלב 2 בחרו WhatsApp: הצ׳אט יופיע ראשון, והסקיצה תישלח עם ההודעה.'));
+      } else {
+        st.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט + הודעה מוכנה', 'https://wa.me/' + ph.intl + '?text=' + encodeURIComponent(waText)));
+        st.appendChild(actBtn('wa-2', '<span class="step">2</span> הורדת ה-PDF לצירוף בצ׳אט', async function(b){ await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }));
+        wa.appendChild(st);
+        wa.appendChild(el2('p', '', 'נפתח ב-WhatsApp Web / WhatsApp למחשב. בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.'));
+      }
+    } else {
+      shareNote(wa, skShare.phone ? 'המספר שהוזן אינו נייד תקין.' : 'הזינו טלפון נייד למעלה כדי לשלוח ישירות לצ׳אט.', true);
+      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף הסקיצה בוואטסאפ (בחירת איש קשר)', async function(b){ if ((await shareFile(pdf.file, { text: waText })) === 'shared') b.classList.add('done'); }));
+    }
+    body.appendChild(wa);
+    // e-mail
+    var em = el2('div', 'share-card');
+    em.appendChild(el2('h4', '', '📧 מייל' + (mailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(mail) + '</span>' : '')));
+    if (mobile){
+      em.appendChild(actBtn('mail', 'שליחה במייל — הסקיצה מצורפת', async function(b){ if ((await shareFile(pdf.file, { title: sketchSubject(), text: mailLines.join('\n') })) === 'shared') b.classList.add('done'); }));
+      em.appendChild(el2('p', '', 'בחרו Outlook או Mail — הקובץ, הנושא והנוסח כבר בפנים.' + (mailOk ? ' הוסיפו את ' + escapeHtml(mail) + ' כנמען.' : '')));
+    } else {
+      var note = el2('div', 'share-note'); note.hidden = true;
+      em.appendChild(actBtn('mail', 'פתיחת טיוטה מעוצבת באאוטלוק — הסקיצה מצורפת', async function(b){
+        try {
+          var eml = await buildQuoteEml(mailOk ? mail : '', sketchSubject(), sketchEmailHtml(), mailLines.join('\n'), pdf.blob, pdf.name);
+          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml');
+          b.classList.add('done');
+          note.innerHTML = '✓ קובץ הטיוטה (‎.eml) נשמר בהורדות — <b>לחצו עליו</b> והוא ייפתח באאוטלוק כטיוטה מוכנה עם הסקיצה מצורפת.';
+        } catch(e){ note.textContent = 'לא הצלחנו להכין את הטיוטה — השתמשו בפתיחה המיידית למטה וצרפו את ה-PDF.'; }
+        note.hidden = false;
+      }));
+      em.appendChild(note);
+      var quick = linkBtn('', '⚡ פתיחה מיידית באאוטלוק (טקסט, בלי קובץ — לגרור את ה-PDF)', buildMailto(mailOk ? mail : '', sketchSubject(), mailLines.slice(0, 14)));
+      em.appendChild(quick);
+    }
+    body.appendChild(em);
+    // save
+    var sv = el2('div', 'share-card');
+    sv.appendChild(el2('h4', '', '💾 שמירה ושיתוף אחר'));
+    sv.appendChild(saveOrShareButton(pdf, mobile));
+    body.appendChild(sv);
+  }
+  document.getElementById('btnSketchEmail').onclick = async function(){
+    var btn = this;
+    if (btn.disabled) return;
+    btn.disabled = true;
+    try {
+      openShareSheet('מכינים את הסקיצה לשליחה…', 'הסקיצה מומרת לקובץ PDF.');
+      var blob = await buildSketchPdfBlob();
+      if (!blob) { renderShareError('לא הצלחנו להפיק את קובץ ה-PDF של הסקיצה. נסו שוב.'); return; }
+      var name = sketchPdfFilename(), c = getCustomerContact();
+      skShare.pdf = { blob:blob, file:pdfFileFrom(blob, name), name:name };
+      if (skShare.phone == null || skShare.who === 'customer') { skShare.who = 'customer'; skShare.phone = c.phone; skShare.email = document.getElementById('skCustomerEmail').value.trim() || c.email; }
+      renderSketchShareSheet();
+    } finally { btn.disabled = false; }
   };
   document.addEventListener('keydown', function(ev){
     if (ev.key === 'Escape' && !sketchBackdrop.hidden) closeSketchModal();
