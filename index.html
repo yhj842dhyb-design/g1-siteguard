@@ -924,9 +924,16 @@
   .sg-btn .step{ display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center; background:rgba(0,0,0,.12); font-size:12px; }
   .sign-doc{ position:relative; margin:16px auto 0; width:820px; background:#fff; padding:28px 30px; font-family:var(--font-body); color:#1b1f24; box-sizing:border-box; }
   .sign-doc .sg-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; }
-  .sg-sigbox{ display:flex; align-items:center; gap:12px; margin-top:10px; } .sg-sigbox img{ height:90px; border-bottom:1px solid #9aa5b1; }
+  .sg-sigbox{ display:flex; align-items:flex-end; gap:14px; margin-top:14px; }
+  .sg-sigbox > span{ font-weight:700; font-size:13px; padding-bottom:6px; }
+  .sg-sigbox .sg-sigline{ width:300px; max-width:60%; border-bottom:1.5px solid #5a6270; padding:0 8px 2px; text-align:center; line-height:0; }
+  .sg-sigbox img{ height:84px; width:auto; max-width:100%; display:inline-block; }
+  .sign-doc .sg-approval .sg-small{ margin-top:14px; padding-top:8px; border-top:1px dashed #cfd8e0; line-height:1.6; }
+  .sign-doc .sg-approval .sg-t td:first-child{ width:120px; color:#5a6270; font-weight:600; }
+  .sg-ltr{ direction:ltr; unicode-bidi:embed; display:inline-block; }
   .q-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; background:rgba(0,170,231,.04); }
   .q-approval-title{ font-weight:700; color:#0b1220; margin-bottom:4px; font-size:13px; }
+  .q-approval-terms, .sg-terms-note{ font-size:11.5px; font-weight:700; color:#0b1220; background:rgba(0,170,231,.08); border-inline-start:3px solid #00AAE7; padding:8px 10px 9px; margin:0 0 12px; line-height:1.75; border-radius:4px; }
   .q-approval-decl{ font-size:11.5px; color:var(--ink-dim); margin:0 0 10px; }
   .q-approval-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; font-size:12px; }
   .q-approval-grid .f{ display:flex; gap:6px; align-items:flex-end; }
@@ -1246,6 +1253,7 @@
   .qp-chip .pct{ font-family:var(--font-mono); font-size:11px; opacity:.8; }
   .qp-chip.rec{ border-color:#00AAE7; background:rgba(0,170,231,.22); }
   .qp-chip.active{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .qp-chip.taken{ opacity:.55; text-decoration:none; } .qp-chip.taken::after{ content:" ✓ מותקן"; font-size:11px; }
   .qp-chip:focus-visible{ outline:2px solid #00AAE7; outline-offset:2px; }
   /* same chips inside the light properties panel */
   .qp-section{ margin-top:12px; padding-top:10px; border-top:1px dashed var(--line); }
@@ -1527,6 +1535,8 @@
           <div class="pal-item" draggable="true" data-type="keypad"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="8" r="1"/><circle cx="14.5" cy="8" r="1"/><circle cx="9.5" cy="12" r="1"/><circle cx="14.5" cy="12" r="1"/></svg><span>לוח מקשים</span></div>
           <div class="pal-item" draggable="true" data-type="pir"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg><span>גלאי נפח א.א. פאסיבי</span></div>
           <div class="pal-item" id="palPirPet" draggable="true" data-type="pir_pet" title="מומלץ/נדרש כשיש חיית מחמד בנכס"><svg viewBox="0 0 24 24"><path d="M12 3 L20 20 L4 20 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13.5" r="1.5" fill="currentColor"/><path d="M7 18.5 L17 18.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/></svg><span>PIR מתעלם מחיות</span></div>
+          <div class="pal-item" draggable="true" data-type="pir_ceiling" title="גלאי נפח תקרתי 360° — מותקן במרכז התקרה (2.4–4 מ׳), כיסוי בקוטר כ-12 מ׳"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg><span>גלאי נפח תקרתי 360°</span></div>
+          <div class="pal-item" draggable="true" data-type="pir_ceiling_ind" title="גלאי תקרתי תעשייתי (PIR+MW, אנטי-מסק) — לחללים גדולים בלבד: מחסנים, אולמות, חללי מכירה. גובה 2.7–8.6 מ׳, קוטר כ-18 מ׳"><svg viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="7" height="7" rx="1.5" fill="currentColor"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg><span>גלאי תקרתי תעשייתי</span></div>
           <div class="pal-item" draggable="true" data-type="contact"><svg viewBox="0 0 24 24"><rect x="3" y="10" width="6" height="4" fill="currentColor"/><rect x="15" y="10" width="6" height="4" fill="currentColor"/></svg><span>גלאי מגע דלת/חלון</span></div>
           <div class="pal-item" draggable="true" data-type="glassbreak"><svg viewBox="0 0 24 24"><path d="M12 2 L14 9 L21 10 L15 14 L17 21 L12 17 L7 21 L9 14 L3 10 L10 9 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>גלאי שבירת זכוכית</span></div>
           <div class="pal-item" draggable="true" data-type="curtain_in"><svg viewBox="0 0 24 24"><path d="M6 1 Q2 12 6 23" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M18 1 Q22 12 18 23" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>גלאי וילון פנימי</span></div>
@@ -1676,7 +1686,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 83</div>
+              <div class="app-version" id="appVersion">גרסה 84</div>
             </div>
           </div>
         </div>
@@ -2095,6 +2105,7 @@
       <div class="q-approval" id="qApproval">
         <div class="q-approval-title">אישור הלקוח</div>
         <p class="q-approval-decl">אני החתום/ה מטה מאשר/ת את הצעת המחיר ואת ההערות והתנאים המפורטים בה.</p>
+        <p class="q-approval-terms">חתימה על הזמנת ציוד/התקנה זו בהתאם לתקנון החברה שמופיע באתר חברת G1, הסכם חיבור מוקד ישלח בנפרד.</p>
         <div class="q-approval-grid" id="qApprovalGrid"></div>
       </div>
 
@@ -2790,6 +2801,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     keypad:       { label:'לוח מקשים',             cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     pir:          { label:'גלאי נפח א.א. פאסיבי',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:110, range:8 },
     pir_pet:      { label:'גלאי נפח מתעלם מחיות',  cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:100, range:8 },
+    pir_ceiling:  { label:'גלאי נפח תקרתי 360°',   cat:'alarm',    color:'var(--accent)',    cable:'alarm', fov:360, range:6 },
+    pir_ceiling_ind: { label:'גלאי תקרתי תעשייתי (PIR+MW, אנטי-מסק)', cat:'alarm', color:'var(--accent)', cable:'alarm', fov:360, range:9 },
     contact:      { label:'גלאי מגע דלת/חלון',      cat:'alarm',    color:'var(--accent)',    cable:'alarm' },
     glassbreak:   { label:'גלאי שבירת זכוכית',      cat:'alarm',    color:'var(--accent)',    cable:'alarm', radius:7 },
     curtain_in:   { label:'גלאי וילון פנימי',       cat:'alarm',    color:'var(--accent)',    cable:'alarm', rotatable:true, fov:16, range:9 },
@@ -2858,6 +2871,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     hub:        'מוח המערכת — למקם במקום מוסתר ולא נגיש מהכניסה, עם גיבוי סוללה. משמש גם כנקודת עוגן לחישוב כבילת האזעקה.',
     keypad:     'להצבה בטווח קצר מהכניסה הראשית, בתוך זמן הכניסה המוגן — ולא נראית/נגישה מבחוץ דרך זכוכית.',
     pir:        'גלאי תנועה — בפינת חדר, בגובה כ-2–3 מ׳, הרחק מחלונות ומיזוג אוויר כדי למנוע התראות שווא.',
+    pir_ceiling:'גלאי נפח תקרתי 360° — מותקן במרכז התקרה ורואה את כל החלל מלמעלה; מתאים לחדרים עם רהיטים גבוהים, מחיצות או צורה לא סדורה, ולתקרות 2.4–4 מ׳. כיסוי בקוטר כ-12 מ׳.',
+    pir_ceiling_ind:'גלאי תקרתי תעשייתי — טכנולוגיה כפולה (PIR + מיקרוגל) עם אנטי-מסק, לחללים גדולים וגבוהים (מחסן, אולם, חלל מכירה) בגובה 2.7–8.6 מ׳; כיסוי בקוטר כ-18 מ׳.',
     pir_pet:    'גלאי נפח מתעלם מחיות (Pet Immune) — לבתים עם כלב/חתול. דגמים נפוצים מספקים חסינות לחיה במשקל של עד כ-25 ק״ג, ויש דגמים מקצועיים המגיעים עד כ-36 ק״ג — יש לוודא מול גיליון הנתונים של הדגם הנבחר מהו משקל החיה המרבי הנתמך בפועל. רוב הדגמים אינם דורשים כיול גובה מיוחד, אך היצרנים מדגישים במפורש להימנע מהתקנה במקום שבו החיה עלולה "לטפס כלפי מעלה" — ליד רהיטים, מדרגות או מדפים שיקרבו אותה לגובה הגלאי.',
     contact:    'גלאי מגע — על כל דלת או חלון חיצוניים הניתנים לפתיחה.',
     glassbreak: 'כיסוי לחלונות/ויטרינות גדולים בטווח קליטה טיפוסי של כ-6–7.5 מ׳ (העיגול המקווקו בשרטוט).',
@@ -2918,6 +2933,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       use: 'הגלאי הבסיסי והנפוץ ביותר להגנה על חלל — מזהה תנועה של גוף חם (אדם) בטווח הכיסוי שלו ומפעיל אזעקה כשהמערכת דרוכה.',
       range: 'טווח גילוי אופייני כ-8–12 מ׳ בזווית כיסוי של כ-90–110 מעלות (חרוט הכיסוי המסומן בשרטוט).',
       install: 'בפינת החדר, בגובה כ-2.0–2.4 מ׳, מכוון אל מרכז החלל; יש להימנע ממול חלון, מזגן, תנור או כל מקור חום/זרימת אוויר שעלול לגרום להתראות שווא.'
+    },
+    pir_ceiling: {
+      use: 'גלאי נפח שמותקן בתקרה ומכסה 360° סביבו — רואה את החדר מלמעלה ולכן לא "מוסתר" ע״י רהיטים גבוהים, ארונות או מחיצות נמוכות; מתאים לחללים פתוחים, לחדרים בצורה לא סדורה ולמקומות שאין בהם פינה פנויה מתאימה.',
+      range: 'כיסוי 360° בקוטר כ-12 מ׳ (רדיוס כ-6 מ׳) בגובה התקנה של 2.4–4 מ׳ — לפי נתוני יצרנים (למשל Risco LuNAR, Optex, Honeywell); ככל שהגלאי גבוה יותר הקוטר גדל, אך הרגישות לתנועה צמוד לרצפה יורדת. רוב הדגמים התקרתיים אינם חסינים לחיות מחמד.',
+      install: 'במרכז התקרה של החלל, בגובה 2.4–4 מ׳. להרחיק ממזגן/פתחי אוורור, גופי תאורה חמים ומאווררי תקרה (כ-1.5 מ׳ לפחות), ולא מעל חלון עם שמש ישירה. בחלל גדול — גלאי לכל כ-80 מ״ר, בפריסה אחידה.'
+    },
+    pir_ceiling_ind: {
+      use: 'גלאי תקרתי ייעודי לחללים גדולים: מחסנים, אולמות, חללי מכירה, מבני תעשייה — טכנולוגיה כפולה (PIR + מיקרוגל) להפחתת התראות שווא בחום גבוה ובחללים לא ממוזגים, אנטי-מסק (IR אקטיבי) נגד כיסוי/הסתרה, וערוצים מתכווננים להתאמה לשורות מדפים.',
+      range: 'כיסוי 360° בקוטר כ-18 מ׳ (רדיוס כ-9 מ׳) בגובה התקנה של 2.7–8.6 מ׳ (למשל Risco Industrial LuNAR, דרגה 3). מיועד לחללים גדולים בלבד — בחדר רגיל הוא מיותר.',
+      install: 'בתקרה, במרכז האזור המוגן, בגובה 2.7–8.6 מ׳ (העדשה מותאמת לגובה). לכוון את הערוצים לאורך מעברי המדפים; להרחיק ממפזרי חום, תנורים ומאווררים; גלאי לכל כ-180 מ״ר. מחווט לרכזת בכבל אזעקה, הזנת 12V.'
     },
     pir_pet: {
       use: 'כמו PIR רגיל, אך עם עדשה/אלגוריתם המסננים תנועה בגובה נמוך — מאפשר להשאיר את המערכת דרוכה גם כשיש חיית מחמד בבית.',
@@ -3164,7 +3189,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { title:'מבנה — חדרים ואזורים', dot:'var(--ink-dim)', types:['room','yard'] },
     { title:'פתחים במבנה', dot:'var(--ink-on-paper)', types:['door_main','door_ext','door_int','window','window_lg'] },
     { title:'גדר היקפית', dot:'var(--wall)', types:['fence','gate'] },
-    { title:'מערכת אזעקה', dot:'var(--accent)', types:['hub','keypad','pir','pir_pet','contact','glassbreak','curtain_in','curtain_out','smoke','flood','siren_in','siren_out','safe_sensor','fence_sensor'] },
+    { title:'מערכת אזעקה', dot:'var(--accent)', types:['hub','keypad','pir','pir_pet','pir_ceiling','pir_ceiling_ind','contact','glassbreak','curtain_in','curtain_out','smoke','flood','siren_in','siren_out','safe_sensor','fence_sensor'] },
     { title:'מצלמות (CCTV)', dot:'var(--accent-2)', types:['cam_in','cam_out','cam_in_analytics','cam_out_analytics','cam_lpr','nvr','comm_cabinet','ups'] },
     { title:'אינטרקום', dot:'var(--accent-3)', types:['intercom_ext','intercom_int','intercom_pal','spider_ctrl','spider_ctrl_2relay'] },
     { title:'מערכת מוזיקה', dot:'var(--accent-4)', types:['amplifier','speaker_in','speaker_out'] },
@@ -3173,7 +3198,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   ];
 
   var DEVICE_CODE = {
-    hub:'HUB', keypad:'KP', pir:'PIR', pir_pet:'PIR-P', contact:'מגע', glassbreak:'זכו׳',
+    hub:'HUB', keypad:'KP', pir:'PIR', pir_pet:'PIR-P', pir_ceiling:'PIR-C', pir_ceiling_ind:'PIR-CI', contact:'מגע', glassbreak:'זכו׳',
     curtain_in:'וילון-פ', curtain_out:'וילון-ח', smoke:'עשן', flood:'הצפה',
     siren_in:'סי-פ', siren_out:'סי-ח', cam_in:'מצ-פ', cam_out:'מצ-ח', cam_in_analytics:'אנל-פ', cam_out_analytics:'אנל-ח', cam_lpr:'LPR', nvr:'NVR', comm_cabinet:'ארון',
     intercom_ext:'אינ-ח', intercom_int:'אינ-פ', intercom_pal:'אינ-P', spider_ctrl:'PAL', spider_ctrl_2relay:'PAL-2', fence_sensor:'קרן', safe_sensor:'כספת',
@@ -4341,6 +4366,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       keypad:'<rect x="4" y="1" width="16" height="22" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="8" r="1.3" fill="currentColor"/><circle cx="15" cy="8" r="1.3" fill="currentColor"/><circle cx="9" cy="13" r="1.3" fill="currentColor"/><circle cx="15" cy="13" r="1.3" fill="currentColor"/>',
       pir:'<path d="M12 1 L22 22 L2 22 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="2.6" fill="currentColor"/>',
       pir_pet:'<path d="M12 1 L22 22 L2 22 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="14" r="1.8" fill="currentColor"/><path d="M7.5 19 L16.5 19" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.5"/>',
+      pir_ceiling:'<circle cx="12" cy="12" r="3.4" fill="currentColor"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.6 2"/>',
+      pir_ceiling_ind:'<rect x="8.3" y="8.3" width="7.4" height="7.4" rx="1.5" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="11.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.6 2"/>',
       contact:'<rect x="1" y="9" width="8" height="6" fill="currentColor"/><rect x="15" y="9" width="8" height="6" fill="currentColor"/>',
       glassbreak:'<path d="M12 1 L14.5 9 L23 10 L16 15 L18.5 23 L12 18 L5.5 23 L8 15 L1 10 L9.5 9 Z" fill="none" stroke="currentColor" stroke-width="1.8"/>',
       curtain_in:'<path d="M6 1 Q2 12 6 23" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M18 1 Q22 12 18 23" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/>',
@@ -5124,7 +5151,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     pirRoomsToCover.forEach(function(r){
       var bb = roomBBoxPx(r);
       var margin = m2p(0.3);
-      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
+      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
       if (covered) return;
       // Corner mount aimed along the corner's bisector (see bestDetectorCorner): the 90° between
       // the two walls is the whole room, so the detector's field of view covers all of it.
@@ -6405,7 +6432,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      door wall). Each option shows how much of the room it actually covers (line of sight,
      walls block), the best one is marked, and one tap moves + aims the device and flashes its
      coverage for a moment so the agent sees the result at once. */
-  var QP_TYPES = { pir:1, pir_pet:1, curtain_in:1, cam_in:1, cam_in_analytics:1, smart_cam:1 };
+  var QP_TYPES = { pir:1, pir_pet:1, curtain_in:1, cam_in:1, cam_in_analytics:1, smart_cam:1, pir_ceiling:1, pir_ceiling_ind:1 };
   var CORNER_COMPASS = ['פינה צפון-מערבית', 'פינה צפון-מזרחית', 'פינה דרום-מערבית', 'פינה דרום-מזרחית']; // roomCornersWithBisector order
   function roomOfDevice(d){ return roomContainingPoint({ x:d.x, y:d.y }); }
   function roomOpeningsInfo(r){
@@ -6449,7 +6476,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     function cornerFarFrom(p){ return corners.reduce(function(a, c){ return dist(c.cx, c.cy, p.x, p.y) > dist(a.cx, a.cy, p.x, p.y) ? c : a; }); }
     function cornerOpt(c){ return { x:c.x, y:c.y, rot:dirRot(c.dx, c.dy) }; }
-    if (type === 'curtain_in'){
+    if (CEILING_AREA[type]){
+      // a ceiling detector belongs in the middle of the ceiling; a big space is split into equal
+      // zones (along its length, or a grid for a deep hall) with one detector in each centre
+      if (type === 'pir_ceiling_ind' && !isLargeSpace(r)) return [];
+      var capC = typeCapacity(type, r), rwC = b.x2 - b.x1, rhC = b.y2 - b.y1;
+      var cols = 1, rows = 1;
+      while (cols * rows < capC) { if (rwC / cols >= rhC / rows) cols++; else rows++; }
+      for (var ry = 0; ry < rows; ry++) for (var rx = 0; rx < cols; rx++){
+        var zLabel = (cols * rows > 1) ? 'מרכז התקרה — אזור ' + (ry * cols + rx + 1) + ' מתוך ' + (cols * rows) : 'מרכז התקרה';
+        add('zone-' + ry + '-' + rx, zLabel, { x:b.x1 + rwC * (rx + 0.5) / cols, y:b.y1 + rhC * (ry + 0.5) / rows, rot:0 });
+      }
+    } else if (type === 'curtain_in'){
       // a narrow curtain runs ALONG a wall: mount it at one end, aimed down the wall
       function alongWall(o, label){
         var w = roomWallOf(o, b);
@@ -6554,6 +6592,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       btn.addEventListener('click', function(ev){ ev.stopPropagation(); var o = opts.filter(function(x){ return x.key === btn.dataset.qp; })[0]; if (o) applyQuickPlace(d, o); });
     });
   }
+  function qpTaken(o, fam){ return !!fam && state.devices.some(function(d){ return ROOM_FAMILY[d.type] === fam && dist(d.x, d.y, o.x, o.y) < m2p(0.4); }); }
   function isAtOption(d, o){ return dist(d.x, d.y, o.x, o.y) < 2 && Math.abs((((d.rot - o.rot) % 360) + 360) % 360) < 1; }
   // Props-panel section for a selected detector/camera.
   function deviceQuickPlaceHtml(d){
@@ -6583,10 +6622,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     // Add straight from the room box: pick the device, then the position — it is placed,
     // aimed, and its coverage flashes on the plan.
-    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam'];
+    var addTypes = [state.hasPet ? 'pir_pet' : 'pir', 'pir_ceiling'].concat(isLargeSpace(r) ? ['pir_ceiling_ind'] : [], ['curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam']);
     var addType = roomAddType[r.id] && addTypes.indexOf(roomAddType[r.id]) > -1 ? roomAddType[r.id] : addTypes[0];
     var addOpts = quickPlaceOptions(addType, r);
-    var addFam = ROOM_FAMILY[addType], addCap = addFam ? roomFamilyCapacity(addFam, r) : 99;
+    var addFam = ROOM_FAMILY[addType], addCap = addFam ? typeCapacity(addType, r) : 99;
     var addHave = addFam ? devicesOfFamilyInRoom(addFam, r).length : 0;
     var addFull = addHave >= addCap ? ('בחדר כבר ' + (addCap === 1 ? 'מותקן ' + ROOM_FAMILY_LABEL[addFam] + ' — חדר בגודל הזה מכוסה באחד. אפשר להזיז אותו למיקום אחר למעלה.' : 'מותקנים ' + addHave + ' ' + ROOM_FAMILY_LABEL[addFam] + ' — המקסימום הנדרש לחלל הזה.')) : '';
     html += '<div class="qp-add"><b class="qp-add-title">➕ הוספת גלאי / מצלמה לחדר</b>' +
@@ -6596,7 +6635,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       (addFull
         ? '<p class="qp-full">✓ ' + escapeHtml(addFull) + '</p>'
         : '<p style="margin:8px 0 6px">מיקום עבור ' + escapeHtml(DEVICE_DEFS[addType].label) + ' (אחוז = כיסוי החדר)' + (addCap > 1 ? ' — חלל גדול: עד ' + addCap + ' יחידות' : '') + ':</p>' +
-          '<div class="qp-wrap qp-add-pos">' + addOpts.map(function(o){ return qpChipHtml(o, 'add'); }).join('') + '</div>') + '</div>';
+          '<div class="qp-wrap qp-add-pos">' + addOpts.map(function(o){ return qpChipHtml(o, 'add' + (qpTaken(o, addFam) ? ' taken' : '')); }).join('') + '</div>') + '</div>';
     html += '</div>';
     return { html:html, bind:function(box){
       devs.forEach(function(d){ var row = box.querySelector('.qp-dev[data-dev="' + d.id + '"]'); if (row) bindQpChips(row, d, devOpts[d.id]); });
@@ -6607,6 +6646,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         btn.addEventListener('click', function(){
           var o = addOpts.filter(function(x){ return x.key === btn.dataset.qp; })[0];
           if (!o) return;
+          // a zone that already has its unit → the next free zone (no two units on one spot)
+          if (qpTaken(o, addFam)) o = addOpts.filter(function(x){ return !qpTaken(x, addFam); })[0] || o;
           var lim = roomLimitBlock(addType, o); if (lim) { showCanvasToast(lim, true); return; }
           var d = addDevice({ type:addType, x:o.x, y:o.y, rot:o.rot, floor:r.floor || 0 });
           applyQuickPlace(d, o);
@@ -6637,7 +6678,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      hall or a sales floor can need more: capacity follows the space's real size (volumetric
      detectors no more than ~9 m apart and ~45 m² each, cameras ~7 m / 35 m², smoke ~40 m²).
      Curtain detectors: one per wall that has windows. */
-  var ROOM_FAMILY = { pir:'vol', pir_pet:'vol', cam_in:'cam', cam_in_analytics:'cam', smart_cam:'cam', glassbreak:'glass', smoke:'smoke', curtain_in:'curtain' };
+  var ROOM_FAMILY = { pir:'vol', pir_pet:'vol', pir_ceiling:'vol', pir_ceiling_ind:'vol', cam_in:'cam', cam_in_analytics:'cam', smart_cam:'cam', glassbreak:'glass', smoke:'smoke', curtain_in:'curtain' };
   var ROOM_FAMILY_LABEL = { vol:'גלאי נפח', cam:'מצלמה פנימית', glass:'גלאי שבירת זכוכית', smoke:'גלאי עשן', curtain:'גלאי וילון' };
   function roomFamilyCapacity(fam, r){
     var w = r.w, h = r.h, area = w * h, long = Math.max(w, h);
@@ -6657,12 +6698,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return state.devices.filter(function(d){ return d.id !== exceptId && ROOM_FAMILY[d.type] === fam && (d.floor || 0) === (r.floor || 0) && d.x >= b.x1 && d.x <= b.x2 && d.y >= b.y1 && d.y <= b.y2; });
   }
   // null when allowed, otherwise the reason to show.
+  // ceiling detectors cover a circle: ⌀12 m (~80 m² each with overlap) / industrial ⌀18 m (~180 m²)
+  var CEILING_AREA = { pir_ceiling:80, pir_ceiling_ind:180 };
+  function isLargeSpace(r){ return r.w * r.h >= 80; }
+  function typeCapacity(type, r){
+    if (CEILING_AREA[type]) return Math.min(6, Math.max(1, Math.ceil(r.w * r.h / CEILING_AREA[type])));
+    return roomFamilyCapacity(ROOM_FAMILY[type], r);
+  }
   function roomLimitBlock(type, p, exceptId){
     var fam = ROOM_FAMILY[type];
     if (!fam) return null;
     var r = roomContainingPoint(p);
     if (!r) return null;
-    var cap = roomFamilyCapacity(fam, r), have = devicesOfFamilyInRoom(fam, r, exceptId).length;
+    if (type === 'pir_ceiling_ind' && !isLargeSpace(r)) return 'גלאי תקרתי תעשייתי מיועד לחללים גדולים בלבד (מ-80 מ״ר — מחסן, אולם, חלל מכירה). ב"' + (r.label || 'חדר') + '" (' + Math.round(r.w * r.h) + ' מ״ר) מתאים גלאי נפח רגיל או גלאי נפח תקרתי.';
+    var cap = typeCapacity(type, r), have = devicesOfFamilyInRoom(fam, r, exceptId).length;
     if (have < cap) return null;
     return 'ב"' + (r.label || 'חדר') + '" כבר ' + (cap === 1 ? 'מותקן ' + ROOM_FAMILY_LABEL[fam] + ' — חדר בגודל הזה מכוסה באחד בלבד.' : 'מותקנים ' + have + ' ' + ROOM_FAMILY_LABEL[fam] + ' — המקסימום הנדרש לחלל בגודל הזה.') + ' כדי לשנות מיקום, הזיזו את הקיים או השתמשו במיקום המהיר.';
   }
@@ -6891,7 +6940,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     pirRoomsChk.forEach(function(r){
       var bb = roomBBoxPx(r);
       var margin = m2p(0.3);
-      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
+      var covered = devices.some(function(d){ return (d.type==='pir'||d.type==='pir_pet'||d.type==='pir_ceiling'||d.type==='pir_ceiling_ind') && pointInBBox({x:d.x,y:d.y}, bb, margin); });
       checks.push({
         sev: covered ? 'ok' : 'warning', weight:2, cat:'alarm',
         text: covered ? ('כיסוי גלאי נפח תקין ב"' + (r.label||'חדר') + '"') : ('אין גלאי נפח בטווח סביר ב"' + (r.label||'חדר') + '"'),
@@ -7176,7 +7225,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var pSpeakerCable = parseFloat(document.getElementById('rateSpeakerCable').value)||0;
     var pNetworkCable = parseFloat(document.getElementById('rateNetworkCable').value)||0;
     var pLabor = parseFloat(document.getElementById('rateLabor').value)||0;
-    var unitPrices = { hub:850, keypad:280, pir:180, pir_pet:260, contact:90, glassbreak:220, siren_in:150, siren_out:320,
+    var unitPrices = { hub:850, keypad:280, pir:180, pir_pet:260, pir_ceiling:240, pir_ceiling_ind:780, contact:90, glassbreak:220, siren_in:150, siren_out:320,
       // cam_lpr, intercom_pal and spider_ctrl_2relay are new PAL products with no agreed
       // price yet — deliberately left out of this table so they fall through to the
       // generic ||150 default below rather than carry an invented number; update this line
@@ -7692,7 +7741,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Detectors and cameras usually go in several at a time: one tap on the palette item keeps it
   // "armed", and every tap on the plan places another one, until "✓ סיום" (or Esc / tapping the
   // item again).
-  var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
+  var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, pir_ceiling:1, pir_ceiling_ind:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
     cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1, smart_cam:1, speaker_in:1, speaker_out:1,
     ap_in:1, ap_out:1, net_point:1, smart_switch:1, smart_shutter:1, window:1, window_lg:1, door_int:1 };
   function singletonPlaced(type){ return !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
@@ -9721,14 +9770,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (total <= pagePx * 1.22) {
       slices.push([0, total]);
     } else {
-      var breaks = (opts.breaks || []).filter(function(v){ return v > 0 && v < total; }).sort(function(x, y){ return x - y; });
+      // keep-together blocks (the customer-approval box, the signature): never cut inside one —
+      // the page ends just above it and the whole block moves to the next page.
+      var keeps = (opts.keep || []).filter(function(k){ return k[1] - k[0] < pagePx * 0.9; });
+      var inKeep = function(v){ return keeps.some(function(k){ return v > k[0] + 1 && v < k[1] - 1; }); };
+      var keepTops = keeps.map(function(k){ return k[0]; });
+      var breaks = (opts.breaks || []).filter(function(v){ return v > 0 && v < total && !inKeep(v); }).sort(function(x, y){ return x - y; });
       var y0 = 0;
       while (y0 < total - 2) {
         var limit = y0 + pagePx, end;
         if (limit >= total) end = total;
         else {
           var ok = breaks.filter(function(v){ return v > y0 + pagePx * 0.45 && v <= limit; });
-          end = ok.length ? ok[ok.length - 1] : limit;
+          var kt = keepTops.filter(function(v){ return v > y0 + pagePx * 0.2 && v <= limit && inKeep(limit); });
+          end = kt.length ? kt[kt.length - 1] : ok.length ? ok[ok.length - 1] : limit;
         }
         slices.push([y0, end]);
         y0 = end;
@@ -9794,6 +9849,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // this runs so a slow capture doesn't look like a dead button.
   // Renders a panel to a PDF Blob (no delivery) — null when the PDF parts are missing or fail.
   var QUOTE_PDF_MARK = 'G1SGQ1[', QUOTE_PDF_MARK_END = ']G1SGQ1';
+  // Safe cut lines (bottom of every row/block) and keep-together ranges, in canvas pixels.
+  function pdfLayoutOf(root, canvas, breakSel, keepSel){
+    var pr = root.getBoundingClientRect(), k = canvas.height / Math.max(1, pr.height);
+    var breaks = Array.prototype.map.call(root.querySelectorAll(breakSel), function(el){
+      var r = el.getBoundingClientRect(); return (r.height > 0 && r.width > 0) ? Math.round((r.bottom - pr.top) * k) + 2 : -1;
+    });
+    var keep = Array.prototype.map.call(root.querySelectorAll(keepSel || '.q-approval, .sg-approval'), function(el){
+      var r = el.getBoundingClientRect(); return [Math.max(0, Math.round((r.top - pr.top) * k) - 14), Math.round((r.bottom - pr.top) * k) + 4];
+    }).filter(function(x){ return x[1] > x[0] + 4; });
+    return { breaks:breaks, keep:keep };
+  }
   async function buildPanelPdfBlob(panelSelector, meta, pdfOpts){
     if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     try {
@@ -9804,12 +9870,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!panel) throw new Error('panel not found: ' + panelSelector);
       var canvas = await renderElementToCanvas(panel);
       // safe cut lines (bottom of every row/block) in canvas pixels + the panel's background
-      var pr = panel.getBoundingClientRect(), k = canvas.height / Math.max(1, pr.height);
-      var breaks = Array.prototype.map.call(panel.querySelectorAll('tr, .rate-row, .total-line, .section-title, .checkbox-row, p, li, .quote-hero, .qbrand-row, #qSignature, #qNotes, .sk-row, .sketch-section, .sketch-head, .q-customer-details > div'), function(el){
-        var r = el.getBoundingClientRect(); return (r.height > 0 && r.width > 0) ? Math.round((r.bottom - pr.top) * k) + 2 : -1;
-      });
+      var lay = pdfLayoutOf(panel, canvas, 'tr, .rate-row, .total-line, .section-title, .checkbox-row, p, li, .quote-hero, .qbrand-row, #qSignature, #qNotes, .sk-row, .sketch-section, .sketch-head, .q-customer-details > div, .q-approval');
       var bgm = (getComputedStyle(panel).backgroundColor || '').match(/\d+/g);
-      var opts = Object.assign({ breaks:breaks, bg: bgm && bgm.length >= 3 ? bgm.slice(0, 3).map(Number) : [255, 255, 255] }, pdfOpts || {});
+      var opts = Object.assign({ breaks:lay.breaks, keep:lay.keep, bg: bgm && bgm.length >= 3 ? bgm.slice(0, 3).map(Number) : [255, 255, 255] }, pdfOpts || {});
       return canvasToPdfBlob(canvas, meta, opts);
     } catch(e){
       return null;
@@ -9983,7 +10046,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var f = function(lbl, val, cls){ return '<div class="f' + (cls ? ' ' + cls : '') + '"><b>' + lbl + ':</b><span>' + (val ? escapeHtml(val) : '') + '</span></div>'; };
       ag.innerHTML = f('שם הלקוח', document.getElementById('fCustomer').value.trim()) +
         f(ID_TYPE_LABEL[c.idType] || 'ת״ז / ח.פ', c.idNum) +
-        f('טלפון', ph && ph.valid ? ph.display : '') +
+        f('טלפון', ph && ph.valid ? ph.display.replace(/[^\d+]/g, '') : '') +
         f('תאריך', '') +
         f('חתימה', '', 'sig');
     }
@@ -10257,6 +10320,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<label>' + escapeHtml(idLabel) + ' / ח.פ<input id="sgId" inputmode="numeric" value="' + escapeHtml(q.c.id || '') + '"></label>' +
         '<label>טלפון<input id="sgPhone" type="tel" value="' + escapeHtml(q.c.p || '') + '"></label>' +
         '<label>אימייל<input id="sgEmail" type="email" value="' + escapeHtml(q.c.e || '') + '"></label>' +
+        '<p class="sg-terms-note">חתימה על הזמנת ציוד/התקנה זו בהתאם לתקנון החברה שמופיע באתר חברת G1, הסכם חיבור מוקד ישלח בנפרד.</p>' +
         '<label class="sg-check"><input type="checkbox" id="sgAgree"> קראתי ואני מאשר/ת את הצעת המחיר מס׳ ' + escapeHtml(String(q.n)) + ' ואת ההערות והתנאים המפורטים בה.</label>' +
         '<div class="sg-pad-wrap"><div class="sg-pad-head"><b>חתימה</b><button type="button" id="sgClear">ניקוי</button></div><canvas id="sgPad"></canvas><div class="sg-pad-hint">חתמו כאן עם האצבע או העכבר</div></div>' +
         '<div class="sg-err" id="sgErr" hidden></div>' +
@@ -10285,19 +10349,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // the signed document, rendered off-screen and turned into a PDF
       var doc = document.createElement('div'); doc.className = 'sign-doc'; doc.setAttribute('dir', 'rtl');
       doc.innerHTML = signQuoteHtml(q, { signed:true }) +
-        '<div class="sg-approval"><h3>אישור הלקוח</h3><p>אני החתום/ה מטה מאשר/ת את הצעת המחיר ואת ההערות והתנאים המפורטים בה.</p>' +
-        '<table class="sg-t"><tr><td>שם</td><td>' + escapeHtml(signer.name) + '</td></tr><tr><td>' + escapeHtml(idLabel) + ' / ח.פ</td><td>' + escapeHtml(signer.id) + '</td></tr>' +
-        (signer.phone ? '<tr><td>טלפון</td><td>' + escapeHtml(signer.phone) + '</td></tr>' : '') + (signer.email ? '<tr><td>אימייל</td><td>' + escapeHtml(signer.email) + '</td></tr>' : '') +
-        '<tr><td>נחתם בתאריך</td><td>' + escapeHtml(when) + '</td></tr></table>' +
-        '<div class="sg-sigbox"><span>חתימה:</span><img src="' + sigImg + '" alt="חתימה"></div>' +
-        '<p class="sg-small">נחתם דיגיטלית · מזהה הצעה ' + qHash + ' · קוד אימות ' + code + '</p></div>';
+        '<div class="sg-approval"><h3>אישור הלקוח</h3><p>אני החתום/ה מטה מאשר/ת את הצעת המחיר ואת ההערות והתנאים המפורטים בה.</p><p class="sg-terms-note">חתימה על הזמנת ציוד/התקנה זו בהתאם לתקנון החברה שמופיע באתר חברת G1, הסכם חיבור מוקד ישלח בנפרד.</p>' +
+        '<table class="sg-t"><tr><td>שם</td><td>' + escapeHtml(signer.name) + '</td></tr><tr><td>' + escapeHtml(idLabel) + ' / ח.פ</td><td><span class="sg-ltr">' + escapeHtml(signer.id) + '</span></td></tr>' +
+        (signer.phone ? '<tr><td>טלפון</td><td><span class="sg-ltr">' + escapeHtml(signer.phone.replace(/[^\d+]/g, '')) + '</span></td></tr>' : '') + (signer.email ? '<tr><td>אימייל</td><td><span class="sg-ltr">' + escapeHtml(signer.email) + '</span></td></tr>' : '') +
+        '<tr><td>נחתם בתאריך</td><td><span class="sg-ltr">' + escapeHtml(when) + '</span></td></tr></table>' +
+        '<div class="sg-sigbox"><span>חתימה:</span><div class="sg-sigline"><img src="' + sigImg + '" alt="חתימה"></div></div>' +
+        '<p class="sg-small">נחתם דיגיטלית · מזהה הצעה <span class="sg-ltr">' + qHash + '</span> · קוד אימות <span class="sg-ltr">' + code + '</span></p></div>';
       view.appendChild(doc); // rendered in the normal flow (html2canvas can't capture off-screen/fixed layers reliably)
       var blob = null;
       try {
         await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
         var canvas = await renderElementToCanvas(doc);
         var meta = JSON.stringify({ type:'g1signed', number:q.n, signer:signer, signedAt:signedAt.toISOString(), code:code, quoteHash:qHash });
-        blob = canvasToPdfBlob(canvas, meta, { bg:[255, 255, 255], footer:'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
+        var lay = pdfLayoutOf(doc, canvas, 'tr, p, li, h3, .sg-brand, .sg-title, .sg-sub, .sg-agent, .sg-terms, .sg-approval, .sg-sigbox');
+        blob = canvasToPdfBlob(canvas, meta, { breaks:lay.breaks, keep:lay.keep, bg:[255, 255, 255], footer:'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
       } catch(e) { blob = null; try { console.error('sign pdf', e); } catch(_) {} }
       doc.parentNode.removeChild(doc);
       btn.disabled = false; btn.textContent = '✍️ אישור וחתימה';
