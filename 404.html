@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>G1 SiteGuard</title>
+<script>
+// A signing link that an e-mail/chat app mangled on the way (an encoded '#', an extra path
+// segment…) lands here instead of the app — recover the quote from it and open the app.
+(function(){
+  var base = '/g1-siteguard/', d = location.href;
+  try { d = decodeURIComponent(d); } catch(e) {}
+  var m2 = d.match(/[?&#\/]s=([0-9a-zA-Z]+)/), m1 = d.match(/sign=([A-Za-z0-9_\-]+)/);
+  location.replace(m2 ? base + '?s=' + m2[1].toLowerCase() : m1 ? base + '#sign=' + m1[1] : base);
+})();
+</script>
+</head>
+<body style="font-family:Arial,sans-serif;text-align:center;padding:48px 16px;color:#1b1f24">
+  <p>מעבירים אתכם להצעת המחיר…</p>
+  <p><a href="/g1-siteguard/" style="color:#0077a8">לחצו כאן אם המעבר לא קרה</a></p>
+</body>
+</html>

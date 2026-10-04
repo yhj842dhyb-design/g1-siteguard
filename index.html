@@ -1686,7 +1686,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 84</div>
+              <div class="app-version" id="appVersion">גרסה 85</div>
             </div>
           </div>
         </div>
@@ -9223,21 +9223,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     recalcQuoteInstall();
     recalcQuoteMonitor();
   }
+  var QUOTE_CABLE_DEFS = [
+    ['alarm','כבל פיקוד לאזעקה (רב-גידי)'], ['cat6','כבל CAT7 למצלמות (PoE)'], ['intercom','כבל גידים לאינטרקום (רב-גידי)'],
+    ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)']
+  ];
   function buildQuote(bom){
     document.getElementById('qAlarmWirelessToggle').checked = state.alarmWireless;
     var rows = Object.keys(bom.counts);
     document.getElementById('qEquipTable').querySelector('tbody').innerHTML = rows.length ? rows.map(function(t){
       var label = (t === 'nvr') ? nvrLabelWithChannels(bom.counts) : DEVICE_DEFS[t].label;
-      return '<tr data-row="equip" data-qty="' + bom.counts[t] + '"><td>' + label + '</td>' +
+      return '<tr data-row="equip" data-type="' + t + '" data-qty="' + bom.counts[t] + '"><td>' + label + '</td>' +
         '<td class="num">' + bom.counts[t] + '</td>' +
         '<td class="num price-col"><input type="number" class="q-price" min="0" placeholder="0" style="width:76px;text-align:center"></td>' +
         '<td class="num q-linetotal price-col">—</td></tr>';
     }).join('') : '<tr><td colspan="4" style="color:var(--ink-dim);text-align:center">אין אביזרים בשרטוט עדיין</td></tr>';
 
-    var cableDefs = [
-      ['alarm','כבל פיקוד לאזעקה (רב-גידי)'], ['cat6','כבל CAT7 למצלמות (PoE)'], ['intercom','כבל גידים לאינטרקום (רב-גידי)'],
-      ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)']
-    ];
+    var cableDefs = QUOTE_CABLE_DEFS;
     var cableHtml = '';
     cableDefs.forEach(function(r){
       var meters = bom.cableTotals[r[0]] || 0;
@@ -9246,7 +9247,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         return;
       }
       if (meters <= 0) return;
-      cableHtml += '<tr data-row="cable" data-meters="' + meters + '"><td>' + r[1] + '</td><td class="num">' + meters + ' מ׳</td>' +
+      cableHtml += '<tr data-row="cable" data-ctype="' + r[0] + '" data-meters="' + meters + '"><td>' + r[1] + '</td><td class="num">' + meters + ' מ׳</td>' +
         '<td class="num price-col"><input type="number" class="q-price" min="0" placeholder="0" style="width:76px;text-align:center"></td>' +
         '<td class="num q-linetotal price-col">—</td></tr>';
     });
@@ -10067,6 +10068,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var lines = ['שלום ' + customer + ',', ''];
     lines.push((wa ? 'מצורפת ' : 'מצורפת (בקובץ PDF) ') + 'הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ממיגון G1 למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
     lines.push('');
+    // the signing link right at the top, alone on its line (a long message can be shortened by
+    // the app it travels through — the link must never be the part that gets cut)
+    if (currentSignLinks) { lines.push('✍️ ' + b('לאישור ההצעה וחתימה דיגיטלית — לחצו על הקישור:')); lines.push(wa ? currentSignLinks.wa : currentSignLinks.mail); lines.push(''); }
     // "הנחה" appears only when the discount row is actually shown (same rule as the quote/PDF)
     if (!document.getElementById('qDiscountAmountRow').hidden) lines.push('הנחה: ' + document.getElementById('qDiscountAmt').textContent);
     lines.push('סה״כ התקנה לתשלום (כולל מע״מ): ' + b(document.getElementById('qTotal').textContent));
@@ -10077,7 +10081,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
     lines.push('ההצעה תקפה ל-7 ימים מיום הוצאתה. אומדן הכבילה משוער — כמות החיווט תימדד בסיום ההתקנה ותחושב לפיה. הציוד נשאר רכוש G1 עד לפירעון התשלום המלא. ט.ל.ח.');
     if (wa) lines.push('קובץ ההצעה המלא (PDF) נשלח כאן בצ׳אט.');
-    if (currentSignLinks) { lines.push(''); lines.push('✍️ לאישור ההצעה וחתימה דיגיטלית: ' + (wa ? currentSignLinks.wa : currentSignLinks.mail)); }
     lines.push('');
     lines.push('בברכה,');
     if (agentInfo.name) lines.push(agentInfo.name);
@@ -10123,6 +10126,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">הצעת מחיר מס׳ ' + e(String(q.number)) + ' ממיגון G1 עבור ' + e(q.customer) + '</p>';
     h += '<p style="margin:0 0 10px">שלום ' + e(q.customer) + ',</p>';
     h += '<p style="margin:0 0 14px">מצורפת בקובץ PDF הצעת מחיר <b>מס׳ ' + e(String(q.number)) + '</b> למערכת מיגון' + (q.address ? ' בכתובת: ' + e(q.address) : '') + '.</p>';
+    if (currentSignLinks) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
     h += '<table dir="rtl" cellpadding="0" cellspacing="0" style="border-collapse:collapse;min-width:360px;max-width:560px;margin:0 0 16px;' + font + 'font-size:14px">';
     h += '<tr><th colspan="2" style="background:#00AAE7;color:#ffffff;text-align:right;padding:9px 12px;font-size:14px">סיכום ההצעה</th></tr>';
     q.rows.forEach(function(r, i){
@@ -10131,7 +10135,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px;white-space:' + (r[1].length > 24 ? 'normal' : 'nowrap') + ';' + (r[2] ? 'font-weight:bold;color:#0077a8;font-size:15px;' : '') + '">' + e(r[1]).replace(/\n/g, '<br>') + '</td></tr>';
     });
     h += '</table>';
-    if (currentSignLinks) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
     h += '<p style="margin:0 0 6px;font-weight:bold;color:#0b1220">הערות ותנאים:</p>';
     q.notes.forEach(function(n, i){
       h += '<p style="margin:0 0 4px;font-weight:bold">' + 'אבגד'.charAt(i) + '. ' + e(n) + '</p>';
@@ -10145,8 +10148,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var q = quoteEmailData(), L = [];
     L.push('הצעת מחיר מס׳ ' + q.number + ' ממיגון G1 עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
     L.push('מצורפת בקובץ PDF הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
+    if (currentSignLinks) L.push('✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו על הקישור:', currentSignLinks.mail, '');
     q.rows.forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
-    if (currentSignLinks) L.push('', '✍️ לאישור ההצעה וחתימה דיגיטלית: ' + currentSignLinks.mail);
     L.push('', 'הערות ותנאים:');
     q.notes.forEach(function(n, i){ L.push('אבגד'.charAt(i) + '. ' + n); });
     L.push('', 'בברכה,');
@@ -10231,50 +10234,169 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      back to the agent the same way they received it (WhatsApp or e-mail). Importing that PDF
      into the saved-quotes library marks the quote as signed. */
   var HOSTED_APP_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/';
+  /* Link format v2 — built to survive every channel it travels through:
+       · in the query string (?s=…), never in a #fragment: some mail/chat apps percent-encode a
+         '#' into the path, which turned the old links into a 404 page;
+       · letters and digits only (base-32): WhatsApp reads _ ~ * as formatting marks and could
+         split a link full of them, and linkifiers drop a trailing '-' or '.';
+       · a 4-character check at the end: a cut-off link is recognised as such ("the link was cut")
+         instead of failing to decode;
+       · compact: device/cable/service codes instead of their Hebrew names, so the link stays short;
+       · decodes on every phone: a built-in inflater is used when the browser lacks
+         DecompressionStream (older iPhones, in-app browsers). */
+  var B32 = '0123456789abcdefghjkmnpqrstvwxyz';
+  function b32enc(bytes){
+    var out = '', bits = 0, val = 0;
+    for (var i = 0; i < bytes.length; i++){ val = (val << 8) | bytes[i]; bits += 8; while (bits >= 5){ out += B32.charAt((val >>> (bits - 5)) & 31); bits -= 5; } val &= 0xff; }
+    if (bits > 0) out += B32.charAt((val << (5 - bits)) & 31);
+    return out;
+  }
+  function b32dec(str){
+    var out = [], bits = 0, val = 0;
+    for (var i = 0; i < str.length; i++){ var v = B32.indexOf(str.charAt(i)); if (v < 0) throw new Error('bad char'); val = ((val << 5) | v) & 0xfff; bits += 5; if (bits >= 8){ out.push((val >>> (bits - 8)) & 0xff); bits -= 8; } }
+    return new Uint8Array(out);
+  }
+  function linkCheck(str){ var h = 0x811c9dc5; for (var i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } var c = ''; for (var k = 0; k < 4; k++){ c += B32.charAt(h & 31); h >>>= 5; } return c; }
   function b64url(bytes){ var bin = ''; for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
   function unb64url(s){ s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var bin = atob(s), b = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b; }
   async function streamBytes(bytes, Stream){ var cs = new Stream('deflate-raw'); var out = new Response(new Blob([bytes]).stream().pipeThrough(cs)); return new Uint8Array(await out.arrayBuffer()); }
-  async function packSignPayload(obj){
-    var raw = new TextEncoder().encode(JSON.stringify(obj));
-    try { if (window.CompressionStream) return 'z' + b64url(await streamBytes(raw, CompressionStream)); } catch(e) {}
-    return 'j' + b64url(raw);
+  // Small RFC 1951 inflater (raw deflate) — the fallback when the browser can't decompress.
+  var jsInflateRaw = (function(){
+    function Tree(){ this.table = new Uint16Array(16); this.trans = new Uint16Array(288); }
+    var sltree = new Tree(), sdtree = new Tree(), lbits = new Uint8Array(30), lbase = new Uint16Array(30), dbits = new Uint8Array(30), dbase = new Uint16Array(30);
+    var clcidx = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15], codeTree = new Tree(), lens = new Uint8Array(320), offs = new Uint16Array(16);
+    function bitsBase(bits, base, delta, first){ var i, sum; for (i = 0; i < delta; ++i) bits[i] = 0; for (i = 0; i < 30 - delta; ++i) bits[i + delta] = (i / delta) | 0; for (sum = first, i = 0; i < 30; ++i){ base[i] = sum; sum += 1 << bits[i]; } }
+    function buildTree(t, l, off, num){ var i, sum; for (i = 0; i < 16; ++i) t.table[i] = 0; for (i = 0; i < num; ++i) t.table[l[off + i]]++; t.table[0] = 0; for (sum = 0, i = 0; i < 16; ++i){ offs[i] = sum; sum += t.table[i]; } for (i = 0; i < num; ++i) if (l[off + i]) t.trans[offs[l[off + i]]++] = i; }
+    (function(){ var i; for (i = 0; i < 7; ++i) sltree.table[i] = 0; sltree.table[7] = 24; sltree.table[8] = 152; sltree.table[9] = 112;
+      for (i = 0; i < 24; ++i) sltree.trans[i] = 256 + i; for (i = 0; i < 144; ++i) sltree.trans[24 + i] = i; for (i = 0; i < 8; ++i) sltree.trans[168 + i] = 280 + i; for (i = 0; i < 112; ++i) sltree.trans[176 + i] = 144 + i;
+      for (i = 0; i < 5; ++i) sdtree.table[i] = 0; sdtree.table[5] = 32; for (i = 0; i < 32; ++i) sdtree.trans[i] = i;
+      bitsBase(lbits, lbase, 4, 3); bitsBase(dbits, dbase, 2, 1); lbits[28] = 0; lbase[28] = 258; })();
+    function fill(d){ while (d.bitcount < 24){ if (d.i > d.s.length + 4) throw new Error('truncated'); d.tag |= (d.s[d.i++] | 0) << d.bitcount; d.bitcount += 8; } }
+    function getbit(d){ if (!d.bitcount--){ if (d.i >= d.s.length + 4) throw new Error('truncated'); d.tag = d.s[d.i++] | 0; d.bitcount = 7; } var b = d.tag & 1; d.tag >>>= 1; return b; }
+    function readBits(d, num, base){ if (!num) return base; fill(d); var v = d.tag & (0xffff >>> (16 - num)); d.tag >>>= num; d.bitcount -= num; return v + base; }
+    function sym(d, t){ fill(d); var sum = 0, cur = 0, len = 0, tag = d.tag; do { cur = 2 * cur + (tag & 1); tag >>>= 1; ++len; if (len > 16) throw new Error('bad code'); sum += t.table[len]; cur -= t.table[len]; } while (cur >= 0); d.tag = tag; d.bitcount -= len; return t.trans[sum + cur]; }
+    function trees(d, lt, dt){ var hlit = readBits(d, 5, 257), hdist = readBits(d, 5, 1), hclen = readBits(d, 4, 4), i, num, n;
+      for (i = 0; i < 19; ++i) lens[i] = 0; for (i = 0; i < hclen; ++i) lens[clcidx[i]] = readBits(d, 3, 0); buildTree(codeTree, lens, 0, 19);
+      for (num = 0; num < hlit + hdist;){ var c = sym(d, codeTree);
+        if (c === 16){ var prev = lens[num - 1]; for (n = readBits(d, 2, 3); n; --n) lens[num++] = prev; }
+        else if (c === 17){ for (n = readBits(d, 3, 3); n; --n) lens[num++] = 0; }
+        else if (c === 18){ for (n = readBits(d, 7, 11); n; --n) lens[num++] = 0; }
+        else lens[num++] = c; }
+      buildTree(lt, lens, 0, hlit); buildTree(dt, lens, hlit, hdist); }
+    function block(d, lt, dt){ for (;;){ var c = sym(d, lt); if (c === 256) return; if (c < 256) d.out.push(c); else { c -= 257; var len = readBits(d, lbits[c], lbase[c]), ds = sym(d, dt), from = d.out.length - readBits(d, dbits[ds], dbase[ds]); if (from < 0) throw new Error('bad distance'); for (var k = 0; k < len; k++) d.out.push(d.out[from + k]); } if (d.out.length > 4e6) throw new Error('too big'); } }
+    return function(src){
+      var d = { s:src, i:0, tag:0, bitcount:0, out:[] }, last;
+      do { last = getbit(d); var type = readBits(d, 2, 0);
+        if (type === 0){ while (d.bitcount > 8){ d.i--; d.bitcount -= 8; } var L = d.s[d.i] | (d.s[d.i + 1] << 8), nL = d.s[d.i + 2] | (d.s[d.i + 3] << 8); if (L !== (~nL & 0xffff)) throw new Error('bad block'); d.i += 4; for (var k = 0; k < L; k++) d.out.push(d.s[d.i++]); d.tag = 0; d.bitcount = 0; }
+        else if (type === 1) block(d, sltree, sdtree);
+        else if (type === 2){ var lt = new Tree(), dt = new Tree(); trees(d, lt, dt); block(d, lt, dt); }
+        else throw new Error('bad block type');
+      } while (!last);
+      return new Uint8Array(d.out);
+    };
+  })();
+  async function inflateRawBytes(bytes){
+    if (window.DecompressionStream){ try { return await streamBytes(bytes, DecompressionStream); } catch(e) {} }
+    return jsInflateRaw(bytes);
   }
-  async function unpackSignPayload(s){
+  async function packSignPayload(obj){
+    var raw = new TextEncoder().encode(JSON.stringify(obj)), body = null, kind = 'c';
+    try { if (window.CompressionStream){ body = b32enc(await streamBytes(raw, CompressionStream)); kind = 'b'; } } catch(e) { body = null; }
+    if (!body){ body = b32enc(raw); kind = 'c'; }
+    return kind + body + linkCheck(kind + body);
+  }
+  // Pulls the payload out of whatever the link turned into on the way (case, stray characters,
+  // an encoded '#', trailing punctuation) — or reports that it was cut off.
+  function extractSignToken(){
+    var href = location.href, m;
+    try { href = decodeURIComponent(href); } catch(e) {}
+    if ((m = href.match(/[?&#]s=([0-9a-z]+)/i))) return { v:2, t:m[1].toLowerCase() };
+    if ((m = href.match(/#sign=([A-Za-z0-9_\-]+)/))) return { v:1, t:m[1] };
+    return null;
+  }
+  async function unpackSignPayload(tok){
+    if (typeof tok === 'string') tok = { v:1, t:tok };
+    var s = tok.t;
+    if (tok.v === 2){
+      if (s.length < 8) throw Object.assign(new Error('cut'), { cut:true });
+      var head = s.slice(0, -4), chk = s.slice(-4);
+      if (linkCheck(head) !== chk) throw Object.assign(new Error('cut'), { cut:true });
+      var bytes2 = b32dec(head.slice(1));
+      if (head.charAt(0) === 'b') bytes2 = await inflateRawBytes(bytes2);
+      return expandSignPayload(JSON.parse(new TextDecoder().decode(bytes2)));
+    }
     var kind = s.charAt(0), bytes = unb64url(s.slice(1));
-    if (kind === 'z') bytes = await streamBytes(bytes, DecompressionStream);
+    if (kind === 'z') bytes = await inflateRawBytes(bytes);
     return JSON.parse(new TextDecoder().decode(bytes));
   }
   async function sha256Hex(str){
     try { var d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return Array.from(new Uint8Array(d)).map(function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
     catch(e) { var h = 0; for (var i = 0; i < str.length; i++) { h = ((h << 5) - h + str.charCodeAt(i)) | 0; } return ('00000000' + (h >>> 0).toString(16)).slice(-8) + '00000000'; }
   }
-  // Agent side: the customer-facing content of the open quote (what the client view shows).
+  // Agent side: the customer-facing content of the open quote (what the client view shows),
+  // packed compactly — "@code" stands for a device / cable / service name both sides know.
+  var SIGN_TOTAL_CODES = { g:'תשלום חד-פעמי — משדר GPRS', s:'סה״כ ציוד והתקנה (לפני מע״מ)', x:'הנחה' };
   function buildSignPayload(ch){
     var c = getCustomerContact(), txt = function(id){ var e = document.getElementById(id); return e ? e.textContent.trim() : ''; };
-    var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){ return [tr.cells[0].textContent.trim(), tr.cells[1].textContent.trim()]; });
-    var cables = Array.prototype.map.call(document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]'), function(tr){ return [tr.cells[0].textContent.trim(), tr.cells[1].textContent.trim()]; });
+    var num = function(t){ return String(t).replace(/[^\d.\-]/g, ''); };
+    var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){
+      var t = tr.dataset.type, lbl = tr.cells[0].textContent.trim(), qty = +tr.cells[1].textContent.trim() || tr.cells[1].textContent.trim();
+      return [(t && DEVICE_DEFS[t] && DEVICE_DEFS[t].label === lbl) ? '@' + t : lbl, qty];
+    });
+    var cables = Array.prototype.map.call(document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]'), function(tr){
+      var t = tr.dataset.ctype, lbl = tr.cells[0].textContent.trim(), def = QUOTE_CABLE_DEFS.filter(function(d){ return d[0] === t; })[0];
+      return [(def && def[1] === lbl) ? '@' + t : lbl, +tr.dataset.meters || num(tr.cells[1].textContent)];
+    });
     var mon = [];
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
       var cb = tr.querySelector('.qMonCheck'); if (!cb || !cb.checked) return;
-      var q = tr.querySelector('.qMonQty'); mon.push([tr.querySelector('.qMonLabel').textContent.trim(), q ? String(Math.max(1, parseInt(q.value, 10) || 1)) : '']);
+      var key = tr.dataset.mon, lbl = tr.querySelector('.qMonLabel').textContent.trim(), sv = MONITOR_SERVICES.filter(function(m){ return m.key === key; })[0];
+      var q = tr.querySelector('.qMonQty'), item = [(sv && sv.label === lbl) ? '@' + key : lbl];
+      if (q) item.push(Math.max(1, parseInt(q.value, 10) || 1));
+      mon.push(item);
     });
     var tot = [];
-    if (!document.getElementById('qGprsOnceRow').hidden) tot.push(['תשלום חד-פעמי — משדר GPRS', txt('qGprsOnceAmt')]);
-    tot.push(['סה״כ ציוד והתקנה (לפני מע״מ)', txt('qSubtotal')]);
-    if (!document.getElementById('qDiscountAmountRow').hidden) tot.push(['הנחה', txt('qDiscountAmt')]);
-    tot.push(['מע״מ (' + txt('qVatPctLabel') + '%)', txt('qVatAmt')]);
-    var now = new Date();
+    if (!document.getElementById('qGprsOnceRow').hidden) tot.push(['g', num(txt('qGprsOnceAmt'))]);
+    tot.push(['s', num(txt('qSubtotal'))]);
+    if (!document.getElementById('qDiscountAmountRow').hidden) tot.push(['x', txt('qDiscountAmt')]);
+    tot.push(['v', num(txt('qVatAmt')), txt('qVatPctLabel')]);
+    var now = new Date(), mt = txt('qMonTotal');
+    var o = {
+      v:2, ch:ch, n:state.quoteNumber, d: now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' }),
+      c:[document.getElementById('fCustomer').value.trim(), document.getElementById('fAddress').value.trim(), c.phone || '', c.email || '', c.idType || '', c.idNum || ''],
+      ag:[agentInfo.name || '', agentInfo.phone || '', agentInfo.branch || '', agentInfo.email || ''],
+      it:items, tt:num(txt('qTotal')), t:tot
+    };
+    if (cables.length) o.cb = cables;
+    if (mon.length && mt !== '₪0') { o.m = mon; o.mt = num(mt); }
+    var pt = document.getElementById('qPaymentTerms').value.trim(); if (pt) o.pt = pt;
+    return o;
+  }
+  // Customer side: back to the full shape the signing page renders.
+  function expandSignPayload(o){
+    if (o.v !== 2) return o;
+    var ils = function(n){ return n === '' || n == null ? '' : (/^-?[\d.]+$/.test(String(n)) ? (String(n).charAt(0) === '-' ? '-' : '') + '₪' + Math.abs(+n).toLocaleString('he-IL') : String(n)); };
+    var name = function(code, map){ if (typeof code !== 'string' || code.charAt(0) !== '@') return code; var k = code.slice(1); return map(k) || k; };
+    var dev = function(k){ return DEVICE_DEFS[k] && DEVICE_DEFS[k].label; };
+    var cab = function(k){ var d = QUOTE_CABLE_DEFS.filter(function(x){ return x[0] === k; })[0]; return d && d[1]; };
+    var svc = function(k){ var d = MONITOR_SERVICES.filter(function(x){ return x.key === k; })[0]; return d && d.label; };
+    var c = o.c || [], ag = o.ag || [];
     return {
-      v:1, ch:ch, n:state.quoteNumber, d: now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' }),
-      c:{ n:document.getElementById('fCustomer').value.trim(), a:document.getElementById('fAddress').value.trim(), p:c.phone, e:c.email, it:c.idType, id:c.idNum },
-      ag:{ n:agentInfo.name || '', p:agentInfo.phone || '', b:agentInfo.branch || '', e:agentInfo.email || '' },
-      it:items, cb:cables, t:tot, tt:txt('qTotal'), m:mon, mt:(txt('qMonTotal') !== '₪0' ? txt('qMonTotal') : ''), pt:document.getElementById('qPaymentTerms').value.trim()
+      v:2, ch:o.ch, n:o.n, d:o.d,
+      c:{ n:c[0] || '', a:c[1] || '', p:c[2] || '', e:c[3] || '', it:c[4] || '', id:c[5] || '' },
+      ag:{ n:ag[0] || '', p:ag[1] || '', b:ag[2] || '', e:ag[3] || '' },
+      it:(o.it || []).map(function(r){ return [name(r[0], dev), String(r[1])]; }),
+      cb:(o.cb || []).map(function(r){ return [name(r[0], cab), r[1] + ' מ׳']; }),
+      t:(o.t || []).map(function(r){ return r[0] === 'v' ? ['מע״מ (' + (r[2] || '') + '%)', ils(r[1])] : [SIGN_TOTAL_CODES[r[0]] || r[0], ils(r[1])]; }),
+      tt:ils(o.tt), m:(o.m || []).map(function(r){ return [name(r[0], svc), r[1] != null ? String(r[1]) : '']; }), mt:o.mt ? ils(o.mt) : '', pt:o.pt || ''
     };
   }
-  function signBaseUrl(){ return /^https?:/.test(location.protocol) ? (location.origin + location.pathname) : HOSTED_APP_URL; }
+  // Signing links always point at the published app — whatever the agent happens to be running
+  // (a downloaded copy, the installed app, a preview), the customer gets a page that opens.
+  function signBaseUrl(){ return HOSTED_APP_URL; }
   async function buildSignLinks(){
     var out = {};
-    for (var ch of ['wa', 'mail']) out[ch] = signBaseUrl() + '#sign=' + await packSignPayload(buildSignPayload(ch));
+    for (var ch of ['wa', 'mail']) out[ch] = signBaseUrl() + '?s=' + await packSignPayload(buildSignPayload(ch));
     return out;
   }
   var currentSignLinks = null;
@@ -10307,11 +10429,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   async function startSignMode(packed){
     var q;
-    try { q = await unpackSignPayload(packed); } catch(e) { q = null; }
+    var cut = false;
+    try { q = await unpackSignPayload(packed); } catch(e) { q = null; cut = !!(e && e.cut); try { console.error('sign link', e); } catch(_) {} }
+    packed = (packed && packed.t) || String(packed || '');
     document.body.classList.add('sign-mode');
     var view = document.createElement('div'); view.id = 'signView'; view.className = 'sign-view'; view.setAttribute('dir', 'rtl');
     document.body.appendChild(view);
-    if (!q) { view.innerHTML = '<div class="sg-card"><h1 class="sg-title">הקישור אינו תקין</h1><p>נא לבקש מיועץ המיגון קישור חדש לחתימה.</p></div>'; return; }
+    if (!q) { view.innerHTML = '<div class="sg-card"><h1 class="sg-title">' + (cut ? 'הקישור הגיע חתוך' : 'לא הצלחנו לפתוח את ההצעה') + '</h1><p>' +
+      (cut ? 'נראה שתוכנת ההודעות קיצרה את הקישור בדרך. נסו ללחוץ שוב על הקישור המלא בהודעה, או בקשו מיועץ המיגון לשלוח אותו שוב.' : 'נא לבקש מיועץ המיגון לשלוח שוב את קישור החתימה.') +
+      '</p><p class="sg-small">ההצעה המלאה מצורפת גם כקובץ PDF בהודעה שקיבלתם.</p></div>'; return; }
     var qHash = (await sha256Hex(packed)).slice(0, 12).toUpperCase();
     var idLabel = ID_TYPE_LABEL[q.c.it] || 'ת״ז';
     view.innerHTML = '<div class="sg-card">' + signQuoteHtml(q) +
@@ -10405,7 +10531,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     btn('save', mobile ? '📤 שמירה / שיתוף אחר' : '⬇ הורדת המסמך החתום', async function(b){ if (mobile) { if ((await shareFile(pdf.file)) === 'shared') b.classList.add('done'); } else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } });
   }
-  (function(){ var h = location.hash || ''; if (h.indexOf('#sign=') === 0) setTimeout(function(){ startSignMode(h.slice(6)); }, 0); })();
+  (function(){ var tok = extractSignToken(); if (tok) setTimeout(function(){ startSignMode(tok); }, 0); })();
 
   /* ============================= send / share sheet ============================= */
   // Phones (iPhone above all, and the installed app) can't "download" a file the way a desktop
@@ -10467,15 +10593,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     wa.appendChild(el2('h4', '', '💬 וואטסאפ ללקוח' + (info.phone && info.phone.mobile ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.phone.display) + '</span>' : '')));
     if (info.phone && info.phone.mobile){
       var steps = el2('div', 'share-steps');
-      steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח + הודעה מוכנה', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText)));
-      steps.appendChild(actBtn('wa-2', '<span class="step">2</span> ' + (mobile ? 'שליחת קובץ ה-PDF לצ׳אט' : 'הורדת ה-PDF לצירוף בצ׳אט'), async function(b){
-        if (mobile){ var r = await shareFile(pdf.file); if (r === 'shared') b.classList.add('done'); }
-        else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }
-      }));
-      wa.appendChild(steps);
-      wa.appendChild(el2('p', '', mobile
-        ? 'שלב 1 פותח את הצ׳אט של הלקוח (גם אם אינו שמור באנשי הקשר) עם סיכום ההצעה — שלחו. בשלב 2 בחרו WhatsApp, והצ׳אט של הלקוח יופיע ראשון ברשימה.'
-        : 'נפתח ב-WhatsApp Web / WhatsApp למחשב. בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.'));
+      if (mobile){
+        // phone: ONE message to the customer — the quote PDF itself, with the summary and the
+        // signing link as its text (no website preview card in place of the document)
+        steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח', 'https://wa.me/' + info.phone.intl));
+        steps.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הצעת המחיר (PDF) + קישור לחתימה', async function(b){
+          var r = await shareFile(pdf.file, { text: waText }); if (r === 'shared') b.classList.add('done');
+        }));
+        wa.appendChild(steps);
+        wa.appendChild(el2('p', '', 'שלב 1 פותח את הצ׳אט של הלקוח (גם אם אינו שמור באנשי הקשר) — חזרו לכאן. בשלב 2 בחרו WhatsApp: הצ׳אט של הלקוח יופיע ראשון, וקובץ ה-PDF יישלח יחד עם סיכום ההצעה וקישור החתימה.'));
+        var waAlt = linkBtn('', 'הקישור לחתימה לא הופיע בצ׳אט? שליחת ההודעה עם הקישור', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText));
+        waAlt.style.marginTop = '6px'; wa.appendChild(waAlt);
+      } else {
+        steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח + הודעה מוכנה', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText)));
+        steps.appendChild(actBtn('wa-2', '<span class="step">2</span> הורדת ה-PDF לצירוף בצ׳אט', async function(b){
+          await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done');
+        }));
+        wa.appendChild(steps);
+        wa.appendChild(el2('p', '', 'נפתח ב-WhatsApp Web / WhatsApp למחשב. לפני השליחה אפשר לסגור את תצוגת האתר (✕ מעל ההודעה). בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.'));
+      }
     } else {
       shareNote(wa, info.contact.phone ? 'המספר שהוזן אינו נייד תקין — תקנו אותו בפרטי הלקוח כדי לשלוח ישירות לצ׳אט שלו.' : 'הזינו את הטלפון הנייד של הלקוח (בראש ההצעה) כדי לשלוח ישירות לצ׳אט שלו.', true);
       if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף ה-PDF בוואטסאפ (בחירת איש קשר)', async function(b){ var r = await shareFile(pdf.file, { text: waText }); if (r === 'shared') b.classList.add('done'); }));
