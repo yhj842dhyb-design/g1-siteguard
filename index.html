@@ -1621,7 +1621,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 79</div>
+              <div class="app-version" id="appVersion">גרסה 80</div>
             </div>
           </div>
         </div>
@@ -3333,9 +3333,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // embedded numbers reading left-to-right inside an RTL phrase — so "חדר ילדים 1" still ends in a
   // normal "1", not a mirrored one.
   function rtlIsolate(s){
+    s = String(s);
+    // nothing right-to-left in it (e.g. "PIR-P-4"): leave it exactly as is — reversing it on
+    // iPhone printed "4-P-RIP"
+    if (!/[\u0590-\u05FF]/.test(s)) return s;
     if (!NEEDS_MANUAL_BIDI_REVERSAL) return '⁧' + s + '⁩';
     var reversed = s.split('').reverse().join('');
-    return reversed.replace(/[0-9.]+/g, function(run){ return run.split('').reverse().join(''); });
+    // Latin words and numbers inside Hebrew text keep their own left-to-right order
+    return reversed.replace(/[A-Za-z0-9.]+(?:-[A-Za-z0-9.]+)*/g, function(run){ return run.split('').reverse().join(''); });
   }
 
   var RESIZE_HANDLES = [
@@ -5742,11 +5747,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
 
   /* ============================= drag / resize / rotate ============================= */
+  // Screen ↔ plan coordinates from the plan's on-screen box and its viewBox. getScreenCTM() is
+  // NOT used: iPhone/iPad Safari (WebKit) leaves the CSS zoom transform on the <svg> out of it,
+  // so once the agent had zoomed in, every tap landed further right/down than the finger — a
+  // detector tapped into a bedroom ended up on the corridor wall, or outside the building.
+  // getBoundingClientRect() includes that transform in every browser.
+  function planScreenMap(){
+    var r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    var s = Math.min(r.width / vb.width, r.height / vb.height) || 1; // preserveAspectRatio: meet
+    return { s:s, ox: r.left + (r.width - vb.width * s) / 2, oy: r.top + (r.height - vb.height * s) / 2, vb:vb };
+  }
   function svgPoint(ev){
-    var pt = svg.createSVGPoint();
-    pt.x = ev.clientX; pt.y = ev.clientY;
-    var ctm = svg.getScreenCTM().inverse();
-    return pt.matrixTransform(ctm);
+    var m = planScreenMap();
+    return { x: m.vb.x + (ev.clientX - m.ox) / m.s, y: m.vb.y + (ev.clientY - m.oy) / m.s };
+  }
+  function planToScreen(x, y){
+    var m = planScreenMap();
+    return { x: m.ox + (x - m.vb.x) * m.s, y: m.oy + (y - m.vb.y) * m.s };
   }
 
   // Double-click detection for rooms, done by hand rather than relying on the native
@@ -6388,7 +6405,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var cx = (b.x1 + b.x2)/2, cy = (b.y1 + b.y2)/2, wi = m2p(0.2);
         var wc = opp === 'top' ? { x:cx, y:b.y1 + wi, rot:dirRot(0, 1) } : opp === 'bottom' ? { x:cx, y:b.y2 - wi, rot:dirRot(0, -1) } :
                  opp === 'left' ? { x:b.x1 + wi, y:cy, rot:dirRot(1, 0) } : { x:b.x2 - wi, y:cy, rot:dirRot(-1, 0) };
-        add('oppwall', 'מרכז הקיר מול הדלת', wc);
+        var longNarrow = Math.max(b.x2 - b.x1, b.y2 - b.y1) >= 2.2 * Math.min(b.x2 - b.x1, b.y2 - b.y1);
+        if (!longNarrow) add('oppwall', 'מרכז הקיר מול הדלת', wc);
       }
       // a long narrow space (corridor, long hall): mount on an end wall looking down its length —
       // a corner's 45° diagonal would hit the opposite wall after a metre or two
@@ -6424,10 +6442,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Bring a device into view on the plan (after a quick placement from the side panel).
   function scrollDeviceIntoView(d){
     try {
-      var sc = document.getElementById('canvasScroll'), ctm = svg.getScreenCTM();
-      if (!sc || !ctm) return;
-      var pt = svg.createSVGPoint(); pt.x = d.x; pt.y = d.y;
-      var sp = pt.matrixTransform(ctm), r = sc.getBoundingClientRect(), m = 60;
+      var sc = document.getElementById('canvasScroll');
+      if (!sc) return;
+      var sp = planToScreen(d.x, d.y), r = sc.getBoundingClientRect(), m = 60;
       if (sp.x < r.left + m || sp.x > r.right - m) sc.scrollLeft += sp.x - (r.left + r.width/2);
       if (sp.y < r.top + m || sp.y > r.bottom - m) sc.scrollTop += sp.y - (r.top + r.height/2);
     } catch(e) {}
@@ -7667,7 +7684,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!free.length) free = opts;
       var near = free.slice().sort(function(a, c){ return dist(a.x, a.y, p.x, p.y) - dist(c.x, c.y, p.x, p.y); })[0];
       var pick;
-      if (near && dist(near.x, near.y, p.x, p.y) <= m2p(0.7)) pick = near;
+      var bestPct = Math.max.apply(null, free.map(function(o){ return o.pct; }));
+      // the position the finger was aimed at — unless it covers clearly less than the best one
+      if (near && dist(near.x, near.y, p.x, p.y) <= m2p(0.7) && near.pct >= bestPct * 0.75) pick = near;
       else if (others.length) pick = free.slice().sort(function(a, c){
           var da = Math.min.apply(null, others.map(function(d){ return dist(d.x, d.y, a.x, a.y); }));
           var dc = Math.min.apply(null, others.map(function(d){ return dist(d.x, d.y, c.x, c.y); }));
@@ -7675,7 +7694,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       else pick = free.filter(function(o){ return o.rec; })[0] || free.slice().sort(function(a, c){ return c.pct - a.pct; })[0];
       return { x:pick.x, y:pick.y, rot:pick.rot, label:pick.label.replace(/\s*\(.*\)$/, ''), pct:pick.pct, note:pick.note };
     }
-    if (type === 'smoke') return { x:cx, y:cy, rot:0, label:'מרכז התקרה' };
+    if (type === 'smoke'){
+      // one smoke detector per ~40 m²: the room is split along its length into as many equal
+      // parts as it needs, and the detector goes to the centre of the free part nearest the tap
+      var cap = roomFamilyCapacity('smoke', r), longX = (b.x2 - b.x1) >= (b.y2 - b.y1);
+      var cells = [];
+      for (var ci = 0; ci < cap; ci++){
+        cells.push(longX ? { x:b.x1 + (b.x2 - b.x1) * (ci + 0.5) / cap, y:cy } : { x:cx, y:b.y1 + (b.y2 - b.y1) * (ci + 0.5) / cap });
+      }
+      var smokes = devicesOfFamilyInRoom('smoke', r);
+      var freeCells = cells.filter(function(c){ return !smokes.some(function(d){ return dist(d.x, d.y, c.x, c.y) < m2p(1); }); });
+      var cell = (freeCells.length ? freeCells : cells).sort(function(a, c){ return dist(a.x, a.y, p.x, p.y) - dist(c.x, c.y, p.x, p.y); })[0];
+      return { x:cell.x, y:cell.y, rot:0, label: cap > 1 ? 'מרכז התקרה (אזור ' + (cells.indexOf(cell) + 1) + ' מתוך ' + cap + ')' : 'מרכז התקרה' };
+    }
     var info = roomOpeningsInfo(r);
     if (type === 'glassbreak'){
       if (!info.mainWin) return { x:cx, y:cy, rot:0, label:'מרכז התקרה' };
@@ -7703,6 +7734,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // A finger tap is never precise: inside a room, a detector/camera goes straight to its
       // professional position in that room (see professionalSnap), with the same note + flash
       // as the quick-place buttons.
+      // an indoor detector tapped just outside a room (or on its wall line) belongs to the
+      // nearest room; nowhere near a room → it isn't placed outdoors by mistake
+      if ((QP_TYPES[type] || type === 'smoke' || type === 'glassbreak') && !roomContainingPoint(p)) {
+        var nr = null, nd = Infinity;
+        walledRoomsOnFloor(state.activeFloor || 0).forEach(function(rr){
+          var bb = roomBBoxPx(rr), dd = Math.hypot(Math.max(bb.x1 - p.x, 0, p.x - bb.x2), Math.max(bb.y1 - p.y, 0, p.y - bb.y2));
+          if (dd < nd) { nd = dd; nr = rr; }
+        });
+        if (!nr || nd > m2p(1.5)) { showCanvasToast(DEVICE_DEFS[type].label + ' מותקן בתוך חדר — הקישו בתוך החדר הרצוי', true); return null; }
+        var nbb = roomBBoxPx(nr), pad = m2p(0.3);
+        p = { x: Math.max(nbb.x1 + pad, Math.min(p.x, nbb.x2 - pad)), y: Math.max(nbb.y1 + pad, Math.min(p.y, nbb.y2 - pad)) };
+        var lim2 = roomLimitBlock(type, p);
+        if (lim2) { showCanvasToast(lim2, true); return null; }
+      }
       var prof = professionalSnap(type, p);
       if (prof) {
         var pd = addDevice({ type:type, x:prof.x, y:prof.y, rot:prof.rot });
