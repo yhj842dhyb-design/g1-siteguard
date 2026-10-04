@@ -1401,6 +1401,92 @@
     .sketch-meta{ order:10; flex:1 1 100%; }
     .sketch-head-actions{ order:11; flex:1 1 100%; flex-wrap:wrap; justify-content:center; }
   }
+
+  /* ===================== phone (portrait): canvas-first layout =====================
+     The drawing takes the whole screen; one slim header (customer + ⋯), a fixed bottom
+     navigation in thumb reach (סידור · המלצות · מדריך · הצעה · סקיצה), and the equipment list
+     as a half-height bottom sheet — category chips + large tiles — so the plan stays in view.
+     Picking an item closes the sheet and starts tap-to-place on the plan. */
+  .m-only, .m-nav, .m-more{ display:none; }
+  @media (max-width:680px) and (orientation:portrait){
+    :root{ --mnav-h:62px; }
+    .app{ padding-bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px)); }
+    .app.is-fullscreen{ padding-bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px)); }
+    #btnFullscreen, .fs-exit-fab{ display:none !important; }
+    /* header: logo · customer title · score · ⋯ */
+    .topbar{ flex-wrap:wrap; gap:8px; padding:8px 10px; row-gap:8px; }
+    .topbar .brand > div{ display:none; }
+    .topbar .brand .mark{ width:30px; height:26px; }
+    .topbar #btnAgentInfo, .topbar #btnReset{ display:none; }
+    .m-only{ display:inline-flex; }
+    .m-title{ display:flex; flex-direction:column; flex:1 1 auto; min-width:0; background:none; border:0; padding:2px 4px; text-align:start; cursor:pointer; color:var(--ink-on-dark); font-family:var(--font-body); }
+    .m-title b{ font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .m-title span{ font-size:11.5px; color:var(--ink-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .m-title b::after{ content:' ✎'; font-size:11px; color:var(--ink-dim); font-weight:400; }
+    .m-ico{ width:38px; height:38px; border-radius:11px; border:1px solid var(--line); background:var(--panel-2); color:var(--ink-on-dark); font-size:18px; font-weight:700; align-items:center; justify-content:center; cursor:pointer; flex:0 0 auto; }
+    .proj-fields{ display:none; order:10; flex:1 1 100%; flex-wrap:wrap; }
+    body.m-proj-open .proj-fields{ display:flex; }
+    .proj-fields input{ flex:1 1 140px; font-size:16px; }
+    .proj-fields select{ font-size:16px; }
+    /* canvas row: floors + zoom only; the work steps live in the bottom nav, the ⋯ menu in the header */
+    .canvas-toolbar .tb-flow, .canvas-toolbar .tb-status, .canvas-toolbar .tb-menu{ display:none !important; }
+    .canvas-toolbar{ padding:5px 8px; min-height:0; }
+    /* the plan keeps its real proportions (it used to keep a fixed 680px height and draw the
+       house as a strip in the middle of a tall empty sheet) */
+    .canvas-stage{ padding:10px; }
+    /* the placing hint sits just above the bottom nav — at the top it covered the top row of rooms */
+    .canvas-hint{ position:fixed; left:50%; transform:translateX(-50%); top:auto; bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px) + 10px); z-index:40; max-width:calc(100% - 24px); }
+    #plan{ width:100% !important; height:auto !important; aspect-ratio:1000 / 680; }
+    /* panels above the bottom nav, which stays usable while they're open */
+    .m-nav{ z-index:10135; }
+    body:has(.modal-backdrop:not([hidden])) .m-nav, body:has(.sketch-backdrop:not([hidden])) .m-nav,
+    body:has(.share-sheet-backdrop:not([hidden])) .m-nav{ display:none; }
+    .mobile-panel-backdrop{ bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px)); }
+    .inspector{ top:calc(56px + env(safe-area-inset-top,0px)); left:0; right:0; width:auto; max-width:none; bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px));
+      border-radius:20px 20px 0 0; border:0; padding-top:0; padding-bottom:0; transform:translateY(calc(100% + var(--mnav-h) + 60px)); box-shadow:0 -8px 28px rgba(6,10,16,.25); }
+    .inspector.mobile-open{ transform:translateY(0); }
+    /* bottom navigation */
+    .m-nav{ display:flex; position:fixed; left:0; right:0; bottom:0; z-index:10040; height:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px));
+      padding:6px 4px env(safe-area-inset-bottom,0px); box-sizing:border-box; background:var(--panel); border-top:1px solid var(--line);
+      box-shadow:0 -4px 16px rgba(6,10,16,.08); justify-content:space-around; align-items:flex-start; }
+    .m-nav button{ all:unset; box-sizing:border-box; flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:2px; padding:4px 2px; border-radius:12px;
+      font:700 10.5px var(--font-body); color:var(--ink-dim); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .m-nav button .i{ font-size:21px; line-height:1.1; }
+    .m-nav button.on{ color:#0077a8; background:rgba(0,170,231,.1); }
+    .m-nav button:focus-visible{ outline:2px solid var(--accent-2); }
+    /* equipment: bottom sheet instead of a side drawer */
+    .mobile-panel-backdrop{ background:rgba(6,10,16,.28); }
+    .palette{ top:auto; left:0; right:0; width:auto; max-width:none; bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px));
+      height:min(56vh, 470px); border-radius:20px 20px 0 0; border:0; padding-top:0; padding-bottom:0;
+      transform:translateY(calc(100% + var(--mnav-h) + 40px)); box-shadow:0 -8px 28px rgba(6,10,16,.25); }
+    .palette.mobile-open{ transform:translateY(0); }
+    .palette .panel-head{ padding:6px 14px 2px; position:relative; }
+    .palette .panel-head::before{ content:''; position:absolute; top:6px; left:50%; width:42px; height:5px; margin-left:-21px; border-radius:3px; background:var(--line); }
+    .palette .panel-head > span{ padding-top:10px; }
+    .palette .panel-scroll{ padding:0 12px 14px; }
+    .palette .hint{ display:none; }
+    .m-cat-chips{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; position:sticky; top:0; z-index:2; background:var(--panel); padding:8px 0 10px; margin:0 -2px; }
+    .m-cat-chips::-webkit-scrollbar{ display:none; }
+    .m-cat-chips button{ all:unset; flex:0 0 auto; padding:7px 13px; border-radius:999px; background:var(--panel-2); border:1px solid var(--line); font:700 12.5px var(--font-body); color:var(--ink-on-dark); cursor:pointer; white-space:nowrap; }
+    .m-cat-chips button.on{ background:var(--cat-accent, #c97a2b); border-color:transparent; color:#fff; }
+    .palette .cat-group{ display:none; margin:0; }
+    .palette .cat-group.m-active{ display:block; }
+    .palette .cat-group > .cat-title{ display:none; }
+    .palette .cat-group.m-active > .cat-body{ max-height:none !important; overflow:visible; }
+    .palette .palette-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+    .palette .pal-item{ min-height:74px; justify-content:center; padding:8px 4px; border-radius:12px; }
+    .palette .pal-item svg{ width:28px; height:28px; }
+    .palette .pal-item span{ font-size:10px; }
+    /* "⋯" sheet */
+    .m-more{ position:fixed; left:0; right:0; bottom:calc(var(--mnav-h) + env(safe-area-inset-bottom,0px)); z-index:10140; background:var(--panel);
+      border-radius:20px 20px 0 0; box-shadow:0 -8px 28px rgba(6,10,16,.25); padding:14px 12px 12px; max-height:70vh; overflow-y:auto; }
+    .m-more:not([hidden]){ display:block; }
+    .m-more h4{ margin:0 4px 10px; font:700 13px var(--font-display); color:var(--ink-dim); }
+    .m-more .mm-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .m-more button{ all:unset; box-sizing:border-box; display:flex; align-items:center; gap:8px; min-height:48px; padding:8px 12px; border-radius:12px; background:var(--panel-2); border:1px solid var(--line); font:600 13px var(--font-body); color:var(--ink-on-dark); cursor:pointer; }
+    .m-more button.warn{ color:var(--danger, #b4231a); }
+    .m-more .mm-ver{ text-align:center; font-size:11px; color:var(--ink-dim); margin-top:10px; }
+  }
   @media (max-width:480px){
     .modal-body{ padding:16px; }
     .modal-head{ padding:14px 16px; }
@@ -1410,8 +1496,33 @@
 
 <div class="app" id="app">
 
+  <nav class="m-nav" id="mNav" aria-label="שלבי העבודה">
+    <button type="button" data-m="palette"><span class="i">🧰</span>סידור</button>
+    <button type="button" data-m="recs"><span class="i">🎯</span>המלצות</button>
+    <button type="button" data-m="guide"><span class="i">📘</span>מדריך</button>
+    <button type="button" data-m="quote"><span class="i">💰</span>הצעה</button>
+    <button type="button" data-m="sketch"><span class="i">📐</span>סקיצה</button>
+  </nav>
+  <div class="m-more" id="mMoreSheet" role="dialog" aria-label="עוד" hidden>
+    <h4>עוד</h4>
+    <div class="mm-grid">
+      <button type="button" data-mm="inspector">📋 מאפיינים והכוונה</button>
+      <button type="button" data-mm="project">✎ פרטי הפרויקט</button>
+      <button type="button" data-mm="library">🗂️ הצעות שמורות</button>
+      <button type="button" data-mm="agent">👤 פרטי סוכן</button>
+      <button type="button" data-mm="save">💾 שמירת פרויקט</button>
+      <button type="button" data-mm="open">📂 פתיחת פרויקט</button>
+      <button type="button" data-mm="sample">📄 טען דוגמה</button>
+      <button type="button" data-mm="help">🖐️ עזרה בניווט</button>
+      <button type="button" data-mm="reset">🆕 פרויקט חדש</button>
+      <button type="button" data-mm="clear" class="warn">🗑️ נקה שרטוט</button>
+    </div>
+    <div class="mm-ver" id="mMoreVer"></div>
+  </div>
+
   <header class="topbar">
     <div class="brand"><span class="mark"><img src="data:image/png;base64,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" alt="G1"></span><div>G1 SiteGuard<small>שרטוט מיגון בשטח</small></div></div>
+    <button type="button" class="m-only m-title" id="mTitle" aria-label="פרטי הפרויקט — לחצו לעריכה"><b id="mTitleName">—</b><span id="mTitleSub"></span></button>
     <div class="proj-fields">
       <input type="text" id="fCustomer" placeholder="שם לקוח" value="משפחת כהן">
       <input type="text" id="fAddress" placeholder="כתובת המתחם" value="רחוב הדוגמה 12, רעננה">
@@ -1428,6 +1539,7 @@
     </div>
     <button class="btn btn-ghost btn-sm" id="btnAgentInfo">פרטי סוכן</button>
     <button class="btn btn-ghost btn-sm" id="btnReset">פרויקט חדש</button>
+    <button type="button" class="m-only m-ico" id="btnMMore" aria-label="עוד — פרויקט, הצעות שמורות, פרטי סוכן">⋯</button>
   </header>
 
   <div class="body">
@@ -1684,6 +1796,7 @@
             <span id="floorLabel">משבצת = 0.5 מ׳</span>
             <span class="tb-status-io" id="projectIOStatus"></span>
           </div>
+          <button type="button" class="btn btn-ghost btn-sm m-only" id="btnMInspector" title="מאפייני הפריט שנבחר, הכוונה וכמויות">📋 מאפיינים</button>
           <div class="tb-spacer"></div>
           <div class="toolbar-group tb-view" role="group" aria-label="תצוגה">
             <div class="zoom-group">
@@ -1708,7 +1821,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 87</div>
+              <div class="app-version" id="appVersion">גרסה 88</div>
             </div>
           </div>
         </div>
@@ -5915,6 +6028,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
   }
   function render(){
+    if (typeof mUpdateTitle === 'function') mUpdateTitle();
     applyFloorViewBox();
     refreshAllPlacementNotes();
     renderRooms();
@@ -7343,51 +7457,51 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var wireless = opt.wireless != null ? opt.wireless : state.alarmWireless;
     var D = {
       hub: wireless
-        ? 'רכזת אזעקה אלחוטית ממוחשבת — קליטת עד 32 אביזרים אלחוטיים בתקשורת מוצפנת דו-כיוונית · חיבור למוקד ולאפליקציה (סלולר / IP) · סוללת גיבוי מובנית'
-        : 'רכזת אזעקה ממוחשבת בעלת 8 אזורי גילוי, מתרחבת עד 32 אזורים · חלוקה לאזורי דריכה · חיבור למוקד ולאפליקציה (סלולר / IP) · ספק כוח וסוללת גיבוי מובנים',
-      keypad: 'לוח מקשים עם תצוגה ומקשי מצב (בית / לילה / יציאה) לדריכה וניטרול · מתחבר לפס התקשורת (BUS) של הרכזת ואינו תופס אזור גילוי',
-      zexp_int: 'כרטיס הרחבה המותקן בתוך הרכזת — מוסיף 8 אזורי גילוי (אזורים 9–16), ללא קופסה נוספת וללא כבילה נוספת',
-      zexp8: 'מרחיב אזורים מרוחק בקופסה עצמאית — 8 אזורי גילוי, מתחבר לרכזת בכבל BUS יחיד' + (conc ? ' · מותקן כנקודת ריכוז קומתית לקיצור הכבילה' : ''),
-      zexp16: 'מרחיב אזורים מרוחק בקופסה עצמאית — 16 אזורי גילוי, מתחבר לרכזת בכבל BUS יחיד' + (conc ? ' · מותקן כנקודת ריכוז קומתית לקיצור הכבילה' : ''),
-      pir: 'גלאי נפח פסיבי (PIR) דיגיטלי עם עיבוד אותות חכם למניעת התראות שווא · זווית כיסוי כ-90–110° וטווח כ-8–12 מ׳ · מגן חבלה (Tamper)',
-      pir_pet: 'גלאי נפח פסיבי דיגיטלי מתעלם מחיות מחמד (Pet Immune, עד כ-25 ק״ג) · טווח כ-8–12 מ׳ · מגן חבלה (Tamper)',
-      pir_ceiling: 'גלאי נפח תקרתי 360° — כיסוי בקוטר כ-12 מ׳ בגובה 2.4–4 מ׳ · התקנה נסתרת ואסתטית במרכז התקרה',
-      pir_ceiling_ind: 'גלאי תקרתי תעשייתי משולב PIR + מיקרוגל (Dual-Tech) עם הגנת אנטי-מסק · כיסוי בקוטר כ-18 מ׳ בגובה עד 8.6 מ׳ · לחללים גדולים',
-      contact: 'גלאי מגע מגנטי לדלת / חלון — התראה מיידית בפתיחה, עוד לפני הכניסה · מאפשר דריכה היקפית בזמן שהות בבית',
-      glassbreak: 'גלאי שבירת זכוכית אקוסטי — מזהה את תדר שבירת הזכוכית בטווח כ-6–7.5 מ׳ · הגנה על חלונות וויטרינות גדולות',
-      curtain_in: 'גלאי וילון פנימי — אלומת גילוי צרה (כ-16°) לאורך חלונות ופתחים, טווח כ-9 מ׳ · תנועה חופשית בבית בזמן דריכה היקפית',
-      curtain_out: 'גלאי וילון חיצוני עמיד מים — אלומה צרה לאורך חזית וחלונות, טווח כ-12 מ׳ · גילוי מוקדם עוד לפני ניסיון החדירה',
-      smoke: 'גלאי עשן אופטי — התראה מוקדמת על שריפה, מחובר לרכזת ולמוקד 24/7',
-      flood: 'גלאי הצפה — התראה מיידית על נזילת מים (מטבח, חדר מכונות, דוד) לצמצום נזקים',
-      siren_in: 'סירנה פנימית בעוצמה של כ-100–110 dB — מרתיעה ומשבשת את פעולת הפורץ',
-      siren_out: 'סירנה חיצונית עם נצנץ ומגן חבלה, עוצמה כ-110–120 dB · סוללת גיבוי עצמאית — ממשיכה לפעול גם בניתוק כבל',
-      fence_sensor: 'גלאי קרניים אקטיבי (IR) להגנה היקפית — טווח כ-20–60 מ׳ בין משדר למקלט · גילוי מוקדם בקו הגדר',
-      safe_sensor: 'גלאי כספת (רטט / מגע) — מזהה ניסיון פריצה, קידוח או הזזה של הכספת',
-      cam_in: 'מצלמת IP פנימית 4MP · עדשה רחבת זווית וראיית לילה IR · הזנת PoE בכבל רשת יחיד',
-      cam_out: 'מצלמת IP חיצונית 4MP עמידה במים ובאבק (IP67) · ראיית לילה IR · עדשה 2.8 מ״מ · הזנת PoE בכבל רשת יחיד',
-      cam_in_analytics: 'מצלמת IP פנימית 4MP עם אנליטיקה מבוססת AI — הבחנה בין אדם / רכב לתנועה רגילה וצמצום התראות שווא · PoE',
-      cam_out_analytics: 'מצלמת IP חיצונית 4MP עם אנליטיקה מבוססת AI (חציית קו, כניסה לאזור, זיהוי אדם / רכב) · IP67 · ראיית לילה IR · PoE',
-      cam_lpr: 'מצלמת זיהוי לוחיות רישוי (LPR) של PAL — פתיחת שער אוטומטית לרכבים מורשים · מודול סלולרי מובנה',
-      poe4: 'מתג רשת PoE ‏4 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · פורט Uplink למערכת ההקלטה · תקציב הספק כ-60W',
-      poe8: 'מתג רשת PoE ‏8 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · פורט Uplink למערכת ההקלטה · תקציב הספק כ-120W',
-      poe16: 'מתג רשת PoE ‏16 פורטים (802.3af/at) — מזין חשמל ונתונים למצלמות בכבל יחיד · 2 פורטי Uplink · תקציב הספק כ-230W',
-      comm_cabinet: 'ארון תקשורת 6U לריכוז מסודר ומאוורר של מערכת ההקלטה, המתגים ואל-הפסק',
-      ups: 'אל-פסק (UPS) — גיבוי חשמל למערכת ההקלטה ולמתגים בעת הפסקת חשמל',
-      intercom_ext: 'יחידת אינטרקום חיצונית עם מצלמה, עמידה בתנאי חוץ · פתיחת דלת / שער',
-      intercom_int: 'צג אינטרקום פנימי — שיחה, צפייה ופתיחת דלת',
-      intercom_pal: 'אינטרקום סלולרי PAL — השיחה מגיעה ישירות לטלפון הנייד באפליקציה, ללא יחידת מסך פנימית',
-      spider_ctrl: 'בקר סלולרי PAL Spider (ממסר אחד) — פתיחת שער / מחסום מהטלפון, ניהול הרשאות ויומן כניסות',
-      spider_ctrl_2relay: 'בקר סלולרי PAL Spider (2 ממסרים) — שליטה בשני שערים / מחסומים מהטלפון, ניהול הרשאות ויומן כניסות',
-      amplifier: 'מגבר אודיו להפעלת מערכת הרמקולים בבית ובחצר',
-      speaker_in: 'רמקול פנימי שקוע תקרה / קיר',
-      speaker_out: 'רמקול חיצוני עמיד מים',
-      switch: 'מתג רשת לחיבור נקודות הרשת ונקודות הגישה',
-      ap_in: 'נקודת גישה Wi-Fi פנימית מוזנת PoE — כיסוי אלחוטי יציב בכל הבית',
-      ap_out: 'נקודת גישה Wi-Fi חיצונית עמידה בתנאי חוץ, מוזנת PoE'
+        ? 'רכזת אלחוטית ממוחשבת · עד 32 אביזרים אלחוטיים · תקשורת דו-כיוונית מוצפנת · סלולר / IP · סוללת גיבוי'
+        : 'רכזת ממוחשבת · 8 אזורים מובנים, הרחבה עד 32 · חלוקה לאזורי דריכה · סלולר / IP · ספק כוח וסוללת גיבוי',
+      keypad: 'לוח מקשים עם תצוגה · מקשי מצב בית / לילה / יציאה · חיבור BUS',
+      zexp_int: 'כרטיס הרחבה פנימי · 8 אזורים (9–16) · התקנה בתוך הרכזת',
+      zexp8: 'מרחיב אזורים 8 · קופסה עצמאית · חיבור BUS' + (conc ? ' · ריכוז קומתי' : ''),
+      zexp16: 'מרחיב אזורים 16 · קופסה עצמאית · חיבור BUS' + (conc ? ' · ריכוז קומתי' : ''),
+      pir: 'PIR דיגיטלי · 90–110° · טווח 12 מ׳ · מגן חבלה',
+      pir_pet: 'PIR דיגיטלי Pet Immune עד 25 ק״ג · טווח 12 מ׳ · מגן חבלה',
+      pir_ceiling: 'PIR תקרתי 360° · קוטר 12 מ׳ · גובה התקנה 2.4–4 מ׳',
+      pir_ceiling_ind: 'גלאי תקרתי Dual-Tech (PIR + MW) · אנטי-מסק · קוטר 18 מ׳ · גובה עד 8.6 מ׳',
+      contact: 'מגע מגנטי · דלת / חלון · מגן חבלה',
+      glassbreak: 'גלאי שבירת זכוכית אקוסטי · טווח 7.5 מ׳ · 360°',
+      curtain_in: 'גלאי וילון פנימי · אלומה 16° · טווח 9 מ׳',
+      curtain_out: 'גלאי וילון חיצוני · IP65 · אלומה 12° · טווח 12 מ׳',
+      smoke: 'גלאי עשן אופטי · מחובר לרכזת ולמוקד',
+      flood: 'גלאי הצפה · חיישן מגע מים',
+      siren_in: 'סירנה פנימית · 100–110 dB',
+      siren_out: 'סירנה חיצונית עם נצנץ · 110–120 dB · סוללת גיבוי · מגן חבלה',
+      fence_sensor: 'גלאי קרניים אקטיבי IR · טווח 20–60 מ׳',
+      safe_sensor: 'גלאי כספת · רטט / מגע',
+      cam_in: 'מצלמת IP פנימית · 4MP · IR · PoE',
+      cam_out: 'מצלמת IP חיצונית · 4MP · עדשה 2.8 מ״מ · IR · IP67 · PoE',
+      cam_in_analytics: 'מצלמת IP פנימית · 4MP · אנליטיקת AI (אדם / רכב) · IR · PoE',
+      cam_out_analytics: 'מצלמת IP חיצונית · 4MP · אנליטיקת AI (חציית קו, אזור, אדם / רכב) · IR · IP67 · PoE',
+      cam_lpr: 'מצלמת LPR · PAL · מודול סלולרי',
+      poe4: 'מתג PoE ‏4 פורטים · 802.3af/at · Uplink · 60W',
+      poe8: 'מתג PoE ‏8 פורטים · 802.3af/at · Uplink · 120W',
+      poe16: 'מתג PoE ‏16 פורטים · 802.3af/at · 2× Uplink · 230W',
+      comm_cabinet: 'ארון תקשורת 6U · מאוורר',
+      ups: 'אל-פסק (UPS) · גיבוי למערכת ההקלטה ולמתגים',
+      intercom_ext: 'יחידת אינטרקום חיצונית · מצלמה · פתיחת דלת / שער',
+      intercom_int: 'צג אינטרקום פנימי',
+      intercom_pal: 'אינטרקום סלולרי PAL · שיחה לאפליקציה',
+      spider_ctrl: 'בקר PAL Spider · ממסר 1 · סלולרי',
+      spider_ctrl_2relay: 'בקר PAL Spider · 2 ממסרים · סלולרי',
+      amplifier: 'מגבר אודיו',
+      speaker_in: 'רמקול שקוע תקרה / קיר',
+      speaker_out: 'רמקול חיצוני · עמיד מים',
+      switch: 'מתג רשת',
+      ap_in: 'נקודת גישה Wi-Fi פנימית · PoE',
+      ap_out: 'נקודת גישה Wi-Fi חיצונית · PoE'
     };
     if (t === 'nvr'){
       var ch = opt.channels || 8;
-      return 'מערכת הקלטה דיגיטלית (NVR) ' + ch + ' ערוצים · דחיסת H.265+ · זיכרון ' + (HDD_BY_CHANNELS[ch] || '2TB') + ' · אנליטיקה מובנית (זיהוי אדם / רכב) · צפייה והתראות מרחוק באפליקציה';
+      return 'NVR ‏' + ch + ' ערוצים · H.265+ · HDD ' + (HDD_BY_CHANNELS[ch] || '2TB') + ' · אנליטיקה מובנית (אדם / רכב) · צפייה מרחוק';
     }
     return D[t] || '';
   }
@@ -7998,14 +8112,89 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function closeMobilePanels(){
     paletteEl.classList.remove('mobile-open');
     inspectorEl.classList.remove('mobile-open');
+    var mm = document.getElementById('mMoreSheet'); if (mm) mm.hidden = true;
     mobileBackdrop.hidden = true;
+    if (typeof mSyncNav === 'function') mSyncNav();
   }
   function openMobilePanel(which){
     closeMobilePanels();
-    if (which === 'palette') paletteEl.classList.add('mobile-open');
+    if (which === 'palette') { paletteEl.classList.add('mobile-open'); if (typeof mOpenSheetCat === 'function') mOpenSheetCat(); }
     else if (which === 'inspector') inspectorEl.classList.add('mobile-open');
+    else if (which === 'more') document.getElementById('mMoreSheet').hidden = false;
     mobileBackdrop.hidden = false;
+    if (typeof mSyncNav === 'function') mSyncNav();
   }
+
+  /* ---------- phone (portrait) canvas-first layout: header title, bottom nav, sheets ---------- */
+  var M_SHEET_QUERY = '(max-width:680px) and (orientation:portrait)';
+  function isPhonePortrait(){ return window.matchMedia(M_SHEET_QUERY).matches; }
+  function mUpdateTitle(){
+    var n = document.getElementById('mTitleName'), sub = document.getElementById('mTitleSub');
+    if (!n) return;
+    var kindSel = document.getElementById('fKind');
+    n.textContent = document.getElementById('fCustomer').value.trim() || 'לקוח חדש';
+    sub.textContent = [document.getElementById('fAddress').value.trim(), kindSel && kindSel.selectedIndex > -1 ? kindSel.options[kindSel.selectedIndex].text : ''].filter(Boolean).join(' · ');
+  }
+  ['fCustomer', 'fAddress', 'fKind'].forEach(function(id){ var e = document.getElementById(id); if (e) { e.addEventListener('input', mUpdateTitle); e.addEventListener('change', mUpdateTitle); } });
+  document.getElementById('mTitle').addEventListener('click', function(){
+    var open = !document.body.classList.contains('m-proj-open');
+    document.body.classList.toggle('m-proj-open', open);
+    if (open) setTimeout(function(){ document.getElementById('fCustomer').focus(); }, 30);
+  });
+  // category chips on top of the equipment sheet — one category shown at a time, as tiles
+  var M_CAT_SHORT = { 'מבנה — חדרים ואזורים':'חדרים', 'פתחים במבנה':'פתחים', 'מערכת אזעקה':'אזעקה', 'מצלמות (CCTV)':'מצלמות', 'מערכת מוזיקה':'מוזיקה', 'מוצרי SMART':'SMART' };
+  var mCatGroups = Array.prototype.slice.call(paletteEl.querySelectorAll('.cat-group')), mCatIdx = -1;
+  var mChips = document.createElement('div'); mChips.className = 'm-cat-chips m-only'; mChips.setAttribute('role', 'tablist');
+  mCatGroups.forEach(function(g, i){
+    var label = (g.querySelector('.cat-title-label') || {}).textContent || '';
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = M_CAT_SHORT[label.trim()] || label.trim();
+    b.style.setProperty('--cat-accent', g.style.getPropertyValue('--cat-accent'));
+    b.addEventListener('click', function(){ mSetCat(i); });
+    mChips.appendChild(b);
+  });
+  paletteEl.querySelector('.panel-scroll').insertBefore(mChips, paletteEl.querySelector('.panel-scroll').firstChild);
+  function mSetCat(i){
+    mCatIdx = i;
+    mCatGroups.forEach(function(g, j){ g.classList.toggle('m-active', i === j); });
+    Array.prototype.forEach.call(mChips.children, function(b, j){ b.classList.toggle('on', i === j); b.setAttribute('aria-selected', i === j ? 'true' : 'false'); });
+    var sc = paletteEl.querySelector('.panel-scroll'); if (sc) sc.scrollTop = 0;
+  }
+  function mOpenSheetCat(){
+    if (mCatIdx < 0) mSetCat(state.rooms.length ? Math.min(2, mCatGroups.length - 1) : 0); // new plan → rooms first, otherwise the alarm
+  }
+  // bottom navigation: each tab drives the same button the desktop toolbar uses
+  var M_NAV = { palette:null, recs:'btnRecommendations', guide:'btnLegend', quote:'btnSend', sketch:'btnSketch' };
+  Array.prototype.forEach.call(document.querySelectorAll('#mNav button'), function(b){
+    b.addEventListener('click', function(){
+      var m = b.dataset.m;
+      if (m === 'palette') { if (paletteEl.classList.contains('mobile-open')) closeMobilePanels(); else { if (armedType) disarmPalette(); openMobilePanel('palette'); } return; }
+      closeMobilePanels();
+      var target = document.getElementById(M_NAV[m]); if (target) target.click();
+      mSyncNav();
+    });
+  });
+  function mSyncNav(){
+    var on = { palette: paletteEl.classList.contains('mobile-open') || !!armedType, recs: document.getElementById('btnRecommendations').classList.contains('active') };
+    Array.prototype.forEach.call(document.querySelectorAll('#mNav button'), function(b){ b.classList.toggle('on', !!on[b.dataset.m]); });
+  }
+  new MutationObserver(mSyncNav).observe(document.getElementById('btnRecommendations'), { attributes:true, attributeFilter:['class'] });
+  // "⋯" sheet
+  var M_MORE = { inspector:'btnMobileInspector', library:'btnQuoteLibrary', agent:'btnAgentInfo', save:'btnSaveProject', open:'btnOpenProject', sample:'btnLoadSample', help:'btnGestureHelp', reset:'btnReset', clear:'btnClear' };
+  document.getElementById('btnMInspector').addEventListener('click', function(){ closeMobilePanels(); document.getElementById('btnMobileInspector').click(); });
+  document.getElementById('btnMMore').addEventListener('click', function(){
+    var sheet = document.getElementById('mMoreSheet');
+    if (!sheet.hidden) { closeMobilePanels(); return; }
+    document.getElementById('mMoreVer').textContent = (document.getElementById('appVersion') || {}).textContent || '';
+    openMobilePanel('more');
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#mMoreSheet [data-mm]'), function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.mm;
+      closeMobilePanels();
+      if (k === 'project') { document.getElementById('mTitle').click(); return; }
+      var t = document.getElementById(M_MORE[k]); if (t) t.click();
+    });
+  });
   // "1 סידור ואבזור": on a phone (or in fullscreen, where the side panels are hidden) it opens
   // the palette drawer; on a desktop the palette is already open beside the plan, so it opens
   // the structure category if nothing is open yet and briefly highlights the panel instead.
@@ -8063,6 +8252,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     canvasHint.hidden = true;
     if (hadType && REPEAT_PLACE_TYPES[hadType] && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
+    if (typeof mSyncNav === 'function') mSyncNav();
   }
   function armPalette(type, itemEl){
     if (armedType === type) { disarmPalette(); return; }
@@ -8075,6 +8265,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     canvasHint.hidden = false;
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (isMobileLayout()) closeMobilePanels();
+    if (typeof mSyncNav === 'function') mSyncNav();
   }
   // Default rotation for a newly-placed interior detector/camera: aim it from its drop point
   // toward the far corner of the room it landed in — the same "corner-mounted, diagonal
@@ -8215,6 +8406,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      above keep working exactly as before. */
   document.querySelectorAll('.cat-group').forEach(function(group){
     var btn = group.querySelector('[data-cat-toggle]');
+    btn.addEventListener('click', function(){ if (typeof mSetCat === 'function' && isPhonePortrait()) mSetCat(mCatGroups.indexOf(group)); });
     var body = group.querySelector('.cat-body');
     var badge = group.querySelector('.cat-badge');
     if (badge) {
