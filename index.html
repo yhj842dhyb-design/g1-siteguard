@@ -792,7 +792,11 @@
     border-bottom:1px solid var(--paper-line); position:sticky; top:0; background:var(--paper); z-index:2;
   }
   .modal-head h2{ font-family:var(--font-display); font-size:18px; margin:0; }
-  .modal-close{ background:transparent; border:0; font-size:20px; cursor:pointer; color:var(--ink-on-paper); line-height:1;}
+  /* a real, labeled close button (the bare ✕ in the corner was hard to hit and sat under the phone's status bar) */
+  .modal-close{ display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; min-height:40px; padding:0 14px; border-radius:999px;
+    border:1px solid var(--paper-line); background:#fff; color:var(--ink-on-paper); font:700 14px var(--font-body); line-height:1; cursor:pointer; white-space:nowrap; }
+  .modal-close:hover{ background:#f2f4f6; }
+  .modal-close:focus-visible{ outline:2px solid var(--accent-2); outline-offset:2px; }
   .modal-body{ padding:22px; }
 
   /* ---------- Developer credit footer — shown on the internal work screens (main canvas
@@ -1496,6 +1500,12 @@
     .m-more button.warn{ color:var(--danger, #b4231a); }
     .m-more .mm-ver{ text-align:center; font-size:11px; color:var(--ink-dim); margin-top:10px; }
   }
+  @media (max-width:680px){
+    .modal-backdrop{ padding:calc(env(safe-area-inset-top, 0px) + 10px) 10px calc(env(safe-area-inset-bottom, 0px) + 10px); align-items:flex-start; }
+    .modal{ max-height:calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px); max-height:calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px); }
+    .sketch-head{ padding-top:calc(env(safe-area-inset-top, 0px) + 10px); }
+    .share-sheet{ max-height:calc(100vh - env(safe-area-inset-top, 0px) - 16px); max-height:calc(100dvh - env(safe-area-inset-top, 0px) - 16px); }
+  }
   @media (max-width:480px){
     .modal-body{ padding:16px; }
     .modal-head{ padding:14px 16px; }
@@ -1831,7 +1841,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 92</div>
+              <div class="app-version" id="appVersion">גרסה 94</div>
             </div>
           </div>
         </div>
@@ -1997,7 +2007,7 @@
         <button class="tab-btn" data-tab="recs">🎯 המלצות מיגון</button>
         <button class="tab-btn" data-tab="bom">כמויות וכבילה</button>
         <button class="tab-btn" data-tab="props">מאפיינים</button>
-        <button type="button" class="mobile-panel-close" id="btnCloseInspector" aria-label="סגירת חלונית המאפיינים" style="flex:0 0 auto;background:transparent;border:0;color:var(--ink-dim);font-size:16px;padding:0 12px;cursor:pointer;font-family:var(--font-display)">✕</button>
+        <button type="button" class="btn btn-ghost btn-sm mobile-panel-close" id="btnCloseInspector" aria-label="סגירת חלונית המאפיינים" style="flex:0 0 auto">✕ סגירה</button>
       </div>
       <div class="panel-scroll">
 
@@ -2088,7 +2098,7 @@
   <div class="modal">
     <div class="modal-head">
       <h2>פרטי הסוכן — לחתימת ההצעה</h2>
-      <button class="modal-close" id="agentClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="agentClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body">
       <p style="font-size:12px;color:var(--ink-dim);margin:0 0 16px;line-height:1.6">הפרטים נשמרים במכשיר זה ומופיעים כחתימה בתחתית כל הצעת מחיר שתפיקו ללקוחות.</p>
@@ -2124,7 +2134,7 @@
   <div class="modal wide">
     <div class="modal-head">
       <h2>הצעות מחיר שנשמרו</h2>
-      <button class="modal-close" id="quoteLibClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="quoteLibClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body">
       <p style="font-size:12px;color:var(--ink-dim);margin:0 0 10px;line-height:1.6">כל הצעת מחיר שנשלחה או נשמרה כ-PDF <b>ממכשיר זה</b> נשמרת כאן אוטומטית, כולל המחירים — "פתיחה לעריכה" מחזירה אותה בדיוק כפי שנשלחה. הספרייה נשמרת בדפדפן/באפליקציה של המכשיר: מחשב ונייד מחזיקים כל אחד ספרייה משלו, ומחיקת האפליקציה מהמסך באייפון מוחקת גם אותה.</p>
@@ -2153,7 +2163,7 @@
   <div class="modal wide">
     <div class="modal-head">
       <h2>הצעת מחיר ללקוח <span class="mode-badge" id="modeBadge">מצב עריכה (סוכן)</span></h2>
-      <button class="modal-close" id="modalClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="modalClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body">
       <div class="qbrand-row" id="qBrand"></div>
@@ -2285,7 +2295,7 @@
         <h3 id="shareSheetTitle">מכינים את קובץ ה-PDF…</h3>
         <p id="shareSheetSub"></p>
       </div>
-      <button class="modal-close" id="shareSheetClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="shareSheetClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="share-sheet-body" id="shareSheetBody"></div>
   </div>
@@ -2306,7 +2316,7 @@
         <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" hidden style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
         <button class="btn btn-primary btn-sm" id="btnSketchEmail">📤 שליחה — מייל / וואטסאפ</button>
         <button class="btn btn-ghost btn-sm" id="btnSketchPrint">💾 שמירה כ-PDF</button>
-        <button class="modal-close" id="sketchClose" aria-label="סגור">✕</button>
+        <button class="modal-close" id="sketchClose" aria-label="סגור">✕ סגור</button>
       </div>
     </div>
     <!-- Shown only for a multi-floor house: each floor gets its own tidy, separately-printable
@@ -2354,7 +2364,7 @@
   <div class="modal">
     <div class="modal-head">
       <h2>📲 התקנת האפליקציה</h2>
-      <button class="modal-close" id="installClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="installClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body" id="installBody"></div>
   </div>
@@ -2368,7 +2378,7 @@
   <div class="modal">
     <div class="modal-head">
       <h2>🖐️ עזרה בניווט בשרטוט</h2>
-      <button class="modal-close" id="gestureHelpClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="gestureHelpClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body" id="gestureHelpBody"></div>
   </div>
@@ -2379,7 +2389,7 @@
   <div class="modal wide">
     <div class="modal-head">
       <h2>מדריך התקנה מקצועי</h2>
-      <button class="modal-close" id="legendClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="legendClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body" id="legendBody"></div>
     <div class="dev-footer" style="margin:0 22px 18px"><span class="dev-footer-c">©</span>כל זכויות הפיתוח שמורות לאבינועם פרקש, פיתוח עסקי – קבוצת G1</div>
@@ -2391,7 +2401,7 @@
   <div class="modal">
     <div class="modal-head">
       <h2>פרויקט חדש</h2>
-      <button class="modal-close" id="newProjectClose" aria-label="סגור">✕</button>
+      <button class="modal-close" id="newProjectClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body" id="npGridStep">
       <p style="font-size:12.5px;color:#6b6455;margin:0 0 16px;line-height:1.6">בחרו סוג מתחם כדי לפתוח סקיצת בסיס עם חלוקת חדרים טיפוסית. כל חדר ניתן לשינוי גודל, הזזה או מחיקה בהמשך — כך שתוכלו להתאים את הסקיצה למציאות בשטח.</p>
@@ -10830,10 +10840,37 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (window.DecompressionStream){ try { return await streamBytes(bytes, DecompressionStream); } catch(e) {} }
     return jsInflateRaw(bytes);
   }
+  // Hebrew text packed one byte per letter (UTF-8 spends two) before compression — the link is
+  // about a third shorter. 0x80–0x9A = א–ת, a few common marks get their own byte, anything else
+  // is stored as 0xFF + length + its UTF-8 bytes.
+  var HEB_EXTRA = { 0x5F4:0x9B, 0x5F3:0x9C, 0x2014:0x9D, 0x20AA:0x9E, 0xB7:0x9F, 0x2013:0xA0, 0x2022:0xA1, 0x200F:0xA2, 0x200E:0xA3 };
+  var HEB_EXTRA_REV = {}; Object.keys(HEB_EXTRA).forEach(function(k){ HEB_EXTRA_REV[HEB_EXTRA[k]] = +k; });
+  function hebPack(str){
+    var out = [], enc = new TextEncoder();
+    for (var ch of str){
+      var c = ch.codePointAt(0);
+      if (c < 0x80) out.push(c);
+      else if (c >= 0x5D0 && c <= 0x5EA) out.push(0x80 + (c - 0x5D0));
+      else if (HEB_EXTRA[c]) out.push(HEB_EXTRA[c]);
+      else { var u = enc.encode(ch); out.push(0xFF, u.length); for (var k = 0; k < u.length; k++) out.push(u[k]); }
+    }
+    return new Uint8Array(out);
+  }
+  function hebUnpack(b){
+    var s = '', dec = new TextDecoder();
+    for (var i = 0; i < b.length; i++){
+      var x = b[i];
+      if (x < 0x80) s += String.fromCharCode(x);
+      else if (x <= 0x9A) s += String.fromCharCode(0x5D0 + x - 0x80);
+      else if (HEB_EXTRA_REV[x]) s += String.fromCodePoint(HEB_EXTRA_REV[x]);
+      else if (x === 0xFF){ var n = b[i + 1]; s += dec.decode(b.subarray(i + 2, i + 2 + n)); i += 1 + n; }
+    }
+    return s;
+  }
   async function packSignPayload(obj){
-    var raw = new TextEncoder().encode(JSON.stringify(obj)), body = null, kind = 'c';
-    try { if (window.CompressionStream){ body = b32enc(await streamBytes(raw, CompressionStream)); kind = 'b'; } } catch(e) { body = null; }
-    if (!body){ body = b32enc(raw); kind = 'c'; }
+    var raw = hebPack(JSON.stringify(obj)), body = null, kind = 'g';
+    try { if (window.CompressionStream){ body = b32enc(await streamBytes(raw, CompressionStream)); kind = 'h'; } } catch(e) { body = null; }
+    if (!body){ body = b32enc(raw); kind = 'g'; }
     return kind + body + linkCheck(kind + body);
   }
   // Pulls the payload out of whatever the link turned into on the way (case, stray characters,
@@ -10852,9 +10889,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (s.length < 8) throw Object.assign(new Error('cut'), { cut:true });
       var head = s.slice(0, -4), chk = s.slice(-4);
       if (linkCheck(head) !== chk) throw Object.assign(new Error('cut'), { cut:true });
-      var bytes2 = b32dec(head.slice(1));
-      if (head.charAt(0) === 'b') bytes2 = await inflateRawBytes(bytes2);
-      return expandSignPayload(JSON.parse(new TextDecoder().decode(bytes2)));
+      var k2 = head.charAt(0), bytes2 = b32dec(head.slice(1));
+      if (k2 === 'b' || k2 === 'h') bytes2 = await inflateRawBytes(bytes2);
+      return expandSignPayload(JSON.parse(k2 === 'h' || k2 === 'g' ? hebUnpack(bytes2) : new TextDecoder().decode(bytes2)));
     }
     var kind = s.charAt(0), bytes = unb64url(s.slice(1));
     if (kind === 'z') bytes = await inflateRawBytes(bytes);
@@ -10919,6 +10956,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       v:2, ch:o.ch, n:o.n, d:o.d,
       c:{ n:c[0] || '', a:c[1] || '', p:c[2] || '', e:c[3] || '', it:c[4] || '', id:c[5] || '' },
       ag:{ n:ag[0] || '', p:ag[1] || '', b:ag[2] || '', e:ag[3] || '' },
+      nt:o.nt || 0,
       it:(o.it || []).map(function(r){
         var code = typeof r[0] === 'string' && r[0].charAt(0) === '@' ? r[0].slice(1) : null, nv = code && code.match(/^nvr(\d+)$/);
         if (nv) return [DEVICE_DEFS.nvr.label + ' (' + nv[1] + ' ערוצים)', String(r[1]), quoteItemDesc('nvr', { channels:+nv[1] })];
@@ -10932,9 +10970,30 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Signing links always point at the published app — whatever the agent happens to be running
   // (a downloaded copy, the installed app, a preview), the customer gets a page that opens.
   function signBaseUrl(){ return HOSTED_APP_URL; }
+  // Short links travel safely: WhatsApp keeps only the first ~1,000 characters of a file's caption,
+  // and some mail/chat apps cut long links. When the full quote doesn't fit in SIGN_LINK_MAX, the
+  // details that are anyway in the attached PDF are left out step by step (cables, item list, …) —
+  // the signing page then points to the PDF for the breakdown; totals and terms always stay.
+  var SIGN_LINK_MAX = 380;
+  async function packSignShort(o){
+    var t = await packSignPayload(o);
+    var steps = [
+      function(x){ delete x.cb; },
+      function(x){ if (x.ag) x.ag[3] = ''; if (x.c) { x.c[3] = ''; } },
+      function(x){ if (x.pt && x.pt.length > 80) x.pt = x.pt.slice(0, 78) + '…'; },
+      function(x){ if (x.it && x.it.length){ x.nt = x.it.length; delete x.it; } },
+      function(x){ if (x.m) { x.m = x.m.map(function(r){ return r.slice(0, 2); }); } if (x.c) x.c[1] = ''; },
+      function(x){ if (x.pt) x.pt = x.pt.slice(0, 40); }
+    ];
+    for (var i = 0; i < steps.length && t.length > SIGN_LINK_MAX; i++){ steps[i](o); t = await packSignPayload(o); }
+    return t;
+  }
   async function buildSignLinks(){
     var out = {};
-    for (var ch of ['wa', 'mail']) out[ch] = signBaseUrl() + '?s=' + await packSignPayload(buildSignPayload(ch));
+    // quote number and the agent's phone go first, in the clear: even a link cut short on the way
+    // still tells the customer's page which quote it is and whom to ask for a new link
+    var ap = parsePhone(agentInfo.phone || ''), pre = '?n=' + encodeURIComponent(String(state.quoteNumber || '')) + (ap && ap.valid ? '&p=' + ap.intl : '');
+    for (var ch of ['wa', 'mail']) out[ch] = signBaseUrl() + pre + '&s=' + await packSignShort(buildSignPayload(ch));
     return out;
   }
   var currentSignLinks = null;
@@ -10951,7 +11010,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var h = '<div class="sg-brand">' + (logo ? '<img src="' + logo + '" alt="G1">' : '') + '<div><b>G1 SiteGuard</b><small>חטיבת המוקדים</small></div></div>';
     h += '<h1 class="sg-title">' + (o.signed ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + e(String(q.n)) + '</h1>';
     h += '<p class="sg-sub">' + e(q.c.n || '') + (q.c.a ? ' · ' + e(q.c.a) : '') + ' · הופקה ' + e(q.d) + '</p>';
-    h += '<h3>התקנה חד-פעמית — אביזרים</h3><table class="sg-t"><tr><th>אביזר</th><th>כמות</th></tr>' +
+    if (!q.it.length && q.nt) h += '<h3>התקנה חד-פעמית — אביזרים</h3><p class="sg-terms">' + q.nt + ' סוגי אביזרים — הפירוט המלא (אביזרים, כמויות וכבילה) בקובץ ה-PDF של הצעת המחיר שצורף להודעה.</p>';
+    else h += '<h3>התקנה חד-פעמית — אביזרים</h3><table class="sg-t"><tr><th>אביזר</th><th>כמות</th></tr>' +
       q.it.map(function(r){ return '<tr><td>' + e(r[0]) + (r[2] ? '<span class="sg-desc">' + e(r[2]) + '</span>' : '') + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
     if (q.cb && q.cb.length) h += '<h3>כבילה נדרשת (אומדן)</h3><table class="sg-t"><tr><th>סוג כבל</th><th>מ״א</th></tr>' +
       q.cb.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
@@ -10973,9 +11033,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.body.classList.add('sign-mode');
     var view = document.createElement('div'); view.id = 'signView'; view.className = 'sign-view'; view.setAttribute('dir', 'rtl');
     document.body.appendChild(view);
-    if (!q) { view.innerHTML = '<div class="sg-card"><h1 class="sg-title">' + (cut ? 'הקישור הגיע חתוך' : 'לא הצלחנו לפתוח את ההצעה') + '</h1><p>' +
-      (cut ? 'נראה שתוכנת ההודעות קיצרה את הקישור בדרך. נסו ללחוץ שוב על הקישור המלא בהודעה, או בקשו מיועץ המיגון לשלוח אותו שוב.' : 'נא לבקש מיועץ המיגון לשלוח שוב את קישור החתימה.') +
-      '</p><p class="sg-small">ההצעה המלאה מצורפת גם כקובץ PDF בהודעה שקיבלתם.</p></div>'; return; }
+    if (!q) {
+      var qn = (location.search.match(/[?&]n=([^&#]+)/) || [])[1], agp = (location.search.match(/[?&]p=(\d{8,15})/) || [])[1];
+      try { qn = qn ? decodeURIComponent(qn) : ''; } catch(e) { qn = ''; }
+      var askTxt = 'שלום, הקישור לאישור הצעת המחיר' + (qn ? ' מס׳ ' + qn : '') + ' לא נפתח אצלי במלואו — אפשר לשלוח אותו שוב?';
+      view.innerHTML = '<div class="sg-card"><h1 class="sg-title">' + (cut ? 'הקישור הגיע חתוך' : 'לא הצלחנו לפתוח את ההצעה') + (qn ? ' — הצעה מס׳ ' + escapeHtml(qn) : '') + '</h1><p>' +
+        (cut ? 'נראה שתוכנת ההודעות קיצרה את הקישור בדרך.' : 'הקישור אינו שלם.') + ' בקשו מיועץ המיגון קישור חדש — בלחיצה אחת:</p>' +
+        (agp ? '<div class="sg-actions"><a class="sg-btn wa" href="https://wa.me/' + agp + '?text=' + encodeURIComponent(askTxt) + '" target="_blank" rel="noopener">💬 בקשת קישור חדש מהיועץ בוואטסאפ</a></div>' : '') +
+        '<p class="sg-small">ההצעה המלאה מצורפת גם כקובץ PDF בהודעה שקיבלתם.</p></div>';
+      return;
+    }
     var qHash = (await sha256Hex(packed)).slice(0, 12).toUpperCase();
     var idLabel = ID_TYPE_LABEL[q.c.it] || 'ת״ז';
     view.innerHTML = '<div class="sg-card">' + signQuoteHtml(q) +
@@ -11101,6 +11168,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('shareSheetBody').innerHTML = '<div class="share-note">⏳ מפיקים את קובץ ה-PDF בפורמט ללקוח…</div>';
     shareSheetBackdrop.hidden = false;
   }
+  // WhatsApp keeps only the first ~1,000 characters of a file's caption — trim whole lines from the
+  // end so the important part (greeting, signing link, totals) always arrives intact.
+  function waCaption(t){ if (t.length <= 980) return t; var cut = t.slice(0, 980); return cut.slice(0, cut.lastIndexOf('\n')).replace(/\n+$/, ''); }
   function el2(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function shareNote(parent, text, warn){ var n = el2('div', 'share-note' + (warn ? ' warn' : '')); n.textContent = text; parent.appendChild(n); return n; }
   function linkBtn(cls, html, href){ var a = el2('a', 'share-btn ' + cls, html); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.addEventListener('click', function(){ a.classList.add('done'); }); return a; }
@@ -11136,7 +11206,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         // signing link as its text (no website preview card in place of the document)
         steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח', 'https://wa.me/' + info.phone.intl));
         steps.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הצעת המחיר (PDF) + קישור לחתימה', async function(b){
-          var r = await shareFile(pdf.file, { text: waText }); if (r === 'shared') b.classList.add('done');
+          var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done');
         }));
         wa.appendChild(steps);
         wa.appendChild(el2('p', '', 'שלב 1 פותח את הצ׳אט של הלקוח (גם אם אינו שמור באנשי הקשר) — חזרו לכאן. בשלב 2 בחרו WhatsApp: הצ׳אט של הלקוח יופיע ראשון, וקובץ ה-PDF יישלח יחד עם סיכום ההצעה וקישור החתימה.'));
@@ -11152,7 +11222,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
     } else {
       shareNote(wa, info.contact.phone ? 'המספר שהוזן אינו נייד תקין — תקנו אותו בפרטי הלקוח כדי לשלוח ישירות לצ׳אט שלו.' : 'הזינו את הטלפון הנייד של הלקוח (בראש ההצעה) כדי לשלוח ישירות לצ׳אט שלו.', true);
-      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף ה-PDF בוואטסאפ (בחירת איש קשר)', async function(b){ var r = await shareFile(pdf.file, { text: waText }); if (r === 'shared') b.classList.add('done'); }));
+      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף ה-PDF בוואטסאפ (בחירת איש קשר)', async function(b){ var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done'); }));
     }
     body.appendChild(wa);
 
@@ -11669,7 +11739,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var st = el2('div', 'share-steps');
       if (mobile){
         st.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט', 'https://wa.me/' + ph.intl));
-        st.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הסקיצה (PDF) + הודעה', async function(b){ if ((await shareFile(pdf.file, { text: waText })) === 'shared') b.classList.add('done'); }));
+        st.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הסקיצה (PDF) + הודעה', async function(b){ if ((await shareFile(pdf.file, { text: waCaption(waText) })) === 'shared') b.classList.add('done'); }));
         wa.appendChild(st);
         wa.appendChild(el2('p', '', 'שלב 1 פותח את הצ׳אט (גם אם המספר אינו שמור) — חזרו לכאן. בשלב 2 בחרו WhatsApp: הצ׳אט יופיע ראשון, והסקיצה תישלח עם ההודעה.'));
       } else {
@@ -11680,7 +11750,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
     } else {
       shareNote(wa, skShare.phone ? 'המספר שהוזן אינו נייד תקין.' : 'הזינו טלפון נייד למעלה כדי לשלוח ישירות לצ׳אט.', true);
-      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף הסקיצה בוואטסאפ (בחירת איש קשר)', async function(b){ if ((await shareFile(pdf.file, { text: waText })) === 'shared') b.classList.add('done'); }));
+      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף הסקיצה בוואטסאפ (בחירת איש קשר)', async function(b){ if ((await shareFile(pdf.file, { text: waCaption(waText) })) === 'shared') b.classList.add('done'); }));
     }
     body.appendChild(wa);
     // e-mail
