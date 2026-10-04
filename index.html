@@ -824,6 +824,10 @@
      rest of the app, which keeps its own working-canvas palette because that palette also
      color-codes device categories on the plan — its letterhead and a few accent numbers use
      G1's actual brand colors (cyan #00AAE7 on near-black), not the app's internal accent set. */
+  .q-division{ display:block; color:#00AAE7 !important; font-weight:700 !important; letter-spacing:.02em; margin-top:1px; }
+  .mon-qty{ font-size:11.5px; color:var(--ink-dim); margin:5px 28px 0 0; }
+  .mon-line-total{ font-size:11px; color:var(--ink-dim); margin-top:3px; }
+  .modal.client-view .mon-line-total{ display:none; }
   .qbrand-row{ padding-bottom:12px; margin-bottom:16px; border-bottom:2px solid #00AAE7; }
   #modalBackdrop .section-title{ color:#101113; border-bottom:2px solid #00AAE7; padding-bottom:4px; display:inline-block; }
   #modalBackdrop .total-line .amt{ color:#00AAE7; }
@@ -1139,7 +1143,7 @@
   body.pdf-export{ overflow:visible; background:#fff; }
   body.pdf-export .app{ display:none !important; }
   body.pdf-export .modal-backdrop{ position:static; background:none; padding:0; }
-  body.pdf-export .modal{ box-shadow:none; width:900px; max-width:900px; max-height:none; }
+  body.pdf-export .modal{ box-shadow:none; width:900px; max-width:900px; max-height:none; border-radius:0; }
   body.pdf-export .modal-actions{ display:none; }
   body.pdf-export .modal-close{ display:none; }
   body.pdf-export .sketch-backdrop{ position:static; }
@@ -1624,7 +1628,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 81</div>
+              <div class="app-version" id="appVersion">גרסה 82</div>
             </div>
           </div>
         </div>
@@ -2004,6 +2008,7 @@
         </span>
       </div>
 
+      <div class="rate-row" id="qGprsOnceRow" hidden><span>תשלום חד-פעמי — משדר GPRS</span><span class="num" id="qGprsOnceAmt">₪0</span></div>
       <div class="rate-row" style="margin-top:6px"><span>סה״כ ציוד והתקנה (לפני מע״מ)</span><span class="num" id="qSubtotal">₪0</span></div>
       <div class="rate-row" id="qDiscountAmountRow" hidden><span>הנחה</span><span class="num" id="qDiscountAmt">-₪0</span></div>
       <div class="rate-row"><span>מע״מ (<span id="qVatPctLabel">18</span>%)</span><span><span class="agent-inline"><input type="number" id="qVatRate" value="18" min="0" max="100" style="width:56px;text-align:center"> — </span><span class="num" id="qVatAmt">₪0</span></span></div>
@@ -2019,13 +2024,13 @@
       <p id="qPaymentTermsDisplay" style="font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin:-4px 0 8px" hidden></p>
 
       <div id="qMonSection">
-      <div class="section-title" style="margin-top:24px">חיבור למוקד מבצעי — תשלום חודשי</div>
+      <div class="section-title" style="margin-top:24px">תשלום הוראת קבע לשירותי המוקד המבצעי</div>
       <p class="agent-hint" style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">סמנו את השירותים הרלוונטיים והשלימו מחיר חודשי לכל אחד — התשלום מבוצע בהוראת קבע בכרטיס אשראי, בנפרד מעלות ההתקנה החד-פעמית.</p>
       <p class="client-only" style="font-size:11px;color:var(--ink-dim);margin:-4px 0 8px">התשלום החודשי מבוצע בהוראת קבע בכרטיס אשראי, בנפרד מעלות ההתקנה החד-פעמית.</p>
       <table class="bom" id="qMonitorTable"><thead><tr><th>שירות</th><th class="num price-col">מחיר חודשי (₪)</th></tr></thead><tbody></tbody></table>
-      <div class="rate-row" style="margin-top:10px"><span>סה״כ חודשי (לפני מע״מ)</span><span class="num" id="qMonSubtotal">₪0</span></div>
+      <div class="rate-row" style="margin-top:10px"><span>סה״כ חודשי לשירותי המוקד (לפני מע״מ)</span><span class="num" id="qMonSubtotal">₪0</span></div>
       <div class="rate-row"><span>מע״מ על המוקד</span><span class="num" id="qMonVatAmt">₪0</span></div>
-      <div class="total-line"><span>סה״כ חודשי בהוראת קבע (כולל מע״מ)</span><span class="amt num" id="qMonTotal">₪0</span></div>
+      <div class="total-line"><span>סה״כ הוראת קבע חודשית לשירותי המוקד (כולל מע״מ)</span><span class="amt num" id="qMonTotal">₪0</span></div>
       </div>
 
       <div id="qNotes" style="margin-top:22px;font-size:11.5px;color:var(--ink-dim);line-height:1.8;border-top:1px dashed var(--paper-line);padding-top:14px"></div>
@@ -8957,6 +8962,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       subtotal += lineTotal;
     });
     subtotal += parseFloat(document.getElementById('qInstallCost').value) || 0;
+    var gOnce = gprsOnceAmount();
+    document.getElementById('qGprsOnceRow').hidden = !(gOnce > 0);
+    document.getElementById('qGprsOnceAmt').textContent = fmtIls(gOnce);
+    gprsOnceLast = gOnce;
+    subtotal += gOnce;
 
     // Discount is applied to the equipment+installation subtotal, before VAT (VAT is then
     // calculated on the discounted amount) — standard practice for a quote like this. The
@@ -8997,11 +9007,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       disp.innerHTML = '';
     }
   }
+  // the GPRS one-time fee lives in the monitoring table but belongs to the installation total
+  function gprsOnceAmount(){
+    var cb = document.querySelector('#qMonitorTable tr[data-mon="gprs"] .qMonCheck'), el = document.querySelector('#qMonitorTable .qGprsOnce');
+    return (cb && cb.checked && el) ? (parseFloat(el.value) || 0) : 0;
+  }
+  var gprsOnceLast = null;
+  function recalcGprsOnceOnly(){ var v = gprsOnceAmount(); if (v !== gprsOnceLast) { gprsOnceLast = v; recalcQuoteInstall(); } }
   function recalcQuoteMonitor(){
     var subtotal = 0, anyMon = false;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
       var cb = tr.querySelector('.qMonCheck');
       var priceInput = tr.querySelector('.qMonPrice');
+      if (!cb || !priceInput) return; // the GPRS one-time sub-row
       // The price field stays editable regardless of the checkbox — disabling it until the
       // box was checked meant an agent who typed a price straight into an unchecked row's
       // "empty" field saw nothing happen, which read as the field being broken. A row that
@@ -9009,8 +9027,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // visual cue now, not a hard block on typing.
       priceInput.style.opacity = cb.checked ? '1' : '.55';
       tr.classList.toggle('mon-off', !cb.checked);
-      if (cb.checked) { subtotal += parseFloat(priceInput.value) || 0; anyMon = true; }
+      var qtyIn = tr.querySelector('.qMonQty'), qty = qtyIn ? Math.max(1, parseInt(qtyIn.value, 10) || 1) : 1;
+      var line = (parseFloat(priceInput.value) || 0) * qty;
+      if (qtyIn) {
+        tr.querySelector('.mon-line-total').textContent = line ? '= ' + fmtIls(line) : '';
+        tr.querySelector('.qMonQtyText').textContent = '× ' + qty + ' ערוצים';
+      }
+      if (tr.dataset.mon === 'gprs') {
+        var onceRow = document.querySelector('#qMonitorTable tr[data-mon="gprs-once"]');
+        if (onceRow) onceRow.hidden = !cb.checked;
+      }
+      if (cb.checked) { subtotal += line; anyMon = true; }
     });
+    recalcGprsOnceOnly();
     var monSec = document.getElementById('qMonSection');
     if (monSec) monSec.classList.toggle('mon-empty', !anyMon);
     var vatRate = parseFloat(document.getElementById('qVatRate').value) || 0;
@@ -9039,9 +9068,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var vatEl = document.getElementById('qVatRate');
     if (vatEl) captured.vat = vatEl.value;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
-      var label = tr.querySelector('label').textContent.trim();
-      captured.monitor[label] = { checked: tr.querySelector('.qMonCheck').checked, price: tr.querySelector('.qMonPrice').value };
+      if (!tr.querySelector('.qMonCheck')) return;
+      var lbEl = tr.querySelector('.qMonLabel'), label = (lbEl || tr.querySelector('label')).textContent.trim();
+      var qIn = tr.querySelector('.qMonQty');
+      captured.monitor[label] = { checked: tr.querySelector('.qMonCheck').checked, price: tr.querySelector('.qMonPrice').value, qty: qIn ? qIn.value : null };
     });
+    var gOnceEl = document.querySelector('#qMonitorTable .qGprsOnce');
+    captured.gprsOnce = gOnceEl ? gOnceEl.value : null;
     captured.discountOn = document.getElementById('qDiscountToggle').checked;
     captured.discountType = document.getElementById('qDiscountType').value;
     captured.discountValue = document.getElementById('qDiscountValue').value;
@@ -9060,12 +9093,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (captured.install !== null) document.getElementById('qInstallCost').value = captured.install;
     if (captured.vat !== null) document.getElementById('qVatRate').value = captured.vat;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
-      var saved = captured.monitor[tr.querySelector('label').textContent.trim()];
+      if (!tr.querySelector('.qMonCheck')) return;
+      var lbEl = tr.querySelector('.qMonLabel'), key = (lbEl || tr.querySelector('label')).textContent.trim();
+      var saved = captured.monitor[key];
       if (saved) {
         tr.querySelector('.qMonCheck').checked = saved.checked;
         tr.querySelector('.qMonPrice').value = saved.price;
+        if (saved.qty && tr.querySelector('.qMonQty')) tr.querySelector('.qMonQty').value = saved.qty;
       }
     });
+    var gOnceIn = document.querySelector('#qMonitorTable .qGprsOnce');
+    if (gOnceIn && captured.gprsOnce != null) gOnceIn.value = captured.gprsOnce;
     document.getElementById('qDiscountToggle').checked = captured.discountOn;
     document.getElementById('qDiscountInputRow').hidden = !captured.discountOn;
     if (captured.discountType) document.getElementById('qDiscountType').value = captured.discountType;
@@ -9136,14 +9174,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     recalcQuoteInstall();
 
+    var analyticsCams = (bom.counts.cam_in_analytics || 0) + (bom.counts.cam_out_analytics || 0);
     document.getElementById('qMonitorTable').querySelector('tbody').innerHTML = MONITOR_SERVICES.map(function(s){
-      return '<tr><td><label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-weight:normal">' +
-        '<input type="checkbox" class="qMonCheck"> ' + s.label + '</label></td>' +
-        '<td class="num price-col"><input type="number" class="qMonPrice num" min="0" placeholder="0" style="width:80px;text-align:center"></td></tr>';
+      var isAn = s.key === 'analytics';
+      var row = '<tr data-mon="' + s.key + '"><td><label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-weight:normal">' +
+        '<input type="checkbox" class="qMonCheck"><span class="qMonLabel">' + s.label + '</span>' + (isAn ? ' <span class="qMonQtyText"></span>' : '') + '</label>' +
+        (isAn ? '<div class="price-line mon-qty">כמות ערוצים: <input type="number" class="qMonQty num" min="1" value="' + Math.max(1, analyticsCams) + '" style="width:58px;text-align:center"> × מחיר לערוץ (בעמודת המחיר)</div>' : '') +
+        '</td><td class="num price-col"><input type="number" class="qMonPrice num" min="0" placeholder="' + (isAn ? 'לערוץ' : '0') + '" style="width:80px;text-align:center">' +
+        (isAn ? '<div class="mon-line-total"></div>' : '') + '</td></tr>';
+      // GPRS: a one-time payment field opens right under it (added to the installation total)
+      if (s.key === 'gprs') row += '<tr class="mon-once price-line" data-mon="gprs-once" hidden><td style="padding-inline-start:28px">תשלום חד-פעמי — משדר GPRS <span style="color:var(--ink-dim);font-size:11px">(מתווסף לסה״כ ההתקנה)</span></td>' +
+        '<td class="num"><input type="number" class="qGprsOnce num" min="0" placeholder="0" style="width:80px;text-align:center"></td></tr>';
+      return row;
     }).join('');
+    var gprsOnceEl = document.querySelector('#qMonitorTable .qGprsOnce');
+    if (gprsOnceEl) gprsOnceEl.addEventListener('input', function(){ recalcQuoteInstall(); });
+    var qtyEl = document.querySelector('#qMonitorTable .qMonQty');
+    if (qtyEl) qtyEl.addEventListener('input', recalcQuoteMonitor);
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
       var cb = tr.querySelector('.qMonCheck');
       var priceInput = tr.querySelector('.qMonPrice');
+      if (!cb || !priceInput) return;
       cb.addEventListener('change', recalcQuoteMonitor);
       // Typing a price directly into a service the agent hasn't ticked yet means "yes,
       // include this" just as much as clicking the checkbox first would — so a price entry
@@ -9507,6 +9558,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var score = runGuidance();
     var r = runBom();
     document.getElementById('qBrand').innerHTML = document.querySelector('.topbar .brand').outerHTML;
+    var qbSmall = document.querySelector('#qBrand .brand small');
+    if (qbSmall && !document.querySelector('#qBrand .q-division')) {
+      var divEl = document.createElement('small'); divEl.className = 'q-division'; divEl.textContent = 'חטיבת המוקדים';
+      qbSmall.parentNode.appendChild(divEl);
+    }
     document.getElementById('qCustomer').textContent = document.getElementById('fCustomer').value || 'לקוח';
     document.getElementById('qAddress').textContent = document.getElementById('fAddress').value || '';
     buildQuote(r.bom);
@@ -9564,7 +9620,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // Wraps one tall raster into an A4 PDF, paginating automatically if the content is taller
   // than a single page — the same way a normal browser "print to PDF" would.
-  function canvasToPdfBlob(canvas, meta){
+  function canvasToPdfBlob(canvas, meta, opts){
     var jsPDF = window.jspdf.jsPDF;
     var pageW = 210, pageH = 297; // A4, mm
     var margin = 8;
@@ -9575,31 +9631,60 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (meta && typeof doc.addMetadata === 'function'){
       try { doc.addMetadata('<g1sg:quote>' + QUOTE_PDF_MARK + b64Utf8(meta) + QUOTE_PDF_MARK_END + '</g1sg:quote>', 'https://g1-group.com/siteguard/1.0/'); } catch(e) {}
     }
-    // Slice the SOURCE CANVAS itself into per-page pixel chunks, rather than drawing the one
-    // full image on every page at a shifting offset and relying on each page's physical edge
-    // to crop it — a PDF page doesn't actually clip at the margin, only at its outer edge, so
-    // that approach silently redraws the last ~margin's worth of one page at the top of the
-    // next (that's the "duplicate signature line" bug: whatever fell in that sliver reappeared
-    // twice). Slicing the canvas up front means each page gets an exact, disjoint piece.
+    // Layout (smart pages): a document that's only a little taller than one page is scaled down
+    // to fit ONE page; a longer one is cut only between rows/blocks (never through a line of
+    // text), and every page gets the document's own background colour and a footer line (quote
+    // number, customer, agent, "page x of n") — so page 2 looks like part of the same document.
+    opts = opts || {};
+    var bg = opts.bg || [255, 255, 255];
+    var footerH = opts.footer ? 8 : 0;
+    var usableH2 = usableH - footerH;
     var pxPerMm = canvas.width / usableW;
-    var sliceHeightPx = Math.max(1, Math.floor(usableH * pxPerMm));
-    var totalHeightPx = canvas.height;
-    var pageCount = Math.max(1, Math.ceil(totalHeightPx / sliceHeightPx));
+    var pagePx = Math.floor(usableH2 * pxPerMm);
+    var total = canvas.height;
+    var slices = [];
+    if (total <= pagePx * 1.22) {
+      slices.push([0, total]);
+    } else {
+      var breaks = (opts.breaks || []).filter(function(v){ return v > 0 && v < total; }).sort(function(x, y){ return x - y; });
+      var y0 = 0;
+      while (y0 < total - 2) {
+        var limit = y0 + pagePx, end;
+        if (limit >= total) end = total;
+        else {
+          var ok = breaks.filter(function(v){ return v > y0 + pagePx * 0.45 && v <= limit; });
+          end = ok.length ? ok[ok.length - 1] : limit;
+        }
+        slices.push([y0, end]);
+        y0 = end;
+      }
+    }
+    function footerImage(text){
+      var fc = document.createElement('canvas'); fc.width = 1800; fc.height = 64;
+      var fx = fc.getContext('2d');
+      fx.fillStyle = 'rgb(' + bg.join(',') + ')'; fx.fillRect(0, 0, fc.width, fc.height);
+      fx.strokeStyle = '#00AAE7'; fx.lineWidth = 3; fx.beginPath(); fx.moveTo(0, 4); fx.lineTo(fc.width, 4); fx.stroke();
+      fx.fillStyle = '#5a6270'; fx.font = '26px Arial, sans-serif'; fx.textBaseline = 'middle';
+      try { fx.direction = 'rtl'; } catch(e) {}
+      fx.textAlign = 'right'; fx.fillText(text, fc.width - 6, 36);
+      return fc.toDataURL('image/png');
+    }
     var sliceCanvas = document.createElement('canvas');
     sliceCanvas.width = canvas.width;
     var sctx = sliceCanvas.getContext('2d');
-    for (var i = 0; i < pageCount; i++){
-      var sy = i * sliceHeightPx;
-      var sh = Math.min(sliceHeightPx, totalHeightPx - sy);
+    slices.forEach(function(sl, i){
+      var sy = sl[0], sh = sl[1] - sl[0];
       sliceCanvas.height = sh;
-      sctx.fillStyle = '#ffffff';
+      sctx.fillStyle = 'rgb(' + bg.join(',') + ')';
       sctx.fillRect(0, 0, sliceCanvas.width, sh);
       sctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, 0, canvas.width, sh);
-      var sliceImgData = sliceCanvas.toDataURL('image/jpeg', 0.95);
-      var sliceHmm = sh / pxPerMm;
       if (i > 0) doc.addPage();
-      doc.addImage(sliceImgData, 'JPEG', margin, margin, usableW, sliceHmm);
-    }
+      doc.setFillColor(bg[0], bg[1], bg[2]); doc.rect(0, 0, pageW, pageH, 'F');
+      var hmm = sh / pxPerMm, wmm = usableW, xmm = margin;
+      if (hmm > usableH2) { wmm = usableW * usableH2 / hmm; hmm = usableH2; xmm = margin + (usableW - wmm) / 2; } // shrink-to-one-page
+      doc.addImage(sliceCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', xmm, margin, wmm, hmm);
+      if (opts.footer) doc.addImage(footerImage(opts.footer + (slices.length > 1 ? '   ·   עמוד ' + (i + 1) + ' מתוך ' + slices.length : '')), 'PNG', margin, pageH - margin - footerH + 1.5, usableW, usableW * 64 / 1800);
+    });
     return doc.output('blob');
   }
   // Hands the finished PDF Blob to the visitor. Returns 'saved' / 'delivered' / 'downloaded',
@@ -9634,7 +9719,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // this runs so a slow capture doesn't look like a dead button.
   // Renders a panel to a PDF Blob (no delivery) — null when the PDF parts are missing or fail.
   var QUOTE_PDF_MARK = 'G1SGQ1[', QUOTE_PDF_MARK_END = ']G1SGQ1';
-  async function buildPanelPdfBlob(panelSelector, meta){
+  async function buildPanelPdfBlob(panelSelector, meta, pdfOpts){
     if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     try {
       pdfExportMode(true);
@@ -9643,7 +9728,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var panel = document.querySelector(panelSelector);
       if (!panel) throw new Error('panel not found: ' + panelSelector);
       var canvas = await renderElementToCanvas(panel);
-      return canvasToPdfBlob(canvas, meta);
+      // safe cut lines (bottom of every row/block) in canvas pixels + the panel's background
+      var pr = panel.getBoundingClientRect(), k = canvas.height / Math.max(1, pr.height);
+      var breaks = Array.prototype.map.call(panel.querySelectorAll('tr, .rate-row, .total-line, .section-title, .checkbox-row, p, li, .quote-hero, .qbrand-row, #qSignature, #qNotes, .sk-row, .sketch-section, .sketch-head, .q-customer-details > div'), function(el){
+        var r = el.getBoundingClientRect(); return (r.height > 0 && r.width > 0) ? Math.round((r.bottom - pr.top) * k) + 2 : -1;
+      });
+      var bgm = (getComputedStyle(panel).backgroundColor || '').match(/\d+/g);
+      var opts = Object.assign({ breaks:breaks, bg: bgm && bgm.length >= 3 ? bgm.slice(0, 3).map(Number) : [255, 255, 255] }, pdfOpts || {});
+      return canvasToPdfBlob(canvas, meta, opts);
     } catch(e){
       return null;
     } finally {
@@ -9832,7 +9924,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!document.getElementById('qDiscountAmountRow').hidden) lines.push('הנחה: ' + document.getElementById('qDiscountAmt').textContent);
     lines.push('סה״כ התקנה לתשלום (כולל מע״מ): ' + b(document.getElementById('qTotal').textContent));
     var monTotal = document.getElementById('qMonTotal').textContent;
-    if (monTotal && monTotal !== '₪0') lines.push('סה״כ חודשי בהוראת קבע למוקד מבצעי (כולל מע״מ): ' + b(monTotal));
+    if (monTotal && monTotal !== '₪0') lines.push('תשלום הוראת קבע לשירותי המוקד המבצעי (חודשי, כולל מע״מ): ' + b(monTotal));
     lines.push('');
     var terms = document.getElementById('qPaymentTerms').value.trim();
     if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
@@ -9858,10 +9950,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
     var address = document.getElementById('fAddress').value || '';
     var rows = [];
+    if (!document.getElementById('qGprsOnceRow').hidden) rows.push(['תשלום חד-פעמי — משדר GPRS (כלול בסה״כ ההתקנה)', document.getElementById('qGprsOnceAmt').textContent]);
     if (!document.getElementById('qDiscountAmountRow').hidden) rows.push(['הנחה', document.getElementById('qDiscountAmt').textContent]);
     rows.push(['סה״כ התקנה לתשלום (כולל מע״מ)', document.getElementById('qTotal').textContent, true]);
     var monTotal = document.getElementById('qMonTotal').textContent;
-    if (monTotal && monTotal !== '₪0') rows.push(['סה״כ חודשי בהוראת קבע — מוקד מבצעי (כולל מע״מ)', monTotal, true]);
+    if (monTotal && monTotal !== '₪0') rows.push(['תשלום הוראת קבע לשירותי המוקד המבצעי (חודשי, כולל מע״מ)', monTotal, true]);
     var terms = document.getElementById('qPaymentTerms').value.trim();
     if (terms) rows.push(['הסדר / תנאי תשלום', terms]);
     return {
@@ -10079,8 +10172,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         } catch(e){ emlNote.hidden = false; emlNote.textContent = 'לא הצלחנו להכין את הטיוטה — השתמשו ב"העתקת נוסח המייל" והדביקו במייל חדש.'; }
       }));
       var emlNote = el2('div', 'share-note'); emlNote.hidden = true;
-      emlNote.textContent = '✓ קובץ הטיוטה נשמר בהורדות — לחצו עליו (בשורת ההורדות של הדפדפן) והוא ייפתח באאוטלוק כטיוטה מוכנה: נמען, נושא, נוסח מעוצב והקובץ מצורף. נשאר רק ללחוץ "שלח".';
+      emlNote.innerHTML = '✓ קובץ הטיוטה (‎.eml) נשמר בהורדות — <b>לחצו עליו בחלונית ההורדות של הדפדפן</b> והוא ייפתח באאוטלוק כטיוטה מוכנה: נמען, נושא, נוסח מעוצב והקובץ מצורף. נשאר רק ללחוץ "שלח".<br>' +
+        '<b>כדי שזה ייפתח מעצמו בפעם הבאה:</b> בחלונית ההורדות של Chrome/Edge לחצו על ⋯ ליד הקובץ ← "פתח תמיד קבצים מסוג זה".';
       mail.appendChild(emlNote);
+      // instant fallback: opens Outlook right away (short plain text, no attachment) — kept short
+      // because Windows silently drops a mailto: link that's too long
+      var shortLines = ['שלום ' + (document.getElementById('fCustomer').value || '') + ',', '',
+        'מצורפת הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1.', 'סה״כ התקנה (כולל מע״מ): ' + document.getElementById('qTotal').textContent, '',
+        'בברכה,', agentInfo.name || '', agentInfo.phone || ''];
+      var quick = linkBtn('', '⚡ פתיחה מיידית באאוטלוק (טקסט קצר, בלי קובץ — לגרור את ה-PDF)', buildMailto(info.emailOk ? info.contact.email : '', quoteSubject(), shortLines));
+      quick.style.marginTop = '6px';
+      mail.appendChild(quick);
       var dcr = el2('div', 'share-copy-row');
       dcr.appendChild(actBtn('', '📋 העתקת נוסח המייל (מעוצב)', function(b){ copyRichEmail(function(ok){ if (ok) b.classList.add('done'); }); }));
       mail.appendChild(dcr);
@@ -10121,7 +10223,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     setClientView(true);
     updateCustomerDetails();
     var name = quotePdfFilename(state.quoteNumber);
-    var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec));
+    var footer = 'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + state.quoteNumber + ' · ' + (document.getElementById('fCustomer').value || '') +
+      (agentInfo.name ? ' · ' + agentInfo.name : '') + (agentInfo.phone ? ' ' + agentInfo.phone : '');
+    var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec), { footer: footer });
     if (!blob) return null;
     return { blob:blob, file:pdfFileFrom(blob, name), name:name, number:state.quoteNumber };
   }
