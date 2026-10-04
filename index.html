@@ -887,6 +887,53 @@
   .share-copy-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .share-copy-row .share-btn{ flex:1; min-height:40px; font-size:12.5px; }
   /* Hebrew-lettered terms list (א. ב. ג. ד.) on the quote / PDF */
+  /* ---------- customer signing page ---------- */
+  body.sign-mode > *:not(#signView):not(script):not(.sign-doc):not(iframe){ display:none !important; }
+  body.sign-mode{ background:#eef3f6; overflow:auto; }
+  .sign-view{ min-height:100vh; padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(24px + env(safe-area-inset-bottom,0px)); box-sizing:border-box; font-family:var(--font-body); color:#1b1f24; }
+  .sg-card{ background:#fff; max-width:720px; margin:0 auto; border-radius:16px; padding:18px 18px 22px; box-shadow:0 6px 28px rgba(10,30,60,.10); }
+  .sg-brand{ display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom:2px solid #00AAE7; margin-bottom:12px; }
+  .sg-brand img{ width:42px; height:auto; }
+  .sg-brand b{ display:block; font-size:16px; } .sg-brand small{ display:block; color:#00AAE7; font-weight:700; font-size:12px; }
+  .sg-title{ font-size:19px; margin:4px 0 2px; } .sg-sub{ color:#5a6270; margin:0 0 12px; font-size:13px; }
+  .sg-card h3, .sign-doc h3{ font-size:14px; margin:16px 0 6px; color:#0b1220; border-bottom:2px solid #00AAE7; display:inline-block; padding-bottom:2px; }
+  .sg-t{ width:100%; border-collapse:collapse; font-size:13px; }
+  .sg-t td, .sg-t th{ border-bottom:1px solid #e3e8ee; padding:6px 4px; text-align:right; }
+  .sg-t th{ color:#5a6270; font-weight:600; font-size:12px; } .sg-t .n{ text-align:left; white-space:nowrap; font-family:var(--font-mono); }
+  .sg-tot{ margin-top:8px; } .sg-t tr.big td{ font-weight:700; font-size:15px; color:#0077a8; border-bottom:2px solid #00AAE7; }
+  .sg-terms{ font-size:13px; margin:8px 0; } .sg-notes{ list-style:none; padding:0; margin:0; font-size:12.5px; } .sg-notes li{ margin:0 0 4px; }
+  .sg-agent{ font-size:12.5px; color:#5a6270; margin-top:12px; }
+  .sg-form{ margin-top:16px; border-top:1px dashed #cfd8e0; padding-top:6px; display:flex; flex-direction:column; gap:10px; }
+  .sg-form label{ display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-weight:600; color:#3b4350; }
+  .sg-form input:not([type="checkbox"]){ border:1px solid #cfd8e0; border-radius:10px; padding:11px 12px; font-size:16px; font-family:inherit; }
+  .sg-form label.sg-check{ flex-direction:row; align-items:flex-start; gap:8px; font-weight:500; line-height:1.5; }
+  .sg-form label.sg-check input{ width:20px; height:20px; margin-top:2px; flex:0 0 auto; }
+  .sg-pad-wrap{ border:1.5px solid #00AAE7; border-radius:12px; padding:8px; }
+  .sg-pad-head{ display:flex; justify-content:space-between; align-items:center; font-size:13px; margin-bottom:4px; }
+  .sg-pad-head button{ border:1px solid #cfd8e0; background:#f4f7f9; border-radius:8px; padding:4px 10px; font-family:inherit; cursor:pointer; }
+  #sgPad{ width:100%; height:180px; background:#fbfdfe; border-radius:8px; touch-action:none; display:block; }
+  .sg-pad-hint{ font-size:11px; color:#8a94a0; text-align:center; margin-top:3px; }
+  .sg-err{ color:#b4231a; font-weight:600; font-size:13px; }
+  .sg-primary{ min-height:52px; border:0; border-radius:12px; background:#00AAE7; color:#fff; font:700 16px var(--font-body); cursor:pointer; }
+  .sg-primary:disabled{ opacity:.6; }
+  .sg-small{ font-size:11px; color:#8a94a0; margin:2px 0 0; }
+  .sg-actions{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+  .sg-btn{ display:flex; align-items:center; justify-content:center; gap:8px; min-height:50px; border-radius:12px; border:1px solid #cfd8e0; background:#f4f7f9; color:#1b1f24; font:700 15px var(--font-body); text-decoration:none; cursor:pointer; }
+  .sg-btn.wa{ background:#25D366; border-color:#1fb457; color:#06280f; } .sg-btn.wa2{ background:#e9fbf0; border-color:#9fe3b8; color:#0d5a2a; }
+  .sg-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; } .sg-btn.done::after{ content:'✓'; }
+  .sg-btn .step{ display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center; background:rgba(0,0,0,.12); font-size:12px; }
+  .sign-doc{ position:relative; margin:16px auto 0; width:820px; background:#fff; padding:28px 30px; font-family:var(--font-body); color:#1b1f24; box-sizing:border-box; }
+  .sign-doc .sg-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; }
+  .sg-sigbox{ display:flex; align-items:center; gap:12px; margin-top:10px; } .sg-sigbox img{ height:90px; border-bottom:1px solid #9aa5b1; }
+  .q-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; background:rgba(0,170,231,.04); }
+  .q-approval-title{ font-weight:700; color:#0b1220; margin-bottom:4px; font-size:13px; }
+  .q-approval-decl{ font-size:11.5px; color:var(--ink-dim); margin:0 0 10px; }
+  .q-approval-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; font-size:12px; }
+  .q-approval-grid .f{ display:flex; gap:6px; align-items:flex-end; }
+  .q-approval-grid .f b{ white-space:nowrap; font-weight:600; color:var(--ink-dim); }
+  .q-approval-grid .f span{ flex:1; border-bottom:1px solid #9aa5b1; min-height:18px; padding:0 4px 1px; color:var(--ink-on-paper); }
+  .q-approval-grid .f.sig{ grid-column:1 / -1; }
+  .q-approval-grid .f.sig span{ min-height:34px; }
   .q-terms{ margin:0; padding:0; list-style:none; }
   .q-terms li{ margin:0 0 4px; }
   .q-terms li b{ color:var(--ink-on-paper); margin-inline-end:4px; }
@@ -928,6 +975,7 @@
   .quote-lib-tools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 6px; }
   .quote-lib-tools label.btn{ cursor:pointer; }
   .quote-lib-note{ font-size:12px; color:var(--accent-2-text); font-weight:600; }
+  .signed-badge{ display:inline-block; font-size:10.5px; font-weight:700; color:#fff; background:#1f9d55; border-radius:999px; padding:1px 8px; margin-inline-start:4px; }
   .quote-lib-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .quote-lib-row-actions .btn{ padding:4px 9px; font-size:11px; }
   #quoteLibTable td{ vertical-align:middle; }
@@ -1628,7 +1676,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 82</div>
+              <div class="app-version" id="appVersion">גרסה 83</div>
             </div>
           </div>
         </div>
@@ -1897,6 +1945,10 @@
         <label for="fAgentBranch">סניף</label>
         <input type="text" id="fAgentBranch" placeholder="לדוגמה: מרכז">
       </div>
+      <div class="agent-field">
+        <label for="fAgentEmail">אימייל (לקבלת הצעות חתומות מלקוחות)</label>
+        <input type="email" id="fAgentEmail" placeholder="name@g1-group.com" style="direction:ltr;text-align:right">
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="btnAgentSave">שמירה</button>
@@ -2036,6 +2088,15 @@
       <div id="qNotes" style="margin-top:22px;font-size:11.5px;color:var(--ink-dim);line-height:1.8;border-top:1px dashed var(--paper-line);padding-top:14px"></div>
 
       <div id="qSignature" style="margin-top:16px"></div>
+
+      <!-- Customer approval: printed on every quote (client view / PDF) — filled with whatever
+           customer details are known, with blank lines for the rest and for the signature. The
+           customer can also sign digitally from the link sent with the quote. -->
+      <div class="q-approval" id="qApproval">
+        <div class="q-approval-title">אישור הלקוח</div>
+        <p class="q-approval-decl">אני החתום/ה מטה מאשר/ת את הצעת המחיר ואת ההערות והתנאים המפורטים בה.</p>
+        <div class="q-approval-grid" id="qApprovalGrid"></div>
+      </div>
 
       <div class="send-ok" id="sendOk">✓ <span id="sendOkText"></span></div>
     </div>
@@ -9273,6 +9334,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('fAgentName').value = agentInfo.name || '';
     document.getElementById('fAgentPhone').value = agentInfo.phone || '';
     document.getElementById('fAgentBranch').value = agentInfo.branch || '';
+    document.getElementById('fAgentEmail').value = agentInfo.email || '';
     agentBackdrop.hidden = false;
   }
   document.getElementById('btnAgentInfo').onclick = function(){ pendingOpenQuote = false; openAgentDialog(); };
@@ -9282,7 +9344,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     agentInfo = {
       name: document.getElementById('fAgentName').value.trim(),
       phone: document.getElementById('fAgentPhone').value.trim(),
-      branch: document.getElementById('fAgentBranch').value.trim()
+      branch: document.getElementById('fAgentBranch').value.trim(),
+      email: document.getElementById('fAgentEmail').value.trim()
     };
     saveAgentInfo(agentInfo);
     agentBackdrop.hidden = true;
@@ -9458,7 +9521,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var dateStr = isNaN(d.getTime()) ? '' : (d.toLocaleDateString('he-IL') + ', ' + d.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'}));
       return '<tr data-number="' + rec.number + '">' +
         '<td class="num">' + rec.number + '</td>' +
-        '<td>' + escapeHtml(rec.customerName || '—') + '</td>' +
+        '<td>' + escapeHtml(rec.customerName || '—') + (rec.signed ? ' <span class="signed-badge" title="' + escapeHtml('נחתם ע״י ' + (rec.signed.name || '') + (rec.signed.id ? ' (' + rec.signed.id + ')' : '')) + '">✓ נחתם ' + escapeHtml(new Date(rec.signed.at).toLocaleDateString('he-IL')) + '</span>' : '') + '</td>' +
         '<td>' + escapeHtml(rec.address || '—') + '</td>' +
         '<td>' + dateStr + '</td>' +
         '<td>' + escapeHtml(rec.agentName || '—') + '</td>' +
@@ -9493,7 +9556,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return { added:added, updated:updated };
   }
   document.getElementById('quoteLibImport').addEventListener('change', async function(){
-    var files = Array.prototype.slice.call(this.files || []), recs = [], bad = [];
+    var files = Array.prototype.slice.call(this.files || []), recs = [], bad = [], signedRecs = [];
     for (var i = 0; i < files.length; i++){
       try {
         var txt = await files[i].text();
@@ -9504,13 +9567,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           var bytes = new Uint8Array(await files[i].arrayBuffer()), bin = '';
           for (var k = 0; k < bytes.length; k += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(k, k + 0x8000));
           var rec = extractQuoteFromPdfText(bin);
-          if (rec) recs.push(rec); else bad.push(files[i].name);
+          if (rec && rec.type === 'g1signed') signedRecs.push(rec);
+          else if (rec) recs.push(rec); else bad.push(files[i].name);
         }
       } catch(e) { bad.push(files[i].name); }
     }
     var res = mergeQuoteRecords(recs);
+    // a signed approval returned by the customer marks its quote as signed
+    var signedMsg = [];
+    if (signedRecs.length) {
+      var libS = loadQuoteLibrary();
+      signedRecs.forEach(function(sr){
+        var tgt = libS.filter(function(x){ return x.number === sr.number; })[0];
+        if (tgt) { tgt.signed = { name: sr.signer.name, id: sr.signer.id, phone: sr.signer.phone, email: sr.signer.email, at: sr.signedAt, code: sr.code }; signedMsg.push('✓ הצעה ' + sr.number + ' סומנה כחתומה ע״י ' + sr.signer.name); }
+        else signedMsg.push('הצעה ' + sr.number + ' חתומה, אך אינה בספרייה במכשיר זה — שחזרו קודם את קובץ ה-PDF המקורי שלה');
+      });
+      saveQuoteLibraryRecords(libS);
+    }
     var note = document.getElementById('quoteLibImportNote');
-    note.textContent = (res.added || res.updated ? '✓ שוחזרו ' + res.added + ' הצעות' + (res.updated ? ' (עודכנו ' + res.updated + ')' : '') : '') +
+    note.textContent = signedMsg.join(' · ') + (signedMsg.length && (res.added || res.updated || bad.length) ? ' · ' : '') + (res.added || res.updated ? '✓ שוחזרו ' + res.added + ' הצעות' + (res.updated ? ' (עודכנו ' + res.updated + ')' : '') : '') +
       (bad.length ? (res.added || res.updated ? ' · ' : '') + 'לא נמצאו נתוני הצעה ב: ' + bad.join(', ') + ' (קבצים שהופקו לפני גרסה 81 לא כוללים נתונים)' : '');
     this.value = '';
     renderQuoteLibrary();
@@ -9903,6 +9978,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (c.idNum) lines.push('<div><b>' + ID_TYPE_LABEL[c.idType] + ':</b> <span class="ltr">' + escapeHtml(c.idNum) + '</span></div>');
     var det = document.getElementById('qCustomerDetails');
     det.innerHTML = lines.join(''); det.hidden = !lines.length;
+    var ag = document.getElementById('qApprovalGrid');
+    if (ag) {
+      var f = function(lbl, val, cls){ return '<div class="f' + (cls ? ' ' + cls : '') + '"><b>' + lbl + ':</b><span>' + (val ? escapeHtml(val) : '') + '</span></div>'; };
+      ag.innerHTML = f('שם הלקוח', document.getElementById('fCustomer').value.trim()) +
+        f(ID_TYPE_LABEL[c.idType] || 'ת״ז / ח.פ', c.idNum) +
+        f('טלפון', ph && ph.valid ? ph.display : '') +
+        f('תאריך', '') +
+        f('חתימה', '', 'sig');
+    }
     var w = document.getElementById('qContactWarn');
     w.textContent = warn.join(' '); w.hidden = !warn.length;
     return { contact:c, phone:ph, emailOk: !!c.email && !emailBad };
@@ -9930,6 +10014,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
     lines.push('ההצעה תקפה ל-7 ימים מיום הוצאתה. אומדן הכבילה משוער — כמות החיווט תימדד בסיום ההתקנה ותחושב לפיה. הציוד נשאר רכוש G1 עד לפירעון התשלום המלא. ט.ל.ח.');
     if (wa) lines.push('קובץ ההצעה המלא (PDF) נשלח כאן בצ׳אט.');
+    if (currentSignLinks) { lines.push(''); lines.push('✍️ לאישור ההצעה וחתימה דיגיטלית: ' + (wa ? currentSignLinks.wa : currentSignLinks.mail)); }
     lines.push('');
     lines.push('בברכה,');
     if (agentInfo.name) lines.push(agentInfo.name);
@@ -9983,6 +10068,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px;white-space:' + (r[1].length > 24 ? 'normal' : 'nowrap') + ';' + (r[2] ? 'font-weight:bold;color:#0077a8;font-size:15px;' : '') + '">' + e(r[1]).replace(/\n/g, '<br>') + '</td></tr>';
     });
     h += '</table>';
+    if (currentSignLinks) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
     h += '<p style="margin:0 0 6px;font-weight:bold;color:#0b1220">הערות ותנאים:</p>';
     q.notes.forEach(function(n, i){
       h += '<p style="margin:0 0 4px;font-weight:bold">' + 'אבגד'.charAt(i) + '. ' + e(n) + '</p>';
@@ -9997,6 +10083,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     L.push('הצעת מחיר מס׳ ' + q.number + ' ממיגון G1 עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
     L.push('מצורפת בקובץ PDF הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
     q.rows.forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
+    if (currentSignLinks) L.push('', '✍️ לאישור ההצעה וחתימה דיגיטלית: ' + currentSignLinks.mail);
     L.push('', 'הערות ותנאים:');
     q.notes.forEach(function(n, i){ L.push('אבגד'.charAt(i) + '. ' + n); });
     L.push('', 'בברכה,');
@@ -10071,6 +10158,189 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     } catch(e) {}
     copyToClipboard(text, cb);
   }
+
+  /* ============================= customer digital signature =============================
+     No server is involved: the quote's customer-facing content travels inside the link itself
+     (compressed, in the #fragment, so it never reaches any server log). The customer opens the
+     link from WhatsApp or the e-mail, sees the quote, confirms their details, signs with a
+     finger/mouse and taps "approve". A signed PDF is produced on their device — the quote,
+     their details, the signature, date/time and a verification code — and they send it straight
+     back to the agent the same way they received it (WhatsApp or e-mail). Importing that PDF
+     into the saved-quotes library marks the quote as signed. */
+  var HOSTED_APP_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/';
+  function b64url(bytes){ var bin = ''; for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64url(s){ s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var bin = atob(s), b = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i); return b; }
+  async function streamBytes(bytes, Stream){ var cs = new Stream('deflate-raw'); var out = new Response(new Blob([bytes]).stream().pipeThrough(cs)); return new Uint8Array(await out.arrayBuffer()); }
+  async function packSignPayload(obj){
+    var raw = new TextEncoder().encode(JSON.stringify(obj));
+    try { if (window.CompressionStream) return 'z' + b64url(await streamBytes(raw, CompressionStream)); } catch(e) {}
+    return 'j' + b64url(raw);
+  }
+  async function unpackSignPayload(s){
+    var kind = s.charAt(0), bytes = unb64url(s.slice(1));
+    if (kind === 'z') bytes = await streamBytes(bytes, DecompressionStream);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  async function sha256Hex(str){
+    try { var d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return Array.from(new Uint8Array(d)).map(function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
+    catch(e) { var h = 0; for (var i = 0; i < str.length; i++) { h = ((h << 5) - h + str.charCodeAt(i)) | 0; } return ('00000000' + (h >>> 0).toString(16)).slice(-8) + '00000000'; }
+  }
+  // Agent side: the customer-facing content of the open quote (what the client view shows).
+  function buildSignPayload(ch){
+    var c = getCustomerContact(), txt = function(id){ var e = document.getElementById(id); return e ? e.textContent.trim() : ''; };
+    var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){ return [tr.cells[0].textContent.trim(), tr.cells[1].textContent.trim()]; });
+    var cables = Array.prototype.map.call(document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]'), function(tr){ return [tr.cells[0].textContent.trim(), tr.cells[1].textContent.trim()]; });
+    var mon = [];
+    document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
+      var cb = tr.querySelector('.qMonCheck'); if (!cb || !cb.checked) return;
+      var q = tr.querySelector('.qMonQty'); mon.push([tr.querySelector('.qMonLabel').textContent.trim(), q ? String(Math.max(1, parseInt(q.value, 10) || 1)) : '']);
+    });
+    var tot = [];
+    if (!document.getElementById('qGprsOnceRow').hidden) tot.push(['תשלום חד-פעמי — משדר GPRS', txt('qGprsOnceAmt')]);
+    tot.push(['סה״כ ציוד והתקנה (לפני מע״מ)', txt('qSubtotal')]);
+    if (!document.getElementById('qDiscountAmountRow').hidden) tot.push(['הנחה', txt('qDiscountAmt')]);
+    tot.push(['מע״מ (' + txt('qVatPctLabel') + '%)', txt('qVatAmt')]);
+    var now = new Date();
+    return {
+      v:1, ch:ch, n:state.quoteNumber, d: now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' }),
+      c:{ n:document.getElementById('fCustomer').value.trim(), a:document.getElementById('fAddress').value.trim(), p:c.phone, e:c.email, it:c.idType, id:c.idNum },
+      ag:{ n:agentInfo.name || '', p:agentInfo.phone || '', b:agentInfo.branch || '', e:agentInfo.email || '' },
+      it:items, cb:cables, t:tot, tt:txt('qTotal'), m:mon, mt:(txt('qMonTotal') !== '₪0' ? txt('qMonTotal') : ''), pt:document.getElementById('qPaymentTerms').value.trim()
+    };
+  }
+  function signBaseUrl(){ return /^https?:/.test(location.protocol) ? (location.origin + location.pathname) : HOSTED_APP_URL; }
+  async function buildSignLinks(){
+    var out = {};
+    for (var ch of ['wa', 'mail']) out[ch] = signBaseUrl() + '#sign=' + await packSignPayload(buildSignPayload(ch));
+    return out;
+  }
+  var currentSignLinks = null;
+
+  /* ---------- customer side: the signing page ---------- */
+  var QUOTE_TERMS_TEXT = function(d){ return [
+    'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה (הופקה בתאריך ' + d + ').',
+    'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
+    'הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.',
+    'ט.ל.ח.' ]; };
+  function signQuoteHtml(q, opts){
+    var e = escapeHtml, o = opts || {};
+    var logo = (document.querySelector('.topbar .brand .mark img') || {}).src || '';
+    var h = '<div class="sg-brand">' + (logo ? '<img src="' + logo + '" alt="G1">' : '') + '<div><b>G1 SiteGuard</b><small>חטיבת המוקדים</small></div></div>';
+    h += '<h1 class="sg-title">' + (o.signed ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + e(String(q.n)) + '</h1>';
+    h += '<p class="sg-sub">' + e(q.c.n || '') + (q.c.a ? ' · ' + e(q.c.a) : '') + ' · הופקה ' + e(q.d) + '</p>';
+    h += '<h3>התקנה חד-פעמית — אביזרים</h3><table class="sg-t"><tr><th>אביזר</th><th>כמות</th></tr>' +
+      q.it.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
+    if (q.cb && q.cb.length) h += '<h3>כבילה נדרשת (אומדן)</h3><table class="sg-t"><tr><th>סוג כבל</th><th>מ״א</th></tr>' +
+      q.cb.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') + '</table>';
+    h += '<table class="sg-t sg-tot">' + q.t.map(function(r){ return '<tr><td>' + e(r[0]) + '</td><td class="n">' + e(r[1]) + '</td></tr>'; }).join('') +
+      '<tr class="big"><td>סה״כ התקנה לתשלום (כולל מע״מ)</td><td class="n">' + e(q.tt) + '</td></tr></table>';
+    if (q.pt) h += '<p class="sg-terms"><b>תנאי תשלום:</b> ' + e(q.pt) + '</p>';
+    if (q.mt) h += '<h3>תשלום הוראת קבע לשירותי המוקד המבצעי</h3><table class="sg-t">' +
+      q.m.map(function(r){ return '<tr><td>' + e(r[0]) + (r[1] ? ' × ' + e(r[1]) + ' ערוצים' : '') + '</td><td></td></tr>'; }).join('') +
+      '<tr class="big"><td>סה״כ הוראת קבע חודשית (כולל מע״מ)</td><td class="n">' + e(q.mt) + '</td></tr></table>';
+    h += '<h3>הערות ותנאים</h3><ol class="sg-notes">' + QUOTE_TERMS_TEXT(q.d).map(function(t, i){ return '<li><b>' + 'אבגד'.charAt(i) + '.</b> ' + e(t) + '</li>'; }).join('') + '</ol>';
+    h += '<p class="sg-agent">יועץ/ת המיגון: <b>' + e(q.ag.n || '') + '</b>' + (q.ag.b ? ' · סניף ' + e(q.ag.b) : '') + (q.ag.p ? ' · ' + e(q.ag.p) : '') + '</p>';
+    return h;
+  }
+  async function startSignMode(packed){
+    var q;
+    try { q = await unpackSignPayload(packed); } catch(e) { q = null; }
+    document.body.classList.add('sign-mode');
+    var view = document.createElement('div'); view.id = 'signView'; view.className = 'sign-view'; view.setAttribute('dir', 'rtl');
+    document.body.appendChild(view);
+    if (!q) { view.innerHTML = '<div class="sg-card"><h1 class="sg-title">הקישור אינו תקין</h1><p>נא לבקש מיועץ המיגון קישור חדש לחתימה.</p></div>'; return; }
+    var qHash = (await sha256Hex(packed)).slice(0, 12).toUpperCase();
+    var idLabel = ID_TYPE_LABEL[q.c.it] || 'ת״ז';
+    view.innerHTML = '<div class="sg-card">' + signQuoteHtml(q) +
+      '<div class="sg-form"><h3>פרטי הלקוח המאשר</h3>' +
+        '<label>שם מלא<input id="sgName" value="' + escapeHtml(q.c.n || '') + '" autocomplete="name"></label>' +
+        '<label>' + escapeHtml(idLabel) + ' / ח.פ<input id="sgId" inputmode="numeric" value="' + escapeHtml(q.c.id || '') + '"></label>' +
+        '<label>טלפון<input id="sgPhone" type="tel" value="' + escapeHtml(q.c.p || '') + '"></label>' +
+        '<label>אימייל<input id="sgEmail" type="email" value="' + escapeHtml(q.c.e || '') + '"></label>' +
+        '<label class="sg-check"><input type="checkbox" id="sgAgree"> קראתי ואני מאשר/ת את הצעת המחיר מס׳ ' + escapeHtml(String(q.n)) + ' ואת ההערות והתנאים המפורטים בה.</label>' +
+        '<div class="sg-pad-wrap"><div class="sg-pad-head"><b>חתימה</b><button type="button" id="sgClear">ניקוי</button></div><canvas id="sgPad"></canvas><div class="sg-pad-hint">חתמו כאן עם האצבע או העכבר</div></div>' +
+        '<div class="sg-err" id="sgErr" hidden></div>' +
+        '<button type="button" class="sg-primary" id="sgApprove">✍️ אישור וחתימה</button>' +
+        '<p class="sg-small">מזהה הצעה: ' + qHash + '. החתימה נשמרת רק במסמך שתשלחו ליועץ — אינה נשלחת לשום שרת.</p>' +
+      '</div></div>';
+    // signature pad
+    var pad = document.getElementById('sgPad'), ctx = pad.getContext('2d'), drawing = false, strokes = 0, last = null;
+    function sizePad(){ var r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; pad.width = Math.round(r.width * dpr); pad.height = Math.round(r.height * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0b1f4d'; strokes = 0; }
+    sizePad();
+    function pt(ev){ var r = pad.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+    pad.addEventListener('pointerdown', function(ev){ ev.preventDefault(); pad.setPointerCapture(ev.pointerId); drawing = true; last = pt(ev); ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, 7); ctx.fillStyle = '#0b1f4d'; ctx.fill(); strokes++; });
+    pad.addEventListener('pointermove', function(ev){ if (!drawing) return; var p = pt(ev); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; strokes++; });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function(t){ pad.addEventListener(t, function(){ drawing = false; }); });
+    document.getElementById('sgClear').onclick = function(){ ctx.clearRect(0, 0, pad.width, pad.height); strokes = 0; };
+    document.getElementById('sgApprove').onclick = async function(){
+      var err = document.getElementById('sgErr'), name = document.getElementById('sgName').value.trim(), idNum = document.getElementById('sgId').value.replace(/\D/g, '');
+      var msg = !name ? 'נא למלא שם מלא.' : !idNum ? 'נא למלא מספר ת״ז / ח.פ.' : !document.getElementById('sgAgree').checked ? 'נא לסמן את אישור ההצעה והתנאים.' : strokes < 6 ? 'נא לחתום בתיבת החתימה.' : '';
+      if (msg) { err.textContent = msg; err.hidden = false; return; }
+      err.hidden = true;
+      var btn = this; btn.disabled = true; btn.textContent = '⏳ מפיקים את המסמך החתום…';
+      var signer = { name:name, id:idNum, phone:document.getElementById('sgPhone').value.trim(), email:document.getElementById('sgEmail').value.trim() };
+      var signedAt = new Date(), when = signedAt.toLocaleDateString('he-IL') + ' ' + signedAt.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' });
+      var sigImg = pad.toDataURL('image/png');
+      var code = (await sha256Hex(packed + '|' + JSON.stringify(signer) + '|' + signedAt.toISOString() + '|' + sigImg.length)).slice(0, 16).toUpperCase();
+      // the signed document, rendered off-screen and turned into a PDF
+      var doc = document.createElement('div'); doc.className = 'sign-doc'; doc.setAttribute('dir', 'rtl');
+      doc.innerHTML = signQuoteHtml(q, { signed:true }) +
+        '<div class="sg-approval"><h3>אישור הלקוח</h3><p>אני החתום/ה מטה מאשר/ת את הצעת המחיר ואת ההערות והתנאים המפורטים בה.</p>' +
+        '<table class="sg-t"><tr><td>שם</td><td>' + escapeHtml(signer.name) + '</td></tr><tr><td>' + escapeHtml(idLabel) + ' / ח.פ</td><td>' + escapeHtml(signer.id) + '</td></tr>' +
+        (signer.phone ? '<tr><td>טלפון</td><td>' + escapeHtml(signer.phone) + '</td></tr>' : '') + (signer.email ? '<tr><td>אימייל</td><td>' + escapeHtml(signer.email) + '</td></tr>' : '') +
+        '<tr><td>נחתם בתאריך</td><td>' + escapeHtml(when) + '</td></tr></table>' +
+        '<div class="sg-sigbox"><span>חתימה:</span><img src="' + sigImg + '" alt="חתימה"></div>' +
+        '<p class="sg-small">נחתם דיגיטלית · מזהה הצעה ' + qHash + ' · קוד אימות ' + code + '</p></div>';
+      view.appendChild(doc); // rendered in the normal flow (html2canvas can't capture off-screen/fixed layers reliably)
+      var blob = null;
+      try {
+        await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
+        var canvas = await renderElementToCanvas(doc);
+        var meta = JSON.stringify({ type:'g1signed', number:q.n, signer:signer, signedAt:signedAt.toISOString(), code:code, quoteHash:qHash });
+        blob = canvasToPdfBlob(canvas, meta, { bg:[255, 255, 255], footer:'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
+      } catch(e) { blob = null; try { console.error('sign pdf', e); } catch(_) {} }
+      doc.parentNode.removeChild(doc);
+      btn.disabled = false; btn.textContent = '✍️ אישור וחתימה';
+      if (!blob) { err.textContent = 'הפקת המסמך נכשלה — נסו שוב.'; err.hidden = false; return; }
+      var name2 = 'G1-Quote-' + q.n + ' - חתום - ' + signer.name.replace(/[\\\/:*?"<>|]+/g, ' ') + '.pdf';
+      renderSignReturn(view, q, { blob:blob, file:pdfFileFrom(blob, name2), name:name2 }, signer, when);
+    };
+  }
+  function renderSignReturn(view, q, pdf, signer, when){
+    var mobile = prefersShareSheet(pdf.file);
+    var agPhone = parsePhone(q.ag.p || ''), agName = q.ag.n || 'יועץ המיגון';
+    var text = 'שלום ' + agName + ',\nאני מאשר/ת את הצעת המחיר מס׳ ' + q.n + '. מצורף המסמך החתום.\n' + signer.name + (signer.phone ? ' · ' + signer.phone : '');
+    var subject = 'אישור הצעת מחיר מס׳ ' + q.n + ' — ' + signer.name;
+    var card = document.createElement('div'); card.className = 'sg-card sg-done';
+    card.innerHTML = '<h1 class="sg-title">✓ ההצעה נחתמה</h1><p class="sg-sub">נחתם ע״י ' + escapeHtml(signer.name) + ' · ' + escapeHtml(when) + '</p>' +
+      '<p>נשאר שלב אחד: לשלוח את המסמך החתום ל' + escapeHtml(agName) + ' — ' + (q.ch === 'mail' ? 'במייל, כמו שקיבלתם את ההצעה.' : 'בוואטסאפ, כמו שקיבלתם את ההצעה.') + '</p><div class="sg-actions" id="sgActions"></div>';
+    view.innerHTML = ''; view.appendChild(card);
+    var box = card.querySelector('#sgActions');
+    function btn(cls, label, fn){ var b = document.createElement('button'); b.type = 'button'; b.className = 'sg-btn ' + cls; b.innerHTML = label; b.onclick = function(){ fn(b); }; box.appendChild(b); return b; }
+    function link(cls, label, href){ var a = document.createElement('a'); a.className = 'sg-btn ' + cls; a.innerHTML = label; a.href = href; a.target = '_blank'; a.rel = 'noopener'; box.appendChild(a); return a; }
+    function note(t){ var p = document.createElement('p'); p.className = 'sg-small'; p.textContent = t; box.appendChild(p); }
+    if (q.ch !== 'mail') {
+      if (agPhone && agPhone.mobile) {
+        link('wa', '<span class="step">1</span> פתיחת וואטסאפ ל' + escapeHtml(agName), 'https://wa.me/' + agPhone.intl + '?text=' + encodeURIComponent(text));
+        btn('wa2', '<span class="step">2</span> ' + (mobile ? 'שליחת המסמך החתום' : 'הורדת המסמך החתום לצירוף'), async function(b){ if (mobile) { if ((await shareFile(pdf.file)) === 'shared') b.classList.add('done'); } else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } });
+        note(mobile ? 'בשלב 2 בחרו WhatsApp — הצ׳אט עם ' + agName + ' יופיע ראשון ברשימה.' : 'בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.');
+      } else if (mobile) btn('wa', 'שליחת המסמך החתום בוואטסאפ', async function(b){ if ((await shareFile(pdf.file, { text:text })) === 'shared') b.classList.add('done'); });
+    } else {
+      if (mobile) {
+        btn('mail', 'שליחת המסמך החתום במייל', async function(b){ if ((await shareFile(pdf.file, { title:subject, text:text })) === 'shared') b.classList.add('done'); });
+        if (q.ag.e) note('כתובת היועץ: ' + q.ag.e + ' (הוסיפו כנמען)');
+      } else {
+        btn('mail', 'פתיחת מייל מוכן ליועץ — המסמך מצורף', async function(b){
+          var html = '<div dir="rtl" style="font-family:Arial,sans-serif;font-size:14px;text-align:right"><p><b>' + escapeHtml(subject) + '</b></p><p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p></div>';
+          var eml = await buildQuoteEml(q.ag.e || '', subject, html, text, pdf.blob, pdf.name);
+          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml'); b.classList.add('done');
+        });
+        note('לחצו על הקובץ שנשמר בהורדות — הוא ייפתח באאוטלוק כמייל מוכן עם המסמך החתום מצורף.');
+      }
+    }
+    btn('save', mobile ? '📤 שמירה / שיתוף אחר' : '⬇ הורדת המסמך החתום', async function(b){ if (mobile) { if ((await shareFile(pdf.file)) === 'shared') b.classList.add('done'); } else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } });
+  }
+  (function(){ var h = location.hash || ''; if (h.indexOf('#sign=') === 0) setTimeout(function(){ startSignMode(h.slice(6)); }, 0); })();
 
   /* ============================= send / share sheet ============================= */
   // Phones (iPhone above all, and the installed app) can't "download" a file the way a desktop
@@ -10189,6 +10459,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     body.appendChild(mail);
 
+    // --- Customer digital signature ---
+    if (currentSignLinks) {
+      var sg = el2('div', 'share-card');
+      sg.appendChild(el2('h4', '', '✍️ חתימה דיגיטלית של הלקוח'));
+      sg.appendChild(el2('p', '', 'קישור לחתימה כבר כלול בהודעת הוואטסאפ ובמייל. הלקוח פותח אותו, מאשר את פרטיו, חותם באצבע — והמסמך החתום חוזר אליך באותה דרך (וואטסאפ או מייל). קבלת המסמך החתום ושמירתו ב"הצעות שמורות ← שחזור מקובץ PDF" מסמנת את ההצעה כחתומה.'));
+      var sr = el2('div', 'share-copy-row');
+      sr.appendChild(actBtn('', '📋 העתקת קישור החתימה', function(b){ copyToClipboard(currentSignLinks.wa, function(ok){ if (ok) b.classList.add('done'); }); }));
+      sr.appendChild(linkBtn('', '👁 תצוגת הלקוח', currentSignLinks.wa));
+      sg.appendChild(sr);
+      body.appendChild(sg);
+    }
+
     // --- Save / other ---
     var other = el2('div', 'share-card');
     other.appendChild(el2('h4', '', '💾 שמירה ושיתוף אחר'));
@@ -10240,6 +10522,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       openShareSheet('מכינים את ההצעה לשליחה…', 'ההצעה מומרת לקובץ PDF בנוסח ללקוח (ריכוז כללי).');
       var pdf = await prepareQuotePdf();
       if (!pdf) { renderShareError(); return; }
+      try { currentSignLinks = await buildSignLinks(); } catch(e) { currentSignLinks = null; }
       var mobile = prefersShareSheet(pdf.file);
       var autoSaved = false;
       if (!mobile){
