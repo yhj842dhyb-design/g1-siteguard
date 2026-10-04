@@ -921,6 +921,9 @@
     background:rgba(0,170,231,.12); color:#00AAE7; border:1px solid rgba(0,170,231,.35);
   }
   .q-number-badge.assigned{ background:#00AAE7; color:#ffffff; border-color:#00AAE7; }
+  .quote-lib-tools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 6px; }
+  .quote-lib-tools label.btn{ cursor:pointer; }
+  .quote-lib-note{ font-size:12px; color:var(--accent-2-text); font-weight:600; }
   .quote-lib-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .quote-lib-row-actions .btn{ padding:4px 9px; font-size:11px; }
   #quoteLibTable td{ vertical-align:middle; }
@@ -1621,7 +1624,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 80</div>
+              <div class="app-version" id="appVersion">גרסה 81</div>
             </div>
           </div>
         </div>
@@ -1909,10 +1912,17 @@
       <button class="modal-close" id="quoteLibClose" aria-label="סגור">✕</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:12px;color:var(--ink-dim);margin:0 0 16px;line-height:1.6">כל הצעת מחיר שנשלחה או הודפסה ממכשיר זה נשמרת כאן אוטומטית, כולל מחירי היחידה שהוזנו — לחצו "פתיחה לעריכה" כדי לחזור אליה בדיוק כפי שנשלחה.</p>
+      <p style="font-size:12px;color:var(--ink-dim);margin:0 0 10px;line-height:1.6">כל הצעת מחיר שנשלחה או נשמרה כ-PDF <b>ממכשיר זה</b> נשמרת כאן אוטומטית, כולל המחירים — "פתיחה לעריכה" מחזירה אותה בדיוק כפי שנשלחה. הספרייה נשמרת בדפדפן/באפליקציה של המכשיר: מחשב ונייד מחזיקים כל אחד ספרייה משלו, ומחיקת האפליקציה מהמסך באייפון מוחקת גם אותה.</p>
+      <div class="quote-lib-tools">
+        <label class="btn btn-primary btn-sm" for="quoteLibImport">📥 שחזור / פתיחה מקובץ PDF של הצעה</label>
+        <input type="file" id="quoteLibImport" accept=".pdf,.json,application/pdf,application/json" multiple hidden>
+        <button type="button" class="btn btn-ghost btn-sm" id="quoteLibBackup">💾 גיבוי כל ההצעות לקובץ</button>
+        <span id="quoteLibImportNote" class="quote-lib-note"></span>
+      </div>
+      <p style="font-size:11px;color:var(--ink-dim);margin:0 0 14px;line-height:1.5">כל קובץ PDF של הצעה שהופק מגרסה זו ואילך כולל בתוכו את נתוני ההצעה — בחירתו כאן מחזירה אותה לספרייה, גם במכשיר אחר. אפשר לבחור כמה קבצים יחד, או קובץ גיבוי.</p>
       <div id="quoteLibEmpty" class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8"/></svg>
-        עדיין לא נשלחה או הודפסה אף הצעת מחיר ממכשיר זה
+        עדיין אין במכשיר זה הצעות שמורות — הצעות שנשלחו ממכשיר אחר אפשר לשחזר מקובץ ה-PDF שלהן (כפתור למעלה)
       </div>
       <table class="bom" id="quoteLibTable" style="display:none">
         <thead><tr><th>מס׳</th><th>לקוח</th><th>כתובת</th><th>תאריך</th><th>סוכן</th><th></th></tr></thead>
@@ -9293,6 +9303,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     } catch(e) { return []; }
   }
   function saveQuoteLibraryRecords(arr){
+    // ask the browser to keep this site's storage (not evict it under storage pressure)
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); } catch(e) {}
     try { localStorage.setItem(QUOTE_LIBRARY_STORAGE_KEY, JSON.stringify(arr)); } catch(e) {}
   }
   function quoteLibraryFilename(record){
@@ -9406,6 +9418,58 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '</div></td></tr>';
     }).join('');
   }
+  // Restore quotes from PDFs (data embedded at creation — see canvasToPdfBlob) or a backup file.
+  function extractQuoteFromPdfText(txt){
+    var a = txt.indexOf(QUOTE_PDF_MARK); if (a < 0) return null;
+    var b = txt.indexOf(QUOTE_PDF_MARK_END, a); if (b < 0) return null;
+    var b64 = txt.slice(a + QUOTE_PDF_MARK.length, b).replace(/[^A-Za-z0-9+\/=]/g, '');
+    var bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  function mergeQuoteRecords(records){
+    var lib = loadQuoteLibrary(), added = 0, updated = 0, maxNum = 0;
+    records.forEach(function(rec){
+      if (!rec || !rec.number || !rec.project) return;
+      maxNum = Math.max(maxNum, rec.number);
+      var i = lib.findIndex(function(x){ return x.number === rec.number; });
+      if (i < 0) { lib.push(rec); added++; }
+      else if (!lib[i].savedAt || (rec.savedAt && rec.savedAt > lib[i].savedAt)) { lib[i] = rec; updated++; }
+    });
+    saveQuoteLibraryRecords(lib);
+    // never hand out a number that already exists in a restored quote
+    if (maxNum && loadQuoteCounter() <= maxNum) saveQuoteCounter(maxNum + 1);
+    return { added:added, updated:updated };
+  }
+  document.getElementById('quoteLibImport').addEventListener('change', async function(){
+    var files = Array.prototype.slice.call(this.files || []), recs = [], bad = [];
+    for (var i = 0; i < files.length; i++){
+      try {
+        var txt = await files[i].text();
+        if (/\.json$/i.test(files[i].name) || /^\s*[\[{]/.test(txt)) {
+          var j = JSON.parse(txt);
+          if (Array.isArray(j)) recs = recs.concat(j); else if (j && Array.isArray(j.quotes)) recs = recs.concat(j.quotes); else if (j && j.number) recs.push(j); else bad.push(files[i].name);
+        } else {
+          var bytes = new Uint8Array(await files[i].arrayBuffer()), bin = '';
+          for (var k = 0; k < bytes.length; k += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(k, k + 0x8000));
+          var rec = extractQuoteFromPdfText(bin);
+          if (rec) recs.push(rec); else bad.push(files[i].name);
+        }
+      } catch(e) { bad.push(files[i].name); }
+    }
+    var res = mergeQuoteRecords(recs);
+    var note = document.getElementById('quoteLibImportNote');
+    note.textContent = (res.added || res.updated ? '✓ שוחזרו ' + res.added + ' הצעות' + (res.updated ? ' (עודכנו ' + res.updated + ')' : '') : '') +
+      (bad.length ? (res.added || res.updated ? ' · ' : '') + 'לא נמצאו נתוני הצעה ב: ' + bad.join(', ') + ' (קבצים שהופקו לפני גרסה 81 לא כוללים נתונים)' : '');
+    this.value = '';
+    renderQuoteLibrary();
+  });
+  document.getElementById('quoteLibBackup').addEventListener('click', function(){
+    var lib = loadQuoteLibrary();
+    if (!lib.length) { document.getElementById('quoteLibImportNote').textContent = 'אין עדיין הצעות לגיבוי במכשיר זה.'; return; }
+    var blob = new Blob([JSON.stringify({ g1siteguardQuotes:1, savedAt:new Date().toISOString(), quotes:lib })], { type:'application/json' });
+    deliverBlob(blob, 'G1-Quotes-backup-' + fileStamp() + '.json').then(function(){ document.getElementById('quoteLibImportNote').textContent = '✓ נשמר קובץ גיבוי עם ' + lib.length + ' הצעות'; }).catch(function(){});
+  });
   var quoteLibBackdrop = document.getElementById('quoteLibBackdrop');
   document.getElementById('btnQuoteLibrary').onclick = function(){ renderQuoteLibrary(); quoteLibBackdrop.hidden = false; };
   document.getElementById('quoteLibClose').onclick = function(){ quoteLibBackdrop.hidden = true; };
@@ -9500,12 +9564,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // Wraps one tall raster into an A4 PDF, paginating automatically if the content is taller
   // than a single page — the same way a normal browser "print to PDF" would.
-  function canvasToPdfBlob(canvas){
+  function canvasToPdfBlob(canvas, meta){
     var jsPDF = window.jspdf.jsPDF;
     var pageW = 210, pageH = 297; // A4, mm
     var margin = 8;
     var usableW = pageW - margin*2, usableH = pageH - margin*2;
     var doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    // The quote's full data rides inside the PDF (XMP metadata) so any PDF that was ever sent
+    // can be re-opened as an editable quote — on another phone, after reinstalling, anywhere.
+    if (meta && typeof doc.addMetadata === 'function'){
+      try { doc.addMetadata('<g1sg:quote>' + QUOTE_PDF_MARK + b64Utf8(meta) + QUOTE_PDF_MARK_END + '</g1sg:quote>', 'https://g1-group.com/siteguard/1.0/'); } catch(e) {}
+    }
     // Slice the SOURCE CANVAS itself into per-page pixel chunks, rather than drawing the one
     // full image on every page at a shifting offset and relying on each page's physical edge
     // to crop it — a PDF page doesn't actually clip at the margin, only at its outer edge, so
@@ -9564,7 +9633,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // the panel, then deliver the file. `btn` (optional) gets a disabled "מפיק PDF…" state while
   // this runs so a slow capture doesn't look like a dead button.
   // Renders a panel to a PDF Blob (no delivery) — null when the PDF parts are missing or fail.
-  async function buildPanelPdfBlob(panelSelector){
+  var QUOTE_PDF_MARK = 'G1SGQ1[', QUOTE_PDF_MARK_END = ']G1SGQ1';
+  async function buildPanelPdfBlob(panelSelector, meta){
     if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     try {
       pdfExportMode(true);
@@ -9573,7 +9643,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var panel = document.querySelector(panelSelector);
       if (!panel) throw new Error('panel not found: ' + panelSelector);
       var canvas = await renderElementToCanvas(panel);
-      return canvasToPdfBlob(canvas);
+      return canvasToPdfBlob(canvas, meta);
     } catch(e){
       return null;
     } finally {
@@ -9616,9 +9686,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var d = new Date(), p = function(n){ return (n < 10 ? '0' : '') + n; };
     return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
   }
-  function quotePdfFilename(number){ return 'G1-Quote-' + (number || fileStamp()) + '.pdf'; }
+  // Quote number + customer name, e.g. "G1-Quote-1003 - משפחת כהן.pdf" (only characters that
+  // are illegal in file names are removed; the ASCII "G1-Quote-<n>" prefix keeps it findable).
+  function quotePdfFilename(number){
+    var cust = (document.getElementById('fCustomer').value || '').replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 50);
+    return 'G1-Quote-' + (number || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf';
+  }
   function ensurePdfName(name){
-    var n = String(name || '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    var n = String(name || '').replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, '-').replace(/\s+/g, ' ').trim();
     if (!/\.pdf$/i.test(n)) n = (n || 'G1-' + fileStamp()) + '.pdf';
     return n;
   }
@@ -9772,6 +9847,138 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function quoteSubject(){ return 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1 עבור ' + (document.getElementById('fCustomer').value || 'הלקוח'); }
 
+  /* ============================= professional quote e-mail =============================
+     The e-mail body is built as real formatted HTML (bold title, a styled table with the
+     amounts and the payment terms, each term on its own bold line, signature) and handed to
+     Outlook as a ready DRAFT: an .eml file with the PDF already attached and "X-Unsent: 1",
+     which Outlook for Windows/Mac opens as an editable message ready to send. (A mailto: link
+     can carry neither formatting nor an attachment, and with Hebrew text it quickly passes the
+     ~2,000-character limit, at which point Windows silently does nothing.) */
+  function quoteEmailData(){
+    var customer = document.getElementById('fCustomer').value || 'הלקוח';
+    var address = document.getElementById('fAddress').value || '';
+    var rows = [];
+    if (!document.getElementById('qDiscountAmountRow').hidden) rows.push(['הנחה', document.getElementById('qDiscountAmt').textContent]);
+    rows.push(['סה״כ התקנה לתשלום (כולל מע״מ)', document.getElementById('qTotal').textContent, true]);
+    var monTotal = document.getElementById('qMonTotal').textContent;
+    if (monTotal && monTotal !== '₪0') rows.push(['סה״כ חודשי בהוראת קבע — מוקד מבצעי (כולל מע״מ)', monTotal, true]);
+    var terms = document.getElementById('qPaymentTerms').value.trim();
+    if (terms) rows.push(['הסדר / תנאי תשלום', terms]);
+    return {
+      customer: customer, address: address, number: state.quoteNumber, rows: rows,
+      notes: [
+        'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה.',
+        'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
+        'הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.',
+        'ט.ל.ח.'
+      ],
+      sig: [agentInfo.name || '', 'יועץ מיגון סניף ' + (agentInfo.branch || '—'), agentInfo.phone || ''].filter(Boolean)
+    };
+  }
+  function quoteEmailHtml(){
+    var q = quoteEmailData(), e = escapeHtml;
+    var font = "font-family:Arial,'Segoe UI',Helvetica,sans-serif;";
+    var h = '<div dir="rtl" style="' + font + 'font-size:14px;line-height:1.6;color:#1b1f24;text-align:right">';
+    h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">הצעת מחיר מס׳ ' + e(String(q.number)) + ' ממיגון G1 עבור ' + e(q.customer) + '</p>';
+    h += '<p style="margin:0 0 10px">שלום ' + e(q.customer) + ',</p>';
+    h += '<p style="margin:0 0 14px">מצורפת בקובץ PDF הצעת מחיר <b>מס׳ ' + e(String(q.number)) + '</b> למערכת מיגון' + (q.address ? ' בכתובת: ' + e(q.address) : '') + '.</p>';
+    h += '<table dir="rtl" cellpadding="0" cellspacing="0" style="border-collapse:collapse;min-width:360px;max-width:560px;margin:0 0 16px;' + font + 'font-size:14px">';
+    h += '<tr><th colspan="2" style="background:#00AAE7;color:#ffffff;text-align:right;padding:9px 12px;font-size:14px">סיכום ההצעה</th></tr>';
+    q.rows.forEach(function(r, i){
+      var bg = i % 2 ? '#f4f8fa' : '#ffffff';
+      h += '<tr><td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px;' + (r[2] ? 'font-weight:bold;' : '') + '">' + e(r[0]) + '</td>' +
+        '<td style="border:1px solid #d6e3ea;background:' + bg + ';padding:8px 12px;white-space:' + (r[1].length > 24 ? 'normal' : 'nowrap') + ';' + (r[2] ? 'font-weight:bold;color:#0077a8;font-size:15px;' : '') + '">' + e(r[1]).replace(/\n/g, '<br>') + '</td></tr>';
+    });
+    h += '</table>';
+    h += '<p style="margin:0 0 6px;font-weight:bold;color:#0b1220">הערות ותנאים:</p>';
+    q.notes.forEach(function(n, i){
+      h += '<p style="margin:0 0 4px;font-weight:bold">' + 'אבגד'.charAt(i) + '. ' + e(n) + '</p>';
+    });
+    h += '<p style="margin:18px 0 2px">בברכה,</p>';
+    q.sig.forEach(function(s, i){ h += '<p style="margin:0;' + (i === 0 ? 'font-weight:bold;' : 'color:#4a5563;') + '">' + e(s) + '</p>'; });
+    h += '</div>';
+    return h;
+  }
+  function quoteEmailText(){
+    var q = quoteEmailData(), L = [];
+    L.push('הצעת מחיר מס׳ ' + q.number + ' ממיגון G1 עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
+    L.push('מצורפת בקובץ PDF הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
+    q.rows.forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
+    L.push('', 'הערות ותנאים:');
+    q.notes.forEach(function(n, i){ L.push('אבגד'.charAt(i) + '. ' + n); });
+    L.push('', 'בברכה,');
+    q.sig.forEach(function(s){ L.push(s); });
+    return L.join('\n');
+  }
+  function b64Utf8(s){
+    var bytes = new TextEncoder().encode(s), bin = '';
+    for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  function wrap76(s){ return s.replace(/(.{76})/g, '$1\r\n'); }
+  function mimeWord(s){ return /^[\x20-\x7e]*$/.test(s) ? s : '=?UTF-8?B?' + b64Utf8(s) + '?='; }
+  async function buildQuoteEml(to, subject, html, text, pdfBlob, pdfName){
+    var buf = new Uint8Array(await pdfBlob.arrayBuffer()), bin = '';
+    for (var i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+    var mixed = 'g1mix_' + Date.now(), alt = 'g1alt_' + Date.now();
+    var full = '<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="utf-8"></head><body dir="rtl">' + html + '</body></html>';
+    var eml = [
+      'X-Unsent: 1',
+      'To: ' + (to || ''),
+      'Subject: ' + mimeWord(subject),
+      'MIME-Version: 1.0',
+      'Content-Type: multipart/mixed; boundary="' + mixed + '"',
+      '',
+      '--' + mixed,
+      'Content-Type: multipart/alternative; boundary="' + alt + '"',
+      '',
+      '--' + alt,
+      'Content-Type: text/plain; charset="UTF-8"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      wrap76(b64Utf8(text)),
+      '--' + alt,
+      'Content-Type: text/html; charset="UTF-8"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      wrap76(b64Utf8(full)),
+      '--' + alt + '--',
+      '',
+      '--' + mixed,
+      'Content-Type: application/pdf; name="' + mimeWord(pdfName) + '"',
+      'Content-Disposition: attachment; filename="' + mimeWord(pdfName) + '"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      wrap76(btoa(bin)),
+      '--' + mixed + '--',
+      ''
+    ].join('\r\n');
+    return new Blob([eml], { type:'message/rfc822' });
+  }
+  // generic file save (same channels as deliverPdfBlob, any type)
+  async function deliverBlob(blob, filename){
+    if (window.claude && typeof window.claude.use === 'function'){
+      try { var dl = await window.claude.use('downloads'); if (dl){ var r = await dl.save({ filename: filename, data: blob }); return r.status; } }
+      catch(e){ if (e && e.code === 'declined') throw e; }
+    }
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    return 'downloaded';
+  }
+  // copy the formatted e-mail so it pastes into Outlook with its formatting
+  function copyRichEmail(cb){
+    var html = quoteEmailHtml(), text = quoteEmailText();
+    try {
+      if (navigator.clipboard && window.ClipboardItem){
+        navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type:'text/html' }), 'text/plain': new Blob([text], { type:'text/plain' }) })])
+          .then(function(){ cb(true); }, function(){ copyToClipboard(text, cb); });
+        return;
+      }
+    } catch(e) {}
+    copyToClipboard(text, cb);
+  }
+
   /* ============================= send / share sheet ============================= */
   // Phones (iPhone above all, and the installed app) can't "download" a file the way a desktop
   // browser does — a script-started download opens a dead-end PDF viewer with no way to save or
@@ -9852,7 +10059,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     mail.appendChild(el2('h4', '', '📧 מייל ללקוח' + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
     if (mobile){
       mail.appendChild(actBtn('mail', 'שליחה במייל — ה-PDF מצורף', async function(b){
-        var r = await shareFile(pdf.file, { title: quoteSubject(), text: mailLines.join('\n') });
+        var r = await shareFile(pdf.file, { title: quoteSubject(), text: quoteEmailText() });
         if (r === 'shared') b.classList.add('done');
       }));
       mail.appendChild(el2('p', '', 'בחרו Outlook או Mail — הקובץ, הנושא ונוסח ההודעה כבר בפנים. ' + (info.emailOk ? 'הוסיפו את כתובת הלקוח כנמען (אפשר להעתיק למטה).' : 'הזינו את כתובת הלקוח כנמען.')));
@@ -9863,8 +10070,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         mail.appendChild(cr);
       }
     } else {
-      mail.appendChild(linkBtn('mail', 'פתיחת טיוטה באאוטלוק', buildMailto(info.emailOk ? info.contact.email : '', quoteSubject(), mailLines)));
-      mail.appendChild(el2('p', '', 'הדפדפן אינו יכול לצרף קובץ בעצמו — ' + (opts.autoSaved ? 'הקובץ ' + pdf.name + ' כבר נשמר בהורדות; גררו אותו לטיוטה.' : 'הורידו את הקובץ למטה וגררו אותו לטיוטה.')));
+      mail.appendChild(actBtn('mail', 'פתיחת טיוטה מעוצבת באאוטלוק — ה-PDF מצורף', async function(b){
+        try {
+          var eml = await buildQuoteEml(info.emailOk ? info.contact.email : '', quoteSubject(), quoteEmailHtml(), quoteEmailText(), pdf.blob, pdf.name);
+          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml');
+          b.classList.add('done');
+          emlNote.hidden = false;
+        } catch(e){ emlNote.hidden = false; emlNote.textContent = 'לא הצלחנו להכין את הטיוטה — השתמשו ב"העתקת נוסח המייל" והדביקו במייל חדש.'; }
+      }));
+      var emlNote = el2('div', 'share-note'); emlNote.hidden = true;
+      emlNote.textContent = '✓ קובץ הטיוטה נשמר בהורדות — לחצו עליו (בשורת ההורדות של הדפדפן) והוא ייפתח באאוטלוק כטיוטה מוכנה: נמען, נושא, נוסח מעוצב והקובץ מצורף. נשאר רק ללחוץ "שלח".';
+      mail.appendChild(emlNote);
+      var dcr = el2('div', 'share-copy-row');
+      dcr.appendChild(actBtn('', '📋 העתקת נוסח המייל (מעוצב)', function(b){ copyRichEmail(function(ok){ if (ok) b.classList.add('done'); }); }));
+      mail.appendChild(dcr);
     }
     body.appendChild(mail);
 
@@ -9874,7 +10093,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     other.appendChild(saveOrShareButton(pdf, mobile));
     var copyRow = el2('div', 'share-copy-row');
     copyRow.appendChild(actBtn('', '📋 העתקת נוסח ההודעה', function(b){
-      copyToClipboard(quoteSubject() + '\n\n' + mailLines.join('\n'), function(ok){ if (ok) b.classList.add('done'); });
+      copyRichEmail(function(ok){ if (ok) b.classList.add('done'); });
     }));
     other.appendChild(copyRow);
     if (opts.saveFirst) body.insertBefore(other, body.firstChild); else body.appendChild(other);
@@ -9898,11 +10117,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     shareNote(body, msg || 'נסו שוב בעוד רגע. אם הבעיה חוזרת — סגרו ופתחו מחדש את ההצעה.', true);
   }
   async function prepareQuotePdf(){
-    recordQuoteSend();
+    var rec = recordQuoteSend();
     setClientView(true);
     updateCustomerDetails();
     var name = quotePdfFilename(state.quoteNumber);
-    var blob = await buildPanelPdfBlob('#modalBackdrop .modal');
+    var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec));
     if (!blob) return null;
     return { blob:blob, file:pdfFileFrom(blob, name), name:name, number:state.quoteNumber };
   }
