@@ -931,6 +931,8 @@
   .sg-actions{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
   .sg-btn{ display:flex; align-items:center; justify-content:center; gap:8px; min-height:50px; border-radius:12px; border:1px solid #cfd8e0; background:#f4f7f9; color:#1b1f24; font:700 15px var(--font-body); text-decoration:none; cursor:pointer; }
   .sg-btn.wa{ background:#25D366; border-color:#1fb457; color:#06280f; } .sg-btn.wa2{ background:#e9fbf0; border-color:#9fe3b8; color:#0d5a2a; }
+  .sg-ret{ margin-top:14px; } .sg-ret h3{ font-size:14px; margin:0 0 6px; color:#0b1220; }
+  .sg-ret .sg-actions{ margin-top:4px; }
   .sg-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; } .sg-btn.done::after{ content:'✓'; }
   .sg-btn .step{ display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center; background:rgba(0,0,0,.12); font-size:12px; }
   .sign-doc{ position:relative; margin:16px auto 0; width:820px; background:#fff; padding:28px 30px; font-family:var(--font-body); color:#1b1f24; box-sizing:border-box; }
@@ -1229,6 +1231,15 @@
   body.pdf-export .modal-close{ display:none; }
   body.pdf-export .sketch-backdrop{ position:static; }
   body.pdf-export .sketch-sheet{ height:auto; width:1200px; }
+  /* on a phone the export layout must not shrink to the screen (flex) or keep the phone's
+     scroll-box limits — the PDF is always the full desktop page */
+  body.pdf-export .sketch-backdrop:not([hidden]), body.pdf-export .modal-backdrop:not([hidden]){ display:block !important; overflow:visible !important; }
+  body.pdf-export .sketch-sheet{ flex:none !important; min-width:1200px; max-width:none; }
+  body.pdf-export .modal-backdrop:not([hidden]) .modal{ flex:none !important; min-width:900px; }
+  body.pdf-export .sketch-side{ max-height:none !important; overflow:visible !important; }
+  body.pdf-export .sketch-plan-wrap{ min-height:0 !important; }
+  body.pdf-export .sketch-head{ flex-wrap:nowrap; padding:14px 26px; }
+  body.pdf-export .sketch-meta{ order:0; flex:1 1 auto; }
   body.pdf-export .sketch-body{ overflow:visible; }
   body.pdf-export .sketch-plan-wrap, body.pdf-export .sketch-side{ overflow:visible; }
   body.pdf-export .sketch-head-actions{ display:none; }
@@ -1841,7 +1852,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 94</div>
+              <div class="app-version" id="appVersion">גרסה 95</div>
             </div>
           </div>
         </div>
@@ -10979,7 +10990,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var t = await packSignPayload(o);
     var steps = [
       function(x){ delete x.cb; },
-      function(x){ if (x.ag) x.ag[3] = ''; if (x.c) { x.c[3] = ''; } },
+      function(x){ if (x.c) { x.c[3] = ''; } },
       function(x){ if (x.pt && x.pt.length > 80) x.pt = x.pt.slice(0, 78) + '…'; },
       function(x){ if (x.it && x.it.length){ x.nt = x.it.length; delete x.it; } },
       function(x){ if (x.m) { x.m = x.m.map(function(r){ return r.slice(0, 2); }); } if (x.c) x.c[1] = ''; },
@@ -11102,39 +11113,58 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       renderSignReturn(view, q, { blob:blob, file:pdfFileFrom(blob, name2), name:name2 }, signer, when);
     };
   }
+  // After signing: send the signed PDF back to the agent. BOTH ways are always offered — the one
+  // the quote arrived by first — because the customer may have received it on WhatsApp through
+  // a link meant for e-mail (or the other way round), and some in-app browsers can't share files.
   function renderSignReturn(view, q, pdf, signer, when){
-    var mobile = prefersShareSheet(pdf.file);
-    var agPhone = parsePhone(q.ag.p || ''), agName = q.ag.n || 'יועץ המיגון';
+    var share = canShareFile(pdf.file), touch = isTouchDevice() || share;
+    var agPhone = parsePhone(q.ag.p || ''), agName = q.ag.n || 'יועץ המיגון', agMail = q.ag.e || '';
     var text = 'שלום ' + agName + ',\nאני מאשר/ת את הצעת המחיר מס׳ ' + q.n + '. מצורף המסמך החתום.\n' + signer.name + (signer.phone ? ' · ' + signer.phone : '');
     var subject = 'אישור הצעת מחיר מס׳ ' + q.n + ' — ' + signer.name;
     var card = document.createElement('div'); card.className = 'sg-card sg-done';
     card.innerHTML = '<h1 class="sg-title">✓ ההצעה נחתמה</h1><p class="sg-sub">נחתם ע״י ' + escapeHtml(signer.name) + ' · ' + escapeHtml(when) + '</p>' +
-      '<p>נשאר שלב אחד: לשלוח את המסמך החתום ל' + escapeHtml(agName) + ' — ' + (q.ch === 'mail' ? 'במייל, כמו שקיבלתם את ההצעה.' : 'בוואטסאפ, כמו שקיבלתם את ההצעה.') + '</p><div class="sg-actions" id="sgActions"></div>';
+      '<p>נשאר שלב אחד: לשלוח את המסמך החתום ל' + escapeHtml(agName) + ' — בוואטסאפ או במייל.</p><div id="sgReturn"></div>';
     view.innerHTML = ''; view.appendChild(card);
-    var box = card.querySelector('#sgActions');
-    function btn(cls, label, fn){ var b = document.createElement('button'); b.type = 'button'; b.className = 'sg-btn ' + cls; b.innerHTML = label; b.onclick = function(){ fn(b); }; box.appendChild(b); return b; }
-    function link(cls, label, href){ var a = document.createElement('a'); a.className = 'sg-btn ' + cls; a.innerHTML = label; a.href = href; a.target = '_blank'; a.rel = 'noopener'; box.appendChild(a); return a; }
-    function note(t){ var p = document.createElement('p'); p.className = 'sg-small'; p.textContent = t; box.appendChild(p); }
-    if (q.ch !== 'mail') {
+    var root = card.querySelector('#sgReturn');
+    function section(title){ var sec = document.createElement('div'); sec.className = 'sg-ret'; sec.innerHTML = '<h3>' + title + '</h3><div class="sg-actions"></div>'; root.appendChild(sec); return sec.querySelector('.sg-actions'); }
+    function btn(box, cls, label, fn){ var b = document.createElement('button'); b.type = 'button'; b.className = 'sg-btn ' + cls; b.innerHTML = label; b.onclick = function(){ fn(b); }; box.appendChild(b); return b; }
+    function link(box, cls, label, href){ var a = document.createElement('a'); a.className = 'sg-btn ' + cls; a.innerHTML = label; a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.addEventListener('click', function(){ a.classList.add('done'); }); box.appendChild(a); return a; }
+    function note(box, t){ var p = document.createElement('p'); p.className = 'sg-small'; p.textContent = t; box.appendChild(p); }
+    async function sendFile(b, extra){
+      if (share) { var r = await shareFile(pdf.file, extra); if (r === 'shared') { b.classList.add('done'); return; } if (r === 'cancelled') return; }
+      await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done');
+    }
+    function waSection(){
+      var box = section('💬 בוואטסאפ');
       if (agPhone && agPhone.mobile) {
-        link('wa', '<span class="step">1</span> פתיחת וואטסאפ ל' + escapeHtml(agName), 'https://wa.me/' + agPhone.intl + '?text=' + encodeURIComponent(text));
-        btn('wa2', '<span class="step">2</span> ' + (mobile ? 'שליחת המסמך החתום' : 'הורדת המסמך החתום לצירוף'), async function(b){ if (mobile) { if ((await shareFile(pdf.file)) === 'shared') b.classList.add('done'); } else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } });
-        note(mobile ? 'בשלב 2 בחרו WhatsApp — הצ׳אט עם ' + agName + ' יופיע ראשון ברשימה.' : 'בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.');
-      } else if (mobile) btn('wa', 'שליחת המסמך החתום בוואטסאפ', async function(b){ if ((await shareFile(pdf.file, { text:text })) === 'shared') b.classList.add('done'); });
-    } else {
-      if (mobile) {
-        btn('mail', 'שליחת המסמך החתום במייל', async function(b){ if ((await shareFile(pdf.file, { title:subject, text:text })) === 'shared') b.classList.add('done'); });
-        if (q.ag.e) note('כתובת היועץ: ' + q.ag.e + ' (הוסיפו כנמען)');
+        link(box, 'wa', '<span class="step">1</span> פתיחת הצ׳אט עם ' + escapeHtml(agName) + ' + הודעה', 'https://wa.me/' + agPhone.intl + '?text=' + encodeURIComponent(text));
+        btn(box, 'wa2', '<span class="step">2</span> ' + (share ? 'שליחת המסמך החתום (PDF)' : 'הורדת המסמך החתום לצירוף'), function(b){ sendFile(b); });
+        note(box, share ? 'בשלב 2 בחרו WhatsApp — הצ׳אט עם ' + agName + ' יופיע ראשון ברשימה.' : 'בשלב 2 הקובץ נשמר בהורדות — צרפו אותו בצ׳אט (📎 ← מסמך).');
       } else {
-        btn('mail', 'פתיחת מייל מוכן ליועץ — המסמך מצורף', async function(b){
-          var html = '<div dir="rtl" style="font-family:Arial,sans-serif;font-size:14px;text-align:right"><p><b>' + escapeHtml(subject) + '</b></p><p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p></div>';
-          var eml = await buildQuoteEml(q.ag.e || '', subject, html, text, pdf.blob, pdf.name);
-          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml'); b.classList.add('done');
-        });
-        note('לחצו על הקובץ שנשמר בהורדות — הוא ייפתח באאוטלוק כמייל מוכן עם המסמך החתום מצורף.');
+        btn(box, 'wa', share ? 'שליחת המסמך החתום בוואטסאפ' : 'הורדת המסמך החתום לשליחה בוואטסאפ', function(b){ sendFile(b, { text:text }); });
       }
     }
-    btn('save', mobile ? '📤 שמירה / שיתוף אחר' : '⬇ הורדת המסמך החתום', async function(b){ if (mobile) { if ((await shareFile(pdf.file)) === 'shared') b.classList.add('done'); } else { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } });
+    function mailSection(){
+      var box = section('📧 במייל');
+      if (share) {
+        btn(box, 'mail', 'שליחת המסמך החתום במייל', function(b){ sendFile(b, { title:subject, text:text }); });
+        if (agMail) note(box, 'כתובת היועץ: ' + agMail + ' (הוסיפו כנמען)');
+      } else if (touch) {
+        link(box, 'mail', '<span class="step">1</span> פתיחת מייל ל' + escapeHtml(agName), 'mailto:' + encodeURIComponent(agMail) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text));
+        btn(box, 'wa2', '<span class="step">2</span> הורדת המסמך החתום לצירוף', function(b){ sendFile(b); });
+        note(box, 'צרפו את הקובץ שנשמר בהורדות למייל שנפתח.');
+      } else {
+        btn(box, 'mail', 'פתיחת מייל מוכן ליועץ — המסמך מצורף', async function(b){
+          var html = '<div dir="rtl" style="font-family:Arial,sans-serif;font-size:14px;text-align:right"><p><b>' + escapeHtml(subject) + '</b></p><p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p></div>';
+          var eml = await buildQuoteEml(agMail, subject, html, text, pdf.blob, pdf.name);
+          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml'); b.classList.add('done');
+        });
+        note(box, 'לחצו על הקובץ שנשמר בהורדות — הוא ייפתח באאוטלוק כמייל מוכן עם המסמך החתום מצורף.');
+      }
+    }
+    if (q.ch === 'mail') { mailSection(); waSection(); } else { waSection(); mailSection(); }
+    var other = section('💾 שמירה');
+    btn(other, 'save', share ? '📤 שמירה / שיתוף אחר' : '⬇ הורדת המסמך החתום', function(b){ sendFile(b); });
   }
   (function(){ var tok = extractSignToken(); if (tok) setTimeout(function(){ startSignMode(tok); }, 0); })();
 
@@ -11146,7 +11176,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // The share sheet only opens from a tap, so the PDF is rendered first and every send option
   // is then its own button.
   function isIOSDevice(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
-  function isTouchDevice(){ return isIOSDevice() || !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches); }
+  function isTouchDevice(){ return isIOSDevice() || /Android|Mobile/i.test(navigator.userAgent) || !!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches); }
   function canShareFile(file){ try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })); } catch(e){ return false; } }
   function prefersShareSheet(file){ return isTouchDevice() && canShareFile(file); }
   function pdfFileFrom(blob, name){ try { return new File([blob], name, { type:'application/pdf' }); } catch(e){ return blob; } }
