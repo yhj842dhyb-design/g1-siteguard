@@ -90,5 +90,8 @@
   "signMax": 4,
   "salesWhatsapp": "",
   "leadEndpoint": ""
+ },
+ "backend": {
+  "endpoint": "https://script.google.com/macros/s/AKfycbxPiPQ7vWyCUAFM9kd320ypx-sni5OV4vApaXvYbtbO6fCljsM31sxKcyzGueyBVazm/exec"
  }
 }
