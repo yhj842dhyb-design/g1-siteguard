@@ -82,7 +82,7 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
     <img src="../icon-192.png" alt="">
     <div>
       <h1>G1 <span>SiteGuard</span></h1>
-      <div class="sub">כלי תכנון ומכירה ליועצי מיגון · חטיבת המוקדים</div>
+      <div class="sub">כלי תכנון ומכירה ליועצי מיגון · קבוצת G1</div>
     </div>
     <div class="ver" id="ver">גרסה 120</div>
   </header>
@@ -92,13 +92,13 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
   <div class="grid">
     <section aria-label="סרטון הסבר">
       <div class="video" id="vbox">
-        <video id="vid" controls playsinline preload="none" poster="../media/poster.jpg?v=2">
-          <source id="vsrc" src="../media/G1-SiteGuard-promo.mp4?v=2" type="video/mp4">
+        <video id="vid" controls playsinline preload="none" poster="../media/poster.jpg?v=3">
+          <source id="vsrc" src="../media/G1-SiteGuard-promo.mp4?v=3" type="video/mp4">
         </video>
         <button type="button" class="vplay" id="vplay" aria-label="צפייה בסרטון ההסבר"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>צפייה בסרטון</span></button>
-        <div class="vfail" id="vfail" hidden>הסרטון לא נפתח בדפדפן הזה. <a id="vopen" href="../media/G1-SiteGuard-promo-720.mp4?v=2" target="_blank" rel="noopener">פתיחת הסרטון בחלון חדש</a></div>
+        <div class="vfail" id="vfail" hidden>הסרטון לא נפתח בדפדפן הזה. <a id="vopen" href="../media/G1-SiteGuard-promo-720.mp4?v=3" target="_blank" rel="noopener">פתיחת הסרטון בחלון חדש</a></div>
       </div>
-      <div class="vmeta"><span>סרטון הסבר · 2:07 דק'</span><span>·</span><span>הורדה:</span><a id="vdl" href="../media/G1-SiteGuard-promo.mp4?v=2" download="G1-SiteGuard-promo.mp4" target="_blank" rel="noopener">איכות גבוהה (24MB)</a><span>·</span><a id="vdl2" href="../media/G1-SiteGuard-promo-720.mp4?v=2" download="G1-SiteGuard-promo-phone.mp4" target="_blank" rel="noopener">לטלפון (8MB)</a></div>
+      <div class="vmeta"><span>סרטון הסבר · 2:00 דק'</span><span>·</span><span>הורדה:</span><a id="vdl" href="../media/G1-SiteGuard-promo.mp4?v=3" download="G1-SiteGuard-promo.mp4" target="_blank" rel="noopener">איכות גבוהה (24MB)</a><span>·</span><a id="vdl2" href="../media/G1-SiteGuard-promo-720.mp4?v=3" download="G1-SiteGuard-promo-phone.mp4" target="_blank" rel="noopener">לטלפון (8MB)</a></div>
     </section>
 
     <section class="card" aria-labelledby="instTitle">
@@ -152,13 +152,13 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
       <div class="done" id="done">✓ האפליקציה הותקנה. פותחים אותה מהאייקון של G1 SiteGuard.</div>
 
       <div class="share">
-        <a class="btn ghost" id="openApp" href="../?v=120">פתיחה בדפדפן בלי התקנה</a>
+        <a class="btn ghost" id="openApp" href="../?v=1201">פתיחה בדפדפן בלי התקנה</a>
         <button class="btn ghost" id="shareBtn" type="button">שליחת הקישור לסוכן</button>
       </div>
     </section>
   </div>
 
-  <footer>G1 · חטיבת המוקדים · הנתונים בסרטון לדוגמה בלבד</footer>
+  <footer>קבוצת G1 · הנתונים בסרטון לדוגמה בלבד</footer>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -176,7 +176,7 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
   // (or a "open in a new window" link) if this browser can't play the first one
   (function(){
     var vid = document.getElementById('vid'), src = document.getElementById('vsrc'), btn = document.getElementById('vplay'), fail = document.getElementById('vfail');
-    var HD = '../media/G1-SiteGuard-promo.mp4?v=2', SD = '../media/G1-SiteGuard-promo-720.mp4?v=2';
+    var HD = '../media/G1-SiteGuard-promo.mp4?v=3', SD = '../media/G1-SiteGuard-promo-720.mp4?v=3';
     var order = (isMobile || window.innerWidth < 900) ? [SD, HD] : [HD, SD], idx = 0, started = false, watchdog = null;
     src.src = order[0];
     function showFail(){ fail.hidden = false; btn.hidden = true; }

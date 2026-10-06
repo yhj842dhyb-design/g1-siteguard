@@ -266,7 +266,7 @@ function issueCode(u, isNew){
   hash(code, u.id, cfg.access.salt).then(function(h){
     u.hash = h; markDirty(); if (tab === 'users') rUsers();
     var phone = (u.phone || '').replace(/\D/g, ''); if (phone.charAt(0) === '0') phone = '972' + phone.slice(1);
-    var text = 'שלום ' + u.name + ',\nזה קוד הכניסה האישי שלך לאפליקציית G1 SiteGuard (פיילוט חטיבת המוקדים):\n' + code + '\n\nהאפליקציה: ' + APP_URL + 'get/\nאת הקוד מזינים אחרי בחירת סוג הפרויקט. נא לא להעביר אותו לאחרים.';
+    var text = 'שלום ' + u.name + ',\nזה קוד הכניסה האישי שלך לאפליקציית G1 SiteGuard (פיילוט):\n' + code + '\n\nהאפליקציה: ' + APP_URL + 'get/\nאת הקוד מזינים אחרי בחירת סוג הפרויקט. נא לא להעביר אותו לאחרים.';
     modal('<h2>' + (isNew ? 'המשתמש נוסף' : 'קוד חדש נוצר') + ' · ' + esc(u.name) + '</h2>' +
       '<p class="sub" style="margin:4px 0 0">הקוד מוצג רק עכשיו. העבירו אותו למשתמש, ואז לחצו "פרסום לכל המשתמשים" כדי שייכנס לתוקף.</p>' +
       '<div class="code-big" id="cb">' + code + '</div>' +

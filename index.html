@@ -2638,7 +2638,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 120</div>
+              <div class="app-version" id="appVersion">גרסה 120.1</div>
             </div>
           </div>
         </div>
@@ -11337,7 +11337,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qBrand').innerHTML = document.querySelector('.topbar .brand').outerHTML;
     var qbSmall = document.querySelector('#qBrand .brand small');
     if (qbSmall && !document.querySelector('#qBrand .q-division')) {
-      var divEl = document.createElement('small'); divEl.className = 'q-division'; divEl.textContent = 'חטיבת המוקדים';
+      var divEl = document.createElement('small'); divEl.className = 'q-division'; divEl.textContent = 'קבוצת G1';
       qbSmall.parentNode.appendChild(divEl);
     }
     document.getElementById('qCustomer').textContent = document.getElementById('fCustomer').value || 'לקוח';
@@ -12129,7 +12129,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function signQuoteHtml(q, opts){
     var e = escapeHtml, o = opts || {};
     var logo = (document.querySelector('.topbar .brand .mark img') || {}).src || '';
-    var h = '<div class="sg-brand">' + (logo ? '<img src="' + logo + '" alt="G1">' : '') + '<div><b>G1 SiteGuard</b><small>חטיבת המוקדים</small></div></div>';
+    var h = '<div class="sg-brand">' + (logo ? '<img src="' + logo + '" alt="G1">' : '') + '<div><b>G1 SiteGuard</b><small>קבוצת G1</small></div></div>';
     h += '<h1 class="sg-title">' + (o.signed ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + e(String(q.n)) + '</h1>';
     h += '<p class="sg-sub">' + e(q.c.n || '') + (q.c.a ? ' · ' + e(q.c.a) : '') + ' · הופקה ' + e(q.d) + '</p>';
     if (!q.it.length && q.nt) h += '<h3>התקנה חד-פעמית — אביזרים</h3><p class="sg-terms">' + q.nt + ' סוגי אביזרים — הפירוט המלא (אביזרים, כמויות וכבילה) בקובץ ה-PDF של הצעת המחיר שצורף להודעה.</p>';
@@ -12215,7 +12215,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var canvas = await renderElementToCanvas(doc);
         var meta = JSON.stringify({ type:'g1signed', number:q.n, signer:signer, signedAt:signedAt.toISOString(), code:code, quoteHash:qHash });
         var lay = pdfLayoutOf(doc, canvas, 'tr, p, li, h3, .sg-brand, .sg-title, .sg-sub, .sg-agent, .sg-terms, .sg-approval, .sg-sigbox');
-        blob = canvasToPdfBlob(canvas, meta, { breaks:lay.breaks, keep:lay.keep, bg:[255, 255, 255], footer:'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
+        blob = canvasToPdfBlob(canvas, meta, { breaks:lay.breaks, keep:lay.keep, bg:[255, 255, 255], footer:'קבוצת G1 · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
       } catch(e) { blob = null; try { console.error('sign pdf', e); } catch(_) {} }
       doc.parentNode.removeChild(doc);
       btn.disabled = false; btn.textContent = '✍️ אישור וחתימה';
@@ -12455,7 +12455,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     setClientView(true);
     updateCustomerDetails();
     var name = quotePdfFilename(state.quoteNumber);
-    var footer = 'G1 — חטיבת המוקדים · הצעת מחיר מס׳ ' + state.quoteNumber + ' · ' + (document.getElementById('fCustomer').value || '') +
+    var footer = 'קבוצת G1 · הצעת מחיר מס׳ ' + state.quoteNumber + ' · ' + (document.getElementById('fCustomer').value || '') +
       (agentInfo.name ? ' · ' + agentInfo.name : '') + (agentInfo.phone ? ' ' + agentInfo.phone : '');
     var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec), { footer: footer });
     if (!blob) return null;
@@ -12746,7 +12746,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   async function buildSketchPdfBlob(){
     if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     var floors = sketchFloorsToExport(), back = sketchActiveFloor, secs = [];
-    var base = 'G1 — חטיבת המוקדים · סקיצת מיגון · ' + (document.getElementById('fCustomer').value || '');
+    var base = 'קבוצת G1 · סקיצת מיגון · ' + (document.getElementById('fCustomer').value || '');
     try {
       pdfExportMode(true);
       for (var k = 0; k < floors.length; k++){
@@ -14230,7 +14230,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<input id="g1LockCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="G1-XXXX-XXXX" dir="ltr">' +
       '<div class="g1-lock-err" id="g1LockErr" role="alert"></div>' +
       '<button type="button" class="g1-lock-go" id="g1LockGo">כניסה</button>' +
-      '<small>אין לכם קוד? פנו למנהל המוצר בחטיבת המוקדים.</small></div>';
+      '<small>אין לכם קוד? פנו למנהל המוצר.</small></div>';
     ov.hidden = false;
     document.body.classList.add('g1-locked');
     var inp = ov.querySelector('#g1LockCode'), err = ov.querySelector('#g1LockErr'), go = ov.querySelector('#g1LockGo');
@@ -14250,7 +14250,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (u.status !== 'active') { err.textContent = 'הקוד הזה הושהה על ידי מנהל המוצר.'; return; }
         g1Auth = { uid:u.id, hash:u.hash, name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
         // first sign-in on this device: the agent's quote signature comes from the access record
-        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && u.phone) agentInfo.phone = u.phone; if (!agentInfo.branch) agentInfo.branch = 'חטיבת המוקדים'; saveAgentInfo(agentInfo); } catch(e) {}
+        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && u.phone) agentInfo.phone = u.phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
         ov.hidden = true; document.body.classList.remove('g1-locked');
         g1ApplyRole();
         try { showCanvasToast('שלום ' + (u.name || '') + ' — הכניסה אושרה'); } catch(e) {}
