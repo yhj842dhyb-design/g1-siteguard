@@ -4,7 +4,7 @@
 // Network-first for the app page itself: whenever there is a connection the agent always gets
 // the newest published version (an installed iPhone/Android app used to keep showing an old
 // cached copy after an update). The cached copy is only the offline fallback.
-const CACHE_NAME = 'g1-siteguard-v115';
+const CACHE_NAME = 'g1-siteguard-v116';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

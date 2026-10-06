@@ -2221,6 +2221,33 @@
   }
 
   @media (max-width:680px){ .c-journey .cj-t b{ white-space:normal; overflow:visible; font-size:11.5px; line-height:1.15; } .c-journey li button{ min-height:46px; } }
+
+  /* welcome: always a visible way forward */
+  body.consumer:not(.c-started) #newProjectClose{ display:none !important; }
+  .c-np-foot{ position:sticky; bottom:-1px; z-index:4; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:16px -22px -22px; padding:12px 22px calc(12px + env(safe-area-inset-bottom,0px)); background:rgba(255,255,255,.97); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); box-shadow:0 -10px 22px -14px rgba(17,27,41,.35); }
+  .c-np-foot span{ font-size:13.5px; color:#4A5768; font-weight:600; }
+  .c-np-go{ all:unset; box-sizing:border-box; cursor:pointer; display:inline-flex; align-items:center; gap:8px; min-height:50px; padding:0 26px; border-radius:14px; background:var(--c-grad-d, linear-gradient(135deg,#1FA6E2,#0047A6)); color:#fff; font:800 16px var(--font-display, Heebo, sans-serif); box-shadow:0 10px 22px rgba(0,80,180,.28); white-space:nowrap; }
+  .c-np-go .c-ic{ width:18px; height:18px; }
+  .c-np-go:hover{ filter:brightness(1.07); } .c-np-go:focus-visible{ outline:3px solid var(--c-cyan,#1AACE3); outline-offset:3px; }
+  body.consumer .np-card.c-default{ border:2px solid transparent; background:linear-gradient(#fff,#fff) padding-box, var(--c-grad-d) border-box; }
+  body.consumer .np-card.c-default > b{ background:var(--c-grad-d); }
+  /* shorter laptop screens: compact hero so the property tiles are on screen */
+  @media (max-height:940px) and (min-width:761px){
+    body.consumer #newProjectBackdrop .modal-head{ padding:12px 24px 10px; }
+    .c-hero2 .ch-copy{ padding:16px 20px 14px; }
+    .c-hero2 h3{ font-size:24px; margin:8px 0 6px; }
+    .c-hero2 .ch-copy > p{ font-size:13.5px; line-height:1.55; }
+    body.consumer .c-hero2 .c-proof{ margin-top:10px; }
+    body.consumer .c-hero2 .c-proof > div{ padding:8px 12px; }
+    body.consumer .c-hero2 .c-proof b{ font-size:24px; }
+    .c-hero2 .ch-photo{ min-height:0; }
+    body.consumer .c-hero2 .c-hero-trust{ padding:8px 18px; }
+    .c-np-title{ margin:12px 0 8px; }
+    body.consumer .np-card{ min-height:0; padding:12px 10px 10px; gap:6px; }
+    body.consumer .np-card .np-emoji{ width:40px; height:45px; }
+    body.consumer .np-card > span:not(.np-emoji){ font-size:12px; }
+  }
+  @media (max-width:760px){ .c-np-foot{ margin:12px -16px -16px; padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px)); } .c-np-foot span{ display:none; } .c-np-go{ width:100%; justify-content:center; } }
 </style>
 
 <div class="app" id="app">
@@ -2552,7 +2579,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 115</div>
+              <div class="app-version" id="appVersion">גרסה 116</div>
             </div>
           </div>
         </div>
@@ -13752,6 +13779,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var npG = npGrid.querySelector('.np-grid');
       if (npG && !document.getElementById('cBlankLink')) npG.insertAdjacentHTML('afterend', '<button type="button" class="c-blank-link" id="cBlankLink">' + ic('pencil') + 'או התחילו משרטוט ריק</button>');
       if (npG && !document.getElementById('cNpProof')) document.getElementById('cBlankLink').insertAdjacentHTML('afterend', '<div class="c-np-proof" id="cNpProof"><div><b class="num">' + PROOF.connected + '</b><span>בתים ועסקים מחוברים למוקד G1</span></div><div><b class="num">' + PROOF.since + '</b><span>שומרים על ישראל מאז</span></div><p>' + ic('truck') + 'אספקה עד ' + DELIVERY_DAYS + ' ימי עסקים · ' + RETURN_DAYS + ' יום להחזרה · עד 6 תשלומים</p></div>');
+      if (!document.getElementById('cNpFoot')) {
+        npGrid.insertAdjacentHTML('beforeend', '<div class="c-np-foot" id="cNpFoot"><span>בחרו את סוג הנכס — או המשיכו עם בית פרטי</span><button type="button" class="c-np-go" id="cNpGo">המשך לתכנון ' + ic('next') + '</button></div>');
+        var houseCard = npGrid.querySelector('.np-card[data-kind=house]'); if (houseCard) houseCard.classList.add('c-default');
+        document.getElementById('cNpGo').onclick = function(){ var hc = npGrid.querySelector('.np-card[data-kind=house]'); if (hc) hc.click(); };
+      }
+      // the very first welcome can't be dismissed into an empty sketch: the customer picks a property
+      // type (or "start from a blank sketch"), and both paths open the drawing coach
+      newProjectBackdrop.addEventListener('click', function(ev){ if (ev.target === newProjectBackdrop && !document.body.classList.contains('c-started')) ev.stopImmediatePropagation(); }, true);
+      var npCloseBtn = document.getElementById('newProjectClose');
+      if (npCloseBtn) npCloseBtn.addEventListener('click', function(ev){ if (!document.body.classList.contains('c-started')) { ev.stopImmediatePropagation(); ev.preventDefault(); } }, true);
       var bl = document.getElementById('cBlankLink'); if (bl) bl.onclick = function(){ var bc = npGrid.querySelector('.np-card[data-kind=blank]'); if (bc) bc.click(); };
       var CARD_COPY = {
         house:'חדרים, חצר וחניה — לבית בקומה אחת או שתיים',
