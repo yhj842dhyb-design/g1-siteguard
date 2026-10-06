@@ -1,6 +1,6 @@
 {
-  "name": "g1siteguard",
-  "short_name": "g1siteguard",
+  "name": "G1 SiteGuard",
+  "short_name": "SiteGuard",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
@@ -9,7 +9,17 @@
   "lang": "he",
   "dir": "rtl",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ]
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "id": "./",
+  "description": "תכנון מערכות מיגון, הצעת מחיר וחתימה דיגיטלית"
 }
