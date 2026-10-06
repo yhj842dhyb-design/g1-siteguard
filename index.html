@@ -2286,6 +2286,27 @@
   .c-inst-total{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-radius:14px; background:var(--c-bg,#F2F3F5); }
   .c-inst-total span{ font-size:13px; font-weight:700; color:#3E4B5A; }
   .c-inst-total b{ font:900 19px var(--font-display); color:var(--c-ink,#111B29); }
+
+  /* G1 control: access lock + minimum prices */
+  .g1-lock{ position:fixed; inset:0; z-index:20000; display:grid; place-items:center; padding:20px; background:radial-gradient(900px 600px at 80% 0%, rgba(26,172,227,.22), transparent 60%), linear-gradient(160deg,#0B1F33,#132C47); }
+  .g1-lock[hidden]{ display:none; }
+  .g1-lock-card{ width:min(420px,100%); background:#fff; border-radius:24px; padding:28px 26px 22px; box-shadow:0 30px 80px rgba(0,0,0,.45); display:flex; flex-direction:column; gap:10px; text-align:center; font-family:'Heebo','Assistant',system-ui,sans-serif; color:#111B29; }
+  .g1-lock-badge{ width:64px; height:72px; margin:0 auto 4px; display:grid; place-items:center; color:#fff; background:linear-gradient(150deg,#1A8FCB,#0D5F92); clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
+  .g1-lock-card h2{ margin:0; font-size:22px; font-weight:800; }
+  .g1-lock-card p{ margin:0; font-size:14px; color:#3E4B5A; line-height:1.6; }
+  .g1-lock-card .g1-lock-why{ background:#FFF4E5; color:#7A4A0E; border-radius:10px; padding:8px 10px; font-weight:600; }
+  .g1-lock-card label{ text-align:start; font-size:13px; font-weight:700; margin-top:6px; }
+  .g1-lock-card input{ font:700 20px/1.2 'JetBrains Mono',ui-monospace,monospace; letter-spacing:2px; text-align:center; padding:12px; border:1.5px solid #C9D2DC; border-radius:12px; text-transform:uppercase; }
+  .g1-lock-card input:focus{ outline:none; border-color:#1AACE3; box-shadow:0 0 0 3px rgba(26,172,227,.2); }
+  .g1-lock-err{ min-height:18px; color:#C2362B; font-size:13px; font-weight:700; }
+  .g1-lock-go{ min-height:50px; border:0; border-radius:14px; background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; font:800 17px 'Heebo',sans-serif; cursor:pointer; }
+  .g1-lock-go:disabled{ opacity:.6; cursor:wait; }
+  .g1-lock-card small{ color:#5B6B7E; font-size:12px; }
+  body.g1-locked{ overflow:hidden; }
+  .q-price.g1-below-min{ border-color:#C2362B !important; background:#FFF0EE !important; color:#C2362B; font-weight:700; }
+  .g1-min-warn{ margin:0 0 10px; padding:10px 12px; border-radius:10px; background:#FFF0EE; color:#8E2A20; font-size:13px; line-height:1.6; border:1px solid rgba(194,54,43,.3); }
+  #btnG1Admin{ border-color:#1AACE3; color:#0A7FBF; font-weight:700; text-decoration:none; }
+  .mm-grid .mm-admin{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; padding:12px; border-radius:12px; background:#0B1F33; color:#fff; font-weight:800; text-decoration:none; }
 </style>
 
 <div class="app" id="app">
@@ -2617,7 +2638,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 119</div>
+              <div class="app-version" id="appVersion">גרסה 120</div>
             </div>
           </div>
         </div>
@@ -14124,6 +14145,238 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     };
     bd.hidden = false;
   }
+
+
+  /* ================= G1 control: remote settings, access codes, prices (managed in /admin/) =================
+     One public file — config.json at the site root — is written by the product manager's admin page
+     (through the GitHub API) and read by both apps on every start while online:
+       • access.users  — pilot agents + the product manager, each with a PBKDF2 hash of their code and a
+                         status (active / blocked). The agent app locks right after the project type is
+                         picked until a valid code is entered; a blocked code locks on the next connection.
+       • agent.prices  — list price (pre-filled in the quote) and minimum price per item type; the quote
+                         can't be sent or saved below the minimums (also after a discount).
+       • consumer.*    — every price and term the home-planner shows.
+     The last good copy is kept on the device, so an approved agent keeps working offline for
+     access.offlineDays (default 7). This is a pilot-grade lock (no server-side enforcement). */
+  var G1_CONFIG_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/config.json';
+  var G1_ADMIN_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/admin/';
+  var G1C = { cfg:null, fresh:false, loaded:false, listeners:[] };
+  function g1cRead(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e) { return null; } }
+  function g1cWrite(k, v){ try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+  G1C.cfg = g1cRead('g1sg_config');
+  function g1cOnConfig(fn){ G1C.listeners.push(fn); if (G1C.cfg) { try { fn(G1C.cfg, false); } catch(e) {} } }
+  function g1cFetchConfig(){
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 8000);
+    return fetch(G1_CONFIG_URL + '?t=' + Date.now(), { cache:'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(cfg){
+        clearTimeout(timer);
+        if (!cfg || typeof cfg !== 'object') throw new Error('bad config');
+        G1C.cfg = cfg; G1C.fresh = true; G1C.loaded = true; g1cWrite('g1sg_config', cfg);
+        G1C.listeners.forEach(function(fn){ try { fn(cfg, true); } catch(e) {} });
+        return cfg;
+      })
+      .catch(function(){ clearTimeout(timer); G1C.loaded = true; G1C.listeners.forEach(function(fn){ try { fn(G1C.cfg, false); } catch(e) {} }); return null; });
+  }
+  function g1cNormCode(c){ return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+  function g1cHash(code, uid, salt){
+    if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error('no-crypto'));
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(g1cNormCode(code)), 'PBKDF2', false, ['deriveBits']).then(function(key){
+      return crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:enc.encode(uid + ':' + (salt || '')), iterations:120000 }, key, 256);
+    }).then(function(bits){ return Array.prototype.map.call(new Uint8Array(bits), function(b){ return ('0' + b.toString(16)).slice(-2); }).join(''); });
+  }
+
+  /* ---------- agent app: access lock ---------- */
+  var g1Auth = g1cRead('g1sg_auth');   // { uid, hash, name, role, verifiedAt }
+  // no settings ever loaded on this device (first start, offline) → locked until the first online check
+  function g1AccessOn(){ if (!G1C.cfg) return G1C.loaded; return !!(G1C.cfg.access && G1C.cfg.access.enabled); }
+  function g1FindUser(uid){ var us = (G1C.cfg && G1C.cfg.access && G1C.cfg.access.users) || []; for (var i = 0; i < us.length; i++) if (us[i].id === uid) return us[i]; return null; }
+  // 'ok' | 'locked' | 'blocked' | 'offline-expired'
+  function g1AccessState(){
+    if (!g1AccessOn()) return 'ok';
+    if (!g1Auth || !G1C.cfg) return 'locked';
+    var u = g1FindUser(g1Auth.uid);
+    if (G1C.fresh) {
+      if (!u || u.hash !== g1Auth.hash) return 'blocked';
+      if (u.status !== 'active') return 'blocked';
+      return 'ok';
+    }
+    var days = ((G1C.cfg.access && G1C.cfg.access.offlineDays) || 7);
+    if (u && (u.status !== 'active' || u.hash !== g1Auth.hash)) return 'blocked';
+    if (!g1Auth.verifiedAt || Date.now() - g1Auth.verifiedAt > days * 864e5) return 'offline-expired';
+    return 'ok';
+  }
+  function g1MarkVerified(){
+    if (!g1Auth || !G1C.fresh) return;
+    var u = g1FindUser(g1Auth.uid); if (!u) return;
+    g1Auth.verifiedAt = Date.now(); g1Auth.name = u.name; g1Auth.role = u.role; g1cWrite('g1sg_auth', g1Auth);
+  }
+  function g1LockScreen(reason, after){
+    var ov = document.getElementById('g1Lock');
+    if (!ov) {
+      ov = document.createElement('div'); ov.id = 'g1Lock'; ov.className = 'g1-lock'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'g1LockT');
+      document.body.appendChild(ov);
+    }
+    var msg = (G1C.cfg && G1C.cfg.access && G1C.cfg.access.message) || 'האפליקציה בשלב פיילוט — הכניסה למורשים בלבד.';
+    var why = reason === 'blocked' ? 'הגישה שלך הושהתה על ידי מנהל המוצר. לבירור — פנו אליו.' :
+              reason === 'offline-expired' ? 'עבר זמן רב מאז האימות האחרון. התחברו לרשת והזינו את הקוד שוב.' : '';
+    ov.innerHTML = '<div class="g1-lock-card">' +
+      '<div class="g1-lock-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>' +
+      '<h2 id="g1LockT">כניסה לאפליקציית הסוכנים</h2><p>' + escapeHtml(msg) + '</p>' +
+      (why ? '<p class="g1-lock-why">' + escapeHtml(why) + '</p>' : '') +
+      '<label for="g1LockCode">קוד הקצאה אישי</label>' +
+      '<input id="g1LockCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="G1-XXXX-XXXX" dir="ltr">' +
+      '<div class="g1-lock-err" id="g1LockErr" role="alert"></div>' +
+      '<button type="button" class="g1-lock-go" id="g1LockGo">כניסה</button>' +
+      '<small>אין לכם קוד? פנו למנהל המוצר בחטיבת המוקדים.</small></div>';
+    ov.hidden = false;
+    document.body.classList.add('g1-locked');
+    var inp = ov.querySelector('#g1LockCode'), err = ov.querySelector('#g1LockErr'), go = ov.querySelector('#g1LockGo');
+    setTimeout(function(){ try { inp.focus(); } catch(e) {} }, 50);
+    function submit(){
+      var code = inp.value; err.textContent = '';
+      if (g1cNormCode(code).length < 6) { err.textContent = 'הזינו את הקוד המלא שקיבלתם.'; return; }
+      go.disabled = true; go.textContent = 'בודק…';
+      var p = G1C.fresh ? Promise.resolve(G1C.cfg) : g1cFetchConfig();
+      p.then(function(){
+        if (!G1C.fresh) throw new Error('offline');
+        var users = ((G1C.cfg.access && G1C.cfg.access.users) || []);
+        return Promise.all(users.map(function(u){ return g1cHash(code, u.id, G1C.cfg.access.salt).then(function(h){ return h === u.hash ? u : null; }); }));
+      }).then(function(found){
+        var u = found.filter(Boolean)[0];
+        if (!u) { err.textContent = 'הקוד לא מוכר. בדקו שהקלדתם אותו נכון.'; return; }
+        if (u.status !== 'active') { err.textContent = 'הקוד הזה הושהה על ידי מנהל המוצר.'; return; }
+        g1Auth = { uid:u.id, hash:u.hash, name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
+        // first sign-in on this device: the agent's quote signature comes from the access record
+        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && u.phone) agentInfo.phone = u.phone; if (!agentInfo.branch) agentInfo.branch = 'חטיבת המוקדים'; saveAgentInfo(agentInfo); } catch(e) {}
+        ov.hidden = true; document.body.classList.remove('g1-locked');
+        g1ApplyRole();
+        try { showCanvasToast('שלום ' + (u.name || '') + ' — הכניסה אושרה'); } catch(e) {}
+        if (after) after();
+      }).catch(function(e){
+        err.textContent = (e && e.message === 'no-crypto') ? 'פתחו את האפליקציה מהקישור הרשמי (https) כדי להזין קוד.' : 'אין חיבור לרשת. לאימות הראשון נדרש חיבור.';
+      }).then(function(){ go.disabled = false; go.textContent = 'כניסה'; });
+    }
+    go.onclick = submit;
+    inp.onkeydown = function(e){ if (e.key === 'Enter') submit(); };
+  }
+  function g1ApplyRole(){
+    var isMgr = g1Auth && g1Auth.role === 'manager';
+    var b = document.getElementById('btnG1Admin');
+    if (isMgr && !b) {
+      var ref = document.getElementById('btnAgentInfo');
+      if (ref) { ref.insertAdjacentHTML('beforebegin', '<a class="btn btn-ghost btn-sm" id="btnG1Admin" href="' + G1_ADMIN_URL + '" target="_blank" rel="noopener">ניהול מוצר</a>'); }
+      var grid = document.querySelector('#mMoreSheet .mm-grid');
+      if (grid && !document.getElementById('mmG1Admin')) grid.insertAdjacentHTML('afterbegin', '<a id="mmG1Admin" class="mm-admin" href="' + G1_ADMIN_URL + '" target="_blank" rel="noopener">⚙️ ניהול מוצר</a>');
+    } else if (!isMgr && b) { b.remove(); var m = document.getElementById('mmG1Admin'); if (m) m.remove(); }
+  }
+  function g1RequireAccess(then){
+    var st = g1AccessState();
+    if (st === 'ok') { g1MarkVerified(); if (then) then(); return true; }
+    if (st === 'blocked') { g1Auth = null; g1cWrite('g1sg_auth', null); }
+    g1LockScreen(st, then);
+    return false;
+  }
+  function initG1AgentAccess(){
+    // the lock appears right after a project type is picked in the new-project window
+    document.addEventListener('click', function(ev){
+      var card = ev.target && ev.target.closest && ev.target.closest('#newProjectBackdrop .np-card');
+      if (!card || card.dataset.g1Pass === '1') return;
+      if (g1AccessState() === 'ok') { g1MarkVerified(); return; }
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      g1RequireAccess(function(){ card.dataset.g1Pass = '1'; card.click(); setTimeout(function(){ delete card.dataset.g1Pass; }, 0); });
+    }, true);
+    function recheck(){
+      var st = g1AccessState();
+      var npOpen = !document.getElementById('newProjectBackdrop').hidden;
+      // a blocked code locks at once; otherwise lock only when the agent is past the project-type step
+      if (st === 'blocked' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
+      else if (st === 'ok') { g1MarkVerified(); g1ApplyRole(); }
+    }
+    g1cOnConfig(function(cfg, fresh){ if (fresh || G1C.loaded) recheck(); });
+    g1ApplyRole();
+    g1cFetchConfig();
+    setInterval(function(){ if (navigator.onLine !== false) g1cFetchConfig(); }, 20 * 60 * 1000);
+    window.addEventListener('online', function(){ g1cFetchConfig(); });
+  }
+
+  /* ---------- agent app: list & minimum prices in the quote ---------- */
+  function g1AgentPrice(kind, key){ var a = G1C.cfg && G1C.cfg.agent; var t = a && (kind === 'cable' ? a.cablePrices : a.prices); return (t && t[key]) || null; }
+  function g1ApplyQuotePrices(){
+    var rows = document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"], #qCableTable tbody tr[data-row="cable"]');
+    Array.prototype.forEach.call(rows, function(tr){
+      var isCable = tr.dataset.row === 'cable', p = g1AgentPrice(isCable ? 'cable' : 'equip', isCable ? tr.dataset.ctype : tr.dataset.type);
+      var inp = tr.querySelector('.q-price'); if (!inp || !p) return;
+      if (p.list != null && p.list !== '' && !inp.value) inp.value = p.list;
+      if (p.min != null && p.min !== '') { inp.dataset.min = p.min; inp.min = p.min; inp.title = 'מחיר מינימום: ₪' + p.min; }
+      if (!inp.dataset.g1Bound) { inp.dataset.g1Bound = '1'; inp.addEventListener('input', g1CheckQuoteMins); }
+    });
+    try { recalcQuoteInstall(); } catch(e) {}
+    g1CheckQuoteMins();
+  }
+  // returns a list of problems (empty = OK) and marks the offending inputs
+  function g1CheckQuoteMins(){
+    var problems = [], minTotal = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price'), function(inp){
+      var min = parseFloat(inp.dataset.min), v = parseFloat(inp.value) || 0, tr = inp.closest('tr');
+      var qty = parseFloat(tr.dataset.qty || tr.dataset.meters) || 0;
+      var bad = !isNaN(min) && v < min;
+      inp.classList.toggle('g1-below-min', bad);
+      if (!isNaN(min)) minTotal += min * qty;
+      if (bad) problems.push(qRowName(tr) + ' — מינימום ₪' + min);
+    });
+    // a discount may not take the equipment+cabling below the sum of the minimums
+    var maxDisc = G1C.cfg && G1C.cfg.agent && parseFloat(G1C.cfg.agent.maxDiscountPct);
+    var on = document.getElementById('qDiscountToggle') && document.getElementById('qDiscountToggle').checked;
+    if (on) {
+      var sub = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price'), function(inp){ var tr = inp.closest('tr'); sub += (parseFloat(inp.value) || 0) * (parseFloat(tr.dataset.qty || tr.dataset.meters) || 0); });
+      var type = document.getElementById('qDiscountType').value, val = parseFloat(document.getElementById('qDiscountValue').value) || 0;
+      var disc = type === 'amount' ? val : sub * val / 100, pct = sub ? disc / sub * 100 : 0;
+      if (!isNaN(maxDisc) && pct > maxDisc + 0.01) problems.push('הנחה מעל המותר (עד ' + maxDisc + '%)');
+      if (minTotal && sub - disc < minTotal - 0.5) problems.push('ההנחה מורידה את הציוד מתחת לסכום המינימום (₪' + Math.round(minTotal).toLocaleString('he-IL') + ')');
+    }
+    var box = document.getElementById('g1MinWarn');
+    if (!box) { var tbl = document.getElementById('qEquipTable'); if (tbl) { tbl.insertAdjacentHTML('beforebegin', '<div class="g1-min-warn" id="g1MinWarn" role="alert" hidden></div>'); box = document.getElementById('g1MinWarn'); } }
+    if (box) { box.hidden = !problems.length; box.innerHTML = problems.length ? '<b>לא ניתן לשלוח את ההצעה:</b> ' + problems.map(escapeHtml).join(' · ') : ''; }
+    return problems;
+  }
+  function initG1AgentPrices(){
+    var baseBuild = buildQuote;
+    buildQuote = function(){ var r = baseBuild.apply(this, arguments); try { g1ApplyQuotePrices(); } catch(e) {} return r; };
+    var baseRecalc = recalcQuoteInstall;
+    recalcQuoteInstall = function(){ var r = baseRecalc.apply(this, arguments); try { g1CheckQuoteMins(); } catch(e) {} return r; };
+    var baseSend = sendQuoteFlow;
+    sendQuoteFlow = function(){
+      var p = g1CheckQuoteMins();
+      if (p.length) { var box = document.getElementById('g1MinWarn'); if (box) box.scrollIntoView({ block:'center', behavior:'smooth' }); return Promise.resolve(); }
+      if (g1AccessOn() && g1AccessState() !== 'ok') { g1RequireAccess(null); return Promise.resolve(); }
+      return baseSend.apply(this, arguments);
+    };
+  }
+
+  /* ---------- home planner: prices & terms ---------- */
+  function g1ApplyConsumerConfig(cfg){
+    var c = cfg && cfg.consumer; if (!c) return;
+    if (c.prices) Object.keys(c.prices).forEach(function(k){ var v = parseFloat(c.prices[k]); if (!isNaN(v)) FIXED_PRICES[k] = v; });
+    var num = function(v){ v = parseFloat(v); return isNaN(v) ? null : v; };
+    if (num(c.techInstall) != null) TECH_INSTALL_PRICE = num(c.techInstall);
+    if (num(c.preprog) != null) PREPROG_PRICE = num(c.preprog);
+    if (num(c.monitoring) != null) MONITORING_PRICE = num(c.monitoring);
+    if (num(c.monitoringFreeMonths) != null) MONITORING_FREE_MONTHS = num(c.monitoringFreeMonths);
+    if (num(c.deliveryDays) != null) DELIVERY_DAYS = num(c.deliveryDays);
+    if (num(c.returnDays) != null) RETURN_DAYS = num(c.returnDays);
+    if (num(c.signMax) != null) SIGN_MAX = num(c.signMax);
+    if (typeof c.salesWhatsapp === 'string' && c.salesWhatsapp) SALES_WHATSAPP = c.salesWhatsapp.replace(/\D/g, '');
+    if (typeof c.leadEndpoint === 'string' && c.leadEndpoint) LEAD_CONFIG.endpoint = c.leadEndpoint;
+    TECH_INSTALL_PERK = MONITORING_FREE_MONTHS + ' חודשים חיבור למוקד המבצעי ללא עלות (חיסכון ' + fmtILS(MONITORING_PRICE * MONITORING_FREE_MONTHS) + ', בהתחייבות לשנה)';
+    try { if (typeof refreshRecommendations === 'function' && consumerStep >= 2) refreshRecommendations(); updateConsumerBadges(); renderJourney(); } catch(e) {}
+  }
+  function initG1Consumer(){ g1cOnConfig(function(cfg){ g1ApplyConsumerConfig(cfg); }); g1cFetchConfig(); }
+
+  if (CONSUMER) initG1Consumer(); else { initG1AgentPrices(); initG1AgentAccess(); }
 
   if (CONSUMER) initConsumerMode();
 

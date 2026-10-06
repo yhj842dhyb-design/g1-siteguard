@@ -1,0 +1,94 @@
+{
+ "schemaVersion": 1,
+ "updatedAt": "2026-10-06T12:03:52Z",
+ "updatedBy": "הגדרה ראשונית",
+ "access": {
+  "enabled": true,
+  "offlineDays": 7,
+  "salt": "2110c1adf1c6de2f822bbbc8",
+  "message": "האפליקציה בשלב פיילוט — הכניסה לסוכנים מורשים בלבד.",
+  "users": [
+   {
+    "id": "u_3613bdac",
+    "name": "אבינועם פרקש",
+    "role": "manager",
+    "status": "active",
+    "note": "מנהל המוצר",
+    "phone": "",
+    "hash": "da994ee41bb8c44d495bdcc1b8ec8eacebfdc3e1c32433cf4ed8f1d5f99f1248",
+    "created": "2026-10-06T12:03:52Z"
+   },
+   {
+    "id": "u_a4b6e9fa",
+    "name": "נסיין 1",
+    "role": "agent",
+    "status": "active",
+    "note": "פיילוט חטיבת המוקדים",
+    "phone": "",
+    "hash": "395e5fd4849a16c73c13eb84a7968b45abc1cf66ddd13b9cabaa9de6a36ff5d0",
+    "created": "2026-10-06T12:03:52Z"
+   },
+   {
+    "id": "u_f498401b",
+    "name": "נסיין 2",
+    "role": "agent",
+    "status": "active",
+    "note": "פיילוט חטיבת המוקדים",
+    "phone": "",
+    "hash": "53c9b3bb21f26d9ca914b4fa3dc9d4bacda49178791af5cd2bb02652b7e215c8",
+    "created": "2026-10-06T12:03:52Z"
+   },
+   {
+    "id": "u_a03ced8f",
+    "name": "נסיין 3",
+    "role": "agent",
+    "status": "active",
+    "note": "פיילוט חטיבת המוקדים",
+    "phone": "",
+    "hash": "4a24119ab77cd830c474190f2ed2e305f1889feda5f470d05b0bd43775ac8d1f",
+    "created": "2026-10-06T12:03:52Z"
+   },
+   {
+    "id": "u_8327fffc",
+    "name": "נסיין 4",
+    "role": "agent",
+    "status": "active",
+    "note": "פיילוט חטיבת המוקדים",
+    "phone": "",
+    "hash": "9bcb63b3bdbd11a367697673c8506acc8dea6fb079c361a6bf878625e10332c6",
+    "created": "2026-10-06T12:03:52Z"
+   }
+  ]
+ },
+ "agent": {
+  "prices": {},
+  "cablePrices": {},
+  "maxDiscountPct": null
+ },
+ "consumer": {
+  "prices": {
+   "hub": 1139,
+   "keypad": 450,
+   "keypad_touch": 850,
+   "pir": 289,
+   "curtain_in": 269,
+   "pir_am": 509,
+   "glassbreak": 539,
+   "curtain_out": 509,
+   "siren_out": 569,
+   "contact": 269,
+   "cellular": 899,
+   "keyfob": 189,
+   "smoke": 499
+  },
+  "techInstall": 1200,
+  "preprog": 300,
+  "monitoring": 119,
+  "monitoringFreeMonths": 2,
+  "deliveryDays": 7,
+  "returnDays": 14,
+  "signMax": 4,
+  "salesWhatsapp": "",
+  "leadEndpoint": ""
+ }
+}

@@ -4,7 +4,7 @@
 // Network-first for the app page itself: whenever there is a connection the agent always gets
 // the newest published version (an installed iPhone/Android app used to keep showing an old
 // cached copy after an update). The cached copy is only the offline fallback.
-const CACHE_NAME = 'g1-siteguard-v119';
+const CACHE_NAME = 'g1-siteguard-v120';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -30,6 +30,8 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   // video files: straight to the network (large, and served with Range requests)
   if (url.pathname.indexOf('/media/') !== -1 || req.headers.has('range')) return;
+  // live settings (config.json) and the admin page: always straight from the network
+  if (/\/config\.json$/.test(url.pathname) || url.pathname.indexOf('/admin/') !== -1) return;
   const isPage = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
   const scopePath = new URL(self.registration.scope).pathname;
   const isApp = url.pathname === scopePath || url.pathname === scopePath + 'index.html';
