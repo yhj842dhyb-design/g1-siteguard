@@ -2248,6 +2248,24 @@
     body.consumer .np-card > span:not(.np-emoji){ font-size:12px; }
   }
   @media (max-width:760px){ .c-np-foot{ margin:12px -16px -16px; padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px)); } .c-np-foot span{ display:none; } .c-np-go{ width:100%; justify-content:center; } }
+
+  /* welcome fit levels (set by fitWelcome) */
+  #newProjectBackdrop .modal.c-tight1 .c-hero2 .ch-copy > p, #newProjectBackdrop .modal.c-tight1 .c-hero2 .c-proof{ display:none !important; }
+  #newProjectBackdrop .modal.c-tight1 .c-hero2 h3{ margin-bottom:0; }
+  #newProjectBackdrop .modal.c-tight1 .c-hero2 .ch-photo{ min-height:120px; }
+  #newProjectBackdrop .modal.c-tight2 .c-hero2{ grid-template-columns:1fr; }
+  #newProjectBackdrop .modal.c-tight2 .c-hero2 .ch-photo, #newProjectBackdrop .modal.c-tight2 .c-hero2 .c-hero-trust{ display:none !important; }
+  #newProjectBackdrop .modal.c-tight2 .c-hero2 .ch-copy{ padding:12px 16px; }
+  #newProjectBackdrop .modal.c-tight2 .c-hero2 h3{ font-size:20px; margin-top:8px; }
+  #newProjectBackdrop .modal.c-tight2 .np-card > span:not(.np-emoji){ display:none; }
+  #newProjectBackdrop .modal.c-tight2 .np-card{ min-height:0; padding:10px; gap:8px; }
+  #newProjectBackdrop .modal.c-tight2 .c-np-title{ margin:10px 0 8px; }
+  #newProjectBackdrop .modal.c-tight3 .c-hero2{ display:none !important; }
+  #newProjectBackdrop .modal.c-tight3 .np-card{ flex-direction:row; align-items:center; padding:8px; }
+  #newProjectBackdrop .modal.c-tight3 .np-card .np-emoji{ width:34px; height:38px; flex:none; }
+  #newProjectBackdrop .modal.c-tight3 .np-card > b{ margin-top:0; flex:1; padding:7px 4px; font-size:13px; white-space:nowrap; letter-spacing:-.2px; }
+  #newProjectBackdrop .modal.c-tight3 .np-card .np-emoji{ width:30px; height:34px; } #newProjectBackdrop .modal.c-tight3 .np-card .np-emoji .c-ic{ width:17px; height:17px; }
+  #newProjectBackdrop .modal.c-tight3 .c-np-title{ margin-top:4px; }
 </style>
 
 <div class="app" id="app">
@@ -2579,7 +2597,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 116</div>
+              <div class="app-version" id="appVersion">גרסה 117</div>
             </div>
           </div>
         </div>
@@ -13784,6 +13802,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var houseCard = npGrid.querySelector('.np-card[data-kind=house]'); if (houseCard) houseCard.classList.add('c-default');
         document.getElementById('cNpGo').onclick = function(){ var hc = npGrid.querySelector('.np-card[data-kind=house]'); if (hc) hc.click(); };
       }
+      // fit: the property tiles must always be fully visible above the sticky "continue" bar —
+      // progressively compact the hero (and then the tiles) until they are, on any window size
+      (function(){
+        var bd = newProjectBackdrop, modal = bd.querySelector('.modal'), grid = npGrid.querySelector('.np-grid');
+        function fitWelcome(){
+          if (bd.hidden || npGrid.hidden || !modal || !grid) return;
+          var foot = document.getElementById('cNpFoot');
+          modal.classList.remove('c-tight1', 'c-tight2', 'c-tight3');
+          var st = modal.scrollTop; modal.scrollTop = 0;
+          var levels = ['c-tight1', 'c-tight2', 'c-tight3'];
+          for (var i = 0; i <= levels.length; i++) {
+            var cards = grid.querySelectorAll('.np-card:not([data-kind=blank])'), last = cards[cards.length - 1];
+            var limit = modal.getBoundingClientRect().bottom - (foot ? foot.offsetHeight : 0) - 6;
+            if (!last || last.getBoundingClientRect().bottom <= limit) break;
+            if (i < levels.length) modal.classList.add(levels[i]);
+          }
+          modal.scrollTop = st;
+        }
+        new MutationObserver(function(){ requestAnimationFrame(fitWelcome); }).observe(bd, { attributes:true, attributeFilter:['hidden'] });
+        new MutationObserver(function(){ requestAnimationFrame(fitWelcome); }).observe(npGrid, { attributes:true, attributeFilter:['hidden'] });
+        window.addEventListener('resize', function(){ requestAnimationFrame(fitWelcome); });
+        setTimeout(fitWelcome, 60); setTimeout(fitWelcome, 600);
+      })();
       // the very first welcome can't be dismissed into an empty sketch: the customer picks a property
       // type (or "start from a blank sketch"), and both paths open the drawing coach
       newProjectBackdrop.addEventListener('click', function(ev){ if (ev.target === newProjectBackdrop && !document.body.classList.contains('c-started')) ev.stopImmediatePropagation(); }, true);
