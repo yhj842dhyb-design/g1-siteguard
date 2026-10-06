@@ -189,16 +189,18 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
     }
     function go(){
       btn.hidden = true; fail.hidden = true;
-      var p = vid.play(); if (p && p.catch) p.catch(function(e){ if (e && e.name === 'NotAllowedError') { btn.hidden = false; } else tryNext(); });
+      // a rejected play() (blocked autoplay, tab in the background, paused mid-load) is not a broken file:
+      // just show the play button again. Only a real media error moves on to the other file.
+      var p = vid.play(); if (p && p.catch) p.catch(function(){ if (vid.error) tryNext(); else if (vid.paused) btn.hidden = false; });
       clearTimeout(watchdog);
-      watchdog = setTimeout(function(){ if (!started) tryNext(); }, 9000);
+      watchdog = setTimeout(function(){ if (!started && (vid.error || vid.networkState === 3)) tryNext(); else if (!started && vid.paused) btn.hidden = false; }, 9000);
     }
     btn.addEventListener('click', go);
     vid.addEventListener('playing', function(){ started = true; clearTimeout(watchdog); btn.hidden = true; fail.hidden = true; });
     vid.addEventListener('play', function(){ btn.hidden = true; });
     vid.addEventListener('ended', function(){ btn.hidden = false; btn.querySelector('span').textContent = 'צפייה חוזרת'; });
-    vid.addEventListener('error', tryNext, true);
-    src.addEventListener('error', tryNext);
+    vid.addEventListener('error', function(){ if (vid.error) tryNext(); });
+    src.addEventListener('error', function(){ if (!started) tryNext(); });
   })();
 
   // tabs
