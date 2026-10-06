@@ -2683,7 +2683,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 121</div>
+              <div class="app-version" id="appVersion">גרסה 122</div>
             </div>
           </div>
         </div>
@@ -13038,6 +13038,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var SIGN_FREE = true;            // שלט "מקום זה מוגן" — given free, up to SIGN_MAX per order
   var SIGN_MAX = 4;
   var TECH_INSTALL_PERK = 'חודשיים חיבור למוקד המבצעי ללא עלות (חיסכון ₪238, בהתחייבות לשנה)';
+  // service names & descriptions — the product manager can rewrite them from the admin page (config.texts.services)
+  var SVC_TXT = {
+    self_t: 'התקנה עצמית',
+    self_s: 'מדריך התקנה לכל אביזר · בלי חוטים ובלי עבודות חשמל',
+    self_d: 'הערכה מגיעה לפי התכנון שלכם, עם מדריך התקנה לכל אביזר. בלי חוטים ובלי עבודות חשמל. אפשר לקבל אותה מתוכנתת מראש.',
+    preprog_t: 'ערכה מתוכנתת מראש',
+    preprog_d: 'אנחנו רושמים את כל האביזרים לרכזת ומגדירים אותם לפי התכנון שלכם — מוציאים מהקופסה, מתקינים ומפעילים.',
+    tech_t: 'התקנה ע״י טכנאי מוסמך של G1',
+    tech_s: 'כולל הגדרה, בדיקת כל גלאי ואחריות לשנה',
+    tech_d: 'מגיע אליכם, מתקין, מגדיר את האפליקציה ובודק איתכם כל גלאי. כולל אחריות לשנה.',
+    mon_t: 'חיבור למוקד המבצעי של G1',
+    mon_d: 'המוקד שכבר שומר על {connected} בתים ועסקים: מוקדן זמין 24/7 מקבל כל התראה, מאמת ומזניק סיור או גורמי חירום לפי הצורך. כולל בדיקת שידור מול המוקד בהפעלה.'
+  };
+  function svcTxt(k){ return escapeHtml(String(SVC_TXT[k] || '').replace(/\{connected\}/g, (typeof PROOF !== 'undefined' && PROOF.connected) || '')); }
   var SHIPPING_PRICE = 0;          // ₪ — 0 = free shipping
   // Where order / consultant requests go. Leave endpoint empty until the website's lead form
   // details arrive: requests are then shown as sent in demo mode (and logged to the console).
@@ -13241,16 +13255,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<h3 class="c-h">איך מתקינים?</h3>' +
       '<div class="c-install" role="radiogroup">' +
         '<label class="c-icard' + (orderOpts.install === 'self' ? ' on' : '') + '"><input type="radio" name="coInst" value="self"' + (orderOpts.install === 'self' ? ' checked' : '') + '>' +
-          '<b>התקנה עצמית</b><span>הערכה מגיעה לפי התכנון שלכם, עם מדריך התקנה לכל אביזר. בלי חוטים ובלי עבודות חשמל. אפשר לקבל אותה מתוכנתת מראש.</span>' +
+          '<b>' + svcTxt('self_t') + '</b><span>' + svcTxt('self_d') + '</span>' +
           '<em>ללא עלות</em></label>' +
         '<label class="c-icard' + (orderOpts.install === 'tech' ? ' on' : '') + '"><input type="radio" name="coInst" value="tech"' + (orderOpts.install === 'tech' ? ' checked' : '') + '>' +
-          '<b>טכנאי מוסמך של G1</b><span>מגיע אליכם, מתקין, מגדיר את האפליקציה ובודק איתכם כל גלאי. כולל אחריות לשנה.</span>' +
+          '<b>' + svcTxt('tech_t') + '</b><span>' + svcTxt('tech_d') + '</span>' +
           '<span class="c-perk">' + ic('gift') + ' הטבה: ' + MONITORING_FREE_MONTHS + ' חודשים חיבור למוקד ללא עלות (חיסכון ' + fmtILS(MONITORING_PRICE * MONITORING_FREE_MONTHS) + ', בהתחייבות לשנה)</span><em>' + techPrice + '</em></label>' +
       '</div>' +
       (orderOpts.install === 'self' ? '<label class="c-preprog"><input type="checkbox" id="coPreprog"' + (orderOpts.preprog ? ' checked' : '') + '>' +
-        '<span><b>ערכה מתוכנתת מראש · ' + fmtILS(PREPROG_PRICE) + '</b> <small>מומלץ</small><br>אנחנו רושמים את כל האביזרים לרכזת ומגדירים אותם לפי התכנון שלכם — מוציאים מהקופסה, מתקינים ומפעילים.</span></label>' : '') +
+        '<span><b>' + svcTxt('preprog_t') + ' · ' + fmtILS(PREPROG_PRICE) + '</b> <small>מומלץ</small><br>' + svcTxt('preprog_d') + '</span></label>' : '') +
       '<label class="c-monitor"><span class="cm-photo" aria-hidden="true"><i>' + ic('shield') + 'מוקד G1 · 24/7</i></span><input type="checkbox" class="c-switch" id="coMonitor"' + (orderOpts.monitoring ? ' checked' : '') + '>' +
-        '<span><b>חיבור למוקד המבצעי של G1 · ' + fmtILS(MONITORING_PRICE) + ' לחודש</b><br>המוקד שכבר שומר על ' + PROOF.connected + ' בתים ועסקים: מוקדן זמין 24/7 מקבל כל התראה, מאמת ומזניק סיור או גורמי חירום לפי הצורך. כולל בדיקת שידור מול המוקד בהפעלה.' +
+        '<span><b>' + svcTxt('mon_t') + ' · ' + fmtILS(MONITORING_PRICE) + ' לחודש</b><br>' + svcTxt('mon_d') +
         (orderOpts.install === 'tech' ? ' <em>' + MONITORING_FREE_MONTHS + ' חודשים ראשונים מתנה (חיסכון ' + fmtILS(MONITORING_PRICE * MONITORING_FREE_MONTHS) + ') בהתחייבות לשנה.</em>' : ' <em>בהתקנה ע״י טכנאי: ' + MONITORING_FREE_MONTHS + ' חודשים ראשונים מתנה.</em>') +
         '</span></label>' +
       '<div class="c-total"><div><span>ציוד</span><b class="num">' + fmtILS(c.subtotal) + '</b></div>' +
@@ -13592,11 +13606,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var add = tech ? (TECH_INSTALL_PRICE || 0) : (orderOpts.preprog ? PREPROG_PRICE : 0);
     host.innerHTML = '<div class="c-inst-head"><b>איך מתקינים?</b><span>אפשר לשנות גם בסל</span></div>' +
       '<label class="c-inst-opt' + (!tech ? ' on' : '') + '"><input type="radio" name="cInstPick" value="self"' + (!tech ? ' checked' : '') + '>' +
-        '<span class="ci-main"><b>התקנה עצמית</b><small>מדריך התקנה לכל אביזר · בלי חוטים ובלי עבודות חשמל</small></span><em>ללא עלות</em></label>' +
+        '<span class="ci-main"><b>' + svcTxt('self_t') + '</b><small>' + svcTxt('self_s') + '</small></span><em>ללא עלות</em></label>' +
       (!tech ? '<label class="c-inst-sub"><input type="checkbox" id="cInstPreprog"' + (orderOpts.preprog ? ' checked' : '') + '>' +
-        '<span><b>מערכת מוגדרת מראש</b><small>כל האביזרים רשומים לרכזת ומתוכנתים לפי התכנון — מוציאים מהקופסה ומפעילים</small></span><em>+' + fmtILS(PREPROG_PRICE) + '</em></label>' : '') +
+        '<span><b>' + svcTxt('preprog_t') + '</b><small>' + svcTxt('preprog_d') + '</small></span><em>+' + fmtILS(PREPROG_PRICE) + '</em></label>' : '') +
       '<label class="c-inst-opt' + (tech ? ' on' : '') + '"><input type="radio" name="cInstPick" value="tech"' + (tech ? ' checked' : '') + '>' +
-        '<span class="ci-main"><b>התקנה ע״י טכנאי מוסמך של G1</b><small>כולל הגדרה, בדיקת כל גלאי ואחריות לשנה</small>' +
+        '<span class="ci-main"><b>' + svcTxt('tech_t') + '</b><small>' + svcTxt('tech_s') + '</small>' +
         '<small class="ci-perk">' + ic('gift') + 'מתנה: ' + MONITORING_FREE_MONTHS + ' חודשים חיבור למוקד ללא עלות (בהתחייבות לשנה)</small></span><em>+' + (TECH_INSTALL_PRICE != null ? fmtILS(TECH_INSTALL_PRICE) : 'בתיאום') + '</em></label>' +
       '<div class="c-inst-total"><span>' + (add ? 'חבילה + ' + (tech ? 'התקנה' : 'הגדרה מראש') : 'סה״כ חבילה') + '</span><b class="num">' + fmtILS(pkgPrice + add) + '</b></div>';
     Array.prototype.forEach.call(host.querySelectorAll('input[name=cInstPick]'), function(r){ r.onchange = function(){
@@ -14604,6 +14618,40 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     sendQuoteFlow = function(){ var r = baseSend2.apply(this, arguments); Promise.resolve(r).then(function(){ var ss = document.getElementById('shareSheetBackdrop'); if (ss && !ss.hidden) g1PulseAfterVisit(); }); return r; };
     window.addEventListener('online', function(){ g1Flush(); });
   }
+
+  // ---- names & descriptions edited in the admin page (config.texts) ----
+  var G1_TXT_ORIG = null;
+  function g1ApplyTexts(cfg){
+    var T = (cfg && cfg.texts) || {}, O = G1_TXT_ORIG;
+    function str(v){ return typeof v === 'string' && v.trim() ? v.trim().replace(/[<>]/g, '') : ''; }
+    if (!O) {
+      O = G1_TXT_ORIG = { svc:Object.assign({}, SVC_TXT), items:{}, tiers:{}, dev:{}, tips:{}, pal:{} };
+      Object.keys(CONSUMER_ITEMS).forEach(function(t){ O.items[t] = { name:CONSUMER_ITEMS[t].name, spec:CONSUMER_ITEMS[t].spec }; });
+      CONSUMER_TIERS.forEach(function(t){ O.tiers[t.k] = { name:t.name, desc:t.desc }; });
+      Object.keys(DEVICE_DEFS).forEach(function(t){ O.dev[t] = DEVICE_DEFS[t].label; O.tips[t] = TIPS[t]; });
+      Array.prototype.forEach.call(document.querySelectorAll('.pal-item[data-type] > span'), function(sp){ var n = sp.firstChild; if (n && n.nodeType === 3) O.pal[sp.parentNode.dataset.type] = n.nodeValue; });
+    }
+    var S = T.services || {}, C = T.consumer || {}, TI = T.tiers || {}, A = T.agent || {};
+    Object.keys(O.svc).forEach(function(k){ SVC_TXT[k] = str(S[k]) || O.svc[k]; });
+    Object.keys(O.items).forEach(function(t){ var o = C[t] || {}; CONSUMER_ITEMS[t].name = str(o.name) || O.items[t].name; CONSUMER_ITEMS[t].spec = str(o.spec) || O.items[t].spec; });
+    CONSUMER_TIERS.forEach(function(t){ var o = TI[t.k] || {}; if (!O.tiers[t.k]) return; t.name = str(o.name) || O.tiers[t.k].name; t.desc = str(o.desc) || O.tiers[t.k].desc; });
+    if (CONSUMER) {
+      Object.keys(CONSUMER_ITEMS).forEach(function(t){
+        if (DEVICE_DEFS[t]) DEVICE_DEFS[t].label = CONSUMER_ITEMS[t].name;
+        var it = document.querySelector('.pal-item[data-type="' + t + '"]'), sp = it && it.querySelector('span');
+        if (sp && !it.classList.contains('c-locked') && document.body.classList.contains('consumer')) sp.textContent = CONSUMER_ITEMS[t].name;
+      });
+    } else {
+      Object.keys(O.dev).forEach(function(t){
+        var o = A[t] || {}, lb = str(o.label);
+        DEVICE_DEFS[t].label = lb || O.dev[t];
+        var tp = str(o.tip); if (tp) TIPS[t] = tp; else if (O.tips[t] != null) TIPS[t] = O.tips[t]; else delete TIPS[t];
+        var sp = document.querySelector('.pal-item[data-type="' + t + '"] > span'), n = sp && sp.firstChild;
+        if (n && n.nodeType === 3 && O.pal[t] != null) n.nodeValue = lb || O.pal[t];
+      });
+    }
+  }
+  g1cOnConfig(function(cfg){ try { g1ApplyTexts(cfg); } catch(e) {} });
 
   if (CONSUMER) initG1Consumer(); else { initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
