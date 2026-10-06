@@ -1967,7 +1967,7 @@
   body.consumer .c-selbar button.sb-primary{ background:var(--c-navy); border-color:var(--c-navy); }
 
   /* modals */
-  body.consumer .modal{ border-radius:24px; overflow:hidden; }
+  body.consumer .modal{ border-radius:24px; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
   body.consumer .modal-head{ position:relative; padding:18px 24px 16px; border-bottom:0; box-shadow:0 1px 0 var(--c-line); }
   body.consumer .modal-head::after{ content:''; position:absolute; inset-inline-start:24px; bottom:-1px; width:56px; height:3px; border-radius:3px; background:var(--c-grad); }
   body.consumer .modal-head h2{ color:var(--c-ink); font-weight:800; font-size:20px; }
@@ -2266,6 +2266,26 @@
   #newProjectBackdrop .modal.c-tight3 .np-card > b{ margin-top:0; flex:1; padding:7px 4px; font-size:13px; white-space:nowrap; letter-spacing:-.2px; }
   #newProjectBackdrop .modal.c-tight3 .np-card .np-emoji{ width:30px; height:34px; } #newProjectBackdrop .modal.c-tight3 .np-card .np-emoji .c-ic{ width:17px; height:17px; }
   #newProjectBackdrop .modal.c-tight3 .c-np-title{ margin-top:4px; }
+
+  /* installation choice inside the recommendation */
+  .c-inst{ margin:14px 0 4px; display:flex; flex-direction:column; gap:8px; }
+  .c-inst-head{ display:flex; justify-content:space-between; align-items:baseline; }
+  .c-inst-head b{ font:800 16px var(--font-display); color:var(--c-ink,#111B29); }
+  .c-inst-head span{ font-size:11.5px; color:#5B6B7E; }
+  .c-inst-opt, .c-inst-sub{ display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:16px; border:1px solid var(--c-line,#E1E5EA); background:#fff; cursor:pointer; transition:border-color .2s, box-shadow .2s; }
+  .c-inst-opt.on{ border:2px solid transparent; background:linear-gradient(#fff,#fff) padding-box, var(--c-grad-d) border-box; box-shadow:0 10px 24px rgba(34,57,90,.12); padding:11px 13px; }
+  .c-inst-opt input, .c-inst-sub input{ margin-top:3px; width:18px; height:18px; flex:none; accent-color:#22395A; }
+  .c-inst-opt .ci-main, .c-inst-sub > span{ flex:1; display:flex; flex-direction:column; gap:2px; }
+  .c-inst-opt b, .c-inst-sub b{ font:800 14.5px var(--font-display); color:var(--c-ink,#111B29); }
+  .c-inst-opt small, .c-inst-sub small{ font-size:12px; color:#4A5768; line-height:1.45; }
+  .c-inst-opt .ci-perk{ display:flex; gap:5px; align-items:center; color:var(--c-navy,#22395A); font-weight:700; margin-top:3px; }
+  .c-inst-opt .ci-perk .c-ic{ width:14px; height:14px; color:var(--c-cyan-strong,#0A7FBF); flex:none; }
+  .c-inst-opt em, .c-inst-sub em{ font-style:normal; font:800 14px var(--font-display); color:var(--c-navy,#22395A); white-space:nowrap; }
+  .c-inst-sub{ margin-inline-start:22px; background:#F7F9FB; }
+  .c-inst-sub:has(input:checked){ border-color:var(--c-navy,#22395A); background:#fff; box-shadow:0 0 0 3px rgba(26,172,227,.14); }
+  .c-inst-total{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-radius:14px; background:var(--c-bg,#F2F3F5); }
+  .c-inst-total span{ font-size:13px; font-weight:700; color:#3E4B5A; }
+  .c-inst-total b{ font:900 19px var(--font-display); color:var(--c-ink,#111B29); }
 </style>
 
 <div class="app" id="app">
@@ -2597,7 +2617,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 117</div>
+              <div class="app-version" id="appVersion">גרסה 119</div>
             </div>
           </div>
         </div>
@@ -13211,6 +13231,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     Array.prototype.forEach.call(body.querySelectorAll('input[name=coInst]'), function(r){ r.onchange = function(){ orderOpts.install = this.value; if (this.value === 'tech') orderOpts.monitoring = true; renderOrder(bd); }; });
     body.querySelector('#coConsult').onclick = function(){ bd.hidden = true; openConsultModal('alarm'); };
     body.querySelector('#coSubmit').onclick = function(){ submitOrder(bd, c); };
+    try { renderInstallPick(); renderReadyCard(); } catch(e) {}
   }
   function submitOrder(bd, c){
     var body = bd.querySelector('.c-body'), err = body.querySelector('#coErr');
@@ -13484,13 +13505,42 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var actions = acceptBtn && acceptBtn.parentNode;
     if (actions && listEl.nextSibling !== actions) listEl.parentNode.insertBefore(actions, listEl.nextSibling);
     if (actions) actions.classList.add('c-pkg-actions');
+    renderInstallPick();
   }
+
+  // installation choice — shown right in the recommendation, with the add-on prices
+  function renderInstallPick(){
+    var listEl = document.getElementById('recsList'); if (!listEl) return;
+    var host = document.getElementById('cInstallPick');
+    if (!host) { host = document.createElement('div'); host.id = 'cInstallPick'; host.className = 'c-inst'; }
+    // right below "what's included" (and above the "add the package" button)
+    if (listEl.nextSibling !== host) listEl.parentNode.insertBefore(host, listEl.nextSibling);
+    var tech = orderOpts.install === 'tech';
+    var pkgPrice = orderOpts.package ? tierPrice(orderOpts.package) : tierPrice(consumerTier);
+    var add = tech ? (TECH_INSTALL_PRICE || 0) : (orderOpts.preprog ? PREPROG_PRICE : 0);
+    host.innerHTML = '<div class="c-inst-head"><b>איך מתקינים?</b><span>אפשר לשנות גם בסל</span></div>' +
+      '<label class="c-inst-opt' + (!tech ? ' on' : '') + '"><input type="radio" name="cInstPick" value="self"' + (!tech ? ' checked' : '') + '>' +
+        '<span class="ci-main"><b>התקנה עצמית</b><small>מדריך התקנה לכל אביזר · בלי חוטים ובלי עבודות חשמל</small></span><em>ללא עלות</em></label>' +
+      (!tech ? '<label class="c-inst-sub"><input type="checkbox" id="cInstPreprog"' + (orderOpts.preprog ? ' checked' : '') + '>' +
+        '<span><b>מערכת מוגדרת מראש</b><small>כל האביזרים רשומים לרכזת ומתוכנתים לפי התכנון — מוציאים מהקופסה ומפעילים</small></span><em>+' + fmtILS(PREPROG_PRICE) + '</em></label>' : '') +
+      '<label class="c-inst-opt' + (tech ? ' on' : '') + '"><input type="radio" name="cInstPick" value="tech"' + (tech ? ' checked' : '') + '>' +
+        '<span class="ci-main"><b>התקנה ע״י טכנאי מוסמך של G1</b><small>כולל הגדרה, בדיקת כל גלאי ואחריות לשנה</small>' +
+        '<small class="ci-perk">' + ic('gift') + 'מתנה: ' + MONITORING_FREE_MONTHS + ' חודשים חיבור למוקד ללא עלות (בהתחייבות לשנה)</small></span><em>+' + (TECH_INSTALL_PRICE != null ? fmtILS(TECH_INSTALL_PRICE) : 'בתיאום') + '</em></label>' +
+      '<div class="c-inst-total"><span>' + (add ? 'חבילה + ' + (tech ? 'התקנה' : 'הגדרה מראש') : 'סה״כ חבילה') + '</span><b class="num">' + fmtILS(pkgPrice + add) + '</b></div>';
+    Array.prototype.forEach.call(host.querySelectorAll('input[name=cInstPick]'), function(r){ r.onchange = function(){
+      orderOpts.install = this.value; if (this.value === 'tech') { orderOpts.monitoring = true; orderOpts.preprog = false; }
+      refreshAfterInstall();
+    }; });
+    var pp = host.querySelector('#cInstPreprog'); if (pp) pp.onchange = function(){ orderOpts.preprog = this.checked; refreshAfterInstall(); };
+  }
+  function refreshAfterInstall(){ try { renderInstallPick(); renderReadyCard(); updateConsumerBadges(); renderJourney(); } catch(e) {} }
+
   var pkgBase = null, pkgAdded = {};
   function pkgDeviceIdSet(){ var m = {}; Object.keys(pkgAdded).forEach(function(k){ m[pkgAdded[k]] = 1; }); return m; }
   function tierPrice(k){
     var base = pkgBase || consumerAllRecs;
     var types = base.filter(function(r){ return recTier(r) <= TIER_RANK[k]; }).map(function(r){ return r.type; });
-    return consumerCart(Object.assign({}, orderOpts, { extraTypes:types, package:k, keyfobs:0, cellular:true, excludeIds:pkgBase ? pkgDeviceIdSet() : null })).total;
+    return consumerCart(Object.assign({}, orderOpts, { extraTypes:types, package:k, keyfobs:0, cellular:true, install:'self', preprog:false, excludeIds:pkgBase ? pkgDeviceIdSet() : null })).total;
   }
   // switch an applied package up or down: remove what the new level doesn't include, add what it does
   function applyPackageTier(k){
@@ -13645,7 +13695,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var c = consumerCart(orderOpts);
     var tierName = (CONSUMER_TIERS.filter(function(t){ return t.k === orderOpts.package; })[0] || {}).name;
     var anchor = document.getElementById('cTiers') || host;
-    anchor.insertAdjacentHTML('beforebegin', '<div class="c-ready" id="cReadyCard"><b>' + ic('check') + ' חבילה ' + tierName + ' בתכנון שלכם</b><span>כל האביזרים במקומם · סה״כ <b class="num">' + fmtILS(c.total) + '</b></span>' +
+    anchor.insertAdjacentHTML('beforebegin', '<div class="c-ready" id="cReadyCard"><b>' + ic('check') + ' חבילה ' + tierName + ' בתכנון שלכם</b><span>כל האביזרים במקומם · סה״כ' + (orderOpts.install === 'tech' ? ' כולל התקנה ע״י טכנאי' : orderOpts.preprog ? ' כולל הגדרה מראש' : '') + ' <b class="num">' + fmtILS(c.total) + '</b></span>' +
       '<button type="button" class="btn btn-primary" id="cReadyGo">להמשך להזמנה ←</button></div>');
     document.getElementById('cReadyGo').onclick = openOrderModal;
   }
@@ -13667,9 +13717,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function updateConsumerBadges(){
     var c = consumerCart(orderOpts);
     var b = document.getElementById('btnSend');
-    if (b) b.innerHTML = 'הזמנה <span class="c-cart-sum num">' + fmtILS(c.total) + '</span>';
+    // a price only once it means something: a package is in the plan, or the customer is placing devices themselves
+    var showSum = typeof consumerStep !== 'undefined' && consumerStep >= 2 && (orderOpts.package || (typeof consumerSelfMode !== 'undefined' && consumerSelfMode));
+    if (b) b.innerHTML = 'הזמנה' + (showSum ? ' <span class="c-cart-sum num">' + fmtILS(c.total) + '</span>' : '');
     var mq = document.querySelector('#mNav [data-m=quote]');
-    if (mq) mq.innerHTML = ic('cart') + '<span class="num">' + (typeof consumerStep !== 'undefined' && consumerStep >= 2 ? fmtILS(c.total) : 'הזמנה') + '</span>';
+    if (mq) mq.innerHTML = ic('cart') + '<span class="num">' + (showSum ? fmtILS(c.total) : 'הזמנה') + '</span>';
   }
 
   function initConsumerMode(){
