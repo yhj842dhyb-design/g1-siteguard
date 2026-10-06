@@ -52,6 +52,7 @@ td input[type=number]{ max-width:120px; text-align:center; font-variant-numeric:
 .role{ font-size:12px; font-weight:800; color:var(--cyanS) }
 .f{ display:flex; flex-direction:column; gap:5px; font-size:13px; font-weight:700 } .f small{ font-weight:500; color:var(--muted) }
 .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center }
+.cf-opt{ display:flex; align-items:center; gap:12px; padding:11px 14px; border:1px solid var(--line); border-radius:12px; cursor:pointer; font-weight:500 } .cf-opt:has(input:checked){ border-color:var(--navy); background:#F3F6FA; box-shadow:inset 0 0 0 1px var(--navy) } .cf-opt input{ width:18px; height:18px; accent-color:var(--navy); flex:none; margin:0 }
 .sw{ display:inline-flex; align-items:center; gap:10px; cursor:pointer; font-weight:700 }
 .sw input{ -webkit-appearance:none; appearance:none; width:46px; height:28px; border-radius:99px; background:#C9D1DA; position:relative; cursor:pointer; transition:background .2s; flex:none }
 .sw input::after{ content:''; position:absolute; top:3px; inset-inline-start:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:inset-inline-start .2s }
@@ -91,6 +92,8 @@ ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-t="overview" aria-selected="true">סקירה</button>
     <button class="tab" role="tab" data-t="users" aria-selected="false">משתמשים והרשאות</button>
+    <button class="tab" role="tab" data-t="logins" aria-selected="false">כניסות ומכשירים</button>
+    <button class="tab" role="tab" data-t="surveys" aria-selected="false">סקרים ומשוב</button>
     <button class="tab" role="tab" data-t="agent" aria-selected="false">אפליקציית סוכנים · מחירים</button>
     <button class="tab" role="tab" data-t="consumer" aria-selected="false">אפליקציית לקוחות</button>
     <button class="tab" role="tab" data-t="publish" aria-selected="false">פרסום וגיבוי</button>
@@ -129,17 +132,82 @@ function hash(code, uid, salt){
 }
 function newCode(){ var A = '23456789ABCDEFGHJKMNPQRSTUVWXYZ', a = new Uint32Array(8), s = ''; crypto.getRandomValues(a); for (var i = 0; i < 8; i++) s += A[a[i] % A.length]; return 'G1-' + s.slice(0, 4) + '-' + s.slice(4); }
 function newId(){ var a = new Uint8Array(4); crypto.getRandomValues(a); return 'u_' + Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
-function token(){ return lsGet('g1sg_admin_token') || ''; }
+var SURVEY_TEMPLATES = [{"id":"pilot-full-v2","kind":"full","active":false,"title":"סקר פיילוט מקיף – G1 SiteGuard","intro":"כ-7 דקות. ענו לפי מה שקרה בפועל בביקורים שלכם בתקופת הפיילוט. התשובות אינן אנונימיות, כדי שנוכל לחזור אליכם ולהבין לעומק. רק צוות המוצר רואה אותן, והן משמשות לשיפור הכלי בלבד ולא להערכת ביצועים. ביקורת כנה היא בדיוק מה שנחוץ לנו לפני ההפצה לכל הסוכנים.","sections":[
+{"title":"תמונה כללית","questions":[
+{"id":"q1","type":"scale","text":"היכולות של SiteGuard עונות על הצרכים שלי בעבודה.","required":true,"reverse":false,"metric":"umux"},
+{"id":"q2","type":"scale","text":"SiteGuard קל לשימוש.","required":true,"reverse":false,"metric":"umux"},
+{"id":"q3","type":"scale","text":"יש בכלי שלבים שמאטים אותי מול הלקוח.","required":true,"reverse":true,"metric":"friction"}]},
+{"title":"דירוג לפי תחומים (1–5)","questions":[
+{"id":"r1","type":"scale","text":"ההמלצות והתכנון של הכלי מקצועיים ומדויקים.","required":true,"reverse":false,"metric":"rating_quality"},
+{"id":"r2","type":"scale","text":"הכלי נוח לעבודה בשטח, מול הלקוח.","required":true,"reverse":false,"metric":"rating_field"},
+{"id":"r3","type":"scale","text":"הכלי חוסך לי זמן לעומת השיטה הקודמת.","required":true,"reverse":false,"metric":"rating_time"},
+{"id":"r4","type":"scale","text":"הצעת המחיר שהכלי מפיק נראית מקצועית בעיני הלקוח.","required":true,"reverse":false,"metric":"rating_quote"},
+{"id":"r5","type":"scale","text":"הכלי עוזר לי להגדיל את העסקה.","required":true,"reverse":false,"metric":"rating_sales"}]},
+{"title":"שרטוט והמלצות","questions":[
+{"id":"q4","type":"choice","text":"על איזה מכשיר עבדתם עם הכלי, ואיך זה היה?","options":["טלפון – נוח","טלפון – המסך קטן מדי לשרטוט","טאבלט – נוח","טאבלט – מסורבל להחזיק ולסחוב בשטח","גם טלפון וגם טאבלט"],"required":true,"metric":"device"},
+{"id":"q5","type":"scale","text":"שרטוט הנכס באפליקציה מהיר יותר מסקיצה על נייר.","required":true,"reverse":false,"metric":"field"},
+{"id":"q6","type":"choice","text":"באיזו תדירות שיניתם מיקומים שהכלי המליץ עליהם (גלאים, מצלמות)?","options":["כמעט אף פעם","בחלק מהביקורים","ברוב הביקורים","כמעט בכל ביקור"],"required":true,"metric":"quality"},
+{"id":"q7","type":"choice","text":"כששיניתם המלצה – מה הייתה הסיבה הנפוצה ביותר?","options":["לא שיניתי המלצות","המיקום לא היה נכון מקצועית","היה חסר רכיב","היה רכיב מיותר","בקשה או תקציב של הלקוח","דרישה של חברת הביטוח"],"required":true,"metric":"quality"},
+{"id":"q8","type":"choice","text":"איזה חלק בתוכנית המערכת דרש הכי הרבה תיקונים?","options":["לא נדרשו תיקונים","חלוקה לאזורים","מרחיבים","רשת ומתגים","כבלים ואורכים","קטגוריות נוספות (שערים, מולטימדיה, בית חכם)","לא בדקתי לעומק"],"required":true,"metric":"quality"},
+{"id":"q9","type":"scale","text":"נוח לי להציג ללקוח את המלצות הכלי כהמלצה המקצועית שלי.","required":true,"reverse":false,"metric":"trust"}]},
+{"title":"מכירה, מחיר וחתימה","questions":[
+{"id":"q10","type":"scale","text":"בביקורים עם הכלי הצעתי ללקוחות קטגוריות נוספות (רשת, בקרי שער ואינטרקום, מולטימדיה, בית חכם) יותר מבעבר.","required":true,"reverse":false,"metric":"sales"},
+{"id":"q11","type":"choice","text":"מה הכי מקשה למכור קטגוריות נוספות?","options":["אין קושי מיוחד","הלקוח מעוניין רק באזעקה ומצלמות","המחיר הכולל מרתיע את הלקוח","חסר לי ידע מקצועי בקטגוריות האלה","הכלי לא מציג אותן בצורה משכנעת"],"required":true,"metric":"sales"},
+{"id":"q12","type":"choice","text":"כשמחיר המינימום של ההנהלה מנע מכם לתת את המחיר שרציתם – מה קרה בדרך כלל?","options":["זה לא קרה","סגרתי בלי לרדת מתחת למינימום","ביקשתי אישור חריג מהמנהל","העסקה נתקעה או אבדה"],"required":true,"metric":"pricing"},
+{"id":"q13","type":"choice","text":"הכנתם הצעת מחיר מחוץ לכלי (אקסל, נייר, מערכת אחרת) ללקוח שביקרתם אצלו עם הכלי? אם כן – למה בעיקר?","options":["לא","כן – היה חסר פריט או מוצר בכלי","כן – לא הצלחתי לשנות מחיר, כמות או הנחה","כן – הלקוח ביקש הצעה בפורמט אחר","כן – בגלל תקלה בכלי"],"required":true,"metric":"pricing"},
+{"id":"q14","type":"choice","text":"מה הכי מעכב חתימה של לקוח באפליקציה?","options":["שום דבר – חותמים בקלות","הלקוח רוצה לחשוב או להתייעץ","הלקוח מעדיף לקבל את ההצעה קודם בוואטסאפ או במייל","ללקוח לא נוח לחתום על המסך","תהליך החתימה מסורבל או נתקע","עוד לא הגעתי לחתימה"],"required":true,"metric":"signature"}]},
+{"title":"מסירה, אמינות וכניסה","questions":[
+{"id":"q15","type":"choice","text":"כמה פעמים פנו אליכם מצוות ההתקנה או מהמוקד כדי לברר משהו בתיק שהוכן בכלי?","options":["לא פנו","פעם או פעמיים","3 פעמים או יותר","עוד לא הותקן תיק שהוכן בכלי"],"required":true,"metric":"handoff"},
+{"id":"q16","type":"choice","text":"כמה פעמים תקלה בכלי (קריסה, איטיות, משהו שלא נשמר) עיכבה אתכם מול לקוח?","options":["לא קרה","פעם או פעמיים","3 פעמים או יותר"],"required":true,"metric":"reliability"},
+{"id":"q17","type":"choice","text":"עבודה בלי קליטה (למשל במרתף או בממ״ד):","options":["לא עבדתי בלי קליטה","עבדתי בלי קליטה והכול נשמר תקין","עבדתי בלי קליטה ומשהו לא נשמר או לא עבד"],"required":true,"metric":"reliability"},
+{"id":"q18","type":"choice","text":"הכניסה לאפליקציה עם קוד הגישה והנייד (בחרו את המקרה החמור ביותר שקרה):","options":["עוברת חלק","מציקה, אבל לא מעכבת","לפחות פעם אחת התעכבתי בגללה מול לקוח","לפחות פעם אחת לא הצלחתי להיכנס"],"required":true,"metric":"reliability"}]},
+{"title":"זמן עבודה","questions":[
+{"id":"q19","type":"number","unit":"דקות","text":"בשיטה הישנה: כמה דקות עבודה שלכם בסך הכול (בשטח ובמשרד, בלי נסיעות) נדרשו לתיק לקוח טיפוסי, עד שהתיק מוכן להתקנה?","required":true,"metric":"time_old"},
+{"id":"q20","type":"number","unit":"דקות","text":"עם SiteGuard: כמה דקות עבודה שלכם בסך הכול (בשטח ובמשרד, בלי נסיעות) נדרשות היום לתיק דומה, עד שהתיק מוכן להתקנה?","required":true,"metric":"time_new"}]},
+{"title":"לפני ההפצה","questions":[
+{"id":"q21","type":"choice","text":"מה יעזור לכם הכי הרבה לעבוד עם הכלי באופן עצמאי לגמרי?","options":["לא צריך עזרה נוספת","ריענון קצר על חלק מסוים בכלי","ליווי בביקור אחד בשטח","סרטוני הדרכה קצרים"],"required":true,"metric":"training"},
+{"id":"q22","type":"choice","text":"האם הכלי מוכן להפצה לכל הסוכנים?","options":["כן, כמו שהוא","כן, אחרי תיקונים קטנים","רק אחרי שינויים משמעותיים","לא"],"required":true,"metric":"readiness"},
+{"id":"q23","type":"text","text":"מה הדבר האחד שהכי חשוב לשנות לפני ההפצה לכל הסוכנים?","required":true,"metric":"open"},
+{"id":"q24","type":"text","text":"איזה שלב הייתם מקצרים, מוותרים עליו או עוקפים היום – ולמה?","required":false,"metric":"open"}]}]},
+{"id":"pulse-visit-v2","kind":"pulse","active":false,"title":"דופק מהיר אחרי ביקור","intro":"5 שאלות על הביקור שהסתיים עכשיו – פחות מדקה.","sections":[{"title":"הביקור האחרון","questions":[
+{"id":"p1","type":"scale","text":"היה קל לבצע את הביקור הזה עם SiteGuard.","required":true,"reverse":false,"metric":"pulse_ease"},
+{"id":"p2","type":"choice","text":"כמה מההמלצות האוטומטיות שיניתם בביקור הזה?","options":["לא שיניתי","מעט","הרבה","כמעט הכול","לא השתמשתי בהמלצות"],"required":true,"metric":"pulse_quality"},
+{"id":"p3","type":"choice","text":"לעומת השיטה הישנה, הביקור הזה עם הכלי היה:","options":["הרבה יותר מהיר","קצת יותר מהיר","בערך אותו זמן","קצת יותר איטי","הרבה יותר איטי"],"required":true,"metric":"pulse_time"},
+{"id":"p4","type":"choice","text":"איך הסתיים הביקור?","options":["הלקוח חתם באפליקציה","הלקוח רוצה לחשוב או להתייעץ","הלקוח נרתע מהמחיר","לא הגעתי להצעת מחיר","תקלה בהצעה או בחתימה"],"required":true,"metric":"pulse_outcome"},
+{"id":"p5","type":"text","text":"משהו שהפריע או היה חסר בביקור הזה?","required":false,"metric":"pulse_open"}]}]}]
+;
+var PHONES = {};   // plain phone numbers typed in this session only (for the WhatsApp link) — never published
+function normPhone(p){ return String(p || '').replace(/\D/g, '').slice(-9); }
+function maskPhone(p){ var d = String(p || '').replace(/\D/g, ''); if (d.length < 9) return ''; d = '0' + d.slice(-9); return d.slice(0, 3) + '-•••-' + d.slice(-3); }
+function setPhone(u, phone){
+  var n = normPhone(phone);
+  if (!n) { delete u.phoneHash; delete u.phoneMask; delete u.phone; markDirty(); return Promise.resolve(); }
+  if (!cfg.access.salt) { var a = new Uint8Array(12); crypto.getRandomValues(a); cfg.access.salt = Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
+  PHONES[u.id] = phone;
+  return hash(n, u.id, cfg.access.salt + ':phone').then(function(h){ u.phoneHash = h; u.phoneMask = maskPhone(phone); delete u.phone; markDirty(); });
+}
+function sheetKey(){ return lsGet('g1sg_admin_sheetkey') || ''; }
+var REPORT = null;
+function loadReport(force){
+  var ep = cfg.backend && cfg.backend.endpoint, k = sheetKey();
+  if (!ep || !k) return Promise.resolve(null);
+  if (REPORT && !force) return Promise.resolve(REPORT);
+  return fetch(ep + (ep.indexOf('?') < 0 ? '?' : '&') + 'key=' + encodeURIComponent(k) + '&t=' + Date.now(), { cache:'no-store' })
+    .then(function(r){ return r.json(); }).then(function(j){ if (!j.ok) throw new Error(j.error || 'שגיאה'); REPORT = j; return j; });
+}
 function b64(str){ return btoa(unescape(encodeURIComponent(str))); }
 function unb64(s){ return decodeURIComponent(escape(atob(s.replace(/\s/g, '')))); }
-function gh(method, body){
-  return fetch('https://api.github.com/repos/' + REPO.owner + '/' + REPO.repo + '/contents/' + REPO.path + (method === 'GET' ? '?ref=' + REPO.branch + '&t=' + Date.now() : ''), {
-    method:method, headers:{ 'Accept':'application/vnd.github+json', 'Authorization':'Bearer ' + token(), 'X-GitHub-Api-Version':'2022-11-28' }, body: body ? JSON.stringify(body) : undefined, cache:'no-store'
-  }).then(function(r){ return r.json().then(function(j){ if (!r.ok) { var e = new Error(j && j.message || ('HTTP ' + r.status)); e.status = r.status; throw e; } return j; }); });
-}
+function adminEp(c){ var e = lsGet('g1sg_admin_ep') || (c && c.backend && c.backend.endpoint) || ''; return /^https:\/\/script\.google\.com\/macros\//.test(e) ? e : ''; }
+var SRC = 'site';   // where the loaded settings came from: 'sheet' (Google) or 'site' (bootstrap file)
 function loadConfig(){
-  if (token()) return gh('GET').then(function(j){ sha = j.sha; return JSON.parse(unb64(j.content)); }).catch(function(){ return fetchPublic(); });
-  return fetchPublic();
+  return fetchPublic().catch(function(e){ if (!adminEp(null)) throw e; return null; }).then(function(base){
+    var ep = adminEp(base);
+    if (!ep) { SRC = 'site'; if (!base) throw new Error('offline'); return base; }
+    return fetch(ep + '?action=config&t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+      if (j && j.ok && j.config && j.config.access) { SRC = 'sheet'; var c = j.config; delete c._src; c.backend = c.backend || {}; c.backend.endpoint = c.backend.endpoint || ep; return c; }
+      SRC = 'site'; if (!base) throw new Error('empty'); base.backend = base.backend || {}; if (!base.backend.endpoint) base.backend.endpoint = ep; return base;
+    }, function(e){ if (!base) throw e; SRC = 'site'; return base; });
+  });
 }
 function fetchPublic(){ return fetch(CFG_URL + '?t=' + Date.now(), { cache:'no-store' }).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -170,7 +238,13 @@ function start(c){
   cfg.access = cfg.access || { enabled:true, offlineDays:7, salt:'', users:[] };
   cfg.agent = cfg.agent || { prices:{}, cablePrices:{}, maxDiscountPct:null }; cfg.agent.prices = cfg.agent.prices || {}; cfg.agent.cablePrices = cfg.agent.cablePrices || {};
   cfg.consumer = cfg.consumer || { prices:{} }; cfg.consumer.prices = cfg.consumer.prices || {};
+  cfg.backend = cfg.backend || { endpoint:'' };
+  if (!Array.isArray(cfg.surveys)) cfg.surveys = clone(SURVEY_TEMPLATES);
+  if (cfg.access.deviceLock == null) cfg.access.deviceLock = false;
   saved = clone(cfg);
+  // phones are never stored in clear in the public settings file: hash + masked display only
+  var plain = (cfg.access.users || []).filter(function(u){ return u.phone; });
+  if (plain.length) Promise.all(plain.map(function(u){ return setPhone(u, u.phone); })).then(function(){ toast('מספרי הנייד הוצפנו — פרסמו כדי לשמור'); render(); });
   $('#vLogin').hidden = true; $('#vApp').hidden = false; $('#pubbar').hidden = false; $('#who').hidden = false; $('#whoName').textContent = me.name;
   render(); markDirty();
 }
@@ -181,7 +255,7 @@ $('#btnLogout').onclick = function(){ if (dirty() && !confirm('יש שינויי
 
 /* ---------- tabs ---------- */
 Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){ t.onclick = function(){ tab = t.dataset.t; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x === t)); }); render(); }; });
-function render(){ ({ overview:rOverview, users:rUsers, agent:rAgent, consumer:rConsumer, publish:rPublish })[tab](); markDirty(); }
+function render(){ ({ overview:rOverview, users:rUsers, logins:rLogins, surveys:rSurveys, agent:rAgent, consumer:rConsumer, publish:rPublish })[tab](); markDirty(); }
 function bindNum(sel, getObj, key, allowNull){
   Array.prototype.forEach.call(document.querySelectorAll(sel), function(inp){
     inp.oninput = function(){ var o = getObj(inp), k = key(inp); var v = inp.value.trim(); if (v === '') { if (allowNull) o[k] = null; else delete o[k]; } else o[k] = Number(v); markDirty(); };
@@ -203,30 +277,31 @@ function rOverview(){
       '<a class="btn" href="' + APP_URL + '" target="_blank" rel="noopener">אפליקציית הסוכנים</a>' +
       '<a class="btn" href="' + APP_URL + 'home/" target="_blank" rel="noopener">אפליקציית הלקוחות</a>' +
       '<a class="btn" href="' + APP_URL + 'get/" target="_blank" rel="noopener">דף התקנה וסרטון</a></div></div>' +
-    (token() ? '' : '<div class="note warn" style="margin-top:16px"><b>עוד צעד אחד לפני שאפשר לפרסם:</b> מחברים את עמוד הניהול לחשבון GitHub פעם אחת (לשונית "פרסום וגיבוי"). עד אז אפשר לערוך, אבל לא לפרסם.</div>');
+    (adminEp(cfg) && sheetKey() ? '' : '<div class="note warn" style="margin-top:16px"><b>עוד צעד אחד לפני שאפשר לפרסם:</b> מחברים את עמוד הניהול לגיליון Google פעם אחת (לשונית "פרסום וגיבוי", כ-5 דקות). עד אז אפשר לערוך, אבל לא לפרסם.</div>');
 }
 
 function rUsers(){
   var us = cfg.access.users || [];
   $('#pane').innerHTML = '<h1>משתמשים והרשאות</h1><p class="sub">לכל נסיין קוד הקצאה אישי. חסימה נכנסת לתוקף בחיבור הבא שלו לרשת (או אחרי ' + (cfg.access.offlineDays || 7) + ' ימים בלי חיבור).</p>' +
     '<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">משתמשים</h2><button class="btn primary" id="btnAdd">+ הוספת סוכן</button></div>' +
-    '<div class="tbl-wrap"><table><thead><tr><th>שם</th><th>תפקיד</th><th>טלפון</th><th>סטטוס</th><th>נוצר</th><th></th></tr></thead><tbody>' +
+    '<div class="tbl-wrap"><table><thead><tr><th>שם</th><th>תפקיד</th><th>נייד לאימות</th><th>סטטוס</th><th>נוצר</th><th></th></tr></thead><tbody>' +
     us.map(function(u, i){
       return '<tr data-i="' + i + '"><td><input type="text" class="u-name" value="' + esc(u.name) + '" aria-label="שם"></td>' +
         '<td><span class="role">' + (u.role === 'manager' ? 'מנהל מוצר' : 'סוכן') + '</span></td>' +
-        '<td><input type="text" class="u-phone mono" value="' + esc(u.phone || '') + '" placeholder="05X-XXXXXXX" aria-label="טלפון" style="max-width:150px"></td>' +
+        '<td>' + (u.phoneHash ? '<span class="st on mono" title="הכניסה דורשת גם את מספר הנייד">✓ ' + esc(u.phoneMask || 'מוגדר') + '</span>' : '<span class="st off">חסר — קוד בלבד</span>') +
+          '<input type="tel" class="u-phone mono" placeholder="' + (u.phoneHash ? 'החלפת נייד…' : 'הוספת נייד…') + '" aria-label="מספר נייד לאימות" style="max-width:150px;margin-top:4px"></td>' +
         '<td><span class="st ' + (u.status === 'active' ? 'on">פעיל' : 'off">חסום') + '</span></td>' +
         '<td style="font-size:12.5px;color:var(--muted)">' + (u.created ? new Date(u.created).toLocaleDateString('he-IL') : '') + '</td>' +
         '<td><div class="row" style="flex-wrap:nowrap">' +
           '<button class="btn sm u-tog">' + (u.status === 'active' ? 'חסימה' : 'שחרור') + '</button>' +
-          '<button class="btn sm u-code">קוד חדש</button>' +
+          '<button class="btn sm u-code">החלפת קוד</button>' +
           '<button class="btn sm danger u-del" aria-label="מחיקה">מחיקה</button></div></td></tr>';
     }).join('') + '</tbody></table></div></div>' +
     '<div class="card" style="margin-top:16px"><h2>נעילת אפליקציית הסוכנים</h2>' +
       '<label class="sw"><input type="checkbox" id="accOn"' + (cfg.access.enabled ? ' checked' : '') + '> הנעילה פעילה — נדרש קוד אחרי בחירת סוג הפרויקט</label>' +
       '<div class="grid2" style="margin-top:12px"><label class="f">ימים לעבודה בלי חיבור<input type="number" id="accDays" min="1" max="60" value="' + (cfg.access.offlineDays || 7) + '"><small>אחרי התקופה הזו בלי חיבור, הסוכן יתבקש להתחבר ולהזין את הקוד שוב</small></label>' +
       '<label class="f">הודעה במסך הנעילה<input type="text" id="accMsg" value="' + esc(cfg.access.message || '') + '"></label></div></div>' +
-    '<div class="note" style="margin-top:14px">הקוד מוצג פעם אחת בלבד, ברגע היצירה. איבד הנסיין את הקוד? לוחצים "קוד חדש" ומפרסמים — הקוד הישן מפסיק לעבוד.</div>';
+    '<div class="note" style="margin-top:14px"><b>אימות דו-שלבי:</b> לכל משתמש עם נייד מוגדר, הכניסה דורשת גם את קוד ההקצאה וגם את מספר הנייד שלו. המספר נשמר מוצפן בלבד. אפשר להגביל גם את המכשירים בלשונית "כניסות ומכשירים".</div><div class="note" style="margin-top:10px">הקוד מוצג פעם אחת בלבד, ברגע היצירה. איבד הנסיין את הקוד? לוחצים "קוד חדש" ומפרסמים — הקוד הישן מפסיק לעבוד.</div>';
   $('#btnAdd').onclick = addUser;
   $('#accOn').onchange = function(){ cfg.access.enabled = this.checked; markDirty(); };
   $('#accDays').oninput = function(){ var v = Math.max(1, Math.min(60, Number(this.value) || 7)); cfg.access.offlineDays = v; markDirty(); };
@@ -234,7 +309,7 @@ function rUsers(){
   Array.prototype.forEach.call(document.querySelectorAll('#pane tr[data-i]'), function(tr){
     var u = us[+tr.dataset.i];
     tr.querySelector('.u-name').oninput = function(){ u.name = this.value; markDirty(); };
-    tr.querySelector('.u-phone').oninput = function(){ u.phone = this.value; markDirty(); };
+    tr.querySelector('.u-phone').onchange = function(){ var v = this.value; if (normPhone(v).length < 9) { toast('מספר נייד לא תקין'); return; } setPhone(u, v).then(function(){ toast('הנייד עודכן — יידרש בכניסה הבאה אחרי הפרסום'); rUsers(); }); };
     tr.querySelector('.u-tog').onclick = function(){
       if (u.status === 'active' && u.role === 'manager' && activeManagers() <= 1) { toast('חייב להישאר לפחות מנהל מוצר פעיל אחד'); return; }
       u.status = u.status === 'active' ? 'blocked' : 'active'; rUsers(); markDirty();
@@ -249,32 +324,88 @@ function rUsers(){
 }
 function activeManagers(){ return (cfg.access.users || []).filter(function(u){ return u.role === 'manager' && u.status === 'active'; }).length; }
 function addUser(){
-  modal('<h2>הוספת משתמש</h2><div class="grid2" style="margin-top:8px"><label class="f">שם מלא<input id="nuName" type="text"></label><label class="f">טלפון (לשליחת הקוד בוואטסאפ)<input id="nuPhone" class="mono" type="text" placeholder="05X-XXXXXXX"></label>' +
+  modal('<h2>הוספת משתמש</h2><div class="grid2" style="margin-top:8px"><label class="f">שם מלא<input id="nuName" type="text"></label><label class="f">מספר נייד (לאימות דו-שלבי ולשליחת הקוד)<input id="nuPhone" class="mono" type="tel" placeholder="05X-XXXXXXX"><small>מומלץ — בלי נייד הכניסה תהיה עם קוד בלבד</small></label>' +
     '<label class="f">תפקיד<select id="nuRole"><option value="agent">סוכן (פיילוט)</option><option value="manager">מנהל מוצר</option></select></label></div>' +
     '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn primary" id="nuGo">יצירת קוד</button></div>', function(bd){
     bd.querySelector('#nuGo').onclick = function(){
       var name = bd.querySelector('#nuName').value.trim(); if (!name) { bd.querySelector('#nuName').focus(); return; }
-      var u = { id:newId(), name:name, role:bd.querySelector('#nuRole').value, status:'active', note:'', phone:bd.querySelector('#nuPhone').value.trim(), hash:'', created:new Date().toISOString() };
-      cfg.access.users.push(u); bd.remove(); issueCode(u, true);
+      var ph = bd.querySelector('#nuPhone').value.trim();
+      if (ph && normPhone(ph).length < 9) { toast('מספר נייד לא תקין'); return; }
+      var u = { id:newId(), name:name, role:bd.querySelector('#nuRole').value, status:'active', note:'', hash:'', devices:[], created:new Date().toISOString() };
+      cfg.access.users.push(u); bd.remove();
+      (ph ? setPhone(u, ph) : Promise.resolve()).then(function(){ issueCode(u, true); });
     };
     setTimeout(function(){ bd.querySelector('#nuName').focus(); }, 30);
   });
 }
+// access codes: 6 random digits (easiest to type), letters+digits (stronger), or a code the manager picks
+function newDigits(){ var a = new Uint32Array(1); for (;;) { crypto.getRandomValues(a); var c = String(a[0] % 1000000); while (c.length < 6) c = '0' + c; if (!weakCode(c)) return c; } }
+function weakCode(c){
+  var n = norm(c); if (n.length < 6) return 'לפחות 6 תווים (אותיות באנגלית או ספרות)';
+  if (/^(.)\1+$/.test(n)) return 'כל התווים זהים — קל מדי לניחוש';
+  var seq = '0123456789', rev = '9876543210', abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (seq.indexOf(n) >= 0 || rev.indexOf(n) >= 0 || abc.indexOf(n) >= 0) return 'רצף פשוט — קל מדי לניחוש';
+  if (/^(..)\1+$/.test(n) || /^(...)\1+$/.test(n)) return 'חזרה על אותו דפוס — קל מדי לניחוש';
+  return '';
+}
+function fmtCode(c){ return /^\d{6}$/.test(c) ? c.slice(0, 3) + ' ' + c.slice(3) : c; }
+// a code must belong to one user only (the app identifies the user by the code)
+function codeTaken(code, uid){
+  var others = (cfg.access.users || []).filter(function(x){ return x.id !== uid && x.hash; });
+  return Promise.all(others.map(function(x){ return hash(code, x.id, cfg.access.salt).then(function(h){ return h === x.hash ? x : null; }); })).then(function(f){ return f.filter(Boolean)[0] || null; });
+}
 function issueCode(u, isNew){
   if (!cfg.access.salt) { var a = new Uint8Array(12); crypto.getRandomValues(a); cfg.access.salt = Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }
-  var code = newCode();
-  hash(code, u.id, cfg.access.salt).then(function(h){
-    u.hash = h; markDirty(); if (tab === 'users') rUsers();
-    var phone = (u.phone || '').replace(/\D/g, ''); if (phone.charAt(0) === '0') phone = '972' + phone.slice(1);
-    var text = 'שלום ' + u.name + ',\nזה קוד הכניסה האישי שלך לאפליקציית G1 SiteGuard (פיילוט):\n' + code + '\n\nהאפליקציה: ' + APP_URL + 'get/\nאת הקוד מזינים אחרי בחירת סוג הפרויקט. נא לא להעביר אותו לאחרים.';
-    modal('<h2>' + (isNew ? 'המשתמש נוסף' : 'קוד חדש נוצר') + ' · ' + esc(u.name) + '</h2>' +
-      '<p class="sub" style="margin:4px 0 0">הקוד מוצג רק עכשיו. העבירו אותו למשתמש, ואז לחצו "פרסום לכל המשתמשים" כדי שייכנס לתוקף.</p>' +
-      '<div class="code-big" id="cb">' + code + '</div>' +
-      '<div class="row" style="justify-content:center"><button class="btn" id="cpy">העתקת הקוד</button>' +
-      '<a class="btn navy" target="_blank" rel="noopener" href="https://wa.me/' + (phone || '') + '?text=' + encodeURIComponent(text) + '">שליחה בוואטסאפ</a></div>' +
-      '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn primary" data-x>סיימתי</button></div>', function(bd){
-      bd.querySelector('#cpy').onclick = function(){ (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(function(){ toast('הקוד הועתק'); }).catch(function(){ toast('סמנו והעתיקו ידנית'); }); };
-    });
+  var last = lsGet('g1sg_admin_codefmt') || 'digits';
+  modal('<h2>' + (isNew ? 'קוד כניסה למשתמש החדש' : 'קוד כניסה חדש') + ' · ' + esc(u.name) + '</h2>' +
+    (isNew ? '' : '<p class="sub" style="margin:4px 0 0">אחרי הפרסום הקוד הקודם של ' + esc(u.name) + ' יפסיק לעבוד.</p>') +
+    '<div class="cf-opts" style="display:grid;gap:8px;margin-top:12px">' +
+      '<label class="cf-opt"><input type="radio" name="cf" value="digits"' + (last === 'digits' ? ' checked' : '') + '> <span><b>6 ספרות</b> — הכי נוח להקליד, למשל <span class="mono">482 913</span></span></label>' +
+      '<label class="cf-opt"><input type="radio" name="cf" value="strong"' + (last === 'strong' ? ' checked' : '') + '> <span><b>אותיות וספרות</b> — חזק יותר, למשל <span class="mono">G1-7KQ4-M9TX</span></span></label>' +
+      '<label class="cf-opt"><input type="radio" name="cf" value="custom"' + (last === 'custom' ? ' checked' : '') + '> <span><b>קוד שאני בוחר</b> — 6 עד 12 ספרות או אותיות באנגלית</span></label>' +
+      '<input id="cfIn" class="mono" dir="ltr" maxlength="14" autocomplete="off" placeholder="למשל 250777 או DANI2026" style="padding:10px;border:1px solid #C9D2DC;border-radius:10px;font-size:18px;letter-spacing:.08em"' + (last === 'custom' ? '' : ' hidden') + '>' +
+      '<small id="cfErr" style="color:#B42318;min-height:1.2em"></small></div>' +
+    '<div class="note" style="margin-top:6px">הנייד והמכשיר המאושר נשארים שכבות הגנה נוספות — גם קוד קצר מספיק לפיילוט, בתנאי שהוא אישי ולא עובר הלאה.</div>' +
+    '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" data-x>' + (isNew ? 'אחר כך' : 'ביטול') + '</button><button class="btn primary" id="cfGo">יצירת הקוד</button></div>', function(bd){
+    var inp = bd.querySelector('#cfIn'), err = bd.querySelector('#cfErr'), go = bd.querySelector('#cfGo');
+    function fmt(){ var r = bd.querySelector('input[name=cf]:checked'); return r ? r.value : 'digits'; }
+    Array.prototype.forEach.call(bd.querySelectorAll('input[name=cf]'), function(r){ r.onchange = function(){ inp.hidden = fmt() !== 'custom'; err.textContent = ''; if (!inp.hidden) inp.focus(); }; });
+    inp.oninput = function(){ err.textContent = ''; };
+    inp.onkeydown = function(e){ if (e.key === 'Enter') go.click(); };
+    go.onclick = function(){
+      var f = fmt(), code;
+      if (f === 'custom') { code = norm(inp.value); var w = norm(inp.value).length > 12 ? 'עד 12 תווים' : weakCode(code); if (w) { err.textContent = w; inp.focus(); return; } }
+      else code = f === 'digits' ? newDigits() : newCode();
+      lsSet('g1sg_admin_codefmt', f);
+      go.disabled = true; go.textContent = 'בודק…';
+      codeTaken(code, u.id).then(function(other){
+        if (other) {
+          go.disabled = false; go.textContent = 'יצירת הקוד';
+          if (f === 'custom') { err.textContent = 'הקוד הזה כבר שייך למשתמש אחר — בחרו קוד אחר'; inp.focus(); } else go.click();
+          return;
+        }
+        return hash(code, u.id, cfg.access.salt).then(function(h){
+          u.hash = h; markDirty(); if (tab === 'users') rUsers();
+          // changing my own code: keep this admin session signed in
+          if (me && u.id === me.id) { me.hash = h; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {} }
+          bd.remove(); showCode(u, code, isNew);
+        });
+      });
+    };
+    if (last === 'custom') setTimeout(function(){ inp.focus(); }, 30);
+  });
+}
+function showCode(u, code, isNew){
+  var shown = fmtCode(code);
+  var phone = (PHONES[u.id] || '').replace(/\D/g, ''); if (phone.charAt(0) === '0') phone = '972' + phone.slice(1);
+  var text = 'שלום ' + u.name + ',\nזה קוד הכניסה האישי שלך לאפליקציית G1 SiteGuard (פיילוט):\n' + shown + '\n\nהאפליקציה: ' + APP_URL + 'get/\nבכניסה מזינים את הקוד' + (u.phoneHash ? ' ואת מספר הנייד שלך' : '') + ' (אחרי בחירת סוג הפרויקט). נא לא להעביר את הקוד לאחרים.';
+  modal('<h2>' + (isNew ? 'המשתמש נוסף' : 'קוד חדש נוצר') + ' · ' + esc(u.name) + '</h2>' +
+    '<p class="sub" style="margin:4px 0 0">הקוד מוצג רק עכשיו (הוא לא נשמר בשום מקום בגלוי). העבירו אותו למשתמש, ואז לחצו "פרסום לכל המשתמשים" כדי שייכנס לתוקף.</p>' +
+    '<div class="code-big" id="cb" dir="ltr">' + esc(shown) + '</div>' +
+    '<div class="row" style="justify-content:center"><button class="btn" id="cpy">העתקת הקוד</button>' +
+    '<a class="btn navy" target="_blank" rel="noopener" href="https://wa.me/' + (phone || '') + '?text=' + encodeURIComponent(text) + '">שליחה בוואטסאפ</a></div>' +
+    '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn primary" data-x>סיימתי</button></div>', function(bd){
+    bd.querySelector('#cpy').onclick = function(){ (navigator.clipboard ? navigator.clipboard.writeText(shown) : Promise.reject()).then(function(){ toast('הקוד הועתק'); }).catch(function(){ toast('סמנו והעתיקו ידנית'); }); };
   });
 }
 function modal(html, init){
@@ -331,42 +462,241 @@ function rConsumer(){
 }
 
 function rPublish(){
-  var t = token();
-  $('#pane').innerHTML = '<h1>פרסום וגיבוי</h1><p class="sub">עמוד הניהול שומר את ההגדרות בקובץ אחד באתר. חיבור חד-פעמי ל-GitHub מאפשר לפרסם מכל מחשב שבו עשיתם את החיבור.</p>' +
-    '<div class="card"><h2>חיבור ל-GitHub ' + (t ? '<span class="st on">מחובר</span>' : '<span class="st off">לא מחובר</span>') + '</h2>' +
-      '<ol class="steps"><li>היכנסו ל-<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">יצירת מפתח גישה ב-GitHub</a> (בחשבון שמנהל את האתר).</li>' +
-      '<li>שם: "G1 admin". תוקף: לבחירתכם (למשל שנה).</li>' +
-      '<li>Repository access: <b>Only select repositories</b> ← <span class="mono">g1-siteguard</span>.</li>' +
-      '<li>Permissions ← Repository permissions ← <b>Contents: Read and write</b>.</li>' +
-      '<li>Generate token, העתיקו והדביקו כאן:</li></ol>' +
-      '<div class="row" style="margin-top:10px"><input type="password" id="tok" class="mono" placeholder="github_pat_…" style="flex:1;min-width:220px;padding:10px;border:1px solid #C9D2DC;border-radius:10px" value="' + esc(t) + '" autocomplete="off">' +
-      '<button class="btn navy" id="tokSave">שמירה ובדיקה</button>' + (t ? '<button class="btn danger" id="tokDel">ניתוק</button>' : '') + '</div>' +
-      '<div class="note" style="margin-top:10px">המפתח נשמר רק בדפדפן של המחשב הזה ומשמש רק לעדכון קובץ ההגדרות. אל תשתפו אותו.</div></div>' +
-    '<div class="card" style="margin-top:14px"><h2>גיבוי</h2><p class="sub" style="margin:0 0 10px">שמירת עותק של כל ההגדרות לקובץ במחשב, או שחזור מעותק כזה (השחזור נכנס כטיוטה — צריך לפרסם).</p>' +
+  $('#pane').innerHTML = '<h1>פרסום וגיבוי</h1><p class="sub">ההגדרות של שתי האפליקציות (משתמשים, מחירים, סקרים) נשמרות בגיליון Google שלכם — אותו גיליון שקולט את התשובות ויומן הכניסות. בלי GitHub ובלי מפתחות גישה.</p>' +
+    sheetSection() +
+    '<div class="card" style="margin-top:14px"><h2>גיבוי</h2><p class="sub" style="margin:0 0 10px">שמירת עותק של כל ההגדרות לקובץ במחשב, או שחזור מעותק כזה (השחזור נכנס כטיוטה — צריך לפרסם). כל פרסום נשמר גם בגיליון, בלשונית ConfigHistory.</p>' +
       '<div class="row"><button class="btn" id="bkDown">הורדת גיבוי</button><label class="btn" for="bkUp">שחזור מגיבוי</label><input type="file" id="bkUp" accept="application/json,.json" hidden></div></div>';
-  $('#tokSave').onclick = function(){
-    var v = $('#tok').value.trim(); if (!v) return; lsSet('g1sg_admin_token', v);
-    gh('GET').then(function(j){ sha = j.sha; toast('החיבור תקין — אפשר לפרסם'); rPublish(); })
-      .catch(function(e){ lsSet('g1sg_admin_token', null); toast(e.status === 401 ? 'המפתח לא תקין' : e.status === 404 ? 'למפתח אין גישה למאגר g1-siteguard' : ('שגיאה: ' + e.message)); rPublish(); });
-  };
-  var td = $('#tokDel'); if (td) td.onclick = function(){ lsSet('g1sg_admin_token', null); sha = null; rPublish(); };
+  bindSheet();
   $('#bkDown').onclick = function(){ var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 1)], { type:'application/json' })); a.download = 'g1-siteguard-config-' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); };
-  $('#bkUp').onchange = function(){ var f = this.files[0]; if (!f) return; f.text().then(function(t){ var c = JSON.parse(t); if (!c.access || !c.consumer) throw new Error(); var keepSalt = cfg.access.salt; cfg = c; if (!cfg.access.salt) cfg.access.salt = keepSalt; toast('הגיבוי נטען — בדקו ופרסמו'); render(); }).catch(function(){ toast('קובץ גיבוי לא תקין'); }); };
+  $('#bkUp').onchange = function(){ var f = this.files[0]; if (!f) return; f.text().then(function(t){ var c = JSON.parse(t); if (!c.access || !c.consumer) throw new Error(); var keepSalt = cfg.access.salt, keepB = cfg.backend; cfg = c; if (!cfg.access.salt) cfg.access.salt = keepSalt; if (!cfg.backend || !cfg.backend.endpoint) cfg.backend = keepB; toast('הגיבוי נטען — בדקו ופרסמו'); render(); }).catch(function(){ toast('קובץ גיבוי לא תקין'); }); };
 }
 
+/* ---------- logins & devices ---------- */
+function userById(id){ return (cfg.access.users || []).filter(function(u){ return u.id === id; })[0]; }
+var EV = { ok:'כניסה', seen:'פעיל', 'fail-phone':'נייד שגוי', blocked:'ניסיון של משתמש חסום', 'device-pending':'מכשיר ממתין לאישור' };
+function rLogins(){
+  var has = cfg.backend && cfg.backend.endpoint && sheetKey();
+  $('#pane').innerHTML = '<h1>כניסות ומכשירים</h1><p class="sub">יומן הכניסות של הסוכנים ואישור המכשירים שמהם מותר להיכנס.</p>' +
+    '<div class="card"><label class="sw"><input type="checkbox" id="devLock"' + (cfg.access.deviceLock ? ' checked' : '') + '> נעילה למכשירים מאושרים בלבד</label>' +
+    '<p class="sub" style="margin:8px 0 0">כשהנעילה פעילה: לסוכן שיש לו מכשירים מאושרים — כניסה רק מהם. לסוכן בלי מכשיר מאושר — המכשיר הראשון שלו נכנס ומופיע כאן, ואתם מאשרים אותו בלחיצה. ניסיון כניסה ממכשיר אחר מופיע כ"ממתין לאישור".</p></div>' +
+    (has ? '<div class="card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><h2 style="margin:0">יומן כניסות</h2><button class="btn sm" id="lgRef">רענון</button></div><div id="lgBody" class="tbl-wrap" style="margin-top:10px">טוען…</div></div>'
+         : '<div class="note warn" style="margin-top:14px">כדי לראות את יומן הכניסות ולאשר מכשירים, חברו את גיליון Google בלשונית "פרסום וגיבוי".</div>') +
+    '<div class="card" style="margin-top:14px"><h2>מכשירים מאושרים לפי משתמש</h2><div id="devBody"></div></div>';
+  $('#devLock').onchange = function(){ cfg.access.deviceLock = this.checked; markDirty(); };
+  drawDevices();
+  if (has) { $('#lgRef').onclick = function(){ REPORT = null; drawLog(true); }; drawLog(false); }
+}
+function seenDevices(uid){
+  var m = {}; ((REPORT && REPORT.logins) || []).forEach(function(l){ if (l.uid === uid && l.deviceId) { var d = m[l.deviceId] || (m[l.deviceId] = { id:l.deviceId, label:l.device, first:l.time, last:l.time, pending:false }); if (l.time < d.first) d.first = l.time; if (l.time > d.last) d.last = l.time; if (l.event === 'device-pending') d.pending = true; } });
+  return Object.keys(m).map(function(k){ return m[k]; });
+}
+function drawDevices(){
+  var box = $('#devBody'); if (!box) return;
+  box.innerHTML = (cfg.access.users || []).map(function(u){
+    u.devices = u.devices || [];
+    var seen = seenDevices(u.id), ids = {}; seen.forEach(function(d){ ids[d.id] = d; }); u.devices.forEach(function(id){ if (!ids[id]) ids[id] = { id:id, label:'(לא נראה ביומן)', pending:false }; });
+    var list = Object.keys(ids).map(function(id){ var d = ids[id], ok = u.devices.indexOf(id) >= 0;
+      return '<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding:6px 0"><span>' + esc(d.label || 'מכשיר') + ' <small class="mono" style="color:var(--muted)">' + esc(id.slice(-6)) + '</small>' + (d.last ? ' <small style="color:var(--muted)">· אחרון ' + new Date(d.last).toLocaleString('he-IL') + '</small>' : '') + (d.pending && !ok ? ' <span class="st off">ממתין</span>' : '') + '</span>' +
+        '<button class="btn sm ' + (ok ? 'danger' : 'navy') + '" data-u="' + u.id + '" data-d="' + esc(id) + '">' + (ok ? 'הסרת אישור' : 'אישור המכשיר') + '</button></div>'; }).join('');
+    return '<div style="margin:10px 0"><b>' + esc(u.name) + '</b> <small style="color:var(--muted)">· ' + u.devices.length + ' מאושרים</small>' + (list || '<div style="color:var(--muted);font-size:13px">עוד לא נראו מכשירים</div>') + '</div>';
+  }).join('');
+  Array.prototype.forEach.call(box.querySelectorAll('button[data-u]'), function(b){ b.onclick = function(){ var u = userById(b.dataset.u), i = u.devices.indexOf(b.dataset.d); if (i >= 0) u.devices.splice(i, 1); else u.devices.push(b.dataset.d); markDirty(); drawDevices(); }; });
+}
+function drawLog(force){
+  var box = $('#lgBody'); if (!box) return; box.textContent = 'טוען…';
+  loadReport(force).then(function(r){
+    var rows = ((r && r.logins) || []).slice().reverse().slice(0, 300);
+    box.innerHTML = rows.length ? '<table><thead><tr><th>זמן</th><th>משתמש</th><th>אירוע</th><th>מכשיר</th><th>גרסה</th></tr></thead><tbody>' + rows.map(function(l){
+      var bad = l.event && l.event !== 'ok' && l.event !== 'seen';
+      return '<tr><td style="white-space:nowrap">' + new Date(l.time).toLocaleString('he-IL') + '</td><td>' + esc(l.name) + '</td><td>' + (bad ? '<span class="st off">' : '<span class="st on">') + esc(EV[l.event] || l.event) + '</span></td><td>' + esc(l.device) + '</td><td style="font-size:12px;color:var(--muted)">' + esc(l.appVersion) + '</td></tr>';
+    }).join('') + '</tbody></table>' : '<p class="sub">עוד אין כניסות ביומן.</p>';
+    drawDevices();
+  }).catch(function(e){ box.innerHTML = '<div class="note warn">לא ניתן לקרוא את הגיליון: ' + esc(e.message) + '</div>'; });
+}
+
+/* ---------- surveys ---------- */
+var svOpen = null, svView = 'results';
+function rSurveys(){
+  cfg.surveys = cfg.surveys || [];
+  if (svOpen && !cfg.surveys.some(function(x){ return x.id === svOpen; })) svOpen = null;
+  if (!svOpen) {
+    $('#pane').innerHTML = '<h1>סקרים ומשוב</h1><p class="sub">סקר שמסומן "פעיל" ומפורסם מופיע לסוכנים באפליקציה. הסקר המקיף מוצג פעם אחת לכל סוכן; הדופק המהיר מוצג אחרי שליחת הצעת מחיר, לכל היותר פעם ביום.</p>' +
+      (cfg.backend && cfg.backend.endpoint ? '' : '<div class="note warn">התשובות נשמרות בגיליון Google. עד שתחברו אותו (לשונית "פרסום וגיבוי"), תשובות שנשלחות נשמרות אצל הסוכן ויישלחו אוטומטית אחרי החיבור.</div>') +
+      '<div class="grid2" style="margin-top:14px">' + cfg.surveys.map(function(sv){
+        var n = 0; (sv.sections || []).forEach(function(se){ n += (se.questions || []).length; });
+        return '<div class="card"><div class="row" style="justify-content:space-between"><span class="pill" style="background:' + (sv.kind === 'pulse' ? '#0A7FBF' : 'var(--navy)') + '">' + (sv.kind === 'pulse' ? 'דופק אחרי ביקור' : 'סקר מקיף') + '</span>' + (sv.active ? '<span class="st on">פעיל</span>' : '<span class="st off">לא נשלח</span>') + '</div>' +
+          '<h2 style="margin-top:10px">' + esc(sv.title) + '</h2><p class="sub" style="margin:0 0 12px">' + n + ' שאלות</p>' +
+          '<div class="row"><label class="sw"><input type="checkbox" class="sv-act" data-id="' + esc(sv.id) + '"' + (sv.active ? ' checked' : '') + '> שליחה לסוכנים</label></div>' +
+          '<div class="row" style="margin-top:12px"><button class="btn primary sm sv-res" data-id="' + esc(sv.id) + '">תוצאות</button><button class="btn sm sv-edit" data-id="' + esc(sv.id) + '">עריכת שאלות</button><button class="btn sm sv-dup" data-id="' + esc(sv.id) + '">שכפול לגרסה חדשה</button></div></div>';
+      }).join('') + '</div>' +
+      '<div class="row" style="margin-top:14px"><button class="btn" id="svTpl">טעינת התבניות המומלצות מחדש</button></div>';
+    Array.prototype.forEach.call(document.querySelectorAll('.sv-act'), function(c){ c.onchange = function(){ svById(c.dataset.id).active = c.checked; markDirty(); rSurveys(); if (c.checked) toast('לחצו "פרסום לכל המשתמשים" כדי לשלוח'); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('.sv-res'), function(b){ b.onclick = function(){ svOpen = b.dataset.id; svView = 'results'; rSurveys(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('.sv-edit'), function(b){ b.onclick = function(){ svOpen = b.dataset.id; svView = 'edit'; rSurveys(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('.sv-dup'), function(b){ b.onclick = function(){ var src = svById(b.dataset.id), c = clone(src); var m = c.id.match(/^(.*?)(\d+)$/); c.id = m ? m[1] + (Number(m[2]) + 1) : c.id + '-2'; while (svById(c.id)) c.id += 'b'; c.active = false; c.title = src.title + ' (גרסה חדשה)'; cfg.surveys.push(c); markDirty(); rSurveys(); toast('נוצרה גרסה חדשה — התשובות שלה ייספרו בנפרד'); }; });
+    $('#svTpl').onclick = function(){ SURVEY_TEMPLATES.forEach(function(t){ if (!svById(t.id)) cfg.surveys.push(clone(t)); }); markDirty(); rSurveys(); };
+    return;
+  }
+  var sv = svById(svOpen);
+  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between"><button class="btn sm" id="svBack">→ כל הסקרים</button><div class="row"><button class="btn sm' + (svView === 'results' ? ' navy' : '') + '" id="svR">תוצאות</button><button class="btn sm' + (svView === 'edit' ? ' navy' : '') + '" id="svE">עריכת שאלות</button></div></div><h1 style="margin-top:12px">' + esc(sv.title) + '</h1><div id="svBody"></div>';
+  $('#svBack').onclick = function(){ svOpen = null; rSurveys(); };
+  $('#svR').onclick = function(){ svView = 'results'; rSurveys(); }; $('#svE').onclick = function(){ svView = 'edit'; rSurveys(); };
+  if (svView === 'edit') svEditor(sv); else svResults(sv);
+}
+function svById(id){ return (cfg.surveys || []).filter(function(x){ return x.id === id; })[0]; }
+function allQs(sv){ var a = []; (sv.sections || []).forEach(function(se){ (se.questions || []).forEach(function(q){ a.push(q); }); }); return a; }
+function svEditor(sv){
+  var TYPES = { scale:'דירוג 1–5', nps:'0–10', number:'מספר', choice:'בחירה', text:'טקסט חופשי' };
+  var box = $('#svBody');
+  box.innerHTML = '<div class="note" style="margin:8px 0 14px">שינוי שאלות בסקר שכבר נענה מקשה להשוות תוצאות. לשינוי מהותי — "שכפול לגרסה חדשה" ברשימת הסקרים.</div>' +
+    '<div class="card"><label class="f">כותרת<input type="text" id="svTitle" value="' + esc(sv.title) + '"></label><label class="f" style="margin-top:10px">פתיח<textarea id="svIntro" rows="3">' + esc(sv.intro || '') + '</textarea></label></div>' +
+    (sv.sections || []).map(function(se, si){
+      return '<div class="card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><input type="text" class="se-t" data-s="' + si + '" value="' + esc(se.title || '') + '" style="font-weight:800;font-size:16px;padding:8px 10px;border:1px solid #C9D2DC;border-radius:10px;flex:1"><button class="btn sm danger se-del" data-s="' + si + '">מחיקת קטע</button></div>' +
+        (se.questions || []).map(function(q, qi){
+          return '<div style="border-top:1px solid var(--line);padding:10px 0;margin-top:8px"><div class="row" style="justify-content:space-between"><span class="pill" style="background:#5B6B7E">' + TYPES[q.type] + ' · ' + esc(q.id) + '</span><span class="row"><label class="sw" style="font-size:13px"><input type="checkbox" class="q-req" data-s="' + si + '" data-q="' + qi + '"' + (q.required ? ' checked' : '') + '> חובה</label>' +
+            '<button class="btn sm q-up" data-s="' + si + '" data-q="' + qi + '" aria-label="למעלה">↑</button><button class="btn sm q-dn" data-s="' + si + '" data-q="' + qi + '" aria-label="למטה">↓</button><button class="btn sm danger q-del" data-s="' + si + '" data-q="' + qi + '">מחיקה</button></span></div>' +
+            '<textarea class="q-t" data-s="' + si + '" data-q="' + qi + '" rows="2" style="width:100%;margin-top:6px;padding:8px 10px;border:1px solid #C9D2DC;border-radius:10px">' + esc(q.text) + '</textarea>' +
+            (q.type === 'choice' ? '<label class="f" style="margin-top:6px">אפשרויות (שורה לכל אפשרות)<textarea class="q-o" data-s="' + si + '" data-q="' + qi + '" rows="' + Math.max(3, (q.options || []).length) + '">' + esc((q.options || []).join('\n')) + '</textarea></label>' : '') +
+            (q.type === 'number' ? '<label class="f" style="margin-top:6px;max-width:200px">יחידה<input type="text" class="q-u" data-s="' + si + '" data-q="' + qi + '" value="' + esc(q.unit || '') + '"></label>' : '') + '</div>';
+        }).join('') +
+        '<div class="row" style="margin-top:10px"><select class="q-newt" data-s="' + si + '" style="padding:8px;border:1px solid #C9D2DC;border-radius:10px">' + Object.keys(TYPES).map(function(t){ return '<option value="' + t + '">' + TYPES[t] + '</option>'; }).join('') + '</select><button class="btn sm q-add" data-s="' + si + '">+ הוספת שאלה</button></div></div>';
+    }).join('') + '<div class="row" style="margin-top:14px"><button class="btn" id="seAdd">+ הוספת קטע</button></div>';
+  var S = sv.sections;
+  function q(el){ return S[+el.dataset.s].questions[+el.dataset.q]; }
+  $('#svTitle').oninput = function(){ sv.title = this.value; markDirty(); }; $('#svIntro').oninput = function(){ sv.intro = this.value; markDirty(); };
+  function each(sel, ev, fn){ Array.prototype.forEach.call(box.querySelectorAll(sel), function(el){ el[ev] = function(){ fn(el); markDirty(); }; }); }
+  each('.se-t', 'oninput', function(el){ S[+el.dataset.s].title = el.value; });
+  each('.q-t', 'oninput', function(el){ q(el).text = el.value; });
+  each('.q-o', 'oninput', function(el){ q(el).options = el.value.split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
+  each('.q-u', 'oninput', function(el){ q(el).unit = el.value; });
+  each('.q-req', 'onchange', function(el){ q(el).required = el.checked; });
+  each('.q-del', 'onclick', function(el){ if (confirm('למחוק את השאלה?')) { S[+el.dataset.s].questions.splice(+el.dataset.q, 1); svEditor(sv); } });
+  each('.q-up', 'onclick', function(el){ var a = S[+el.dataset.s].questions, i = +el.dataset.q; if (i > 0) { a.splice(i - 1, 0, a.splice(i, 1)[0]); svEditor(sv); } });
+  each('.q-dn', 'onclick', function(el){ var a = S[+el.dataset.s].questions, i = +el.dataset.q; if (i < a.length - 1) { a.splice(i + 1, 0, a.splice(i, 1)[0]); svEditor(sv); } });
+  each('.se-del', 'onclick', function(el){ if (confirm('למחוק את הקטע וכל השאלות שבו?')) { S.splice(+el.dataset.s, 1); svEditor(sv); } });
+  each('.q-add', 'onclick', function(el){ var si = +el.dataset.s, t = box.querySelector('.q-newt[data-s="' + si + '"]').value, n = 1, ids = allQs(sv).map(function(x){ return x.id; }); while (ids.indexOf('n' + n) >= 0) n++;
+    var nq = { id:'n' + n, type:t, text:'שאלה חדשה', required:false, metric:'custom' }; if (t === 'choice') nq.options = ['אפשרות א', 'אפשרות ב']; if (t === 'number') nq.unit = ''; S[si].questions.push(nq); svEditor(sv); });
+  $('#seAdd').onclick = function(){ S.push({ title:'קטע חדש', questions:[] }); markDirty(); svEditor(sv); };
+}
+function median(a){ if (!a.length) return null; var b = a.slice().sort(function(x, y){ return x - y; }), m = Math.floor(b.length / 2); return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
+function fmt1(x){ return x == null || isNaN(x) ? '—' : (Math.round(x * 10) / 10).toLocaleString('he-IL'); }
+function svResults(sv){
+  var box = $('#svBody');
+  if (!(cfg.backend && cfg.backend.endpoint && sheetKey())) { box.innerHTML = '<div class="note warn" style="margin-top:12px">כדי לראות תוצאות, חברו את גיליון Google בלשונית "פרסום וגיבוי".</div>'; return; }
+  box.innerHTML = '<p class="sub">טוען תשובות…</p>';
+  loadReport(true).then(function(r){
+    var resp = ((r && r.responses) || []).filter(function(x){ return x.surveyId === sv.id; }).map(function(x){ var a = {}; try { a = JSON.parse(x.answers || '{}'); } catch(e) {} return { time:x.time, uid:x.uid, name:x.name, a:a }; });
+    var qs = allQs(sv);
+    if (!resp.length) { box.innerHTML = '<div class="card" style="margin-top:12px"><h2>עוד אין תשובות</h2><p class="sub" style="margin:0">' + (sv.active ? 'הסקר פעיל — התשובות יופיעו כאן כשהסוכנים יענו.' : 'הסקר עוד לא נשלח לסוכנים. סמנו "שליחה לסוכנים" ופרסמו.') + '</p></div>'; return; }
+    // latest answer per agent (full survey) — the pulse keeps every visit
+    var latest = {}; resp.forEach(function(x){ if (!latest[x.uid] || x.time > latest[x.uid].time) latest[x.uid] = x; });
+    var people = sv.kind === 'pulse' ? resp : Object.keys(latest).map(function(k){ return latest[k]; });
+    var agents = Object.keys(latest).map(function(k){ return latest[k]; });
+    var html = '<div class="grid2" style="margin-top:8px"><div class="stat"><b>' + agents.length + '</b><span>סוכנים ענו</span></div><div class="stat"><b>' + resp.length + '</b><span>תשובות בסך הכול</span></div>';
+    var um = qs.filter(function(q){ return q.metric === 'umux'; });
+    if (um.length === 2 && sv.kind !== 'pulse') {
+      var ux = agents.map(function(x){ var a = x.a[um[0].id], b = x.a[um[1].id]; return (typeof a === 'number' && typeof b === 'number') ? ((a - 1) + (b - 1)) / 8 * 100 : null; }).filter(function(v){ return v != null; });
+      var med = median(ux);
+      html += '<div class="stat"><b>' + fmt1(med) + '</b><span>מדד שימושיות UX-Lite (חציון, 0–100) · יעד ≥ 70</span></div>';
+    }
+    var tOld = qs.filter(function(q){ return q.metric === 'time_old'; })[0], tNew = qs.filter(function(q){ return q.metric === 'time_new'; })[0];
+    if (tOld && tNew) {
+      var sv2 = agents.map(function(x){ var o = x.a[tOld.id], n = x.a[tNew.id]; return (o > 0 && n >= 0) ? (o - n) / o * 100 : null; }).filter(function(v){ return v != null; });
+      html += '<div class="stat"><b>' + fmt1(median(sv2)) + '%</b><span>חיסכון בזמן לתיק לקוח (חציון, לפי הסוכנים)</span></div>';
+    }
+    html += '</div><div class="note" style="margin-top:12px">עם ארבעה נסיינים, כל תשובה היא 25% — קראו את התוצאות לפי סוכן ואת ההערות הפתוחות, לא כממוצעים. ציון 1–2 של סוכן כלשהו = שיחה איתו השבוע.</div>';
+    // per question
+    html += '<div class="card" style="margin-top:14px"><div class="tbl-wrap"><table><thead><tr><th style="min-width:240px">שאלה</th>' + (sv.kind === 'pulse' ? '' : agents.map(function(x){ return '<th>' + esc(x.name) + '</th>'; }).join('')) + '<th>סיכום</th></tr></thead><tbody>';
+    qs.forEach(function(q){
+      var vals = people.map(function(x){ return x.a[q.id]; });
+      var cell = function(v){
+        if (v == null || v === '') return '<td style="color:var(--muted)">—</td>';
+        if (q.type === 'scale') { var eff = q.reverse ? 6 - v : v; var col = eff <= 2 ? 'var(--bad)' : eff >= 4 ? 'var(--ok)' : 'var(--ink)'; return v === 'NA' ? '<td style="color:var(--muted)">לא רלוונטי</td>' : '<td style="font-weight:900;color:' + col + '">' + v + '</td>'; }
+        return '<td style="font-size:13px">' + esc(v) + '</td>';
+      };
+      var summary = '';
+      if (q.type === 'scale' || q.type === 'nps') {
+        var nums = vals.filter(function(v){ return typeof v === 'number'; }), dist = {};
+        nums.forEach(function(v){ dist[v] = (dist[v] || 0) + 1; });
+        var max = q.type === 'nps' ? 10 : 5, min = q.type === 'nps' ? 0 : 1, bars = '';
+        for (var i = min; i <= max; i++) bars += '<span title="' + i + ': ' + (dist[i] || 0) + '" style="display:inline-block;width:' + (q.type === 'nps' ? 7 : 12) + 'px;margin:0 1px;height:' + (4 + (dist[i] || 0) * 9) + 'px;background:' + ((dist[i] || 0) ? 'var(--navy)' : '#E1E5EA') + ';border-radius:2px;vertical-align:bottom"></span>';
+        summary = 'חציון <b>' + fmt1(median(nums)) + '</b> · ממוצע ' + fmt1(nums.length ? nums.reduce(function(a, b){ return a + b; }, 0) / nums.length : null) + (q.reverse ? ' <small>(הפוך: נמוך = טוב)</small>' : '') + '<div style="margin-top:4px">' + bars + '</div>';
+      } else if (q.type === 'choice') {
+        var c = {}; vals.forEach(function(v){ if (v) c[v] = (c[v] || 0) + 1; });
+        summary = Object.keys(c).sort(function(a, b){ return c[b] - c[a]; }).map(function(k){ return '<div style="font-size:12.5px">' + esc(k) + ' · <b>' + c[k] + '</b></div>'; }).join('') || '—';
+      } else if (q.type === 'number') {
+        var nn = vals.filter(function(v){ return typeof v === 'number'; }); summary = 'חציון <b>' + fmt1(median(nn)) + '</b> ' + esc(q.unit || '');
+      } else {
+        summary = vals.filter(Boolean).length + ' תשובות';
+      }
+      html += '<tr><td><b style="font-size:13.5px">' + esc(q.text) + '</b></td>' + (sv.kind === 'pulse' ? '' : agents.map(function(x){ return cell(x.a[q.id]); }).join('')) + '<td style="font-size:13px;min-width:160px">' + summary + '</td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+    var texts = qs.filter(function(q){ return q.type === 'text'; });
+    if (texts.length) html += '<div class="card" style="margin-top:14px"><h2>תשובות פתוחות</h2>' + texts.map(function(q){ var list = resp.filter(function(x){ return x.a[q.id]; });
+      return '<h3>' + esc(q.text) + '</h3>' + (list.length ? list.map(function(x){ return '<div class="note" style="margin:6px 0"><b>' + esc(x.name) + '</b> <small style="color:var(--muted)">' + new Date(x.time).toLocaleDateString('he-IL') + '</small><div style="margin-top:4px;white-space:pre-wrap">' + esc(x.a[q.id]) + '</div></div>'; }).join('') : '<p class="sub">אין עדיין.</p>'); }).join('') + '</div>';
+    html += '<div class="row" style="margin-top:14px"><button class="btn" id="svCsv">ייצוא לאקסל (CSV)</button></div>';
+    box.innerHTML = html;
+    $('#svCsv').onclick = function(){
+      var head = ['זמן', 'סוכן'].concat(qs.map(function(q){ return q.id + ' ' + q.text; }));
+      var lines = [head].concat(resp.map(function(x){ return [new Date(x.time).toLocaleString('he-IL'), x.name].concat(qs.map(function(q){ return x.a[q.id] == null ? '' : x.a[q.id]; })); }));
+      var csv = '﻿' + lines.map(function(r){ return r.map(function(c){ c = String(c).replace(/"/g, '""'); return /[",\n]/.test(c) ? '"' + c + '"' : c; }).join(','); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' })); a.download = sv.id + '-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+    };
+  }).catch(function(e){ box.innerHTML = '<div class="note warn" style="margin-top:12px">לא ניתן לקרוא את הגיליון: ' + esc(e.message) + '</div>'; });
+}
+
+/* ---------- Google Sheet connection (in the publish tab) ---------- */
+function sheetSection(){
+  var ep = (cfg.backend && cfg.backend.endpoint) || '', k = sheetKey();
+  return '<div class="card" style="margin-top:14px"><h2>חיבור לגיליון Google ' + (ep && k ? '<span class="st on">מחובר</span>' : '<span class="st off">לא מחובר</span>') + '</h2>' +
+    '<p class="sub" style="margin:0 0 8px">הגיליון שומר את ההגדרות שאתם מפרסמים מכאן, וקולט את תשובות הסקרים, את יומן הכניסות — ואם תרצו גם את ההזמנות מאפליקציית הלקוחות. פעולה חד-פעמית של כ-5 דקות:</p>' + (ep && k ? '<div class="note ' + (SRC === 'sheet' ? '' : 'warn') + '" style="margin:0 0 10px">' + (SRC === 'sheet' ? 'ההגדרות נטענו מהגיליון. כל פרסום נשמר בו והאפליקציות מתעדכנות ממנו.' : 'הגיליון מחובר אבל עוד אין בו הגדרות — לחצו "פרסום לכל המשתמשים" כדי לשמור אותן בו בפעם הראשונה.') + '</div>' : '') + '' +
+    '<ol class="steps"><li>פתחו <a href="https://sheets.new" target="_blank" rel="noopener">גיליון Google חדש</a> בחשבון העבודה ותנו לו שם (למשל "G1 SiteGuard – נתוני פיילוט").</li>' +
+    '<li>בגיליון: Extensions ← Apps Script. מחקו את מה שיש שם.</li>' +
+    '<li><button class="btn sm navy" id="gsCopy">העתקת הקוד</button> והדביקו אותו שם, ואז שמירה (Ctrl+S).</li>' +
+    '<li>Deploy ← New deployment ← סוג: <b>Web app</b> ← Execute as: <b>Me</b> ← Who has access: <b>Anyone</b> ← Deploy, ואשרו את ההרשאות.</li>' +
+    '<li>העתיקו את ה-Web app URL והדביקו כאן, ולחצו "שמירה ובדיקה". אחר כך "פרסום לכל המשתמשים".</li></ol><div class="note" style="margin:6px 0 0">עדכון קוד בעתיד: Deploy ← Manage deployments ← עיפרון ← Version: New version ← Deploy — כך הכתובת נשארת אותה כתובת.</div>' +
+    '<div class="row" style="margin-top:8px"><input type="url" id="gsUrl" class="mono" placeholder="https://script.google.com/macros/s/…/exec" value="' + esc(ep) + '" style="flex:1;min-width:240px;padding:10px;border:1px solid #C9D2DC;border-radius:10px"><button class="btn navy" id="gsSave">שמירה ובדיקה</button></div>' +
+    '<label class="sw" style="margin-top:12px"><input type="checkbox" id="gsLeads"' + (ep && cfg.consumer.leadEndpoint === ep ? ' checked' : '') + '> לקלוט גם את ההזמנות ובקשות היועץ מאפליקציית הלקוחות לגיליון</label>' +
+    '<div class="note" style="margin-top:10px">מפתח הניהול של הגיליון (מאפשר לפרסם ולקרוא תוצאות) נשמר רק בדפדפן הזה' + (k ? ' (קיים)' : '') + '. כדי לנהל ממחשב אחר — העבירו אליו את המפתח (הצגה ← העתקה, ושם: הצגה ← הדבקה): <span class="mono" id="gsKey">' + (k ? esc(k.slice(0, 6)) + '…' : '—') + '</span> <button class="btn sm" id="gsKeyShow">הצגה</button></div></div>';
+}
+function bindSheet(){
+  $('#gsCopy').onclick = function(){
+    var k = sheetKey(); if (!k) { var a = new Uint8Array(18); crypto.getRandomValues(a); k = Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); lsSet('g1sg_admin_sheetkey', k); }
+    var code = APPS_SCRIPT.replace('%%ADMIN_KEY%%', k);
+    (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(function(){ toast('הקוד הועתק — הדביקו ב-Apps Script'); }).catch(function(){ modal('<h2>קוד ל-Apps Script</h2><textarea style="width:100%;height:320px;direction:ltr;font:12px ui-monospace,monospace">' + esc(code) + '</textarea><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn primary" data-x>סגירה</button></div>'); });
+    rPublish();
+  };
+  $('#gsSave').onclick = function(){
+    var u = $('#gsUrl').value.trim(); if (!/^https:\/\/script\.google\.com\//.test(u)) { toast('כתובת Web app לא תקינה'); return; }
+    fetch(u + '?action=ping&t=' + Date.now()).then(function(r){ return r.json(); }).then(function(j){
+      if (!j.ok) throw new Error();
+      var prevEp = cfg.backend.endpoint; cfg.backend.endpoint = u; lsSet('g1sg_admin_ep', u); if (cfg.consumer.leadEndpoint === prevEp && prevEp) cfg.consumer.leadEndpoint = u;
+      markDirty(); toast('הגיליון מחובר — עכשיו \"פרסום לכל המשתמשים\" כדי לשמור בו את ההגדרות'); rPublish();
+      return loadReport(true).then(function(){}, function(e){ toast('הגיליון עונה, אבל מפתח הניהול לא תואם — העתיקו את הקוד מחדש והדביקו ב-Apps Script'); });
+    }).catch(function(){ toast('הכתובת לא עונה. ודאו ש-Who has access מוגדר ל-Anyone'); });
+  };
+  $('#gsLeads').onchange = function(){ if (this.checked) { if (!cfg.backend.endpoint) { this.checked = false; toast('קודם מחברים את הגיליון'); return; } cfg.consumer.leadEndpoint = cfg.backend.endpoint; } else if (cfg.consumer.leadEndpoint === cfg.backend.endpoint) cfg.consumer.leadEndpoint = ''; markDirty(); };
+  $('#gsKeyShow').onclick = function(){ var k = sheetKey(); if (!k) { var m = prompt('הדביקו מפתח קריאה קיים (אם יצרתם את הקוד ממחשב אחר):'); if (m) { lsSet('g1sg_admin_sheetkey', m.trim()); REPORT = null; rPublish(); } return; } $('#gsKey').textContent = k; };
+}
+
+var APPS_SCRIPT = "/**\n * G1 SiteGuard — הגדרות האפליקציות (מחירים, משתמשים, סקרים) + קליטת נתונים (סקרים, יומן כניסות, הזמנות) בגיליון Google.\n * הדבקה: Extensions → Apps Script → מחקו את התוכן הקיים → הדביקו את כל הקובץ → שמירה.\n * פרסום: Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone → Deploy.\n * את כתובת ה-Web app מדביקים בעמוד הניהול.\n */\nvar ADMIN_KEY = '%%ADMIN_KEY%%';          // מפתח הניהול (קריאה ופרסום) — אל תשתפו\nvar CONFIG_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/config.json';\n\nfunction doPost(e) {\n  var lock = LockService.getScriptLock();\n  try {\n    lock.waitLock(20000);\n    var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var now = new Date();\n    if (d.type === 'config') {\n      if (!d.key || d.key !== ADMIN_KEY) return out_({ ok: false, error: 'unauthorized' });\n      var c = d.config;\n      if (!c || typeof c !== 'object' || !c.access || !c.consumer) return out_({ ok: false, error: 'bad config' });\n      var json = JSON.stringify(c);\n      saveConfig_(ss, json);\n      var hist = sheet_(ss, 'ConfigHistory', ['time', 'by', 'json']);\n      hist.appendRow([now, String(d.by || '')].concat(chunks_(json)));\n      if (hist.getLastRow() > 201) hist.deleteRows(2, hist.getLastRow() - 201);   // keep the last 200 versions\n      CacheService.getScriptCache().remove('cfg'); CacheService.getScriptCache().remove('users');\n      return out_({ ok: true, savedAt: now.toISOString() });\n    }\n    if (d.type === 'login') {\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      append_(ss, 'Logins', ['time', 'event', 'uid', 'name', 'deviceId', 'device', 'appVersion'],\n        [now, d.event || '', d.uid || '', d.name || '', d.deviceId || '', d.deviceLabel || '', d.appVersion || '']);\n    } else if (d.type === 'survey') {\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      append_(ss, 'Responses', ['time', 'surveyId', 'uid', 'name', 'deviceId', 'answers'],\n        [now, d.surveyId || '', d.uid || '', d.name || '', d.deviceId || '', JSON.stringify(d.answers || {})]);\n      // a readable sheet per survey: one column per question\n      var ids = Object.keys(d.answers || {});\n      var sh = sheet_(ss, 'S_' + String(d.surveyId || 'survey').slice(0, 40), ['time', 'name', 'uid'].concat(ids));\n      var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n      ids.forEach(function (q) { if (head.indexOf(q) < 0) { head.push(q); sh.getRange(1, head.length).setValue(q); } });\n      var row = head.map(function (h) { return h === 'time' ? now : h === 'name' ? (d.name || '') : h === 'uid' ? (d.uid || '') : (d.answers && d.answers[h] != null ? d.answers[h] : ''); });\n      sh.appendRow(row);\n    } else {\n      // orders / consultant requests from the home planner\n      append_(ss, 'Leads', ['time', 'type', 'ref', 'name', 'phone', 'email', 'city', 'message', 'data'],\n        [now, d.lead_type || d.type || '', d.ref || '', d.name || '', d.phone || '', d.email || '', d.city || '', d.message || '', d.data || '']);\n    }\n    return out_({ ok: true });\n  } catch (err) {\n    return out_({ ok: false, error: String(err) });\n  } finally {\n    try { lock.releaseLock(); } catch (e2) {}\n  }\n}\n\nfunction doGet(e) {\n  var p = (e && e.parameter) || {};\n  if (p.action === 'ping') return out_({ ok: true, app: 'g1-siteguard' });\n  if (p.action === 'config') { var cj = getConfigJson_(); return out_({ ok: true, config: cj ? JSON.parse(cj) : null }); }\n  if (p.key !== ADMIN_KEY) return out_({ ok: false, error: 'unauthorized' });\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  return out_({ ok: true, logins: rows_(ss, 'Logins', 2000), responses: rows_(ss, 'Responses', 5000), leads: rows_(ss, 'Leads', 1000) });\n}\n\nfunction knownUser_(uid) {\n  if (!uid) return false;\n  var cache = CacheService.getScriptCache(), key = 'users';\n  var list = cache.get(key);\n  if (!list) {\n    try {\n      var cj = getConfigJson_();\n      var cfg = JSON.parse(cj || UrlFetchApp.fetch(CONFIG_URL + '?t=' + Date.now(), { muteHttpExceptions: true }).getContentText());\n      list = JSON.stringify(((cfg.access && cfg.access.users) || []).map(function (u) { return u.id; }));\n      cache.put(key, list, 300);\n    } catch (e) { return true; }   // config unreachable: don't lose data\n  }\n  return JSON.parse(list).indexOf(uid) >= 0;\n}\n// settings JSON kept in a hidden sheet, split into cells (a cell holds up to 50,000 characters)\nfunction chunks_(s) { var a = []; for (var i = 0; i < s.length; i += 40000) a.push(s.slice(i, i + 40000)); return a.length ? a : ['']; }\nfunction saveConfig_(ss, json) {\n  var sh = ss.getSheetByName('Config');\n  if (!sh) { sh = ss.insertSheet('Config'); try { sh.hideSheet(); } catch (e) {} }\n  sh.clearContents();\n  var parts = chunks_(json);\n  sh.getRange(1, 1, parts.length, 1).setValues(parts.map(function (x) { return [x]; }));\n  try { CacheService.getScriptCache().put('cfg', json, 120); } catch (e) {}\n}\nfunction getConfigJson_() {\n  var cache = CacheService.getScriptCache(), hit = cache.get('cfg');\n  if (hit) return hit;\n  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Config');\n  if (!sh || sh.getLastRow() < 1) return '';\n  var json = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(function (r) { return r[0]; }).join('');\n  try { cache.put('cfg', json, 120); } catch (e) {}\n  return json;\n}\nfunction sheet_(ss, name, header) {\n  var sh = ss.getSheetByName(name);\n  if (!sh) { sh = ss.insertSheet(name); sh.appendRow(header); sh.setFrozenRows(1); sh.setRightToLeft(true); }\n  return sh;\n}\nfunction append_(ss, name, header, row) { sheet_(ss, name, header).appendRow(row); }\nfunction rows_(ss, name, max) {\n  var sh = ss.getSheetByName(name); if (!sh || sh.getLastRow() < 2) return [];\n  var n = sh.getLastRow() - 1, start = Math.max(2, sh.getLastRow() - max + 1);\n  var vals = sh.getRange(start, 1, sh.getLastRow() - start + 1, sh.getLastColumn()).getValues();\n  var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n  return vals.map(function (r) { var o = {}; head.forEach(function (h, i) { o[h] = r[i] instanceof Date ? r[i].toISOString() : r[i]; }); return o; });\n}\nfunction out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }\n";
 /* ---------- publish ---------- */
 $('#btnDiscard').onclick = function(){ if (!confirm('לבטל את כל השינויים שלא פורסמו?')) return; cfg = clone(saved); render(); };
 $('#btnPublish').onclick = function(){
-  if (!token()) { tab = 'publish'; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x.dataset.t === 'publish')); }); render(); toast('קודם מחברים את עמוד הניהול ל-GitHub'); return; }
+  var ep = adminEp(cfg), k = sheetKey();
+  if (!ep || !k) { tab = 'publish'; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x.dataset.t === 'publish')); }); render(); toast(!ep ? 'קודם מחברים את עמוד הניהול לגיליון Google' : 'חסר מפתח הניהול של הגיליון בדפדפן הזה'); return; }
   if (activeManagers() < 1) { toast('חייב להישאר לפחות מנהל מוצר פעיל אחד'); return; }
   var mine = (cfg.access.users || []).filter(function(u){ return u.id === me.id; })[0];
   if (!mine || mine.status !== 'active' || mine.hash !== me.hash) { if (!confirm('השינוי ינעל את הכניסה שלך עם הקוד הנוכחי. להמשיך?')) return; }
   var b = this; b.disabled = true; b.textContent = 'מפרסם…';
+  cfg.backend.endpoint = ep;
   cfg.updatedAt = new Date().toISOString(); cfg.updatedBy = me.name;
-  var body = JSON.stringify(cfg, null, 1);
-  gh('GET').then(function(j){ return gh('PUT', { message:'admin: settings update by ' + me.name, content:b64(body), sha:j.sha, branch:REPO.branch }); })
-    .then(function(r){ sha = r.content && r.content.sha; saved = clone(cfg); markDirty(); toast('פורסם! המשתמשים יקבלו את העדכון תוך כדקה–שתיים'); render(); })
-    .catch(function(e){ toast(e.status === 401 || e.status === 403 ? 'אין הרשאה — בדקו את החיבור ל-GitHub' : ('הפרסום נכשל: ' + e.message)); })
+  fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ type:'config', key:k, by:me.name, config:cfg }) })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if (!j || !j.ok) { var e = new Error(j && j.error || 'שגיאה'); e.code = j && j.error; throw e; }
+      SRC = 'sheet'; saved = clone(cfg); markDirty(); toast('פורסם! המשתמשים יקבלו את העדכון בפתיחה הבאה (או תוך 20 דקות)'); render(); })
+    .catch(function(e){ toast(e.code === 'unauthorized' ? 'מפתח הניהול לא תואם לקוד שבגיליון — העתיקו את הקוד מחדש' : e.code === 'bad config' ? 'ההגדרות לא תקינות — לא פורסם' : ('הפרסום נכשל: ' + e.message + '. בדקו את החיבור לגיליון')); })
     .then(function(){ b.textContent = 'פרסום לכל המשתמשים'; markDirty(); });
 };
 })();

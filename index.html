@@ -2307,6 +2307,51 @@
   .g1-min-warn{ margin:0 0 10px; padding:10px 12px; border-radius:10px; background:#FFF0EE; color:#8E2A20; font-size:13px; line-height:1.6; border:1px solid rgba(194,54,43,.3); }
   #btnG1Admin{ border-color:#1AACE3; color:#0A7FBF; font-weight:700; text-decoration:none; }
   .mm-grid .mm-admin{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; padding:12px; border-radius:12px; background:#0B1F33; color:#fff; font-weight:800; text-decoration:none; }
+
+  /* G1 control v2: phone factor, surveys */
+  .g1-lock-card .g1-lock-phone{ font:700 18px/1.2 ui-monospace,monospace; letter-spacing:1px; text-align:center; padding:11px; border:1.5px solid #C9D2DC; border-radius:12px; }
+  .g1-sv-btn{ position:relative; border-color:#1AACE3 !important; color:#0A7FBF !important; font-weight:800; }
+  .g1-dot{ position:absolute; top:4px; inset-inline-end:4px; width:8px; height:8px; border-radius:50%; background:#E5484D; }
+  .g1-sv-prompt{ position:fixed; z-index:15000; inset-inline-start:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); width:min(360px, calc(100vw - 32px)); background:#0B1F33; color:#fff; border-radius:18px; padding:14px 16px; box-shadow:0 18px 44px rgba(0,0,0,.35); display:flex; flex-direction:column; gap:4px; font-family:'Heebo',sans-serif; animation:g1svIn .35s ease; }
+  @keyframes g1svIn{ from{ transform:translateY(16px); opacity:0 } to{ transform:none; opacity:1 } }
+  .g1-sv-prompt b{ font-size:15.5px; font-weight:800; } .g1-sv-prompt span{ font-size:13px; color:#BFD3E6; }
+  .g1-sv-pa{ display:flex; gap:8px; margin-top:8px; }
+  .g1-sv-pa button{ flex:1; min-height:42px; border-radius:12px; border:0; font:800 14.5px 'Heebo',sans-serif; cursor:pointer; }
+  .g1-sv-go{ background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; } .g1-sv-later{ background:rgba(255,255,255,.12); color:#fff; }
+  @media (max-width:680px){ .g1-sv-prompt{ bottom:calc(76px + env(safe-area-inset-bottom,0px)); inset-inline:12px; width:auto; } }
+  .g1-sv{ position:fixed; inset:0; z-index:19000; background:rgba(11,31,51,.62); display:grid; place-items:center; padding:16px; font-family:'Heebo','Assistant',sans-serif; color:#111B29; }
+  .g1-sv-card{ width:min(680px,100%); max-height:calc(100dvh - 32px); background:#fff; border-radius:22px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.35); }
+  .g1-sv-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding:16px 20px 10px; }
+  .g1-sv-kick{ display:inline-block; background:#22395A; color:#fff; border-radius:8px; padding:2px 10px; font-size:12px; font-weight:800; }
+  .g1-sv-head h2{ margin:6px 0 0; font-size:20px; font-weight:900; line-height:1.25; }
+  .g1-sv-x{ width:40px; height:40px; border-radius:12px; border:1px solid #E1E5EA; background:#fff; font-size:16px; cursor:pointer; flex:none; }
+  .g1-sv-prog{ height:4px; background:#E6EAEF; margin:0 20px; border-radius:4px; overflow:hidden; } .g1-sv-prog i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#5DD9E6,#1FA6E2 42%,#0050B4); transition:width .3s; }
+  .g1-sv-body{ overflow-y:auto; padding:8px 20px 16px; overscroll-behavior:contain; }
+  .g1-sv-intro{ font-size:14px; color:#3E4B5A; line-height:1.6; background:#F2F3F5; border-radius:12px; padding:10px 12px; margin:8px 0 6px; }
+  .g1-sv-sec h3{ font-size:15px; font-weight:900; color:#22395A; margin:18px 0 6px; padding-bottom:4px; border-bottom:2px solid #E1E5EA; }
+  .g1-sv-q{ border:1px solid #E1E5EA; border-radius:14px; padding:12px; margin:10px 0; transition:border-color .2s, background .2s; }
+  .g1-sv-q.miss{ border-color:#C2362B; background:#FFF6F5; }
+  .g1-sv-q legend{ font-weight:700; font-size:14.5px; line-height:1.5; padding:0 4px; float:right; width:100%; margin-bottom:8px; }
+  .g1-sv-q legend small{ color:#5B6B7E; font-weight:500; }
+  .g1-sv-scale{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; clear:both; }
+  .g1-sv-scale label, .g1-sv-nps label{ position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 2px; border:1.5px solid #D5DCE3; border-radius:12px; cursor:pointer; text-align:center; min-height:58px; justify-content:center; }
+  .g1-sv-scale input, .g1-sv-nps input, .g1-sv-choice input{ position:absolute; opacity:0; pointer-events:none; }
+  .g1-sv-scale b{ font-size:18px; font-weight:900; } .g1-sv-scale small{ font-size:10.5px; color:#5B6B7E; line-height:1.2; }
+  .g1-sv-scale label:has(input:checked), .g1-sv-nps label:has(input:checked){ background:#22395A; border-color:#22395A; color:#fff; } .g1-sv-scale label:has(input:checked) small{ color:#CFE0EE; }
+  .g1-sv-scale label:has(input:focus-visible), .g1-sv-nps label:has(input:focus-visible), .g1-sv-choice label:has(input:focus-visible){ outline:3px solid rgba(26,172,227,.5); outline-offset:2px; }
+  .g1-sv-na{ display:inline-flex; gap:6px; align-items:center; margin-top:8px; font-size:12.5px; color:#5B6B7E; cursor:pointer; }
+  .g1-sv-nps{ display:grid; grid-template-columns:repeat(11,1fr); gap:4px; clear:both; } .g1-sv-nps label{ min-height:44px; } .g1-sv-nps b{ font-size:15px; }
+  .g1-sv-npsl{ display:flex; justify-content:space-between; font-size:11.5px; color:#5B6B7E; margin-top:4px; }
+  .g1-sv-num{ display:flex; align-items:center; gap:8px; clear:both; } .g1-sv-num input{ width:140px; padding:10px; border:1.5px solid #C9D2DC; border-radius:10px; font-size:16px; text-align:center; }
+  .g1-sv-choice{ display:flex; flex-direction:column; gap:6px; clear:both; }
+  .g1-sv-choice label{ position:relative; padding:10px 12px; border:1.5px solid #D5DCE3; border-radius:12px; cursor:pointer; font-size:14px; }
+  .g1-sv-choice label:has(input:checked){ border-color:#22395A; background:#EEF3F8; font-weight:700; box-shadow:inset 4px 0 0 #1AACE3; }
+  .g1-sv-q textarea{ width:100%; padding:10px; border:1.5px solid #C9D2DC; border-radius:10px; font:inherit; resize:vertical; clear:both; }
+  .g1-sv-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); border-top:1px solid #E1E5EA; }
+  .g1-sv-err{ color:#C2362B; font-weight:700; font-size:13px; }
+  .g1-sv-send{ min-height:48px; padding:0 24px; border:0; border-radius:14px; background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; font:800 16px 'Heebo',sans-serif; cursor:pointer; }
+  .g1-sv-thanks{ padding:34px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; } .g1-sv-thanks h2{ margin:0; font-size:24px; } .g1-sv-thanks p{ color:#3E4B5A; margin:0 0 10px; }
+  @media (max-width:520px){ .g1-sv{ padding:0; } .g1-sv-card{ max-height:100dvh; height:100dvh; border-radius:0; } .g1-sv-scale small{ font-size:9.5px; } .g1-sv-nps{ grid-template-columns:repeat(6,1fr); } }
 </style>
 
 <div class="app" id="app">
@@ -2638,7 +2683,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 120.1</div>
+              <div class="app-version" id="appVersion">גרסה 121</div>
             </div>
           </div>
         </div>
@@ -13103,6 +13148,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       name:payload.customer.name, phone:payload.customer.phone, email:payload.customer.email || '',
       city:payload.customer.city || '', message:payload.message, lead_type:payload.type, ref:payload.ref, data:JSON.stringify(payload)
     });
+    if (/script\.google(usercontent)?\.com/.test(LEAD_CONFIG.endpoint)) {
+      body.type = payload.type;
+      return fetch(LEAD_CONFIG.endpoint, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(body) })
+        .catch(function(){ return fetch(LEAD_CONFIG.endpoint, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(body) }); })
+        .then(function(){ return { demo:false }; });
+    }
     return fetch(LEAD_CONFIG.endpoint, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) })
       .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return { demo:false }; });
   }
@@ -14165,19 +14216,35 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function g1cWrite(k, v){ try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
   G1C.cfg = g1cRead('g1sg_config');
   function g1cOnConfig(fn){ G1C.listeners.push(fn); if (G1C.cfg) { try { fn(G1C.cfg, false); } catch(e) {} } }
-  function g1cFetchConfig(){
+  // Settings come from the manager's Google Sheet (published from the admin page). The GitHub
+  // config.json is only the bootstrap: it tells the app where the sheet lives (backend.endpoint).
+  function g1cJSON(url){
     var ctl = ('AbortController' in window) ? new AbortController() : null;
-    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 8000);
-    return fetch(G1_CONFIG_URL + '?t=' + Date.now(), { cache:'no-store', signal: ctl ? ctl.signal : undefined })
-      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(cfg){
-        clearTimeout(timer);
-        if (!cfg || typeof cfg !== 'object') throw new Error('bad config');
-        G1C.cfg = cfg; G1C.fresh = true; G1C.loaded = true; g1cWrite('g1sg_config', cfg);
-        G1C.listeners.forEach(function(fn){ try { fn(cfg, true); } catch(e) {} });
-        return cfg;
-      })
-      .catch(function(){ clearTimeout(timer); G1C.loaded = true; G1C.listeners.forEach(function(fn){ try { fn(G1C.cfg, false); } catch(e) {} }); return null; });
+    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 9000);
+    return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(), { cache:'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function(r){ clearTimeout(timer); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }, function(e){ clearTimeout(timer); throw e; });
+  }
+  function g1cIsEp(u){ return /^https:\/\/script\.google\.com\/macros\//.test(String(u || '')); }
+  function g1cFetchConfig(){
+    var cached = G1C.cfg;
+    return g1cJSON(G1_CONFIG_URL).then(function(c){ return c && typeof c === 'object' ? c : null; }, function(){ return null; }).then(function(base){
+      var ep = (base && base.backend && base.backend.endpoint) || (cached && cached.backend && cached.backend.endpoint) || '';
+      if (!g1cIsEp(ep)) return base;
+      return g1cJSON(ep + '?action=config').then(function(j){
+        if (j && j.ok && j.config && j.config.access) { var c = j.config; c.backend = c.backend || {}; if (!g1cIsEp(c.backend.endpoint)) c.backend.endpoint = ep; c._src = 'sheet'; return c; }
+        return base;                                   // sheet connected but not published yet
+      }, function(){
+        // sheet unreachable: a newer copy from the sheet beats the bootstrap file
+        if (cached && cached._src === 'sheet') return cached;
+        return base;
+      });
+    }).then(function(cfg){
+      if (!cfg || typeof cfg !== 'object') throw new Error('offline');
+      var fresh = cfg !== cached;
+      G1C.cfg = cfg; G1C.fresh = fresh || G1C.fresh; G1C.loaded = true; g1cWrite('g1sg_config', cfg);
+      G1C.listeners.forEach(function(fn){ try { fn(cfg, fresh); } catch(e) {} });
+      return cfg;
+    }).catch(function(){ G1C.loaded = true; G1C.listeners.forEach(function(fn){ try { fn(G1C.cfg, false); } catch(e) {} }); return null; });
   }
   function g1cNormCode(c){ return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
   function g1cHash(code, uid, salt){
@@ -14193,7 +14260,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // no settings ever loaded on this device (first start, offline) → locked until the first online check
   function g1AccessOn(){ if (!G1C.cfg) return G1C.loaded; return !!(G1C.cfg.access && G1C.cfg.access.enabled); }
   function g1FindUser(uid){ var us = (G1C.cfg && G1C.cfg.access && G1C.cfg.access.users) || []; for (var i = 0; i < us.length; i++) if (us[i].id === uid) return us[i]; return null; }
-  // 'ok' | 'locked' | 'blocked' | 'offline-expired'
+  // device identity: a random id kept on this device (cleared browser data = a new device)
+  function g1DeviceId(){ var d = g1cRead('g1sg_device'); if (!d) { var a = new Uint8Array(8); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach(function(_, i){ a[i] = Math.random() * 256; }); d = 'd_' + Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); g1cWrite('g1sg_device', d); } return d; }
+  function g1DeviceLabel(){
+    var ua = navigator.userAgent || '';
+    var os = /iPhone/.test(ua) ? 'iPhone' : /iPad|Macintosh.*Mobile/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'iPad' : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android טלפון' : 'Android טאבלט') : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : 'מכשיר';
+    var br = /Edg\//.test(ua) ? 'Edge' : /SamsungBrowser/.test(ua) ? 'Samsung' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : '';
+    var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    return os + (br ? ' · ' + br : '') + (standalone ? ' · מותקן' : '') + (location.protocol === 'file:' ? ' · עותק מקומי' : '');
+  }
+  function g1DeviceOk(u){
+    var a = G1C.cfg && G1C.cfg.access;
+    if (!a || !a.deviceLock || !u || !u.devices || !u.devices.length) return true;
+    return u.devices.indexOf(g1DeviceId()) >= 0;
+  }
+  // 'ok' | 'locked' | 'blocked' | 'device' | 'offline-expired'
   function g1AccessState(){
     if (!g1AccessOn()) return 'ok';
     if (!g1Auth || !G1C.cfg) return 'locked';
@@ -14201,10 +14282,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (G1C.fresh) {
       if (!u || u.hash !== g1Auth.hash) return 'blocked';
       if (u.status !== 'active') return 'blocked';
+      if (u.phoneHash && g1Auth.phoneHash !== u.phoneHash) return 'locked';
+      if (!g1DeviceOk(u)) return 'device';
       return 'ok';
     }
     var days = ((G1C.cfg.access && G1C.cfg.access.offlineDays) || 7);
     if (u && (u.status !== 'active' || u.hash !== g1Auth.hash)) return 'blocked';
+    if (u && !g1DeviceOk(u)) return 'device';
     if (!g1Auth.verifiedAt || Date.now() - g1Auth.verifiedAt > days * 864e5) return 'offline-expired';
     return 'ok';
   }
@@ -14212,6 +14296,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!g1Auth || !G1C.fresh) return;
     var u = g1FindUser(g1Auth.uid); if (!u) return;
     g1Auth.verifiedAt = Date.now(); g1Auth.name = u.name; g1Auth.role = u.role; g1cWrite('g1sg_auth', g1Auth);
+    // at most one "seen" entry per device per day in the admin's access log
+    var day = new Date().toISOString().slice(0, 10);
+    if (g1cRead('g1sg_seen') !== day) { g1cWrite('g1sg_seen', day); g1Log('login', { event:'seen', uid:u.id, name:u.name }); }
+  }
+  function g1NormPhone(p){ var d = String(p || '').replace(/\D/g, ''); return d.slice(-9); }
+  function g1PhoneHash(phone, uid, salt){ return g1cHash(g1NormPhone(phone), uid, (salt || '') + ':phone'); }
+  /* ---------- outbound data (Google Sheet endpoint set in the admin page): logins + survey answers ---------- */
+  function g1Endpoint(){ var b = G1C.cfg && G1C.cfg.backend; return (b && b.endpoint) || ''; }
+  function g1Send(payload){
+    var ep = g1Endpoint(); if (!ep) return Promise.reject(new Error('no-endpoint'));
+    return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
+      .catch(function(){ return fetch(ep, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) }); });
+  }
+  function g1Queue(payload){ var q = g1cRead('g1sg_outbox') || []; q.push(payload); g1cWrite('g1sg_outbox', q.slice(-200)); }
+  function g1Flush(){
+    var q = g1cRead('g1sg_outbox') || []; if (!q.length || !g1Endpoint()) return;
+    g1cWrite('g1sg_outbox', []);
+    q.forEach(function(item){ g1Send(item).catch(function(){ g1Queue(item); }); });
+  }
+  function g1Log(type, data){
+    var payload = Object.assign({ type:type, ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') }, data || {});
+    if (!g1Endpoint()) { g1Queue(payload); return; }
+    g1Send(payload).catch(function(){ g1Queue(payload); });
   }
   function g1LockScreen(reason, after){
     var ov = document.getElementById('g1Lock');
@@ -14221,46 +14328,62 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     var msg = (G1C.cfg && G1C.cfg.access && G1C.cfg.access.message) || 'האפליקציה בשלב פיילוט — הכניסה למורשים בלבד.';
     var why = reason === 'blocked' ? 'הגישה שלך הושהתה על ידי מנהל המוצר. לבירור — פנו אליו.' :
-              reason === 'offline-expired' ? 'עבר זמן רב מאז האימות האחרון. התחברו לרשת והזינו את הקוד שוב.' : '';
+              reason === 'device' ? 'המכשיר הזה עוד לא אושר לשימוש. מנהל המוצר יאשר אותו בעמוד הניהול — ואז אפשר להיכנס.' :
+              reason === 'offline-expired' ? 'עבר זמן רב מאז האימות האחרון. התחברו לרשת והזינו את הפרטים שוב.' : '';
+    var needPhone = ((G1C.cfg && G1C.cfg.access && G1C.cfg.access.users) || []).some(function(u){ return !!u.phoneHash; });
     ov.innerHTML = '<div class="g1-lock-card">' +
       '<div class="g1-lock-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>' +
       '<h2 id="g1LockT">כניסה לאפליקציית הסוכנים</h2><p>' + escapeHtml(msg) + '</p>' +
       (why ? '<p class="g1-lock-why">' + escapeHtml(why) + '</p>' : '') +
       '<label for="g1LockCode">קוד הקצאה אישי</label>' +
-      '<input id="g1LockCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="G1-XXXX-XXXX" dir="ltr">' +
+      '<input id="g1LockCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="הקוד שקיבלתם" dir="ltr">' +
+      (needPhone ? '<label for="g1LockPhone">מספר הנייד שלך</label><input id="g1LockPhone" class="g1-lock-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05X-XXXXXXX" dir="ltr">' : '') +
       '<div class="g1-lock-err" id="g1LockErr" role="alert"></div>' +
       '<button type="button" class="g1-lock-go" id="g1LockGo">כניסה</button>' +
       '<small>אין לכם קוד? פנו למנהל המוצר.</small></div>';
     ov.hidden = false;
     document.body.classList.add('g1-locked');
-    var inp = ov.querySelector('#g1LockCode'), err = ov.querySelector('#g1LockErr'), go = ov.querySelector('#g1LockGo');
+    var inp = ov.querySelector('#g1LockCode'), ph = ov.querySelector('#g1LockPhone'), err = ov.querySelector('#g1LockErr'), go = ov.querySelector('#g1LockGo');
     setTimeout(function(){ try { inp.focus(); } catch(e) {} }, 50);
     function submit(){
-      var code = inp.value; err.textContent = '';
+      var code = inp.value, phone = ph ? ph.value : ''; err.textContent = '';
       if (g1cNormCode(code).length < 6) { err.textContent = 'הזינו את הקוד המלא שקיבלתם.'; return; }
+      if (ph && g1NormPhone(phone).length < 9) { err.textContent = 'הזינו את מספר הנייד המלא.'; ph.focus(); return; }
       go.disabled = true; go.textContent = 'בודק…';
       var p = G1C.fresh ? Promise.resolve(G1C.cfg) : g1cFetchConfig();
+      var matched = null;
       p.then(function(){
         if (!G1C.fresh) throw new Error('offline');
         var users = ((G1C.cfg.access && G1C.cfg.access.users) || []);
         return Promise.all(users.map(function(u){ return g1cHash(code, u.id, G1C.cfg.access.salt).then(function(h){ return h === u.hash ? u : null; }); }));
       }).then(function(found){
         var u = found.filter(Boolean)[0];
-        if (!u) { err.textContent = 'הקוד לא מוכר. בדקו שהקלדתם אותו נכון.'; return; }
-        if (u.status !== 'active') { err.textContent = 'הקוד הזה הושהה על ידי מנהל המוצר.'; return; }
-        g1Auth = { uid:u.id, hash:u.hash, name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
+        if (!u) { err.textContent = 'הקוד או מספר הנייד לא תואמים. בדקו ונסו שוב.'; return null; }
+        matched = u;
+        if (!u.phoneHash) return '';
+        return g1PhoneHash(phone, u.id, G1C.cfg.access.salt);
+      }).then(function(phHash){
+        var u = matched; if (!u) return;
+        if (u.phoneHash && phHash !== u.phoneHash) { err.textContent = 'הקוד או מספר הנייד לא תואמים. בדקו ונסו שוב.'; g1Log('login', { event:'fail-phone', uid:u.id, name:u.name }); return; }
+        if (u.status !== 'active') { err.textContent = 'הגישה שלך הושהתה על ידי מנהל המוצר.'; g1Log('login', { event:'blocked', uid:u.id, name:u.name }); return; }
+        if (!g1DeviceOk(u)) { err.textContent = 'הפרטים נכונים, אבל המכשיר הזה עוד לא אושר. מנהל המוצר קיבל בקשה לאשר אותו.'; g1Log('login', { event:'device-pending', uid:u.id, name:u.name }); return; }
+        g1Auth = { uid:u.id, hash:u.hash, phoneHash:u.phoneHash || '', name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
+        g1cWrite('g1sg_seen', new Date().toISOString().slice(0, 10));
+        g1Log('login', { event:'ok', uid:u.id, name:u.name });
         // first sign-in on this device: the agent's quote signature comes from the access record
-        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && u.phone) agentInfo.phone = u.phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
+        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && phone) agentInfo.phone = phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
         ov.hidden = true; document.body.classList.remove('g1-locked');
         g1ApplyRole();
         try { showCanvasToast('שלום ' + (u.name || '') + ' — הכניסה אושרה'); } catch(e) {}
         if (after) after();
+        setTimeout(g1SurveyCheck, 1500);
       }).catch(function(e){
         err.textContent = (e && e.message === 'no-crypto') ? 'פתחו את האפליקציה מהקישור הרשמי (https) כדי להזין קוד.' : 'אין חיבור לרשת. לאימות הראשון נדרש חיבור.';
       }).then(function(){ go.disabled = false; go.textContent = 'כניסה'; });
     }
     go.onclick = submit;
-    inp.onkeydown = function(e){ if (e.key === 'Enter') submit(); };
+    inp.onkeydown = function(e){ if (e.key === 'Enter') { if (ph && !ph.value) ph.focus(); else submit(); } };
+    if (ph) ph.onkeydown = function(e){ if (e.key === 'Enter') submit(); };
   }
   function g1ApplyRole(){
     var isMgr = g1Auth && g1Auth.role === 'manager';
@@ -14292,8 +14415,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var st = g1AccessState();
       var npOpen = !document.getElementById('newProjectBackdrop').hidden;
       // a blocked code locks at once; otherwise lock only when the agent is past the project-type step
-      if (st === 'blocked' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
-      else if (st === 'ok') { g1MarkVerified(); g1ApplyRole(); }
+      if (st === 'blocked' || st === 'device' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
+      else if (st === 'ok') { g1MarkVerified(); g1ApplyRole(); g1Flush(); g1SurveyCheck(); }
     }
     g1cOnConfig(function(cfg, fresh){ if (fresh || G1C.loaded) recheck(); });
     g1ApplyRole();
@@ -14376,7 +14499,114 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function initG1Consumer(){ g1cOnConfig(function(cfg){ g1ApplyConsumerConfig(cfg); }); g1cFetchConfig(); }
 
-  if (CONSUMER) initG1Consumer(); else { initG1AgentPrices(); initG1AgentAccess(); }
+
+  /* ---------- pilot surveys (published from the admin page, answered here, results in the admin page) ---------- */
+  var G1_SCALE = ['לא מסכים/ה בכלל', 'לא מסכים/ה', 'ניטרלי', 'מסכים/ה', 'מסכים/ה מאוד'];
+  function g1Surveys(kind){ return ((G1C.cfg && G1C.cfg.surveys) || []).filter(function(sv){ return sv.active && (sv.kind || 'full') === kind; }); }
+  function g1SurveyDone(id){ return !!g1cRead('g1sg_sv_done_' + id); }
+  function g1SurveyCheck(){
+    if (CONSUMER || g1AccessState() !== 'ok' || !g1Auth) return;
+    var pend = g1Surveys('full').filter(function(sv){ return !g1SurveyDone(sv.id); });
+    g1SurveyMenu(pend.length);
+    if (!pend.length) return;
+    var sv = pend[0], snooze = g1cRead('g1sg_sv_snooze_' + sv.id);
+    if (snooze && Date.now() < snooze) return;
+    if (!document.getElementById('newProjectBackdrop').hidden || document.getElementById('g1Survey')) return;
+    g1SurveyPrompt(sv, false);
+  }
+  function g1SurveyMenu(n){
+    var b = document.getElementById('btnG1Survey');
+    if (n && !b) {
+      var ref = document.getElementById('btnAgentInfo');
+      if (ref) ref.insertAdjacentHTML('beforebegin', '<button type="button" class="btn btn-ghost btn-sm g1-sv-btn" id="btnG1Survey">סקר פיילוט <i class="g1-dot"></i></button>');
+      var grid = document.querySelector('#mMoreSheet .mm-grid');
+      if (grid && !document.getElementById('mmG1Survey')) grid.insertAdjacentHTML('afterbegin', '<button type="button" id="mmG1Survey" class="mm-admin g1-sv-mm">📝 סקר פיילוט — ממתין למילוי</button>');
+      var open = function(){ var sv = g1Surveys('full').filter(function(x){ return !g1SurveyDone(x.id); })[0]; if (sv) g1OpenSurvey(sv); };
+      var bb = document.getElementById('btnG1Survey'); if (bb) bb.onclick = open;
+      var mm = document.getElementById('mmG1Survey'); if (mm) mm.onclick = function(){ var sh = document.getElementById('mMoreSheet'); if (sh) sh.hidden = true; open(); };
+    } else if (!n && b) { b.remove(); var m = document.getElementById('mmG1Survey'); if (m) m.remove(); }
+  }
+  function g1SurveyMinutes(sv){ var n = 0; (sv.sections || []).forEach(function(se){ (se.questions || []).forEach(function(q){ n += q.type === 'text' ? 3 : 1; }); }); return Math.max(1, Math.round(n * 12 / 60)); }
+  function g1SurveyPrompt(sv, isPulse){
+    var old = document.getElementById('g1SvPrompt'); if (old) old.remove();
+    var d = document.createElement('div'); d.id = 'g1SvPrompt'; d.className = 'g1-sv-prompt'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', sv.title);
+    d.innerHTML = '<b>' + escapeHtml(sv.title) + '</b><span>' + (isPulse ? 'פחות מדקה — על הביקור שהסתיים עכשיו' : 'כ-' + g1SurveyMinutes(sv) + ' דקות · מנהל המוצר מבקש את דעתך') + '</span>' +
+      '<div class="g1-sv-pa"><button type="button" class="g1-sv-go">למילוי</button><button type="button" class="g1-sv-later">' + (isPulse ? 'דילוג' : 'אחר כך') + '</button></div>';
+    document.body.appendChild(d);
+    d.querySelector('.g1-sv-go').onclick = function(){ d.remove(); g1OpenSurvey(sv); };
+    d.querySelector('.g1-sv-later').onclick = function(){ d.remove(); if (!isPulse) g1cWrite('g1sg_sv_snooze_' + sv.id, Date.now() + 12 * 3600e3); };
+  }
+  function g1PulseAfterVisit(){
+    if (CONSUMER || !g1Auth) return;
+    var sv = g1Surveys('pulse')[0]; if (!sv) return;
+    var day = new Date().toISOString().slice(0, 10);
+    if (g1cRead('g1sg_pulse_day_' + sv.id) === day) return;
+    g1cWrite('g1sg_pulse_day_' + sv.id, day);
+    setTimeout(function(){ g1SurveyPrompt(sv, true); }, 1200);
+  }
+  function g1OpenSurvey(sv){
+    var ov = document.getElementById('g1Survey'); if (ov) ov.remove();
+    ov = document.createElement('div'); ov.id = 'g1Survey'; ov.className = 'g1-sv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'g1SvT');
+    var ans = {}, qs = [];
+    var html = '<div class="g1-sv-card"><div class="g1-sv-head"><div><span class="g1-sv-kick">סקר פיילוט</span><h2 id="g1SvT">' + escapeHtml(sv.title) + '</h2></div><button type="button" class="g1-sv-x" aria-label="סגירה">✕</button></div>' +
+      '<div class="g1-sv-prog" aria-hidden="true"><i></i></div><div class="g1-sv-body">' + (sv.intro ? '<p class="g1-sv-intro">' + escapeHtml(sv.intro) + '</p>' : '');
+    (sv.sections || []).forEach(function(se){
+      html += '<section class="g1-sv-sec">' + (se.title ? '<h3>' + escapeHtml(se.title) + '</h3>' : '');
+      (se.questions || []).forEach(function(q){
+        qs.push(q);
+        var name = 'g1q_' + q.id;
+        html += '<fieldset class="g1-sv-q" data-q="' + escapeHtml(q.id) + '"><legend dir="rtl">' + escapeHtml(q.text) + (q.required ? '' : ' <small>(לא חובה)</small>') + '</legend>';
+        if (q.type === 'scale') {
+          html += '<div class="g1-sv-scale">' + [1, 2, 3, 4, 5].map(function(v){ return '<label><input type="radio" name="' + name + '" value="' + v + '"><b>' + v + '</b><small>' + G1_SCALE[v - 1] + '</small></label>'; }).join('') + '</div>' +
+            (q.required ? '' : '<label class="g1-sv-na"><input type="radio" name="' + name + '" value="NA"> לא רלוונטי</label>');
+        } else if (q.type === 'nps') {
+          html += '<div class="g1-sv-nps">' + [0,1,2,3,4,5,6,7,8,9,10].map(function(v){ return '<label><input type="radio" name="' + name + '" value="' + v + '"><b>' + v + '</b></label>'; }).join('') + '</div><div class="g1-sv-npsl"><span>בכלל לא סביר</span><span>סביר מאוד</span></div>';
+        } else if (q.type === 'number') {
+          html += '<div class="g1-sv-num"><input type="number" inputmode="numeric" min="0" max="100000" name="' + name + '" aria-label="' + escapeHtml(q.text) + '"><span>' + escapeHtml(q.unit || '') + '</span></div>';
+        } else if (q.type === 'choice') {
+          html += '<div class="g1-sv-choice">' + (q.options || []).map(function(o){ return '<label><input type="radio" name="' + name + '" value="' + escapeHtml(o) + '"><span>' + escapeHtml(o) + '</span></label>'; }).join('') + '</div>';
+        } else {
+          html += '<textarea name="' + name + '" rows="3" maxlength="2000" aria-label="' + escapeHtml(q.text) + '"></textarea>';
+        }
+        html += '</fieldset>';
+      });
+      html += '</section>';
+    });
+    html += '</div><div class="g1-sv-foot"><span class="g1-sv-err" role="alert"></span><button type="button" class="g1-sv-send">שליחת התשובות</button></div></div>';
+    ov.innerHTML = html; document.body.appendChild(ov);
+    var prog = ov.querySelector('.g1-sv-prog i'), req = qs.filter(function(q){ return q.required; });
+    function read(){
+      qs.forEach(function(q){
+        var name = 'g1q_' + q.id, el;
+        if (q.type === 'number' || q.type === 'text') { el = ov.querySelector('[name="' + name + '"]'); var v = (el.value || '').trim(); if (v !== '') ans[q.id] = q.type === 'number' ? Number(v) : v; else delete ans[q.id]; }
+        else { el = ov.querySelector('[name="' + name + '"]:checked'); if (el) ans[q.id] = (q.type === 'scale' || q.type === 'nps') && el.value !== 'NA' ? Number(el.value) : el.value; else delete ans[q.id]; }
+      });
+      var done = req.filter(function(q){ return ans[q.id] != null; }).length;
+      prog.style.width = (req.length ? done / req.length * 100 : 100) + '%';
+    }
+    ov.addEventListener('input', read); ov.addEventListener('change', function(e){ read(); var f = e.target.closest('.g1-sv-q'); if (f) f.classList.remove('miss'); });
+    ov.querySelector('.g1-sv-x').onclick = function(){ ov.remove(); };
+    ov.querySelector('.g1-sv-send').onclick = function(){
+      read();
+      var miss = req.filter(function(q){ return ans[q.id] == null; });
+      Array.prototype.forEach.call(ov.querySelectorAll('.g1-sv-q'), function(f){ f.classList.toggle('miss', miss.some(function(q){ return q.id === f.dataset.q; })); });
+      if (miss.length) { ov.querySelector('.g1-sv-err').textContent = 'נשארו ' + miss.length + ' שאלות חובה'; var f = ov.querySelector('.g1-sv-q.miss'); if (f) f.scrollIntoView({ block:'center', behavior:'smooth' }); return; }
+      var u = g1FindUser(g1Auth && g1Auth.uid) || {};
+      g1Log('survey', { surveyId:sv.id, surveyTitle:sv.title, uid:g1Auth && g1Auth.uid, name:(u.name || (g1Auth && g1Auth.name) || ''), answers:ans });
+      if ((sv.kind || 'full') === 'full') { g1cWrite('g1sg_sv_done_' + sv.id, Date.now()); g1SurveyMenu(g1Surveys('full').filter(function(x){ return !g1SurveyDone(x.id); }).length); }
+      ov.querySelector('.g1-sv-card').innerHTML = '<div class="g1-sv-thanks"><div class="g1-lock-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg></div><h2>תודה!</h2><p>התשובות ' + (g1Endpoint() ? 'נשלחו למנהל המוצר' : 'נשמרו וישלחו למנהל המוצר אוטומטית') + '. כל תשובה עוזרת לשפר את הכלי לפני ההפצה.</p><button type="button" class="g1-sv-send">סגירה</button></div>';
+      ov.querySelector('.g1-sv-thanks .g1-sv-send').onclick = function(){ ov.remove(); };
+    };
+    read();
+  }
+  function initG1Surveys(){
+    var baseSend2 = sendQuoteFlow;
+    sendQuoteFlow = function(){ var r = baseSend2.apply(this, arguments); Promise.resolve(r).then(function(){ var ss = document.getElementById('shareSheetBackdrop'); if (ss && !ss.hidden) g1PulseAfterVisit(); }); return r; };
+    window.addEventListener('online', function(){ g1Flush(); });
+  }
+
+  if (CONSUMER) initG1Consumer(); else { initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
+
 
   if (CONSUMER) initConsumerMode();
 
