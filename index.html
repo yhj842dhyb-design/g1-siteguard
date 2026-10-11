@@ -614,7 +614,7 @@
   .fire-box label{ display:flex; gap:8px; align-items:center; font-weight:700; color:#5c1a10; cursor:pointer; }
   .fire-box p{ margin:6px 0 0; }
   .rec-pop.fire-pop{ border-top-color:#d23b2a; max-height:min(70vh, 560px); overflow:auto; width:min(420px, calc(100vw - 32px)); }
-  @media (max-width:760px){ .rec-pop.fire-pop:not(.over-modal){ bottom:calc(74px + env(safe-area-inset-bottom, 0px)); max-height:62vh; } }
+  @media (max-width:760px){ .rec-pop.fire-pop{ max-height:70vh; } }
   .rec-pop.fire-pop .rp-bar{ background:#d23b2a; }
   .rec-pop.fire-pop.over-modal{ z-index:10400; }
   .fire-pop .fp-intro{ margin:8px 0 6px; }
@@ -1347,6 +1347,11 @@
   .underlay-img.movable{ pointer-events:all; cursor:move; outline:2px dashed #1aace3; }
   body.pdf-export #underlayLayer, body.pdf-export .ul-bar{ display:none !important; }
   .pi-card{ max-width:760px; }
+  #planImp .g1-sv-foot{ flex-wrap:wrap; }
+  #planImp .g1-sv-foot .g1-sv-err:empty{ display:none; }
+  .pi-go2{ display:flex; flex-direction:column; align-items:center; gap:1px; line-height:1.25; padding:8px 16px; height:auto; font-weight:800; }
+  .pi-go2 small{ font-weight:500; font-size:11px; opacity:.8; }
+  @media (max-width:560px){ #planImp .g1-sv-foot > button{ flex:1 1 100%; } }
   .rec-pop.plan-choice{ border-top-color:#22395a; width:min(420px, calc(100vw - 32px)); }
   .plan-choice p{ margin:6px 0 10px; }
   #mMoreSheet .mm-import{ grid-column:1 / -1; font-weight:800; }
@@ -1374,22 +1379,25 @@
   .pi-row input{ width:90px; padding:7px; border:1px solid #c9d2dc; border-radius:8px; }
   .pi-ai{ display:flex; gap:8px; align-items:center; margin-top:12px; font-weight:700; font-size:13px; }
   .pi-err{ color:#b42318; font-size:13px; min-height:1em; }
-  .rec-pop{ position:fixed; z-index:1200; inset-inline-start:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); width:min(380px, calc(100vw - 32px)); background:#fff; color:#14202f; border-radius:14px; box-shadow:0 14px 40px rgba(15,30,50,.28); padding:14px 16px 12px; border-top:4px solid #1aace3; overflow:hidden; animation:rpIn .25s ease; }
-  .rec-pop.out{ opacity:0; transform:translateY(8px); transition:all .25s ease; }
+  .rec-pop{ position:fixed; z-index:10550; left:50%; top:50%; transform:translate(-50%, -50%); width:min(380px, calc(100vw - 32px)); background:#fff; color:#14202f; border-radius:14px; box-shadow:0 14px 40px rgba(15,30,50,.28); padding:14px 16px 12px; border-top:4px solid #1aace3; overflow:hidden; animation:rpIn .25s ease; }
+  .rec-pop.out{ opacity:0; transform:translate(-50%, -46%); transition:all .25s ease; }
   .rec-pop .rp-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; font-size:15px; }
   .rec-pop .rp-x{ border:0; background:none; font-size:20px; line-height:1; cursor:pointer; color:#5b6b7e; }
   .rec-pop p{ margin:8px 0 10px; font-size:13px; line-height:1.6; color:#33435a; }
   .rec-pop .rp-acts{ display:flex; gap:8px; }
   .rec-pop .rp-bar{ position:absolute; bottom:0; inset-inline-start:0; height:3px; width:100%; background:#1aace3; }
-  @keyframes rpIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  @keyframes rpIn{ from{ opacity:0; transform:translate(-50%, -46%); } to{ opacity:1; transform:translate(-50%, -50%); } }
   @media (prefers-reduced-motion: reduce){ .rec-pop{ animation:none; } }
-  .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
+  .canvas-toast{ position:fixed; inset:0; z-index:10600; display:flex; justify-content:center; align-items:center; pointer-events:none; padding:0 16px; }
   .canvas-toast span{
     background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600; padding:8px 16px;
     border-radius:999px; box-shadow:0 6px 18px rgba(24,35,53,0.28); max-width:92%; text-align:center;
   }
   .canvas-toast span[hidden]{ display:none; }
   .canvas-toast span.warn{ background:#b8382a; }
+  .canvas-toast span{ font-size:15px !important; line-height:1.55; padding:14px 22px !important; border-radius:14px !important; max-width:min(560px, 100%) !important; box-shadow:0 18px 50px rgba(10,20,35,.35) !important; animation:ctIn .22s ease; }
+  @keyframes ctIn{ from{ opacity:0; transform:scale(.96); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .canvas-toast span{ animation:none; } }
   .canvas-hint button{
     background:rgba(255,255,255,0.18); border:0; color:#fff; border-radius:999px;
     width:20px; height:20px; font-size:12px; cursor:pointer; flex:0 0 auto; line-height:1;
@@ -2775,7 +2783,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 128</div>
+              <div class="app-version" id="appVersion">גרסה 129</div>
             </div>
           </div>
         </div>
@@ -6804,9 +6812,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     el.innerHTML = '<div class="rp-head"><b>' + P.title + '</b><button type="button" class="rp-x" aria-label="סגירה">×</button></div><p>' + P.body + '</p>' +
       '<div class="rp-acts"><button type="button" class="btn btn-primary btn-sm rp-add">' + P.addLabel + '</button><button type="button" class="btn btn-ghost btn-sm rp-later">לא עכשיו</button></div><i class="rp-bar"></i>';
     document.body.appendChild(el);
-    var left = 12000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar');
+    var left = 3000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar');
     function close(){ clearInterval(recPopTimer); el.classList.add('out'); setTimeout(function(){ el.remove(); nextRecPop(); }, 250); }
-    recPopTimer = setInterval(function(){ if (paused) { t0 = Date.now(); return; } var now = Date.now(); left -= now - t0; t0 = now; bar.style.width = Math.max(0, left / 120) + '%'; if (left <= 0) close(); }, 100);
+    recPopTimer = setInterval(function(){ if (paused) { t0 = Date.now(); return; } var now = Date.now(); left -= now - t0; t0 = now; bar.style.width = Math.max(0, left / 30) + '%'; if (left <= 0) close(); }, 100);
     el.onmouseenter = function(){ paused = true; }; el.onmouseleave = function(){ paused = false; };
     el.addEventListener('touchstart', function(){ paused = true; }, { passive:true });
     el.querySelector('.rp-x').onclick = close; el.querySelector('.rp-later').onclick = close;
@@ -7065,7 +7073,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       (intro ? '<p class="fp-intro">' + intro + '</p>' : '') +
       (list.length ? '<ul class="fire-audit">' + list.slice(0, 6).map(fireIssueHtml).join('') + '</ul>' + (list.length > 6 ? '<p class="fp-more">ועוד ' + (list.length - 6) + ' — ברשימת ההמלצות › גילוי אש</p>' : '') : '') +
       '<div class="rp-acts">' + (fixable.length > 1 ? '<button type="button" class="btn btn-primary btn-sm fp-all">תיקון הכול (' + fixable.length + ')</button>' : '') +
-      '<button type="button" class="btn btn-ghost btn-sm fp-ok">' + (opts.quote ? 'המשך להצעה' : 'הבנתי') + '</button></div>' + (opts.quote ? '' : '<i class="rp-bar"></i>');
+      '<button type="button" class="btn btn-ghost btn-sm fp-ok">' + (opts.quote ? 'המשך להצעה' : 'הבנתי') + '</button></div><i class="rp-bar"></i>';
     document.body.appendChild(el);
     function close(){ clearInterval(firePopTimer); el.classList.add('out'); setTimeout(function(){ el.remove(); }, 250); }
     el.querySelector('.rp-x').onclick = close; el.querySelector('.fp-ok').onclick = close;
@@ -7078,8 +7086,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       showCanvasToast(left ? '✓ תוקן מה שאפשר — נשארו ' + left + ' פריטים לבדיקה ידנית' : '✓ תכנון גילוי האש עודכן לפי כללי התקן');
       if (opts.onFix) opts.onFix(); close();
     };
-    if (!opts.quote) {
-      var left = opts.ms || 15000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar'), full = left;
+    {
+      var left = 3000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar'), full = left;
       firePopTimer = setInterval(function(){ if (paused) { t0 = Date.now(); return; } var now = Date.now(); left -= now - t0; t0 = now; bar.style.width = Math.max(0, left / full * 100) + '%'; if (left <= 0) close(); }, 100);
       el.onmouseenter = function(){ paused = true; }; el.onmouseleave = function(){ paused = false; };
       el.addEventListener('touchstart', function(){ paused = true; }, { passive:true });
@@ -7752,11 +7760,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           '<label class="pi-ai pi-match" id="piAiRow"><input type="checkbox" id="piAi" checked> <span id="piAiLbl">זיהוי חדרים, דלתות וחלונות — יוצר אותם בשרטוט</span></label>' +
           '<div class="pi-row pi-match"><label for="piKind">סוג הנכס</label><select id="piKind"><option value="house">בית פרטי</option><option value="apartment">דירה</option><option value="store">עסק / חנות</option><option value="clinic">משרד / קליניקה</option></select></div>' +
           '<p class="pi-note pi-match" id="piAiNote"></p>' +
-          '<p class="pi-note pi-upload">התוכנית תועלה לשרטוט כפי שהיא, כרקע. אחרי ההעלאה תבחרו: התאמה אוטומטית של השרטוט לתוכנית, או הצבת אביזרים חופשית עליה.</p>' +
+          '<p class="pi-note pi-upload"><b>שתי אפשרויות:</b> <b>כפי שהועלתה</b> — התוכנית נכנסת כרקע ומציבים עליה אביזרים בדיוק במקום שבוחרים; <b>התאמה למערכת</b> — מסמנים קו מידה והמערכת מזהה חדרים, דלתות וחלונות ובונה מהם את השרטוט. אפשר להחליט גם אחר כך מסרגל התוכנית.</p>' +
         '</div>' +
         '<p class="pi-err" id="piErr" role="alert"></p>' +
       '</div>' +
-      '<div class="g1-sv-foot"><span class="g1-sv-err"></span><button type="button" class="g1-sv-send" id="piGo" disabled>הצבה בשרטוט</button></div></div>';
+      '<div class="g1-sv-foot"><span class="g1-sv-err"></span><button type="button" class="btn btn-ghost pi-go2" id="piGoMatch" hidden disabled>העלאה + התאמה למערכת<small>זיהוי חדרים, דלתות וחלונות</small></button><button type="button" class="g1-sv-send" id="piGo" disabled>הצבה בשרטוט</button></div></div>';
     document.body.appendChild(ov);
     var file = null, cv = MATCH ? opts.cv : null, pts = [], page = 1, aiOn = false, zoom = 1, closed = false, busy = false, placed = false, ctrl = null;
     Array.prototype.forEach.call(ov.querySelectorAll('.pi-match'), function(e){ e.hidden = !MATCH; });
@@ -7793,7 +7801,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var len = lenM(), raw = parseLenInput($('piLen').value, 'm'), calib = pts.length === 2 && len >= 0.3 && len <= 300;
       $('piHint').textContent = $('piUnit').value === 'm' && raw >= 100 ? 'מידה בס״מ? בחרו ס״מ' : (len > 300 ? 'המרחק גדול מדי' : '');
       if (busy) return;
-      if (!MATCH) { $('piGo').disabled = !cv; $('piGo').textContent = 'העלאה לשרטוט כפי שהיא'; return; }
+      if (!MATCH) { $('piGo').disabled = !cv; $('piGo').textContent = 'העלאה כפי שהיא'; $('piGoMatch').hidden = false; $('piGoMatch').disabled = !cv; return; }
       $('piGo').disabled = !(cv && (calib || (wantAi() && pts.length === 0)));
       $('piGo').textContent = wantAi() ? (calib ? 'התאמה: זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : wantLocal() ? (calib ? 'התאמה: זיהוי חדרים' : 'סמנו שתי נקודות ומרחק') : (calib ? 'כיול קנה המידה' : 'סמנו שתי נקודות ומרחק');
     }
@@ -7841,12 +7849,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       saveUnderlay(); placed = true;
       return underlays[fl];
     }
+    $('piGoMatch').onclick = function(){
+      if (busy || MATCH || !cv) return;
+      place(Math.min(960 / cv.width, 640 / cv.height), { ix:0, iy:0, px:20, py:20 }, true);
+      close(); render(); openPlanMatch(false);
+    };
     $('piGo').onclick = function(){
       if (busy) return;
       if (!MATCH) {   // upload as it is: fitted to the drawing area, not to scale yet
         var kf = Math.min(960 / cv.width, 640 / cv.height);
         place(kf, { ix:0, iy:0, px:20, py:20 }, true);
-        close(); render(); showPlanChoice();
+        close(); render();
+        showCanvasToast('התוכנית הועלתה כפי שהיא — הציבו עליה אביזרים בדיוק במקום שתבחרו');
         return;
       }
       var calib = pts.length === 2, k = 0;
@@ -10711,11 +10725,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function showCanvasToast(msg, isWarn){
     var t = document.getElementById('canvasToast');
     if (!t) return;
+    if (t.parentNode && t.parentNode.parentNode !== document.body) document.body.appendChild(t.parentNode);
     t.textContent = msg;
     t.classList.toggle('warn', !!isWarn);
     t.hidden = false;
     clearTimeout(canvasToastTimer);
-    canvasToastTimer = setTimeout(function(){ t.hidden = true; }, 4200);
+    canvasToastTimer = setTimeout(function(){ t.hidden = true; }, 3000);
   }
 
   document.querySelectorAll('.room-preset-btn').forEach(function(btn){
