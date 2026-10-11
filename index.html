@@ -1087,6 +1087,14 @@
     display:flex; align-items:center; justify-content:center;
   }
   .sketch-plan-wrap svg{ width:100%; height:100%; }
+  .sketch-plan-wrap{ position:relative; }
+  .sk-scroll{ width:100%; height:100%; overflow:auto; display:flex; align-items:center; justify-content:center; }
+  .sketch-plan-wrap.zoomed .sk-scroll{ display:block; }
+  .sketch-plan-wrap.zoomed svg{ max-width:none; }
+  body.pdf-export .sk-scroll{ overflow:visible; height:auto; display:block; }
+  .sk-zoom{ position:absolute; top:10px; left:10px; display:flex; flex-direction:column; gap:6px; z-index:2; }
+  .sk-zoom button{ width:36px; height:36px; border-radius:10px; border:1px solid var(--paper-line); background:#fff; font-size:20px; font-weight:700; cursor:pointer; color:var(--ink-on-paper); box-shadow:0 2px 8px rgba(0,0,0,.12); }
+  body.pdf-export .sk-zoom{ display:none !important; }
   .sketch-side{
     flex:0 0 300px; border-inline-start:1px solid var(--paper-line); overflow-y:auto;
     padding:18px; background:var(--paper);
@@ -1345,7 +1353,7 @@
   .underlay-img{ pointer-events:none; }
   #plan.has-underlay #roomsLayer, #plan.has-underlay #furnitureLayer{ opacity:.62; }
   .underlay-img.movable{ pointer-events:all; cursor:move; outline:2px dashed #1aace3; }
-  body.pdf-export #underlayLayer, body.pdf-export .ul-bar{ display:none !important; }
+  body.pdf-export .ul-bar{ display:none !important; }
   .pi-card{ max-width:760px; }
   #planImp .g1-sv-foot{ flex-wrap:wrap; }
   #planImp .g1-sv-foot .g1-sv-err:empty{ display:none; }
@@ -1496,7 +1504,10 @@
      side column instead of squeezing the plan into a sliver next to a fixed 300px rail */
   @media (max-width:760px){
     .sketch-body{ flex-direction:column; overflow:auto; }
-    .sketch-plan-wrap{ flex:0 0 auto; min-height:46vh; }
+    .sketch-plan-wrap{ flex:0 0 auto; min-height:0; padding:10px; display:block; }
+    .sk-scroll{ height:auto; display:block; }
+    .sketch-plan-wrap.zoomed .sk-scroll{ max-height:72vh; }
+    .sketch-plan-wrap svg{ height:auto; display:block; }
     .sketch-side{ flex:0 0 auto; max-height:44vh; border-inline-start:0; border-top:1px solid var(--paper-line); }
     .sketch-head{ flex-wrap:wrap; row-gap:8px; padding:12px 16px; }
     .sketch-meta{ order:10; flex:1 1 100%; }
@@ -2783,7 +2794,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 129</div>
+              <div class="app-version" id="appVersion">גרסה 131</div>
             </div>
           </div>
         </div>
@@ -6738,6 +6749,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function acceptAllRecommendations(){
     var visible = CONSUMER ? currentRecs.slice() : visibleRecsForPanel();   // consumer: every floor at once
     if (!visible.length) return;
+    if (typeof g1Track === 'function') g1Track('recs', { n:visible.length });
     pushUndo(snapshotState());
     if (CONSUMER && !pkgBase) pkgBase = consumerAllRecs.slice();
     visible.forEach(function(r){ var d = recAdd(r.type, r.x, r.y, r.rot, recFloor(r)); if (CONSUMER && d) pkgAdded[r.recId] = d.id; });
@@ -7108,6 +7120,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function fireOnPlaced(ids){
     var devs = state.devices.filter(function(d){ return ids.indexOf(d.id) > -1; }); if (!devs.length) return;
+    if (typeof g1Track === 'function') g1Track('fire', { k:state.kind });
     var iss = fireAudit().filter(function(i){
       if (i.devs && i.devs.some(function(id){ return ids.indexOf(id) > -1; })) return true;
       if (i.first && !fireFirstShown && devs.some(function(d){ return d.type !== 'fire_panel'; })) { fireFirstShown = true; return true; }   // still no panel — said once
@@ -7861,6 +7874,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         place(kf, { ix:0, iy:0, px:20, py:20 }, true);
         close(); render();
         showCanvasToast('התוכנית הועלתה כפי שהיא — הציבו עליה אביזרים בדיוק במקום שתבחרו');
+        if (typeof g1Track === 'function') g1Track('plan', { m:'asis' });
         return;
       }
       var calib = pts.length === 2, k = 0;
@@ -7876,7 +7890,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (kind !== state.kind) { state.kind = kind; syncKindSelect(); updatePaletteAvailability(); }
       if (wantLocal()) { runLocal(k, ''); return; }
       if (!wantAi()) {
-        var U0 = curUL(); close();
+        var U0 = curUL(); close(); if (typeof g1Track === 'function') g1Track('plan', { m:'calib' });
         showCanvasToast(U0.w > 1000 || U0.h > 680 ? 'קנה המידה כויל — התוכנית גדולה משטח השרטוט; "הזזה" בסרגל התוכנית ממקמת אותה' : 'קנה המידה כויל — התוכנית ברקע במידות אמיתיות');
         return;
       }
@@ -7893,6 +7907,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           if (!j || !j.ok) throw new Error((j && j.error) || 'x');
           var res = applyPlanAI(j.plan, { k:k, calibrated:calib, cv:cv, sentW:sent.width, sentH:sent.height, place:place });
           if (res.needCalib) { busy = false; err(res.msg); check(); return; }
+          if (typeof g1Track === 'function') g1Track('plan', { m:'ai', r:res.rooms || 0 });
           finish(res, '');
         })
         .catch(function(e){
@@ -7922,6 +7937,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (closed || srcCv !== cv) return;
         var guessed = (r.plan.rooms || []).filter(function(q){ return q.guessed; }).length;
         var res = applyPlanAI(r.plan, { k:k, calibrated:true, cv:cv, sentW:cv.width, sentH:cv.height, place:place });
+        if (typeof g1Track === 'function') g1Track('plan', { m:'local', r:res.rooms || 0 });
         finish(res, note + (!r.ocr ? ' · שמות החדרים לא נקראו (אין חיבור לרכיב הכיתוב) — שנו לפי הצורך' : guessed ? ' · ל-' + guessed + ' חדרים ניתן שם משוער — שנו לפי הצורך' : ''));
       }).catch(function(e){
         if (closed) return;
@@ -11807,6 +11823,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // layout for that kind of premises (private house / apartment / store), or a blank canvas.
   function startNewProject(kind, guidingAnswers){
     if (typeof clearUnderlays === 'function') clearUnderlays();
+    if (typeof g1Track === 'function') g1Track('project', { k:kind, t:Date.now().toString(36) });
     guidingAnswers = guidingAnswers || {};
     // 'blank' has no dedicated recommendation policy of its own — default it to 'house'
     // (cameras recommended) until the agent says otherwise via the property-kind selector.
@@ -14163,6 +14180,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       (agentInfo.name ? ' · ' + agentInfo.name : '') + (agentInfo.phone ? ' ' + agentInfo.phone : '');
     var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec), { footer: footer });
     if (!blob) return null;
+    try {
+      var qTot = String((document.getElementById('qTotal') || {}).textContent || '').replace(/[^\d.]/g, '');
+      var hasFire = state.devices.some(function(d){ return /^fire_/.test(d.type); });
+      var hasPlan = typeof underlays === 'object' && underlays && Object.keys(underlays).some(function(f){ return !!underlays[f]; });
+      if (typeof g1Track === 'function') g1Track('quote', { q:state.quoteNumber, v:Math.round(+qTot || 0), k:state.kind, n:state.devices.length, fire:hasFire, plan:hasPlan });
+    } catch(e) {}
     return { blob:blob, file:pdfFileFrom(blob, name), name:name, number:state.quoteNumber };
   }
   var quotePdfBusy = false;
@@ -14209,8 +14232,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // enough to hand to an installer/electrician for infrastructure prep, not just a preview.
   var sketchBackdrop = document.getElementById('sketchBackdrop');
   function computeContentBBox(){
-    var layerIds = ['roomsLayer','fencesLayer','devicesLayer','openingsLayer','cablesLayer','furnitureLayer'];
+    var layerIds = ['underlayLayer','roomsLayer','fencesLayer','devicesLayer','openingsLayer','cablesLayer','furnitureLayer'];
     var minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity, any=false;
+    // coverage cones / glass-break circles never reach the sketch — leave them out of its size
+    var aids = Array.prototype.slice.call(document.querySelectorAll('#plan .fov-cone, #plan .glass-radius, #plan #recsLayer, #plan circle[fill="transparent"], #plan [class*="-hit"]'));
+    aids.forEach(function(n){ n.setAttribute('data-skhide', n.style.display || '-'); n.style.display = 'none'; });
     layerIds.forEach(function(id){
       var el = document.getElementById(id);
       if (!el || !el.childNodes.length) return;
@@ -14226,14 +14252,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // floor*FLOOR_Y_STRIDE in the shared coordinate space (see the constant's comment) — the
     // layers above only ever contain the ACTIVE floor's elements (render() filters them), so
     // clamp against that floor's window instead of the fixed [0,680] a single-floor project uses.
+    aids.forEach(function(n){ var v = n.getAttribute('data-skhide'); n.style.display = v === '-' ? '' : v; n.removeAttribute('data-skhide'); });
     var floorY0 = (state.activeFloor||0) * FLOOR_Y_STRIDE;
-    var floorY1 = floorY0 + 680;
     if (!any) return { x:0, y:floorY0, w:1000, h:680 };
+    // the whole drawing, never cut at the editing window's edge (a big yard, a client plan or
+    // labels outside the 1000x680 area used to be cropped off the sketch)
     var pad = 30;
-    var x = Math.max(0, minX - pad);
-    var y = Math.max(floorY0, minY - pad);
-    var w = Math.min(1000, maxX + pad + 90) - x; // extra room bottom-right for the compass/scale bar
-    var h = Math.min(floorY1, maxY + pad + 90) - y;
+    var x = minX - pad;
+    var y = Math.max(floorY0 - FLOOR_Y_STRIDE / 2, minY - pad);
+    var w = maxX + pad + 90 - x; // extra room bottom-right for the compass/scale bar
+    var h = Math.min(floorY0 + FLOOR_Y_STRIDE / 2, maxY + pad + 90) - y;
     return { x:x, y:y, w:Math.max(w,200), h:Math.max(h,140) };
   }
   // A multi-floor house pages between one tidy sketch sheet per floor instead of squeezing
@@ -14285,6 +14313,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     // "המלצות מיגון" ghost suggestions are an in-progress planning overlay, never a final
     // placement — they must never reach the sketch handed to the client/installer.
+    Array.prototype.forEach.call(clone.querySelectorAll('#underlayLayer image'), function(im){ im.setAttribute('opacity', Math.max(0.7, +im.getAttribute('opacity') || 0)); im.removeAttribute('class'); });
     var recsClone = clone.querySelector('#recsLayer');
     if (recsClone) recsClone.parentNode.removeChild(recsClone);
     // zone number badge next to every wired/wireless detector (matches "רשימת אזורי אזעקה")
@@ -14343,7 +14372,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (skScale) { skScale.setAttribute('transform', 'translate(' + (box.x+box.w-170) + ',' + (box.y+box.h-20) + ')'); skScale.removeAttribute('id'); }
     var wrap = document.getElementById('sketchPlanWrap');
     wrap.innerHTML = '';
-    wrap.appendChild(clone);
+    var skScroll = document.createElement('div'); skScroll.className = 'sk-scroll';
+    skScroll.appendChild(clone); wrap.appendChild(skScroll);
+    clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    var zb = document.createElement('div'); zb.className = 'sk-zoom'; zb.setAttribute('data-html2canvas-ignore', 'true');
+    zb.innerHTML = '<button type="button" aria-label="הגדלה">+</button><button type="button" aria-label="הקטנה">−</button>';
+    wrap.appendChild(zb);
+    var skZoom = 1;
+    function applySkZoom(){ wrap.classList.toggle('zoomed', skZoom > 1); clone.style.width = (skZoom * 100) + '%'; clone.style.height = skZoom > 1 ? 'auto' : ''; }
+    zb.children[0].onclick = function(){ skZoom = Math.min(4, skZoom * 1.5); applySkZoom(); };
+    zb.children[1].onclick = function(){ skZoom = Math.max(1, skZoom / 1.5); applySkZoom(); };
 
     var usedTypes = {};
     state.devices.forEach(function(d){ usedTypes[d.type] = true; });
@@ -14463,6 +14501,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var lay = pdfLayoutOf(panel, canvas, '.sk-row, .sketch-section, .sketch-head, tr, p, li');
         secs.push({ canvas:canvas, breaks:lay.breaks, keep:lay.keep, footer: base + (usesMultiFloor() ? ' · ' + floorLabelFor(floors[k]) : '') });
       }
+      if (typeof g1Track === 'function') g1Track('sketch', { k:state.kind });
       var bgm = (getComputedStyle(document.querySelector('#sketchBackdrop .sketch-sheet')).backgroundColor || '').match(/\d+/g);
       return canvasToPdfBlob(null, null, { sections:secs, bg: bgm && bgm.length >= 3 ? bgm.slice(0, 3).map(Number) : [255, 255, 255] });
     } catch(e){
@@ -16005,6 +16044,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // at most one "seen" entry per device per day in the admin's access log
     var day = new Date().toISOString().slice(0, 10);
     if (g1cRead('g1sg_seen') !== day) { g1cWrite('g1sg_seen', day); g1Log('login', { event:'seen', uid:u.id, name:u.name }); }
+    g1TrackFlush();
   }
   function g1NormPhone(p){ var d = String(p || '').replace(/\D/g, ''); return d.slice(-9); }
   function g1PhoneHash(phone, uid, salt){ return g1cHash(g1NormPhone(phone), uid, (salt || '') + ':phone'); }
@@ -16021,6 +16061,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     g1cWrite('g1sg_outbox', []);
     q.forEach(function(item){ g1Send(item).catch(function(){ g1Queue(item); }); });
   }
+  /* pilot usage metrics: a few key actions go to the same access log as 'use:<action>|key=value' rows
+     (the admin's "מדדי פיילוט" tab counts them). Nothing about the customer is sent — only counts,
+     the property type and the quote total. Before sign-in they wait and go out with the agent's id. */
+  var g1TrackSeen = {}, g1TrackWait = [];
+  function g1Track(ev, meta){
+    try {
+      if (CONSUMER) return;
+      var s = 'use:' + ev;
+      Object.keys(meta || {}).forEach(function(k){ var v = meta[k]; if (v === true) s += '|' + k; else if (v != null && v !== '' && v !== false) s += '|' + k + '=' + String(v).replace(/[|=]/g, ' ').slice(0, 40); });
+      var now = Date.now(); if (g1TrackSeen[s] && now - g1TrackSeen[s] < 10 * 60000) return;   // the same action again within 10 minutes
+      g1TrackSeen[s] = now;
+      if (!g1Auth || !g1Auth.uid) { g1TrackWait.push(s); g1TrackWait = g1TrackWait.slice(-6); return; }
+      g1Log('login', { event:s, uid:g1Auth.uid, name:g1Auth.name || '' });
+    } catch(e) {}
+  }
+  function g1TrackFlush(){ if (!g1Auth || !g1Auth.uid) return; var w = g1TrackWait; g1TrackWait = []; w.forEach(function(s){ g1Log('login', { event:s, uid:g1Auth.uid, name:g1Auth.name || '' }); }); }
   function g1Log(type, data){
     var payload = Object.assign({ type:type, ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') }, data || {});
     if (!g1Endpoint()) { g1Queue(payload); return; }
@@ -16078,7 +16134,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (!g1DeviceOk(u)) { err.textContent = 'הפרטים נכונים, אבל המכשיר הזה עוד לא אושר. מנהל המוצר קיבל בקשה לאשר אותו.'; g1Log('login', { event:'device-pending', uid:u.id, name:u.name }); return; }
         g1Auth = { uid:u.id, hash:u.hash, phoneHash:u.phoneHash || '', name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
         g1cWrite('g1sg_seen', new Date().toISOString().slice(0, 10));
-        g1Log('login', { event:'ok', uid:u.id, name:u.name });
+        g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush();
         // first sign-in on this device: the agent's quote signature comes from the access record
         try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && phone) agentInfo.phone = phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
         ov.hidden = true; document.body.classList.remove('g1-locked');
