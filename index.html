@@ -2764,7 +2764,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 124</div>
+              <div class="app-version" id="appVersion">גרסה 125</div>
             </div>
           </div>
         </div>
@@ -7109,6 +7109,422 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     firePop('בדיקת גילוי אש · ת״י 1220', nc ? 'נמצאו ' + nc + ' חוסרים לפי כללי התקן בתכנון גילוי האש:' : 'הערות לתכנון גילוי האש:', l, { ms:20000 });
   }
 
+
+  /* ---------- reading the plan on the device (no server, no key) ---------- */
+  /* G1 SiteGuard — reading a floor plan in the browser, without any server or key.
+     Input: an RGBA image (canvas ImageData-like) and the scale (image px per meter).
+     Walls are the thick dark strokes; thin strokes (text, door swings, window frames, dimension
+     lines, furniture) are removed by a morphological opening. Door and window gaps in collinear
+     walls are bridged so every room becomes a closed region; each region becomes an axis-aligned
+     room. Openings are found where the drawn wall is missing along a room's edge. Labels come from
+     OCR words (optional) that fall inside a room. The output has the same shape as the AI reading
+     (normalized coordinates), so the app turns it into rooms and openings the same way. */
+  (function (root) {
+    'use strict';
+    var ROOM_WORDS = ['סלון', 'מטבח', 'פינת', 'אוכל', 'חדר', 'שינה', 'הורים', 'ילדים', 'שירותים', 'שירותי', 'אורחים', 'אמבטיה', 'רחצה', 'מקלחת',
+      'ממ"ד', 'ממ״ד', 'ממד', 'מרפסת', 'מסדרון', 'מבואה', 'כניסה', 'כביסה', 'חניה', 'חנייה', 'מחסן', 'משרד', 'עבודה', 'קבלה', 'המתנה', 'טיפול',
+      'מכירה', 'חלל', 'מרכזי', 'לובי', 'ארון', 'חצר', 'גינה', 'פטיו', 'מעבר', 'מדרגות', 'ישיבות', 'ישיבה', 'דלפק', 'קופה', 'תצוגה', 'מטבחון',
+      'שירות', 'מקלט', 'חדרון', 'גג', 'ספרייה', 'משפחה', 'אירוח', 'הלבשה', 'אוכל'];
+    var OUT_RE = /מרפסת|חצר|גינה|חניה|חנייה|חניון|פטיו|גג/;
+
+    function lev(a, b) {
+      var m = a.length, n = b.length, d = [], i, j;
+      for (i = 0; i <= m; i++) { d[i] = [i]; }
+      for (j = 1; j <= n; j++) d[0][j] = j;
+      for (i = 1; i <= m; i++) for (j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      return d[m][n];
+    }
+    function matchWord(w) {
+      w = String(w || '').replace(/[^א-ת"״']/g, '');
+      if (w.length < 2) return null;
+      var best = null, bd = 9;
+      ROOM_WORDS.forEach(function (r) { var dd = lev(w, r); if (dd < bd) { bd = dd; best = r; } });
+      var tol = w.length >= 5 ? 2 : w.length >= 3 ? 1 : 0;
+      if (bd > tol) return null;
+      return best === 'ממד' || best === 'ממ"ד' ? 'ממ״ד' : best === 'שירותי' && !/אורח/.test(w) ? 'שירותי' : best;
+    }
+
+    // ---- image helpers
+    function toGray(img) {
+      var n = img.width * img.height, g = new Uint8Array(n), d = img.data;
+      for (var i = 0, j = 0; i < n; i++, j += 4) {
+        var a = d[j + 3] / 255;
+        g[i] = Math.round((0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2]) * a + 255 * (1 - a));
+      }
+      return g;
+    }
+    function otsu(g) {
+      var h = new Array(256).fill(0), n = g.length, i;
+      for (i = 0; i < n; i++) h[g[i]]++;
+      var sum = 0; for (i = 0; i < 256; i++) sum += i * h[i];
+      var sB = 0, wB = 0, best = 0, t = 128;
+      for (i = 0; i < 256; i++) {
+        wB += h[i]; if (!wB) continue; var wF = n - wB; if (!wF) break;
+        sB += i * h[i]; var mB = sB / wB, mF = (sum - sB) / wF, v = wB * wF * (mB - mF) * (mB - mF);
+        if (v > best) { best = v; t = i; }
+      }
+      return Math.max(80, Math.min(200, t));
+    }
+    // resample gray to a target scale (nearest-min to keep thin dark strokes)
+    function resample(g, W, H, f) {
+      var w = Math.max(8, Math.round(W * f)), h = Math.max(8, Math.round(H * f)), o = new Uint8Array(w * h), mn = new Uint8Array(w * h);
+      for (var y = 0; y < h; y++) {
+        var y0 = Math.floor(y / f), y1 = Math.min(H - 1, Math.max(y0, Math.floor((y + 1) / f) - 1));
+        for (var x = 0; x < w; x++) {
+          var x0 = Math.floor(x / f), x1 = Math.min(W - 1, Math.max(x0, Math.floor((x + 1) / f) - 1)), s = 0, c = 0, m = 255;
+          for (var yy = y0; yy <= y1; yy++) for (var xx = x0; xx <= x1; xx++) { var v = g[yy * W + xx]; s += v; c++; if (v < m) m = v; }
+          o[y * w + x] = c ? Math.round(s / c) : 255; mn[y * w + x] = m;
+        }
+      }
+      return { g: o, mn: mn, w: w, h: h };
+    }
+    function erode(m, w, h, r) { return morph(m, w, h, r, true); }
+    function dilate(m, w, h, r) { return morph(m, w, h, r, false); }
+    function morph(m, w, h, r, ero) {   // separable square kernel
+      if (r <= 0) return m.slice();
+      var t = new Uint8Array(w * h), o = new Uint8Array(w * h), x, y, k;
+      for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+        var v = ero ? 1 : 0;
+        for (k = -r; k <= r; k++) { var xx = x + k, p = (xx < 0 || xx >= w) ? (ero ? 0 : 0) : m[y * w + xx]; if (ero ? !p : p) { v = ero ? 0 : 1; break; } }
+        t[y * w + x] = v;
+      }
+      for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+        var u = ero ? 1 : 0;
+        for (k = -r; k <= r; k++) { var yy = y + k, q = (yy < 0 || yy >= h) ? 0 : t[yy * w + x]; if (ero ? !q : q) { u = ero ? 0 : 1; break; } }
+        o[y * w + x] = u;
+      }
+      return o;
+    }
+    function components(mask, w, h, val) {   // 4-connected labels of pixels == val
+      var lab = new Int32Array(w * h).fill(-1), comps = [], st = new Int32Array(w * h);
+      for (var i = 0; i < w * h; i++) {
+        if (mask[i] !== val || lab[i] >= 0) continue;
+        var id = comps.length, sp = 0, c = { id: id, n: 0, x0: w, y0: h, x1: 0, y1: 0, border: false };
+        st[sp++] = i; lab[i] = id;
+        while (sp) {
+          var p = st[--sp], x = p % w, y = (p - x) / w; c.n++;
+          if (x < c.x0) c.x0 = x; if (x > c.x1) c.x1 = x; if (y < c.y0) c.y0 = y; if (y > c.y1) c.y1 = y;
+          if (x === 0 || y === 0 || x === w - 1 || y === h - 1) c.border = true;
+          if (x > 0 && mask[p - 1] === val && lab[p - 1] < 0) { lab[p - 1] = id; st[sp++] = p - 1; }
+          if (x < w - 1 && mask[p + 1] === val && lab[p + 1] < 0) { lab[p + 1] = id; st[sp++] = p + 1; }
+          if (y > 0 && mask[p - w] === val && lab[p - w] < 0) { lab[p - w] = id; st[sp++] = p - w; }
+          if (y < h - 1 && mask[p + w] === val && lab[p + w] < 0) { lab[p + w] = id; st[sp++] = p + w; }
+        }
+        comps.push(c);
+      }
+      return { lab: lab, comps: comps };
+    }
+    // largest axis-aligned rectangle made only of pixels with lab == id inside the bbox
+    function largestRect(lab, w, c, id, taken) {
+      var bw = c.x1 - c.x0 + 1, hts = new Int32Array(bw), best = { a: 0 };
+      for (var y = c.y0; y <= c.y1; y++) {
+        for (var i = 0; i < bw; i++) { var p = y * w + c.x0 + i; hts[i] = (lab[p] === id && !(taken && taken[p])) ? hts[i] + 1 : 0; }
+        var stack = [];
+        for (i = 0; i <= bw; i++) {
+          var hh = i < bw ? hts[i] : 0, start = i;
+          while (stack.length && stack[stack.length - 1][1] >= hh) {
+            var s = stack.pop(), area = s[1] * (i - s[0]);
+            if (area > best.a) best = { a: area, x0: c.x0 + s[0], x1: c.x0 + i - 1, y1: y, y0: y - s[1] + 1 };
+            start = s[0];
+          }
+          stack.push([start, hh]);
+        }
+      }
+      return best.a ? best : null;
+    }
+
+    // ---- the main reader. img: {data,width,height}; ipm: image px per meter; words: OCR words [{text,conf,x0,y0,x1,y1}] in image px
+    function readPlan(img, ipm, words, opts) {
+      opts = opts || {};
+      var W = img.width, H = img.height, G = toGray(img);
+      var f = Math.min(1, 40 / ipm, 1800 / Math.max(W, H)), R = resample(G, W, H, f), g = R.g, w = R.w, h = R.h, s = ipm * f;   // s = work px per meter
+      var T = otsu(g), dark = new Uint8Array(w * h), thin = new Uint8Array(w * h), i, x, y;
+      // photos: uneven light — compare each pixel with its neighbourhood instead of one global threshold
+      var mid = 0; for (i = 0; i < w * h; i++) if (g[i] > 70 && g[i] < 200) mid++;
+      var photo = opts.photo != null ? opts.photo : mid / (w * h) > 0.2;
+      if (photo) {
+        var I = new Float64Array((w + 1) * (h + 1)), rad = Math.max(12, Math.round(0.6 * s));
+        for (y = 0; y < h; y++) { var rs = 0; for (x = 0; x < w; x++) { rs += g[y * w + x]; I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + rs; } }
+        for (y = 0; y < h; y++) for (x = 0; x < w; x++) {
+          var xa = Math.max(0, x - rad), xb = Math.min(w, x + rad + 1), ya = Math.max(0, y - rad), yb = Math.min(h, y + rad + 1);
+          var mean = (I[yb * (w + 1) + xb] - I[ya * (w + 1) + xb] - I[yb * (w + 1) + xa] + I[ya * (w + 1) + xa]) / ((xb - xa) * (yb - ya));
+          var p0 = y * w + x; dark[p0] = g[p0] < mean * 0.78 ? 1 : 0; thin[p0] = R.mn[p0] < mean * 0.78 ? 1 : 0;
+        }
+      } else for (i = 0; i < w * h; i++) { dark[i] = g[i] < T ? 1 : 0; thin[i] = R.mn[i] < T ? 1 : 0; }
+      var M = function (m) { return Math.max(1, Math.round(m * s)); };
+      var r0 = opts.r != null ? opts.r : Math.max(1, Math.round(0.035 * s));
+      if (opts.r == null) {   // hand sketches draw walls with thin strokes: try thinner settings and keep the reading with the most rooms
+        var best = null;
+        [r0, r0 - 1].filter(function (v, k, a) { return v >= 0 && a.indexOf(v) === k; }).forEach(function (rv) {
+          var o2 = {}; for (var kk in opts) o2[kk] = opts[kk]; o2.r = rv;
+          var res = readPlan(img, ipm, words, o2), n2 = res.rooms.length;
+          if (!best || n2 > best.n / 0.6) best = { n: n2, res: res };   // thinner setting only when it finds far more rooms
+        });
+        return best.res;
+      }
+      var r = r0;
+      // 1. walls: strokes at least ~7 cm thick (r = 0: every dark stroke, for sketches)
+      var wall = r > 0 ? dilate(erode(dark, w, h, r), w, h, r) : dark.slice();
+      // drop small blobs (bold text, arrow heads, fixtures)
+      var wc = components(wall, w, h, 1);
+      wc.comps.forEach(function (c) { if (Math.max(c.x1 - c.x0, c.y1 - c.y0) < M(0.6)) for (var yy = c.y0; yy <= c.y1; yy++) for (var xx = c.x0; xx <= c.x1; xx++) { var p = yy * w + xx; if (wc.lab[p] === c.id) wall[p] = 0; } });
+      // 2. bridge door / window gaps between collinear walls
+      var minRun = M(0.3), gapDoor = M(1.35), gapWin = M(3.6), band = M(0.14);
+      var closed = wall.slice();
+      function darkCover(horiz, line, a, b) {   // share of positions in (a,b) with a thin dark stroke near the wall line
+        var hit = 0, tot = 0;
+        for (var q = a + 1; q < b; q++) { tot++; for (var o = -band; o <= band; o++) { var xx = horiz ? q : line + o, yy = horiz ? line + o : q; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; if (thin[yy * w + xx]) { hit++; break; } } }
+        return tot ? hit / tot : 0;
+      }
+      function bridge(horiz) {
+        var L = horiz ? h : w, N = horiz ? w : h;
+        for (var line = 0; line < L; line++) {
+          var runs = [], st = -1;
+          for (var q = 0; q <= N; q++) {
+            var on = q < N && wall[horiz ? line * w + q : q * w + line];
+            if (on && st < 0) st = q; if (!on && st >= 0) { if (q - st >= minRun) runs.push([st, q - 1]); st = -1; }
+          }
+          for (var k = 0; k + 1 < runs.length; k++) {
+            var a = runs[k][1], b = runs[k + 1][0], gap = b - a - 1;
+            if (gap <= 0) continue;
+            if (gap <= gapDoor || (gap <= gapWin && darkCover(horiz, line, a, b) > 0.75)) for (q = a + 1; q < b; q++) closed[horiz ? line * w + q : q * w + line] = 1;
+          }
+        }
+      }
+      bridge(true); bridge(false);
+      // 3. regions: outside = connected to the border; rooms = the rest
+      var free = new Uint8Array(w * h); for (i = 0; i < w * h; i++) free[i] = closed[i] ? 0 : 1;
+      var rc = components(free, w, h, 1), outside = new Uint8Array(rc.comps.length);
+      rc.comps.forEach(function (c) { if (c.border) outside[c.id] = 1; });
+      var minA = 1.2 * s * s, rooms = [];
+      rc.comps.forEach(function (c) {
+        if (outside[c.id] || c.n < minA) return;
+        if (c.x1 - c.x0 < M(0.8) || c.y1 - c.y0 < M(0.8)) return;
+        if (c.n > 600 * s * s) return;
+        // L-shaped spaces: split into rectangles
+        var taken = null, pieces = [], left = c.n;
+        for (var it = 0; it < 3; it++) {
+          var rr = largestRect(rc.lab, w, c, c.id, taken); if (!rr) break;
+          var ar = (rr.x1 - rr.x0 + 1) * (rr.y1 - rr.y0 + 1);
+          if (ar < Math.max(minA, (it ? 0.12 : 0) * c.n) || rr.x1 - rr.x0 < M(0.8) || rr.y1 - rr.y0 < M(0.8)) break;
+          pieces.push(rr); left -= ar;
+          if (left < Math.max(minA, 0.12 * c.n)) break;
+          taken = taken || new Uint8Array(w * h);
+          for (var yy = rr.y0; yy <= rr.y1; yy++) for (var xx = rr.x0; xx <= rr.x1; xx++) taken[yy * w + xx] = 1;
+        }
+        // a nearly rectangular room keeps its full bbox (straighter walls than the inscribed rectangle)
+        if (pieces.length === 1 && c.n / ((c.x1 - c.x0 + 1) * (c.y1 - c.y0 + 1)) > 0.82) pieces = [{ x0: c.x0, y0: c.y0, x1: c.x1, y1: c.y1 }];
+        pieces.forEach(function (p, k) { rooms.push({ comp: c.id, part: k, x0: p.x0, y0: p.y0, x1: p.x1, y1: p.y1, kind: 'room' }); });
+      });
+      // keep the main drawing only (sheets also carry small copies, sections, title blocks)
+      (function () {
+        var gap = M(0.7), grp = rooms.map(function (_, k) { return k; });
+        function find(k) { while (grp[k] !== k) k = grp[k] = grp[grp[k]]; return k; }
+        for (var a1 = 0; a1 < rooms.length; a1++) for (var b1 = a1 + 1; b1 < rooms.length; b1++) {
+          var A = rooms[a1], B = rooms[b1];
+          if (A.x0 - gap <= B.x1 && B.x0 - gap <= A.x1 && A.y0 - gap <= B.y1 && B.y0 - gap <= A.y1) grp[find(a1)] = find(b1);
+        }
+        var tot = {}; rooms.forEach(function (rm, k) { var g0 = find(k); tot[g0] = (tot[g0] || 0) + (rm.x1 - rm.x0) * (rm.y1 - rm.y0); });
+        var keep = Object.keys(tot).sort(function (a2, b2) { return tot[b2] - tot[a2]; })[0];
+        rooms = rooms.filter(function (_, k) { return String(find(k)) === keep; });
+      })();
+      // 4. thin-line spaces outside the walls (balcony, yard, parking): closed by thin strokes only
+      var thinFree = new Uint8Array(w * h);
+      for (i = 0; i < w * h; i++) thinFree[i] = (!thin[i] && !closed[i] && outside[rc.lab[i]] ) ? 1 : 0;
+      var oc = components(thinFree, w, h, 1);
+      var bx0 = w, by0 = h, bx1 = 0, by1 = 0;
+      rooms.forEach(function (rm) { bx0 = Math.min(bx0, rm.x0); by0 = Math.min(by0, rm.y0); bx1 = Math.max(bx1, rm.x1); by1 = Math.max(by1, rm.y1); });
+      oc.comps.forEach(function (c) {
+        if (c.border || c.n < 2 * s * s || c.n > 300 * s * s) return;
+        if (c.x1 - c.x0 < M(1) || c.y1 - c.y0 < M(1)) return;
+        var fill = c.n / ((c.x1 - c.x0 + 1) * (c.y1 - c.y0 + 1)); if (fill < 0.7) return;
+        var near = M(0.6);
+        if (!rooms.length || c.x1 < bx0 - near || c.x0 > bx1 + near || c.y1 < by0 - near || c.y0 > by1 + near) return;
+        // must touch the building on one side
+        var touch = (Math.abs(c.y1 - by0) < near || Math.abs(c.y0 - by1) < near || Math.abs(c.x1 - bx0) < near || Math.abs(c.x0 - bx1) < near);
+        if (!touch) return;
+        rooms.push({ comp: -1, x0: c.x0, y0: c.y0, x1: c.x1, y1: c.y1, kind: 'yard' });
+      });
+      // 5. labels from OCR words
+      var ws = (words || []).map(function (q) { return { t: q.text, c: q.conf, x: (q.x0 + q.x1) / 2 * f, y: (q.y0 + q.y1) / 2 * f, x0: q.x0 * f, x1: q.x1 * f }; });
+      rooms.forEach(function (rm) {
+        var inside = ws.filter(function (q) { return q.x >= rm.x0 && q.x <= rm.x1 && q.y >= rm.y0 && q.y <= rm.y1; });
+        inside.sort(function (a, b) { return Math.abs(a.y - b.y) > M(0.25) ? a.y - b.y : b.x - a.x; });   // lines top-down, words right-to-left
+        var toks = [];
+        var last = null;
+        inside.forEach(function (q) {
+          var m = matchWord(q.t);
+          if (m && toks.indexOf(m) < 0) { toks.push(m); last = q; }
+          else if (!m && /^\d$/.test(q.t) && last && Math.abs(q.y - last.y) < M(0.25) && /^(שינה|חדר|ילדים|משרד|טיפול|ישיבות)$/.test(toks[toks.length - 1])) toks.push(q.t);
+        });
+        while (toks.length && /^\d$/.test(toks[0])) toks.shift();
+        if (toks.length) rm.name = toks.join(' ').replace(/^(\S+) (\d)$/, '$1 $2');
+      });
+      // unlabeled: guess by shape
+      var area = function (rm) { return (rm.x1 - rm.x0 + 1) * (rm.y1 - rm.y0 + 1) / (s * s); };
+      var byArea = rooms.filter(function (rm) { return rm.kind === 'room'; }).sort(function (a, b) { return area(b) - area(a); });
+      var n = 0;
+      rooms.forEach(function (rm) {
+        if (rm.name) { if (OUT_RE.test(rm.name)) rm.kind = 'yard'; return; }
+        var a = area(rm), sw = Math.min(rm.x1 - rm.x0, rm.y1 - rm.y0) / s, lw = Math.max(rm.x1 - rm.x0, rm.y1 - rm.y0) / s;
+        if (rm.kind === 'yard') rm.name = 'מרפסת';
+        else if (rm === byArea[0] && a > 12) rm.name = opts.kind === 'store' ? 'חלל מכירה מרכזי' : opts.kind === 'clinic' ? 'קבלה והמתנה' : 'סלון';
+        else if (lw / sw >= 2.4 && sw <= 2.2) rm.name = 'מסדרון';
+        else if (a <= 4.5) rm.name = 'שירותים';
+        else rm.name = 'חדר ' + (++n);
+        rm.guessed = true;
+      });
+      // 6. openings: along each room edge, where the drawn wall is missing
+      var openings = [], wallMax = M(0.45), minGap = M(0.55);
+      function probe(px, py, dx, dy) {   // {d: distance to the first wall pixel going outward, t: its thickness} or null
+        for (var d = 1; d <= wallMax; d++) {
+          var xx = px + dx * d, yy = py + dy * d; if (xx < 0 || yy < 0 || xx >= w || yy >= h) return null;
+          if (wall[yy * w + xx]) { var t = 0; while (d + t <= wallMax + M(0.2)) { var x2 = px + dx * (d + t), y2 = py + dy * (d + t); if (x2 < 0 || y2 < 0 || x2 >= w || y2 >= h || !wall[y2 * w + x2]) break; t++; } return { d: d, t: t }; }
+        }
+        return null;
+      }
+      function outsideAt(px, py, dx, dy) {
+        for (var d = 1; d <= wallMax + M(0.8); d++) { var xx = px + dx * d, yy = py + dy * d; if (xx < 0 || yy < 0 || xx >= w || yy >= h) return true; var p = yy * w + xx; if (!closed[p] && !wall[p]) return !!outside[rc.lab[p]]; }
+        return false;
+      }
+      rooms.forEach(function (rm, ri) {
+        if (rm.kind !== 'room') return;
+        var edges = [[rm.x0, rm.y0, rm.x1, rm.y0, 0, -1], [rm.x0, rm.y1, rm.x1, rm.y1, 0, 1], [rm.x0, rm.y0, rm.x0, rm.y1, -1, 0], [rm.x1, rm.y0, rm.x1, rm.y1, 1, 0]];
+        edges.forEach(function (e) {
+          var horiz = e[1] === e[3], len = horiz ? e[2] - e[0] : e[3] - e[1], inset = M(0.15), pr = [], q;
+          for (q = 0; q <= len; q++) pr.push(probe(horiz ? e[0] + q : e[0], horiz ? e[1] : e[1] + q, e[4], e[5]));
+          var ts = pr.filter(Boolean).map(function (o) { return o.t; }).sort(function (a3, b3) { return a3 - b3; });
+          var med = ts.length ? ts[Math.floor(ts.length * 0.6)] : 0;
+          var state = pr.map(function (o) { return !o ? 'm' : (med >= 4 && o.t < 0.6 * med) ? 't' : 'w'; });
+          var st = -1;
+          for (q = inset; q <= len - inset + 1; q++) {
+            var open = q <= len - inset && state[q] !== 'w';
+            if (open && st < 0) st = q;
+            if (!open && st >= 0) {
+              var gl = q - st;
+              if (gl >= minGap) {
+                var nThin = 0; for (var k3 = st; k3 < q; k3++) if (state[k3] === 't') nThin++;
+                var mid = st + gl / 2, cx = horiz ? e[0] + mid : e[0] + e[4] * M(0.08), cy = horiz ? e[1] + e[5] * M(0.08) : e[1] + mid;
+                var ext = outsideAt(horiz ? Math.round(e[0] + mid) : e[0], horiz ? e[1] : Math.round(e[1] + mid), e[4], e[5]);
+                // window = two or more parallel thin lines across the wall; door = a swing arc next to the gap
+                var lines = [0.25, 0.5, 0.75].map(function (fr) {
+                  var qq = Math.round(st + gl * fr), n3 = 0, prev = 0, span = Math.max(med, M(0.12)) + 2;
+                  for (var dd = -1; dd <= span; dd++) { var xx = horiz ? e[0] + qq : e[0] + e[4] * dd, yy = horiz ? e[1] + e[5] * dd : e[1] + qq; var on = (xx >= 0 && yy >= 0 && xx < w && yy < h) ? thin[yy * w + xx] : 0; if (on && !prev) n3++; prev = on; }
+                  return n3;
+                }).sort()[1];
+                var arc = [st, q].some(function (hinge) { return [0.8, 1, 1.2, 1.4].some(function (kr) { return [0, Math.round(med / 2)].some(function (off) {
+                  var hits = 0, tot = 0, rr = gl * kr;
+                  for (var ang = 0.15; ang < Math.PI / 2 - 0.15; ang += 0.08) {
+                    tot++;
+                    var along = Math.cos(ang) * rr * (hinge === st ? 1 : -1), into = Math.sin(ang) * rr;
+                    var xx = Math.round(horiz ? e[0] + hinge + along : e[0] + e[4] * off - e[4] * into), yy = Math.round(horiz ? e[1] + e[5] * off - e[5] * into : e[1] + hinge + along);
+                    var ok = false; for (var o3 = -2; o3 <= 2 && !ok; o3++) for (var o4 = -2; o4 <= 2 && !ok; o4++) { var x3 = xx + o3, y3 = yy + o4; if (x3 >= 0 && y3 >= 0 && x3 < w && y3 < h && thin[y3 * w + x3]) ok = true; }
+                    if (ok) hits++;
+                  }
+                  return hits / tot > 0.6;
+                }); }); });
+                var win = !arc && (lines >= 2 || (lines === 1 && ext && nThin > 0.5 * gl));
+                var widthM = gl / s;
+                if (!(!ext && !win && widthM > 1.9)) openings.push({ kind: win ? 'window' : (widthM >= 1.6 ? 'sliding_door' : 'door'), cx: cx, cy: cy, width_m: Math.round(widthM * 10) / 10, exterior: ext, room: ri });
+              }
+              st = -1;
+            }
+          }
+        });
+      });
+      // main entrance: an exterior door (not sliding), preferring entrance-like rooms
+      var extDoors = openings.filter(function (o) { return o.kind === 'door' && o.exterior; });
+      var pref = extDoors.filter(function (o) { return /מבואה|כניסה|מסדרון|לובי|קבלה/.test(rooms[o.room].name || ''); });
+      var main = pref[0] || extDoors.filter(function (o) { return !/שינה|הורים|ילדים|שירות|רחצה/.test(rooms[o.room].name || ''); })[0] || extDoors[0];
+      if (main) main.main_entrance = true;
+      // 7. output in the AI shape (normalized to the image)
+      return {
+        document_type: rooms.length ? 'floor_plan' : 'not_a_plan', overall_confidence: rooms.length ? 0.6 : 0, source: 'local', warnings: [],
+        rooms: rooms.map(function (rm) { return { name: rm.name, bbox: [rm.x0 / w, rm.y0 / h, (rm.x1 + 1) / w, (rm.y1 + 1) / h], confidence: rm.guessed ? 0.5 : 0.8, guessed: !!rm.guessed }; }),
+        openings: openings.map(function (o) { return { kind: o.kind, center: [o.cx / w, o.cy / h], width_m: o.width_m, exterior: o.exterior, main_entrance: !!o.main_entrance, confidence: 0.7 }; }),
+        dimensions: [], debug: opts.debug ? { w: w, h: h, s: s, T: T, walls: wall, closed: closed } : undefined
+      };
+    }
+
+    // scale from printed dimensions: a number (cm) next to a long thin line with that length
+    function dimScaleFromWords(img, words) {
+      var W = img.width, H = img.height, G = toGray(img), T = otsu(G), dk = function (x, y) { return x >= 0 && y >= 0 && x < W && y < H && G[y * W + x] < T; };
+      var cand = [];
+      (words || []).forEach(function (q) {
+        var t = String(q.text || '').replace(/[^\d.,]/g, '').replace(',', '.'); if (!t) return;
+        var v = parseFloat(t); if (!(v > 0)) return;
+        var m = /\./.test(t) ? (v <= 60 ? v : null) : (v >= 80 && v <= 20000 ? v / 100 : null); if (!m || m < 1) return;
+        var cx = Math.round((q.x0 + q.x1) / 2), cy = Math.round((q.y0 + q.y1) / 2), th = Math.max(6, q.y1 - q.y0);
+        var best = null;
+        // horizontal line above/below the number
+        for (var dy = -3 * th; dy <= 3 * th; dy++) {
+          var y = cy + dy; if (y < 0 || y >= H) continue;
+          if (!dk(cx, y) && !dk(cx - 1, y) && !dk(cx + 1, y)) continue;
+          var a = cx, b = cx; while (dk(a - 1, y) || dk(a - 2, y)) a--; while (dk(b + 1, y) || dk(b + 2, y)) b++;
+          var thick = 0; for (var k = -6; k <= 6; k++) if (dk(cx, y + k)) thick++;
+          if (b - a > 4 * th && thick <= 4 && (!best || Math.abs(dy) < Math.abs(best.d))) best = { d: dy, len: b - a };
+        }
+        for (var dx = -4 * th; dx <= 4 * th; dx++) {
+          var x = cx + dx; if (x < 0 || x >= W) continue;
+          if (!dk(x, cy) && !dk(x, cy - 1) && !dk(x, cy + 1)) continue;
+          var a2 = cy, b2 = cy; while (dk(x, a2 - 1) || dk(x, a2 - 2)) a2--; while (dk(x, b2 + 1) || dk(x, b2 + 2)) b2++;
+          var th2 = 0; for (var k2 = -6; k2 <= 6; k2++) if (dk(x + k2, cy)) th2++;
+          if (b2 - a2 > 4 * th && th2 <= 4 && (!best || Math.abs(dx) < Math.abs(best.d))) best = { d: dx, len: b2 - a2 };
+        }
+        if (best) cand.push({ ipm: best.len / m, m: m, len: best.len, text: q.text });
+      });
+      if (!cand.length) return null;
+      cand.sort(function (a, b) { return a.ipm - b.ipm; });
+      var bestGroup = [];
+      cand.forEach(function (c) { var g = cand.filter(function (o) { return Math.abs(o.ipm / c.ipm - 1) <= 0.06; }); if (g.length > bestGroup.length) bestGroup = g; });
+      var ipm = bestGroup.reduce(function (s2, c) { return s2 + c.ipm; }, 0) / bestGroup.length;
+      return { ipm: ipm, n: bestGroup.length, all: cand.length, sure: bestGroup.length >= 2 };
+    }
+
+    var api = { readPlan: readPlan, dimScaleFromWords: dimScaleFromWords, matchWord: matchWord };
+    if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.G1PlanLocal = api;
+  })(typeof window !== 'undefined' ? window : this);
+  var OCR_BASE = 'https://yhj842dhyb-design.github.io/g1-siteguard/lib/ocr/', ocrWorkerP = null;
+  function loadOcr(){
+    if (ocrWorkerP) return ocrWorkerP;
+    ocrWorkerP = new Promise(function(res, rej){
+      function go(){
+        try {
+          window.Tesseract.createWorker('heb', 1, { workerPath:OCR_BASE + 'worker.min.js', corePath:OCR_BASE, langPath:OCR_BASE, gzip:true, logger:function(){} })
+            .then(function(w){ return w.setParameters({ tessedit_pageseg_mode:'11' }).then(function(){ res(w); }); }, rej);
+        } catch(e) { rej(e); }
+      }
+      if (window.Tesseract) return go();
+      var sc = document.createElement('script'); sc.src = OCR_BASE + 'tesseract.min.js'; sc.onload = go; sc.onerror = function(){ sc.remove(); rej(new Error('ocr')); };
+      document.head.appendChild(sc);
+    });
+    ocrWorkerP.catch(function(){ ocrWorkerP = null; });
+    return ocrWorkerP;
+  }
+  function withTimeout(p, ms){ return new Promise(function(res, rej){ var t = setTimeout(function(){ rej(new Error('timeout')); }, ms); p.then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); }); }); }
+  // OCR words (labels) + walls/rooms/openings. ipm = image px per meter
+  function localRead(cv, ipm, kind, status){
+    status('מזהה כיתוב בתוכנית…');
+    return withTimeout(loadOcr().then(function(w){ return w.recognize(cv, {}, { blocks:true }); }), 60000).then(function(r){
+      var words = [];
+      ((r && r.data && r.data.blocks) || []).forEach(function(b){ (b.paragraphs || []).forEach(function(p){ (p.lines || []).forEach(function(l){ (l.words || []).forEach(function(x){
+        if (x.confidence > 40) words.push({ text:x.text, conf:x.confidence, x0:x.bbox.x0, y0:x.bbox.y0, x1:x.bbox.x1, y1:x.bbox.y1 });
+      }); }); }); });
+      return words;
+    }, function(){ return null; }).then(function(words){
+      status('מזהה קירות, חדרים, דלתות וחלונות…');
+      return new Promise(function(res){ setTimeout(function(){
+        var img = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height);
+        var plan = window.G1PlanLocal.readPlan(img, ipm, words || [], { kind:kind });
+        res({ plan:plan, ocr:!!words });
+      }, 30); });
+    });
+  }
+  function openRecsAfterImport(){
+    var b = document.getElementById('btnRecommendations');
+    if (b && !b.classList.contains('active')) b.click(); else { refreshRecommendations(); setTimeout(agentRecPopups, 500); }
+  }
+
   /* ============================= client plan import =============================
      The agent receives the customer's architectural plan (photo, scan or PDF). It is placed under
      the drawing as a tracing layer at true scale (the agent marks two points of a known
@@ -7164,11 +7580,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<label title="שקיפות">שקיפות <input type="range" id="ulOp" min="0.1" max="1" step="0.05" value="' + U.opacity + '"></label>' +
       '<button type="button" class="btn btn-ghost btn-sm" id="ulVis">' + (U.visible ? 'הסתרה' : 'הצגה') + '</button>' +
       '<button type="button" class="btn btn-ghost btn-sm' + (ulMove ? ' active' : '') + '" id="ulMv">' + (ulMove ? 'נעילה' : 'הזזה') + '</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm' + (U.free !== false ? ' active' : '') + '" id="ulFree" title="הצבת אביזרים בדיוק במקום שבחרתם — בלי מגבלות חדר ובלי הצמדה אוטומטית">הצבה חופשית: ' + (U.free !== false ? 'פעילה' : 'כבויה') + '</button>' +
       '<button type="button" class="btn btn-ghost btn-sm" id="ulDel">הסרה</button>';
     bar.querySelector('#ulOp').oninput = function(){ U.opacity = +this.value; var i = document.querySelector('#underlayLayer image'); if (i) i.setAttribute('opacity', U.opacity); };
     bar.querySelector('#ulOp').onchange = saveUnderlay;
     bar.querySelector('#ulVis').onclick = function(){ U.visible = !U.visible; saveUnderlay(); renderUnderlay(); };
     bar.querySelector('#ulMv').onclick = function(){ ulMove = !ulMove; renderUnderlay(); if (ulMove) showCanvasToast('גררו את התוכנית למקום — ואז "נעילה"'); };
+    bar.querySelector('#ulFree').onclick = function(){ U.free = U.free === false; saveUnderlay(); renderUnderlay(); updatePaletteAvailability(); showCanvasToast(U.free !== false ? 'הצבה חופשית: כל אביזר נשאר בדיוק במקום שבחרתם' : 'הצבה חכמה: הצמדה למיקום המקצועי ומגבלות לפי חדר'); };
     bar.querySelector('#ulDel').onclick = function(){ if (!confirm('להסיר את תוכנית הלקוח מהרקע של הקומה הזו? השרטוט עצמו לא ישתנה.')) return; delete underlays[state.activeFloor || 0]; ulMove = false; saveUnderlay(); renderUnderlay(); };
   }
 
@@ -7314,7 +7732,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           '<div class="pi-row"><label for="piLen">המרחק בין הנקודות</label><input type="text" id="piLen" inputmode="decimal" autocomplete="off" placeholder="למשל 11.5">' +
             '<select id="piUnit" aria-label="יחידות"><option value="m">מ׳</option><option value="cm">ס״מ</option></select>' +
             '<button type="button" class="btn btn-ghost btn-sm" id="piReset">סימון מחדש</button><span class="pi-hint" id="piHint"></span></div>' +
-          '<label class="pi-ai" id="piAiRow" hidden><input type="checkbox" id="piAi" checked> זיהוי חדרים ופתחים אוטומטי (AI) — יוצר את החדרים בשרטוט לבדיקתכם</label>' +
+          '<label class="pi-ai" id="piAiRow"><input type="checkbox" id="piAi" checked> <span id="piAiLbl">זיהוי חדרים, דלתות וחלונות — יוצר אותם בשרטוט ומציג המלצות</span></label>' +
+          '<div class="pi-row"><label for="piKind">סוג הנכס</label><select id="piKind"><option value="house">בית פרטי</option><option value="apartment">דירה</option><option value="store">עסק / חנות</option><option value="clinic">משרד / קליניקה</option></select></div>' +
           '<p class="pi-note" id="piAiNote"></p>' +
         '</div>' +
         '<p class="pi-err" id="piErr" role="alert"></p>' +
@@ -7328,14 +7747,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function onKey(e){ if (e.key === 'Escape') close(); }
     document.addEventListener('keydown', onKey);
     ov.querySelector('.g1-sv-x').onclick = close;
-    aiStatus().then(function(on){
-      if (closed) return;
-      aiOn = on;
-      $('piAiRow').hidden = !on;
-      $('piAiNote').innerHTML = on ? 'התוכנית תישלח לניתוח בשירות Claude (Anthropic) דרך הגיליון של G1 — לשימוש בתכנון בלבד. אין מידה ידועה? אפשר לדלג על הסימון — הזיהוי ינסה לכייל לפי המידות שכתובות בתוכנית.'
-                                   : 'זיהוי חדרים אוטומטי יופעל אחרי שמנהל המוצר יחבר מפתח AI בעמוד הניהול. בינתיים התוכנית מוצבת כרקע בקנה מידה — ומשרטטים עליה את החדרים.';
-      check();
-    });
+    $('piKind').value = (state.kind === 'apartment' || state.kind === 'store' || state.kind === 'clinic') ? state.kind : 'house';
+    function setNote(){
+      $('piAiNote').innerHTML = aiOn ? 'התוכנית תישלח לניתוח בשירות Claude (Anthropic) דרך הגיליון של G1 — לשימוש בתכנון בלבד. אין מידה ידועה? אפשר לדלג על הסימון — הזיהוי ינסה לכייל לפי המידות שכתובות בתוכנית.'
+        : 'הזיהוי נעשה כאן במכשיר, בלי שליחה לשרת: קירות, חדרים, דלתות וחלונות, ושמות החדרים מהכיתוב בתוכנית. הכי מדויק ב-PDF מהאדריכל או בצילום מסך; בצילום טלפון — פחות. נדרש כיול (שתי נקודות ומרחק).';
+    }
+    setNote();
+    aiStatus().then(function(on){ if (closed) return; aiOn = on; setNote(); check(); });
     function draw(){
       if (!cv) return;
       var c = $('piCv'), wrapW = Math.min(ov.querySelector('.pi-canvas-wrap').clientWidth || 640, 900);
@@ -7349,12 +7767,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     function lenM(){ return parseLenInput($('piLen').value, $('piUnit').value); }
     function wantAi(){ return aiOn && $('piAi').checked; }
+    function wantLocal(){ return !aiOn && $('piAi').checked; }
     function check(){
       var len = lenM(), raw = parseLenInput($('piLen').value, 'm'), calib = pts.length === 2 && len >= 0.3 && len <= 300;
       $('piHint').textContent = $('piUnit').value === 'm' && raw >= 100 ? 'מידה בס״מ? בחרו ס״מ' : (len > 300 ? 'המרחק גדול מדי' : '');
       if (busy) return;
       $('piGo').disabled = !(cv && (calib || (wantAi() && pts.length === 0)));
-      $('piGo').textContent = wantAi() ? (calib ? 'הצבה + זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : 'הצבה כרקע בשרטוט';
+      $('piGo').textContent = wantAi() ? (calib ? 'הצבה + זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : wantLocal() ? (calib ? 'הצבה + זיהוי חדרים' : 'סמנו שתי נקודות ומרחק') : 'הצבה כרקע בשרטוט';
     }
     function load(){
       err(''); $('piGo').disabled = true; $('piS1').querySelector('.pi-drop span').textContent = 'טוען…';
@@ -7411,6 +7830,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (spanM < 3 || spanM > 500) { err('קנה המידה לא סביר (הדף יוצא ' + spanM.toFixed(0) + ' מ׳). בדקו את המרחק והיחידות.'); return; }
         place(k);
       }
+      var kind = $('piKind').value;
+      if (kind !== state.kind) { state.kind = kind; syncKindSelect(); updatePaletteAvailability(); }
+      if (wantLocal()) { runLocal(k, ''); return; }
       if (!wantAi()) {
         var U0 = curUL(); close();
         showCanvasToast(U0.w > 1000 || U0.h > 680 ? 'התוכנית הוצבה בקנה מידה — היא גדולה משטח השרטוט; "הזזה" בסרגל התוכנית ממקמת אותה' : 'התוכנית הוצבה כרקע בקנה מידה — שרטטו עליה את החדרים (חדרים מוכנים / ציור חדר)');
@@ -7429,14 +7851,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           if (!j || !j.ok) throw new Error((j && j.error) || 'x');
           var res = applyPlanAI(j.plan, { k:k, calibrated:calib, cv:cv, sentW:sent.width, sentH:sent.height, place:place });
           if (res.needCalib) { busy = false; err(res.msg); check(); return; }
-          close(); render();
-          showCanvasToast(res.msg, !res.rooms || res.warn);
+          finish(res, '');
         })
         .catch(function(e){
           clearTimeout(timer);
           if (closed) return;
           busy = false;
           var m = String(e && (e.name === 'AbortError' ? 'timeout' : e.message) || ''), tail = placed ? ' התוכנית הוצבה כרקע — אפשר לשרטט עליה.' : ' אפשר לסמן שתי נקודות ומרחק ולהציב כרקע.';
+          if (placed && k) { runLocal(k, ' · הזיהוי בשרת לא זמין — נקרא במכשיר'); return; }   // the AI is unavailable: read it here instead
           if (placed && /^(daily-cap|unknown user|ai-not-configured)$/.test(m)) {   // retrying won't help: continue with the tracing layer
             close(); showCanvasToast((m === 'daily-cap' ? 'הגעתם למכסת הזיהויים היומית' : m === 'unknown user' ? 'הזיהוי האוטומטי זמין לסוכנים מחוברים בלבד' : 'הזיהוי האוטומטי לא מחובר') + ' — התוכנית הוצבה כרקע בקנה מידה, שרטטו עליה את החדרים', true); return;
           }
@@ -7447,6 +7869,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           check(); if (placed) render();
         });
     };
+    function finish(res, extra){
+      close(); render();
+      showCanvasToast(res.msg + (extra || ''), !res.rooms || res.warn);
+      if (res.rooms) setTimeout(openRecsAfterImport, 700);
+    }
+    function runLocal(k, note){
+      busy = true; $('piGo').disabled = true; err('');
+      var srcCv = cv, st = function(tx){ if (!closed) $('piGo').textContent = tx; };
+      localRead(cv, PPM / k, state.kind, st).then(function(r){
+        if (closed || srcCv !== cv) return;
+        var guessed = (r.plan.rooms || []).filter(function(q){ return q.guessed; }).length;
+        var res = applyPlanAI(r.plan, { k:k, calibrated:true, cv:cv, sentW:cv.width, sentH:cv.height, place:place });
+        finish(res, note + (!r.ocr ? ' · שמות החדרים לא נקראו (אין חיבור לרכיב הכיתוב) — שנו לפי הצורך' : guessed ? ' · ל-' + guessed + ' חדרים ניתן שם משוער — שנו לפי הצורך' : ''));
+      }).catch(function(e){
+        if (closed) return;
+        busy = false; console.warn('local plan read', e);
+        err('הזיהוי במכשיר לא הצליח בתוכנית הזו. התוכנית הוצבה כרקע — אפשר לשרטט עליה.'); check(); render();
+      });
+    }
     $('piFile').click();
   }
 
@@ -7568,7 +8009,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return { rooms:made.length, warn:warn, msg:'זוהו ' + made.length + ' חדרים ו-' + nOp + ' פתחים' + (notes.length ? ' · ' + notes.join(' · ') : '') + ' — בדקו כל חדר מול הרקע (ביטול מחזיר את השרטוט הקודם)' };
   }
   loadUnderlay();
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); } };   // local tests only
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); } };   // local tests only
 
   var KIND_LABEL_HE = { house:'בית פרטי', apartment:'דירה', store:'עסק / חנות', clinic:'קליניקה / משרד' };
   // The recommendations panel scopes itself to whatever floor is currently being viewed: a
@@ -8586,6 +9027,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var dragLimit = Math.hypot(d.x - startX, d.y - startY) > m2p(0.3) ? roomLimitBlock(d.type, { x:d.x, y:d.y }, d.id) : null;
       var fromRoom = roomContainingPoint({ x:startX, y:startY }), toRoom = roomContainingPoint({ x:d.x, y:d.y });
       if (dragLimit && fromRoom !== toRoom) { d.x = startX; d.y = startY; showCanvasToast(dragLimit, true); render(); return; }
+      if (freePlace()) { render(); return; }
       // dropped close to one of the room's ready positions → seat it exactly there (with note)
       if (Math.hypot(d.x - startX, d.y - startY) > m2p(0.3) && QP_TYPES[d.type] && toRoom) {
         var dOpt = quickPlaceOptions(d.type, toRoom).filter(function(o){ return dist(o.x, o.y, d.x, d.y) <= m2p(0.7); })
@@ -9060,6 +9502,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return roomFamilyCapacity(ROOM_FAMILY[type], r);
   }
   function roomLimitBlock(type, p, exceptId){
+    if (freePlace()) return null;
     var fam = ROOM_FAMILY[type];
     if (!fam) return null;
     var r = roomContainingPoint(p);
@@ -10416,7 +10859,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var REPEAT_PLACE_TYPES = { pir:1, pir_pet:1, pir_am:1, pir_ceiling:1, pir_ceiling_ind:1, curtain_in:1, curtain_out:1, contact:1, glassbreak:1, smoke:1, flood:1,
     cam_in:1, cam_out:1, cam_in_analytics:1, cam_out_analytics:1, smart_cam:1, speaker_in:1, speaker_out:1,
     ap_in:1, ap_out:1, net_point:1, smart_switch:1, smart_shutter:1, window:1, window_lg:1, door_int:1 };
-  function singletonPlaced(type){ return !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
+
+  // While a client's plan is under the drawing, the agent places any device exactly where they want:
+  // no per-room limits, no single-instance limits, no automatic snapping. The plan and our model of
+  // the building may not match yet, so the agent's eye wins.
+  function freePlace(){ var U = !CONSUMER && typeof curUL === 'function' && curUL(); return !!(U && U.free !== false); }
+  function singletonPlaced(type){ return !freePlace() && !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
   function singletonMsg(type){ return 'כבר יש בפרויקט ' + DEVICE_DEFS[type].label + ' — אין צורך ביותר מאחד. להזזה, גררו את הקיים בשרטוט.'; }
   function updateArmHint(){
     var cancelBtn = document.getElementById('canvasHintCancel');
@@ -10546,6 +10994,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (singletonPlaced(type)) { showCanvasToast(singletonMsg(type), true); return null; }
       var limitMsg = roomLimitBlock(type, p);
       if (limitMsg) { showCanvasToast(limitMsg, true); return null; }
+      if (freePlace()) {   // exactly where the agent tapped
+        var fd = addDevice({ type:type, x:p.x, y:p.y, rot:type.indexOf('out') > -1 ? 180 : 0 });
+        selectItem('device', fd.id);
+        return fd;
+      }
       // A finger tap is never precise: inside a room, a detector/camera goes straight to its
       // professional position in that room (see professionalSnap), with the same note + flash
       // as the quick-place buttons.
