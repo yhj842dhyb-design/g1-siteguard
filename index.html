@@ -1349,6 +1349,7 @@
   .pi-card{ max-width:760px; }
   .rec-pop.plan-choice{ border-top-color:#22395a; width:min(420px, calc(100vw - 32px)); }
   .plan-choice p{ margin:6px 0 10px; }
+  #mMoreSheet .mm-import{ grid-column:1 / -1; font-weight:800; }
   .plan-choice .pc-opts{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .plan-choice .pc-opts .btn{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 8px; height:auto; line-height:1.3; white-space:normal; }
   .plan-choice .pc-opts small{ font-weight:500; font-size:11px; opacity:.85; }
@@ -2434,6 +2435,7 @@
   <div class="m-more" id="mMoreSheet" role="dialog" aria-label="עוד" hidden>
     <h4>עוד</h4>
     <div class="mm-grid">
+      <button type="button" data-mm="importPlan" id="mmImportPlan" class="mm-import">📐 ייבוא תוכנית מהלקוח <span class="beta-tag">בהרצה</span></button>
       <button type="button" data-mm="inspector">📋 מאפיינים והכוונה</button>
       <button type="button" data-mm="project">✎ פרטי הפרויקט</button>
       <button type="button" data-mm="library">🗂️ הצעות שמורות</button>
@@ -2773,7 +2775,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 127</div>
+              <div class="app-version" id="appVersion">גרסה 128</div>
             </div>
           </div>
         </div>
@@ -10859,7 +10861,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   new MutationObserver(mSyncNav).observe(document.getElementById('btnRecommendations'), { attributes:true, attributeFilter:['class'] });
   // "⋯" sheet
-  var M_MORE = { inspector:'btnMobileInspector', library:'btnQuoteLibrary', agent:'btnAgentInfo', save:'btnSaveProject', open:'btnOpenProject', sample:'btnLoadSample', help:'btnGestureHelp', reset:'btnReset', clear:'btnClear' };
+  var M_MORE = { importPlan:'btnImportPlan', inspector:'btnMobileInspector', library:'btnQuoteLibrary', agent:'btnAgentInfo', save:'btnSaveProject', open:'btnOpenProject', sample:'btnLoadSample', help:'btnGestureHelp', reset:'btnReset', clear:'btnClear' };
   document.getElementById('btnMInspector').addEventListener('click', function(){ closeMobilePanels(); document.getElementById('btnMobileInspector').click(); });
   document.getElementById('btnMMore').addEventListener('click', function(){
     var sheet = document.getElementById('mMoreSheet');
@@ -11446,7 +11448,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   function clearProject(){ disarmPalette(); clearUnderlays(); state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 }; selected=null; roomEditId=null; resetRecommendationsView(); syncKindSelect(); render(); }
   armConfirm(document.getElementById('btnClear'), '🗑️ נקה שרטוט', 'לאשר ניקוי? לחצו שוב', clearProject);
-  (function(){ var b = document.getElementById('btnImportPlan'); if (b && CONSUMER) { b.hidden = true; return; } if (b) b.addEventListener('click', function(){ var m = document.getElementById('moreMenu'); if (m) m.hidden = true; openPlanImport(); }); })();
+  (function(){ var b = document.getElementById('btnImportPlan'); if (b && CONSUMER) { b.hidden = true; var mb = document.getElementById('mmImportPlan'); if (mb) mb.hidden = true; return; } if (b) b.addEventListener('click', function(){ var m = document.getElementById('moreMenu'); if (m) m.hidden = true; openPlanImport(); }); })();
 
   // "⋯ עוד" menu (project-file housekeeping: save / open / sample / help / clear). It closes on
   // an outside click, Escape, or after any item runs — except while "נקה שרטוט" is armed for its
