@@ -53,6 +53,7 @@
     --accent-5-ink:#04101f;
     --accent-5-text:#2a5796;
     --accent-6:#4a9d5f;
+    --fire:#d23b2a;
     --accent-6-ink:#07200d;
     --accent-6-text:#2c7a41;
     --danger:#b8382a;
@@ -608,6 +609,28 @@
   .cable-line.power{ stroke:#a8562f; stroke-dasharray:9 2 2 2; }
   .cable-line.speaker{ stroke:var(--accent-4); stroke-dasharray:3 2 1 2; }
   .cable-line.network{ stroke:var(--accent-5); stroke-dasharray:6 2 2 2 2 2; }
+  .cable-line.fire{ stroke:var(--fire); stroke-dasharray:8 2 1 2; }
+  .fire-note, .fire-box{ margin:0 0 10px; padding:9px 11px; border-radius:10px; background:#fff3f1; border:1px solid rgba(210,59,42,.35); color:#7a2418; font-size:12px; line-height:1.6; }
+  .fire-box label{ display:flex; gap:8px; align-items:center; font-weight:700; color:#5c1a10; cursor:pointer; }
+  .fire-box p{ margin:6px 0 0; }
+  .rec-pop.fire-pop{ border-top-color:#d23b2a; max-height:min(70vh, 560px); overflow:auto; width:min(420px, calc(100vw - 32px)); }
+  @media (max-width:760px){ .rec-pop.fire-pop:not(.over-modal){ bottom:calc(74px + env(safe-area-inset-bottom, 0px)); max-height:62vh; } }
+  .rec-pop.fire-pop .rp-bar{ background:#d23b2a; }
+  .rec-pop.fire-pop.over-modal{ z-index:10400; }
+  .fire-pop .fp-intro{ margin:8px 0 6px; }
+  .fire-pop .fp-more{ font-size:12px; margin:4px 0 8px; color:#5b6b7e; }
+  ul.fire-audit{ list-style:none; margin:6px 0 10px; padding:0; display:flex; flex-direction:column; gap:8px; }
+  ul.fire-audit li{ display:flex; gap:8px; align-items:flex-start; font-size:12.5px; line-height:1.5; background:#fbfcfe; border:1px solid #e3e8ef; border-radius:10px; padding:7px 9px; color:#14202f; }
+  ul.fire-audit li.fa-crit{ border-color:#f1b5ab; background:#fff6f4; }
+  ul.fire-audit li.fa-warn{ border-color:#f1dc9a; background:#fffbeb; }
+  ul.fire-audit li b{ display:block; font-size:12.5px; }
+  ul.fire-audit li span{ display:block; color:#44546a; }
+  ul.fire-audit .fa-ic{ flex:0 0 auto; font-size:13px; line-height:1.4; }
+  ul.fire-audit .fa-fix{ margin-top:5px; }
+  .fire-box .fa-head{ font-weight:800; font-size:12.5px; margin:8px 0 2px; }
+  .q-fire-appr{ margin:6px 0 0; }
+  .q-fire-note{ margin-top:10px; padding:8px 10px; border:1.5px solid #d23b2a; border-radius:8px; background:#fff6f4; color:#6e1f14; font-size:11.5px; line-height:1.6; }
+  .rec-card.fire b::before{ content:'גילוי אש · '; color:var(--fire); }
 
   .resize-handle.cur-move{ cursor:move; }
   .draw-preview-line{ stroke:var(--accent-2); stroke-width:2.5; stroke-dasharray:5 4; pointer-events:none; }
@@ -1315,6 +1338,41 @@
   .qp-add-title{ display:block; font-size:12px; margin-bottom:7px; }
   .qp-full{ margin:8px 0 0 !important; color:var(--accent-2-text) !important; font-weight:600; }
   .qp-section .qp-chip.type.active{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .ul-bar{ position:absolute; z-index:15; bottom:44px; inset-inline-end:12px; max-width:calc(100% - 24px); display:flex; flex-wrap:wrap; gap:8px; align-items:center; background:#fff; border:1px solid var(--paper-line, #dde3ea); border-radius:12px; padding:6px 10px; box-shadow:0 6px 18px rgba(15,30,50,.12); font-size:12.5px; }
+  .ul-bar label{ display:flex; align-items:center; gap:6px; }
+  .ul-bar input[type=range]{ width:90px; }
+  .underlay-img{ pointer-events:none; }
+  #plan.has-underlay #roomsLayer, #plan.has-underlay #furnitureLayer{ opacity:.62; }
+  .underlay-img.movable{ pointer-events:all; cursor:move; outline:2px dashed #1aace3; }
+  body.pdf-export #underlayLayer, body.pdf-export .ul-bar{ display:none !important; }
+  .pi-card{ max-width:760px; }
+  .beta-tag{ display:inline-block; font-size:10.5px; font-weight:800; line-height:1.5; padding:0 7px; border-radius:999px; background:#fff3cd; color:#7a4f00; border:1px solid #efd27e; margin-inline-start:6px; vertical-align:middle; letter-spacing:0; white-space:nowrap; }
+  .pi-beta{ font-size:12.5px; background:#fff8e1; border:1px solid #f1dc9a; color:#6b4b00; border-radius:10px; padding:7px 10px; margin:0 0 10px; }
+  .pi-tools{ margin-top:0; margin-bottom:6px; }
+  .pi-zoom{ display:inline-flex; align-items:center; gap:4px; }
+  .pi-zoom span{ min-width:44px; text-align:center; font-variant-numeric:tabular-nums; }
+  .pi-row select{ padding:7px; border:1px solid #c9d2dc; border-radius:8px; background:#fff; }
+  .pi-hint{ color:#b54708; font-size:12.5px; font-weight:700; }
+  body.pdf-export .beta-tag{ display:none !important; }
+  .pi-drop{ display:flex; flex-direction:column; gap:4px; align-items:center; justify-content:center; padding:22px; border:2px dashed #aebbd0; border-radius:14px; cursor:pointer; text-align:center; }
+  .pi-drop span{ font-size:13px; color:#5b6b7e; }
+  .pi-note{ font-size:12.5px; color:#5b6b7e; line-height:1.6; margin:8px 0 0; }
+  .pi-instr{ font-size:13px; line-height:1.6; margin:4px 0 8px; }
+  .pi-canvas-wrap{ width:100%; max-height:55vh; overflow:auto; border:1px solid #dde3ea; border-radius:10px; background:#f4f6f9; }
+  .pi-canvas-wrap canvas{ display:block; cursor:crosshair; max-width:none; }
+  .pi-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:10px; font-size:13px; }
+  .pi-row input{ width:90px; padding:7px; border:1px solid #c9d2dc; border-radius:8px; }
+  .pi-ai{ display:flex; gap:8px; align-items:center; margin-top:12px; font-weight:700; font-size:13px; }
+  .pi-err{ color:#b42318; font-size:13px; min-height:1em; }
+  .rec-pop{ position:fixed; z-index:1200; inset-inline-start:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); width:min(380px, calc(100vw - 32px)); background:#fff; color:#14202f; border-radius:14px; box-shadow:0 14px 40px rgba(15,30,50,.28); padding:14px 16px 12px; border-top:4px solid #1aace3; overflow:hidden; animation:rpIn .25s ease; }
+  .rec-pop.out{ opacity:0; transform:translateY(8px); transition:all .25s ease; }
+  .rec-pop .rp-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; font-size:15px; }
+  .rec-pop .rp-x{ border:0; background:none; font-size:20px; line-height:1; cursor:pointer; color:#5b6b7e; }
+  .rec-pop p{ margin:8px 0 10px; font-size:13px; line-height:1.6; color:#33435a; }
+  .rec-pop .rp-acts{ display:flex; gap:8px; }
+  .rec-pop .rp-bar{ position:absolute; bottom:0; inset-inline-start:0; height:3px; width:100%; background:#1aace3; }
+  @keyframes rpIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .rec-pop{ animation:none; } }
   .canvas-toast{ position:sticky; top:10px; height:0; z-index:16; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
   .canvas-toast span{
     background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600; padding:8px 16px;
@@ -2304,7 +2362,8 @@
   .g1-lock-card small{ color:#5B6B7E; font-size:12px; }
   body.g1-locked{ overflow:hidden; }
   .q-price.g1-below-min{ border-color:#C2362B !important; background:#FFF0EE !important; color:#C2362B; font-weight:700; }
-  .g1-min-warn{ margin:0 0 10px; padding:10px 12px; border-radius:10px; background:#FFF0EE; color:#8E2A20; font-size:13px; line-height:1.6; border:1px solid rgba(194,54,43,.3); }
+  body.pdf-export .q-price.g1-below-min{ border-color:inherit !important; background:inherit !important; color:inherit; font-weight:inherit; }
+  .g1-min-list, .g1-min-detail ul{ margin:8px 0 0; padding-inline-start:20px; line-height:1.8; }
   #btnG1Admin{ border-color:#1AACE3; color:#0A7FBF; font-weight:700; text-decoration:none; }
   .mm-grid .mm-admin{ grid-column:1 / -1; display:flex; align-items:center; justify-content:center; padding:12px; border-radius:12px; background:#0B1F33; color:#fff; font-weight:800; text-decoration:none; }
 
@@ -2611,6 +2670,27 @@
           </div></div>
         </div>
 
+        <div class="cat-group" id="palFireGroup" style="--cat-accent:var(--fire)">
+          <button type="button" class="cat-title" data-cat-toggle><span class="cat-dot"></span><span class="cat-title-label">גילוי אש · ת״י 1220 <span class="beta-tag">בהרצה</span></span><span class="cat-badge"></span><span class="cat-chevron"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <div class="cat-body"><div class="cat-body-inner">
+        <p class="fire-note" id="fireNotePalette"><b>בהרצה · מערכת מצילת חיים.</b> התכנון כאן ראשוני בלבד — נדרש תכנון ואישור של מתכנן מוסמך לגילוי אש לפי ת״י 1220 ובדיקת מעבדה מוסמכת.</p>
+        <div class="palette-grid">
+          <div class="pal-item" draggable="true" data-type="fire_panel"><svg viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4.5c2.2 3 4.3 4.6 4.3 8.2a4.3 4.3 0 0 1-8.6 0c0-2 1-3.3 2.1-4.3 0 1.6.8 2.6 2.1 2.6 0-2.6-.5-4.4.1-6.5z" fill="currentColor"/></svg><span>רכזת גילוי אש</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_smoke"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6.5 14c1.8-2.2 3.7-2.2 5.5 0s3.7 2.2 5.5 0M6.5 9.5c1.8-2.2 3.7-2.2 5.5 0s3.7 2.2 5.5 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>גלאי עשן אופטי</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_heat"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 5.5v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16" r="2.8" fill="currentColor"/></svg><span>גלאי חום</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_multi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5.5 10c1.6-2 3.2-2 4.8 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M15.5 6v7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="15.5" cy="15.5" r="2.4" fill="currentColor"/></svg><span>גלאי משולב</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_beam"><svg viewBox="0 0 24 24"><rect x="1" y="7.5" width="5" height="9" rx="1" fill="currentColor"/><rect x="18" y="7.5" width="5" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 12h11" stroke="currentColor" stroke-width="1.9" stroke-dasharray="2 2"/></svg><span>גלאי קרן</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_duct"><svg viewBox="0 0 24 24"><rect x="1" y="7" width="22" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 12c1.4-1.8 2.8-1.8 4.2 0s2.8 1.8 4.2 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/></svg><span>גלאי לתעלת מיזוג</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_call_point"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="7" y="7" width="10" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.3" fill="currentColor"/></svg><span>לחצן אש ידני</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_sounder"><svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l2 2.2H4z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><path d="M10 21.5h4" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg><span>צופר אש</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_sounder_strobe"><svg viewBox="0 0 24 24"><path d="M7 17V12a5 5 0 0 1 10 0v5l1.6 1.8H5.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10.2 21.5h3.6M2.5 7l2.2 1.2M21.5 7l-2.2 1.2M12 1.5v2.4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>צופר-נצנץ</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_strobe_out"><svg viewBox="0 0 24 24"><path d="M7 20.5h10l-1.2-8.5a3.8 3.8 0 0 0-7.6 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 9.5l2 1M21 9.5l-2 1M12 2v3M5 4.5l1.8 1.8M19 4.5l-1.8 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>נצנץ חיצוני</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_io_module"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h8.5l-2.2-2.2M17 14H8.5l2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>מודול בקרה</span></div>
+          <div class="pal-item" draggable="true" data-type="fire_repeater"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 8h8M6 12h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="10" r="1.6" fill="currentColor"/><path d="M9 21h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>לוח משנה</span></div>
+        </div>
+          </div></div>
+        </div>
+
         <p class="hint">גררו חדר מוכן או אביזר אל השרטוט, או — נוח יותר במסך מגע — הקישו על הפריט (הוא יודגש) ואז הקישו על מיקום בשרטוט כדי להניח אותו שם; הקישו על הפריט שוב לביטול. השתמשו ב“צייר חדר לפי מידה” בקטגוריית “מבנה — חדרים ואזורים” כדי לשרטט חדר במידה מדויקת. לחצו על פריט כדי לערוך/לסובב אותו, גררו את נקודות האחיזה בזוויות/באמצע הקירות כדי לשנות מידה, ומחקו עם ✕ על הפריט הנבחר או מקש Delete. השתמשו ב“מתיחת גדר היקפית” באותה קטגוריה כדי למתוח קווי גדר לאורך גבול המגרש — ניתן לסמן מקטע כשער ולהוסיף עליו גלאי קרן.</p>
       </div>
     </aside>
@@ -2677,13 +2757,14 @@
           <div class="tb-menu">
             <button type="button" class="btn btn-ghost btn-sm" id="btnMoreMenu" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu" title="שמירה ופתיחה של קובץ פרויקט, דוגמה, עזרה וניקוי">⋯<span class="tb-lbl"> עוד</span></button>
             <div class="tb-menu-pop" id="moreMenu" role="menu" hidden>
+              <button class="btn btn-ghost btn-sm" id="btnImportPlan" role="menuitem" title="ייבוא תוכנית אדריכלית שהלקוח שלח (תמונה או PDF) — כרקע לשרטוט, עם כיול קנה מידה וזיהוי חדרים אוטומטי">📐 ייבוא תוכנית מהלקוח <span class="beta-tag">בהרצה</span></button>
               <button class="btn btn-ghost btn-sm" id="btnSaveProject" role="menuitem" title="שמירת השרטוט, האביזרים ופרטי הלקוח כקובץ במכשיר — לצורך המשך עבודה מאוחר יותר">💾 שמירת פרויקט</button>
               <button class="btn btn-ghost btn-sm" id="btnOpenProject" role="menuitem" title="פתיחת קובץ פרויקט שנשמר בעבר">📂 פתיחת פרויקט</button>
               <input type="file" id="projectFileInput" accept="application/json,.json" style="display:none">
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 122</div>
+              <div class="app-version" id="appVersion">גרסה 124</div>
             </div>
           </div>
         </div>
@@ -2799,6 +2880,7 @@
               </filter>
             </defs>
             <rect x="0" y="0" width="1000" height="680" fill="url(#grid)"/>
+            <g id="underlayLayer"></g>
             <g id="roomsLayer"></g>
             <g id="furnitureLayer"></g>
             <g id="fencesLayer"></g>
@@ -3883,7 +3965,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     zexp16:       { label:'מרחיב אזורים חיצוני — 16 אזורים', cat:'alarm',  color:'var(--accent)',   derived:true },
     poe4:         { label:'מתג PoE ‏4 פורטים',               cat:'camera', color:'var(--accent-2)', derived:true },
     poe8:         { label:'מתג PoE ‏8 פורטים',               cat:'camera', color:'var(--accent-2)', derived:true },
-    poe16:        { label:'מתג PoE ‏16 פורטים',              cat:'camera', color:'var(--accent-2)', derived:true }
+    poe16:        { label:'מתג PoE ‏16 פורטים',              cat:'camera', color:'var(--accent-2)', derived:true },
+    // a wired alarm panel always needs its standby battery — added to the quote automatically
+    alarm_battery: { label:'סוללת גיבוי 12V 4.5Ah לרכזת',   cat:'alarm',  color:'var(--accent)',   derived:true },
+    // ---- fire detection & alarm (SI 1220). A life-safety system: every plan made here is preliminary
+    //      and must be designed/approved by a certified fire-detection designer (see FIRE_NOTE).
+    fire_panel:          { label:'רכזת גילוי אש',                    cat:'fire', color:'var(--fire)', anchor:'fire' },
+    fire_smoke:          { label:'גלאי עשן אופטי (גילוי אש)',         cat:'fire', color:'var(--fire)', cable:'fire', radius:6.4 },
+    fire_heat:           { label:'גלאי חום (קבוע / קצב עלייה)',       cat:'fire', color:'var(--fire)', cable:'fire', radius:5.3 },
+    fire_multi:          { label:'גלאי משולב עשן/חום',                cat:'fire', color:'var(--fire)', cable:'fire', radius:6.4 },
+    fire_beam:           { label:'גלאי עשן קרן (Beam)',               cat:'fire', color:'var(--fire)', cable:'fire', rotatable:true, fov:8, range:40 },
+    fire_duct:           { label:'גלאי עשן לתעלת מיזוג',              cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_call_point:     { label:'לחצן אש ידני',                      cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_sounder:        { label:'צופר התרעת אש',                     cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_sounder_strobe: { label:'צופר-נצנץ (קולי וחזותי)',           cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_strobe_out:     { label:'נצנץ / צופר חיצוני',                cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_io_module:      { label:'מודול כניסה/יציאה (בקרה)',          cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_repeater:       { label:'לוח משנה (רפיטר)',                  cat:'fire', color:'var(--fire)', cable:'fire' },
+    fire_standalone:     { label:'גלאי עשן עצמאי (מגורים)',           cat:'fire', color:'var(--fire)', radius:6.4 },
+    // sized by the app from the drawing (quote/BOM only)
+    fire_battery:        { label:'מצברי גיבוי לרכזת גילוי אש (זוג)',  cat:'fire', color:'var(--fire)', derived:true },
+    fire_dialer:         { label:'חייגן / תקשורת למוקד ולכבאות',      cat:'fire', color:'var(--fire)', derived:true }
   };
 
   var TIPS = {
@@ -3937,7 +4039,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     smart_shutter:'מתג/בקר תריסים חכם — שליטה על הגלילה (פתיחה/סגירה, לו״ז) מהאפליקציה; מוחלף בדרך כלל בקופסת ההפעלה הקיימת של מנוע התריס.',
     smart_switch: 'מתג חשמל/תאורה חכם — שליטה מהאפליקציה ותזמון; מוחלף במקום מתג הקיר הרגיל, ללא צורך בכבל נוסף מעבר לחיווט הקיים.',
     smart_cam:    'מצלמת SMART אלחוטית (Wi-Fi) — צפייה/התראות מהאפליקציה, בנפרד ממערכת ה-CCTV/NVR; טעינה או שקע 220V לפי הדגם, ללא כבילת Cat6.',
-    smart_water_heater: 'מפסק חכם לתזמון הפעלת דוד השמש/חשמל — הפעלה מהאפליקציה ותזמון אוטומטי; מוחלף במקום מפסק הדוד הקיים בלוח החשמל, התקנה על ידי חשמלאי מוסמך בלבד.'
+    smart_water_heater: 'מפסק חכם לתזמון הפעלת דוד השמש/חשמל — הפעלה מהאפליקציה ותזמון אוטומטי; מוחלף במקום מפסק הדוד הקיים בלוח החשמל, התקנה על ידי חשמלאי מוסמך בלבד.',
+    fire_panel:   'רכזת גילוי אש — ליד הכניסה הראשית / פנל הכבאים בקומת הקרקע, נגישה לכוחות ההצלה; נקודת העוגן לכבילת הלולאות.',
+    fire_smoke:   'גלאי עשן אופטי — בתקרה, כיסוי עד כ-80 מ״ר לגלאי, מרווח עד 9 מ׳ ו-0.5–4.5 מ׳ מהקירות (ערכי ייחוס לאימות מול ת״י 1220).',
+    fire_heat:    'גלאי חום — במטבח, חניה, חדר דוד/כביסה וחללים מאובקים בהם גלאי עשן יתריע בשווא; כ-50 מ״ר לגלאי, מרווח עד 7.5 מ׳.',
+    fire_multi:   'גלאי משולב עשן/חום — מצליב שני חיישנים להפחתת התרעות שווא; כיסוי כמו גלאי עשן.',
+    fire_beam:    'גלאי קרן — לאולמות גבוהים ורחבים (תקרה מעל כ-10.5 מ׳); משדר ומחזיר בקו ראייה, עד כ-7.5 מ׳ מהקיר הצדי.',
+    fire_duct:    'גלאי עשן לתעלת מיזוג — בצד האספקה של יחידת טיפול באוויר, לניתוק המיזוג בשריפה.',
+    fire_call_point:'לחצן אש ידני — בכל יציאה, יציאת קומה ודלת חדר מדרגות, בגובה 1.2–1.4 מ׳; מרחק הליכה עד כ-45 מ׳ ללחצן.',
+    fire_sounder: 'צופר התרעת אש — לפחות 65 dB(A) ו-5 dB מעל רעש הרקע בכל חלל; 75 dB(A) בחדרי שינה.',
+    fire_sounder_strobe:'צופר-נצנץ — התרעה קולית וחזותית בחללים ציבוריים, שירותי נכים וחללים רועשים.',
+    fire_strobe_out:'נצנץ חיצוני — בחזית הכניסה, מסמן לכוחות ההצלה את המבנה בהתרעה.',
+    fire_io_module:'מודול כניסה/יציאה — חיבור ממסר זרימה, ניתוק מיזוג, החזרת מעליות ומחזיקי דלתות לרכזת.',
+    fire_repeater:'לוח משנה — תצוגה והפעלה מרוחקת בכניסה נוספת, עמדת שמירה או מבנה נוסף.',
+    fire_standalone:'גלאי עשן עצמאי (ת״י 1220-5) — בדירות ובבתים פרטיים: במבואת חדרי השינה ובכל קומה, לפחות 1 מ׳ מחדר רחצה ומפתחי מיזוג.'
   };
 
   // Professional per-device installation guide — שימוש (use case), טווח פעולה (typical
@@ -4155,6 +4270,51 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       use: 'מפסק חכם לתזמון הפעלת דוד השמש/דוד החשמל מהאפליקציה — מפעיל חימום מים בזמן הנכון (למשל לפני שעת מקלחת) וחוסך בחשמל בלי להשאיר את הדוד דלוק כל היום.',
       range: 'טווח שליטה אלחוטית כ-10–15 מ׳; שליטה מרחוק ותזמון אוטומטי דרך האינטרנט ללא הגבלת מרחק.',
       install: 'מוחלף במקום מפסק הדוד הקיים בלוח החשמל או בנקודת ההפעלה שלו — התקנה על ידי חשמלאי מוסמך בלבד (עומס חשמלי גבוה).'
+    },
+    fire_panel: {
+      use: 'מנהלת את גלאי האש, הלחצנים והצופרים, מציגה את מיקום האירוע ומעבירה התרעה למוקד ולכבאות.',
+      range: 'בחירת הדגם לפי מספר הכתובות (גלאים + לחצנים + צופרים + מודולים): עד כ-60 — רכזת לולאה אחת; עד כ-250 — שתי לולאות; מעבר לכך רכזת מרובת לולאות.',
+      install: 'ליד הכניסה הראשית או בפנל הכבאים בקומת הקרקע, במקום נגיש לכוחות ההצלה; מעגל חשמל ייעודי ומצברי גיבוי (24 שעות המתנה + 30 דק׳ התרעה, לאימות מול ת״י 1220).'
+    },
+    fire_smoke: {
+      use: 'גילוי מוקדם של עשן — הבסיס לכל מערכת גילוי אש בחללים יבשים ונקיים.',
+      range: 'כ-80 מ״ר לגלאי בתקרה שטוחה, מרווח עד 9 מ׳, כל נקודה עד כ-6.4–7.5 מ׳ מגלאי; גובה תקרה עד כ-10.5 מ׳ (ערכי NFPA 72 / BS 5839-1 — לאימות מול ת״י 1220-3).',
+      install: 'בתקרה, 0.5–4.5 מ׳ מהקירות, לפחות 1 מ׳ מפתח מיזוג; קורה עמוקה נחשבת כקיר; חללי תקרה/רצפה מוגבהים בעומק 0.8 מ׳ ומעלה דורשים גילוי.'
+    },
+    fire_heat: {
+      use: 'גילוי שריפה לפי עליית טמפרטורה — בחללים בהם עשן, אדים או אבק יגרמו להתרעות שווא.',
+      range: 'כ-50 מ״ר לגלאי, מרווח עד 7.5 מ׳; גובה תקרה עד כ-7.5 מ׳.',
+      install: 'מטבחים, חניונים, חדרי דוד, כביסה ומכונות — בתקרה, הרחק מפתחי אוורור ישירים.'
+    },
+    fire_multi: {
+      use: 'גלאי רב-חיישני (עשן + חום) — מצמצם התרעות שווא במשרדים, מלונות ולובאים.',
+      range: 'כיסוי כמו גלאי עשן — כ-80 מ״ר, מרווח עד 9 מ׳.',
+      install: 'בתקרה, באותם כללי מרחק כמו גלאי עשן.'
+    },
+    fire_beam: {
+      use: 'גילוי עשן בחללים גבוהים ורחבים — מחסנים, אולמות ומבני תעשייה.',
+      range: 'אורך קרן כ-7–100 מ׳ לפי דגם; קרן אחת לכל כ-15 מ׳ רוחב; עד כ-25 מ׳ גובה.',
+      install: 'משדר ומחזיר (או מקלט) על קירות מנוגדים בקו ראייה פנוי, כ-0.3–0.6 מ׳ מתחת לתקרה; עד כ-7.5 מ׳ מהקיר הצדי.'
+    },
+    fire_call_point: {
+      use: 'הפעלה ידנית של התרעת אש על ידי מי שמבחין בשריפה.',
+      range: 'בכל יציאה סופית, יציאת קומה ודלת חדר מדרגות; מרחק הליכה עד כ-45 מ׳ (כ-25 מ׳ באזורי סיכון).',
+      install: 'בגובה 1.2–1.4 מ׳, בצד הדלת בכיוון היציאה, גלוי ולא מוסתר.'
+    },
+    fire_sounder: {
+      use: 'אות פינוי קולי בכל חלקי המבנה.',
+      range: 'לפחות 65 dB(A) ו-5 dB מעל רעש הרקע בכל נקודה; 75 dB(A) ליד המיטה בחדרי שינה; דלת מנחיתה כ-20–30 dB.',
+      install: 'לפחות צופר אחד בכל קומה/אזור, בחללים גדולים ובמסדרונות לפי חישוב עוצמה.'
+    },
+    fire_sounder_strobe: {
+      use: 'התרעה קולית וחזותית — לכבדי שמיעה ולחללים רועשים.',
+      range: 'נצנץ לפי גודל החדר (לדוגמה עד 7.5×7.5 מ׳ לנצנץ קיר); ת״י 1220-13 מתייחס להתקני איתות חזותי.',
+      install: 'בחללים ציבוריים, שירותי נכים, חדרי מכונות וחללים רועשים, בגובה 2.0–2.4 מ׳.'
+    },
+    fire_standalone: {
+      use: 'גלאי עשן עצמאי עם צופר מובנה לדירות ולבתים פרטיים (ת״י 1220-5).',
+      range: 'גלאי במבואת חדרי השינה ובכל קומה; בבית גדול — גלאי נוסף לכל אזור שינה.',
+      install: 'בתקרה, לפחות 1 מ׳ מחדר רחצה ומפתחי מיזוג; עדיף חיבור לחשמל עם סוללת גיבוי.'
     }
   };
 
@@ -4178,6 +4338,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ap_out:            { power:0, net:1, text:'נקודת רשת (מוזנת PoE מהסוויץ׳) — ללא שקע חשמל נפרד.' },
     intercom_pal:      { power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
     spider_ctrl:       { power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
+    fire_panel:        { power:1, net:0, text:'מעגל חשמל ייעודי ומסומן בלוח החשמל, וקו/מודול תקשורת למוקד ולכבאות.' },
     spider_ctrl_2relay:{ power:1, net:0, text:'נקודת חשמל בלבד — אינו מחייב נקודת רשת (מודול סלולרי מובנה).' },
     cam_lpr:           { power:1, net:0, text:'נקודת חשמל בלבד — אינה מחייבת נקודת רשת (מודול סלולרי מובנה, ללא חיבור ל-NVR).' },
     smart_cam:         { power:1, net:0, text:'נקודת חשמל (או סוללה לפי הדגם) וקליטת Wi-Fi טובה — ללא נקודת רשת.' },
@@ -4307,7 +4468,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { title:'אינטרקום', dot:'var(--accent-3)', types:['intercom_ext','intercom_int','intercom_pal','spider_ctrl','spider_ctrl_2relay'] },
     { title:'מערכת מוזיקה', dot:'var(--accent-4)', types:['amplifier','speaker_in','speaker_out'] },
     { title:'תקשורת', dot:'var(--accent-5)', types:['switch','net_point','ap_in','ap_out'] },
-    { title:'מוצרי SMART', dot:'var(--accent-6)', types:['smart_lock','smart_shutter','smart_switch','smart_cam','smart_water_heater'] }
+    { title:'מוצרי SMART', dot:'var(--accent-6)', types:['smart_lock','smart_shutter','smart_switch','smart_cam','smart_water_heater'] },
+    { title:'גילוי אש (ת״י 1220)', dot:'var(--fire)', types:['fire_panel','fire_smoke','fire_heat','fire_multi','fire_beam','fire_duct','fire_call_point','fire_sounder','fire_sounder_strobe','fire_strobe_out','fire_io_module','fire_repeater','fire_standalone'] }
   ];
 
   var DEVICE_CODE = {
@@ -4317,12 +4479,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     intercom_ext:'אינ-ח', intercom_int:'אינ-פ', intercom_pal:'אינ-P', spider_ctrl:'PAL', spider_ctrl_2relay:'PAL-2', fence_sensor:'קרן', safe_sensor:'כספת',
     ups:'UPS', amplifier:'מגבר', speaker_in:'רמק-פ', speaker_out:'רמק-ח',
     switch:'SW', net_point:'נק-ר', ap_in:'AP-פ', ap_out:'AP-ח',
-    smart_lock:'מנעול', smart_shutter:'תריס', smart_switch:'מתג-ח', smart_cam:'מצ-S', smart_water_heater:'דוד'
+    smart_lock:'מנעול', smart_shutter:'תריס', smart_switch:'מתג-ח', smart_cam:'מצ-S', smart_water_heater:'דוד',
+    fire_panel:'רג״א', fire_smoke:'ע-א', fire_heat:'ח-א', fire_multi:'מש-א', fire_beam:'קרן', fire_duct:'תעלה', fire_call_point:'לח-א',
+    fire_sounder:'צ-א', fire_sounder_strobe:'צנ-א', fire_strobe_out:'נצ-ח', fire_io_module:'IO', fire_repeater:'רפיטר', fire_standalone:'ע-ע'
   };
   // Category → symbol shape, so the sketch stays legible without color (e.g. printed
   // in black & white for an installer/electrician): circle=alarm, square=camera,
   // diamond=intercom, triangle=music, hexagon=network.
-  var CAT_SHAPE = { alarm:'circle', camera:'square', intercom:'diamond', music:'triangle', network:'hexagon', smart:'octagon' };
+  var CAT_SHAPE = { alarm:'circle', camera:'square', intercom:'diamond', music:'triangle', network:'hexagon', smart:'octagon', fire:'fire' };
 
   // Analytics cameras (cam_in_analytics/cam_out_analytics) are full-featured cameras with an
   // added smart-detection layer — every place that checks "is there already a camera here"
@@ -4394,6 +4558,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   /* ============================= sample project ============================= */
   function loadSample(){
+    if (typeof clearUnderlays === 'function') clearUnderlays();
     state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 };
     selected = null;
     roomEditId = null;
@@ -5104,6 +5269,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var wpx = m2p(r.w), hpx = m2p(r.h);
       var g = furnitureGroup(kind, wpx, hpx, r.label);
       g.setAttribute('transform', 'translate(' + r.x + ',' + r.y + ')');
+      // an indoor space with a counter (or another room) inside it: keep its furniture out of the nested room
+      if (kind !== 'yard' && roomHostsAnother(r, vis)) {
+        var d = 'M0 0H' + wpx + 'V' + hpx + 'H0Z';
+        vis.forEach(function(o){
+          if (o === r) return;
+          var ox = o.x - r.x, oy = o.y - r.y, ow = m2p(o.w), oh = m2p(o.h);
+          if (ox >= -1 && oy >= -1 && ox + ow <= wpx + 1 && oy + oh <= hpx + 1) d += 'M' + (ox - 4) + ' ' + (oy - 4) + 'h' + (ow + 8) + 'v' + (oh + 8) + 'h' + (-ow - 8) + 'Z';
+        });
+        var cid = 'fclip-' + r.id, cp = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath'), pth = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        cp.setAttribute('id', cid); pth.setAttribute('d', d); pth.setAttribute('clip-rule', 'evenodd'); cp.appendChild(pth); g.insertBefore(cp, g.firstChild);
+        var inner = document.createElementNS('http://www.w3.org/2000/svg', 'g'); inner.setAttribute('clip-path', 'url(#' + cid + ')');
+        while (g.childNodes.length > 1) inner.appendChild(g.childNodes[1]);
+        g.appendChild(inner);
+      }
       furnitureLayer.appendChild(g);
     });
   }
@@ -5276,6 +5455,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (shape === 'triangle') return el('path', { d:'M0,-12.5 L10.8,6.2 L-10.8,6.2 Z', fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1, 'stroke-linejoin':'round' });
     if (shape === 'hexagon') return el('path', { d:'M0,-12 L10.4,-6 L10.4,6 L0,12 L-10.4,6 L-10.4,-6 Z', fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1, 'stroke-linejoin':'round' });
     if (shape === 'octagon') return el('path', { d:'M10.6,4.4 L4.4,10.6 L-4.4,10.6 L-10.6,4.4 L-10.6,-4.4 L-4.4,-10.6 L4.4,-10.6 L10.6,-4.4 Z', fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1, 'stroke-linejoin':'round' });
+    if (shape === 'fire') return el('circle', { cx:0, cy:0, r:11, fill:'#fff6f4', stroke:'var(--fire)', 'stroke-width':1.6 });
     return el('circle', { cx:0, cy:0, r:11, fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1 });
   }
 
@@ -5530,7 +5710,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       smart_lock:'<rect x="5" y="11" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="16" r="1.7" fill="currentColor"/>',
       smart_shutter:'<rect x="4" y="2" width="16" height="20" rx="1.8" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 7h16M4 11.3h16M4 15.6h16M4 19.9h16" stroke="currentColor" stroke-width="1.5"/>',
       smart_switch:'<rect x="6" y="1" width="12" height="22" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="9" r="2.6" fill="currentColor"/><path d="M8.2 17a5.2 5.2 0 0 1 7.6 0" fill="none" stroke="currentColor" stroke-width="1.7"/>',
-      smart_cam:'<circle cx="12" cy="15" r="6.4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="2.3" fill="currentColor"/><path d="M8 7.2a5.5 5.5 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6 4.4a9 9 0 0 1 12 0" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.7"/>'
+      smart_cam:'<circle cx="12" cy="15" r="6.4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="15" r="2.3" fill="currentColor"/><path d="M8 7.2a5.5 5.5 0 0 1 8 0" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M6 4.4a9 9 0 0 1 12 0" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.7"/>',
+      fire_panel:'<rect x="1" y="1" width="22" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4.5c2.2 3 4.3 4.6 4.3 8.2a4.3 4.3 0 0 1-8.6 0c0-2 1-3.3 2.1-4.3 0 1.6.8 2.6 2.1 2.6 0-2.6-.5-4.4.1-6.5z" fill="currentColor"/>',
+      fire_smoke:'<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6.5 14c1.8-2.2 3.7-2.2 5.5 0s3.7 2.2 5.5 0M6.5 9.5c1.8-2.2 3.7-2.2 5.5 0s3.7 2.2 5.5 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
+      fire_heat:'<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 5.5v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16" r="2.8" fill="currentColor"/>',
+      fire_multi:'<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5.5 10c1.6-2 3.2-2 4.8 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M15.5 6v7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="15.5" cy="15.5" r="2.4" fill="currentColor"/>',
+      fire_beam:'<rect x="1" y="7.5" width="5" height="9" rx="1" fill="currentColor"/><rect x="18" y="7.5" width="5" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 12h11" stroke="currentColor" stroke-width="1.9" stroke-dasharray="2 2"/>',
+      fire_duct:'<rect x="1" y="7" width="22" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 12c1.4-1.8 2.8-1.8 4.2 0s2.8 1.8 4.2 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor"/>',
+      fire_call_point:'<rect x="2" y="2" width="20" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="7" y="7" width="10" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.3" fill="currentColor"/>',
+      fire_sounder:'<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l2 2.2H4z" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/><path d="M10 21.5h4" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>',
+      fire_sounder_strobe:'<path d="M7 17V12a5 5 0 0 1 10 0v5l1.6 1.8H5.4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10.2 21.5h3.6M2.5 7l2.2 1.2M21.5 7l-2.2 1.2M12 1.5v2.4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
+      fire_strobe_out:'<path d="M7 20.5h10l-1.2-8.5a3.8 3.8 0 0 0-7.6 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 9.5l2 1M21 9.5l-2 1M12 2v3M5 4.5l1.8 1.8M19 4.5l-1.8 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+      fire_io_module:'<rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h8.5l-2.2-2.2M17 14H8.5l2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+      fire_repeater:'<rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 8h8M6 12h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="10" r="1.6" fill="currentColor"/><path d="M9 21h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      fire_standalone:'<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6.5 11c1.8-2.2 3.7-2.2 5.5 0s3.7 2.2 5.5 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.7" fill="currentColor"/>'
     };
     return icons[type] || '';
   }
@@ -5563,7 +5756,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var intercom = deviceList.find(function(d){ return d.type === 'intercom_int'; }) || hub;
     var amp = deviceList.find(function(d){ return d.type === 'amplifier'; });
     var switchAnchor = deviceList.find(function(d){ return d.type === 'switch'; });
-    return { hub:hub, nvr:nvr, intercom:intercom, amp:amp, switch:switchAnchor };
+    var fire = deviceList.find(function(d){ return d.type === 'fire_panel'; });
+    return { hub:hub, nvr:nvr, intercom:intercom, amp:amp, switch:switchAnchor, fire:fire };
   }
   // Which anchor a cable type routes back to — shared by every cabling calculation
   // (live cable drawing, the BOM/quote/sketch totals, and the recommendations estimate).
@@ -5572,6 +5766,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (cableType === 'intercom') return 'intercom';
     if (cableType === 'speaker') return 'amp';
     if (cableType === 'network') return 'switch';
+    if (cableType === 'fire') return 'fire';
     return 'hub';
   }
 
@@ -6147,7 +6342,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // just the subset actually shown/added in the panel right now (see visibleRecsForPanel()),
   // so the "expected cabling impact" text never overstates what "הוסף הכל" is about to add.
   function computeRecsCabling(recsList, anchors){
-    var cableTotals = { alarm:0, cat6:0, power:0, intercom:0, speaker:0, network:0 };
+    var cableTotals = { alarm:0, cat6:0, power:0, intercom:0, speaker:0, network:0, fire:0 };
     var missingAnchor = false;
     recsList.forEach(function(r){
       var def = DEVICE_DEFS[r.type];
@@ -6530,6 +6725,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (CONSUMER) orderOpts.package = consumerTier;
     refreshRecommendations();
     render();
+    if (!CONSUMER) { setTimeout(agentRecPopups, 700); setTimeout(function(){ fireSummaryPop(true); }, 900); }
     if (CONSUMER) {
       orderOpts.package = consumerTier; orderOpts.cellular = true;
       orderOpts.keyfobs = Math.max(orderOpts.keyfobs || 0, PACKAGE_KIT[consumerTier].keyfobs);
@@ -6537,6 +6733,842 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       consumerPlanReady(visible.length);
     }
   }
+
+  /* ---------- agent: timed recommendation pop-ups (comms cabinet + UPS with cameras, PAL controller for a private house) ---------- */
+  var recPopQueue = [], recPopLast = {}, recPopTimer = null;
+  function recPopFloor(){ return state.activeFloor || 0; }
+  function nearType(types){ return state.devices.filter(function(d){ return types.indexOf(d.type) > -1 && (d.floor || 0) === recPopFloor(); })[0]; }
+  function addNear(type, ref, dxm, dym){
+    var p = ref ? { x:ref.x + m2p(dxm), y:ref.y + m2p(dym) } : null;
+    if (!p) { var rs = visibleRooms().filter(function(r){ return r.type !== 'yard'; }); var r = rs[0]; if (!r) return null; p = { x:r.x + m2p(0.6), y:r.y + m2p(0.6) }; }
+    return recAdd(type, Math.round(p.x), Math.round(p.y), 0, recPopFloor());
+  }
+  var REC_POPS = {
+    cabinet: {
+      when: function(){
+        var cams = state.devices.some(function(d){ return /^cam_/.test(d.type); }) || currentRecs.some(function(r){ return /^cam_/.test(r.type); });
+        return cams && (!state.devices.some(function(d){ return d.type === 'comm_cabinet'; }) || !state.devices.some(function(d){ return d.type === 'ups'; }));
+      },
+      title: 'מומלץ: ארון תקשורת + אל-פסק (UPS)',
+      body: '<b>ארון תקשורת 6U</b> מרכז במקום אחד, נעול ומאוורר, את מערכת ההקלטה, מתג ה-PoE וספק הכוח — מונע גישה וחבלה בהקלטות ומסדר את כל הכבילה.<br><b>אל-פסק</b> שומר על המצלמות וההקלטה פועלות בהפסקת חשמל (כ-15–30 דק׳) ומגן על הדיסק מקפיצות מתח.',
+      add: function(){
+        var ref = nearType(['nvr']) || nearType(['hub']), out = [];
+        if (!state.devices.some(function(d){ return d.type === 'comm_cabinet'; })) out.push(addNear('comm_cabinet', ref, 0.9, 0));
+        if (!state.devices.some(function(d){ return d.type === 'ups'; })) out.push(addNear('ups', ref, 0.9, 0.7));
+        return out.filter(Boolean).length ? 'נוספו ארון תקשורת ואל-פסק ליד מערכת ההקלטה' : '';
+      },
+      addLabel: 'הוספה לתכנון'
+    },
+    pal: {
+      when: function(){ return state.kind === 'house' && !state.devices.some(function(d){ return /^spider_ctrl/.test(d.type); }); },
+      title: 'מומלץ: בקר PAL לשער החניה',
+      body: 'פתיחת שער החניה מהטלפון לכל בני הבית — בלי שלטים. הרשאות זמניות לאורחים ולנותני שירות, יומן פתיחות, ועובד סלולרי בלי תשתית רשת. בבית פרטי עם חניה או שער — תוספת קטנה, ערך יומיומי גדול.',
+      add: function(){
+        var gate = visibleFences().filter(function(f){ return f.type === 'gate'; })[0];
+        var park = visibleRooms().filter(function(r){ return /חניה|חניון/.test(r.label || ''); })[0];
+        var d = null;
+        if (gate) d = recAdd('spider_ctrl', Math.round((gate.x1 + gate.x2) / 2), Math.round((gate.y1 + gate.y2) / 2) + 12, 0, recPopFloor());
+        else if (park) d = recAdd('spider_ctrl', Math.round(park.x + m2p(0.5)), Math.round(park.y + m2p(0.5)), 0, recPopFloor());
+        else d = addNear('spider_ctrl', nearType(['intercom_ext']) || state.openings.filter(function(o){ return o.type === 'door_main'; })[0], 0, -1);
+        return d ? 'נוסף בקר PAL ' + (gate ? 'ליד שער החניה' : park ? 'בחניה' : 'ליד הכניסה') : '';
+      },
+      addLabel: 'הוספת בקר PAL'
+    }
+  };
+  function agentRecPopups(){
+    if (CONSUMER) return;
+    setTimeout(function(){ fireSummaryPop(false); }, 200);
+    Object.keys(REC_POPS).forEach(function(k){
+      var P = REC_POPS[k];
+      if (recPopQueue.indexOf(k) > -1 || (recPopLast[k] && Date.now() - recPopLast[k] < 3 * 60e3)) return;
+      try { if (P.when()) recPopQueue.push(k); } catch(e) {}
+    });
+    if (!document.getElementById('recPop')) nextRecPop();
+  }
+  function nextRecPop(){
+    var k = recPopQueue.shift(); if (!k) return;
+    var P = REC_POPS[k]; if (!P.when()) return nextRecPop();
+    recPopLast[k] = Date.now();
+    var el = document.createElement('div'); el.id = 'recPop'; el.className = 'rec-pop'; el.setAttribute('role', 'status'); el.setAttribute('data-html2canvas-ignore', 'true');
+    el.innerHTML = '<div class="rp-head"><b>' + P.title + '</b><button type="button" class="rp-x" aria-label="סגירה">×</button></div><p>' + P.body + '</p>' +
+      '<div class="rp-acts"><button type="button" class="btn btn-primary btn-sm rp-add">' + P.addLabel + '</button><button type="button" class="btn btn-ghost btn-sm rp-later">לא עכשיו</button></div><i class="rp-bar"></i>';
+    document.body.appendChild(el);
+    var left = 12000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar');
+    function close(){ clearInterval(recPopTimer); el.classList.add('out'); setTimeout(function(){ el.remove(); nextRecPop(); }, 250); }
+    recPopTimer = setInterval(function(){ if (paused) { t0 = Date.now(); return; } var now = Date.now(); left -= now - t0; t0 = now; bar.style.width = Math.max(0, left / 120) + '%'; if (left <= 0) close(); }, 100);
+    el.onmouseenter = function(){ paused = true; }; el.onmouseleave = function(){ paused = false; };
+    el.addEventListener('touchstart', function(){ paused = true; }, { passive:true });
+    el.querySelector('.rp-x').onclick = close; el.querySelector('.rp-later').onclick = close;
+    el.querySelector('.rp-add').onclick = function(){ pushUndo(snapshotState()); var msg = P.add(); refreshRecommendations(); render(); if (msg) showCanvasToast('✓ ' + msg); close(); };
+    (window.__g1pops = window.__g1pops || []).push(k);
+  }
+
+  var QUOTE_TXT = {
+    validity: 'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה (הופקה בתאריך {date}).',
+    cabling: 'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
+    ownership: 'הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.',
+    errors: 'ט.ל.ח.',
+    extra: '',
+    fireQuote: 'מערכת גילוי אש היא מערכת מצילת חיים. הצעה זו מבוססת על תכנון ראשוני; הכמויות והמיקומים הסופיים ייקבעו בתכנון מפורט על ידי מתכנן מוסמך לגילוי אש לפי ת״י 1220, ובכפוף לבדיקת מעבדה מוסמכת ולאישור רשות הכבאות וההצלה.',
+    fireApproval: 'במידה והלקוח יידרש לאישור מכון התקנים, הדבר אינו נכלל בהצעה זו.',
+    fireLong: 'מערכת גילוי אש היא מערכת מצילת חיים. התכנון המוצג כאן הוא ראשוני ואינדיקטיבי בלבד ואינו תכנון מפורט או אישור לביצוע. יש לתכנן, להתקין ולתחזק את המערכת על ידי מתכנן/מתקין מוסמך לגילוי אש לפי ת״י 1220 על חלקיו, ולקבל בדיקה ואישור של מעבדה מוסמכת ורשות הכבאות וההצלה לפני הפעלתה. ערכי הכיסוי באפליקציה הם ערכי ייחוס (NFPA 72 / BS 5839-1) — יש לאמתם מול ת״י 1220-3.'
+  };
+  /* ---------- fire detection (SI 1220): recommendations ---------- */
+  // Fire detection (SI 1220) is offered only for businesses and offices/clinics — never for a private house or an apartment.
+  function fireAllowed(){ return !CONSUMER && (state.kind === 'store' || state.kind === 'clinic'); }
+  function firePlanOn(){ return fireAllowed() && (state.firePlan != null ? !!state.firePlan : true); }
+  function fireResidential(){ return state.kind === 'house' || state.kind === 'apartment'; }
+  var FIRE_DET = ['fire_smoke', 'fire_heat', 'fire_multi', 'fire_standalone'];
+  function fireRecommendations(){
+    var out = [], seq = 0, res = fireResidential();
+    var all = state.devices;
+    var tag = {};
+    function rec(type, x, y, title, reason, general, rot){ out.push({ recId:'f' + (++seq), type:type, x:Math.round(x), y:Math.round(y), rot:rot || 0, sev:'rec', title:title, reason:reason, general:!!general, fire:true, roomId:tag.room || null, doorId:tag.door || null }); }
+    function nearAny(types, x, y, dm){ var lim = m2p(dm); return all.some(function(d){ return types.indexOf(d.type) > -1 && Math.hypot(d.x - x, d.y - y) < lim; }) || out.some(function(r){ return types.indexOf(r.type) > -1 && Math.hypot(r.x - x, r.y - y) < lim; }); }
+    function inRoom(d, r){ return d.x >= r.x - 2 && d.x <= r.x + m2p(r.w) + 2 && d.y >= r.y - 2 && d.y <= r.y + m2p(r.h) + 2; }
+    function roomOf(o){ return state.rooms.filter(function(r){ return r.type !== 'yard' && inRoom(o, r); })[0]; }
+    var floors = Math.max(1, state.floorCount || 1);
+    var mainDoor = state.openings.filter(function(o){ return o.type === 'door_main'; })[0];
+    var dry = /שירותים|אמבט|מקלחת|רחצה/;
+    var heatRe = /מטבח|חניה|חניון|דוד|כביסה|מכונות|גנרטור|מחסן חומרים/;
+    if (!res) {
+      if (!all.some(function(d){ return d.type === 'fire_panel'; })) {
+        var hr = mainDoor && roomOf(mainDoor), px, py;
+        if (hr) { var wo = computeWallOrientation(mainDoor); px = mainDoor.x + (wo.orient === 'h' ? m2p(1.2) : wo.inSign * m2p(0.4)); py = mainDoor.y + (wo.orient === 'h' ? wo.inSign * m2p(0.4) : m2p(1.2)); }
+        else { var r0 = state.rooms.filter(function(r){ return r.type !== 'yard' && (r.floor || 0) === 0; })[0]; if (r0) { px = r0.x + m2p(0.5); py = r0.y + m2p(0.5); } }
+        if (px != null) rec('fire_panel', px, py, 'רכזת גילוי אש — ליד הכניסה הראשית', 'ליד הכניסה הראשית / פנל כבאים בקומת הקרקע, נגישה לכוחות ההצלה ולמוקד. הדגם נקבע לפי מספר הכתובות במערכת.', true);
+      }
+      if (mainDoor && !all.some(function(d){ return d.type === 'fire_strobe_out'; })) {
+        var w2 = computeWallOrientation(mainDoor);
+        rec('fire_strobe_out', mainDoor.x + (w2.orient === 'h' ? -m2p(1.2) : -w2.inSign * 7), mainDoor.y + (w2.orient === 'h' ? -w2.inSign * 7 : -m2p(1.2)), 'נצנץ חיצוני — חזית הכניסה', 'מסמן לכוחות ההצלה את המבנה בעת התרעה.', true);
+      }
+    }
+    for (var f = 0; f < floors; f++) {
+      var rooms = state.rooms.filter(function(r){ return r.type !== 'yard' && (r.floor || 0) === f; });
+      if (!rooms.length) continue;
+      var placedOnFloor = 0;
+      rooms.forEach(function(r){
+        var lb = r.label || 'חדר'; tag = { room:r.id };
+        if (dry.test(lb)) return;
+        var have = all.filter(function(d){ return FIRE_DET.indexOf(d.type) > -1 && inRoom(d, r); });
+        if (res) {
+          // homes: stand-alone detectors (SI 1220-5) in the bedroom hallway / entrance and the living space
+          if (!/מסדרון|מבואה|סלון|חלל|כניסה/.test(lb) || have.length) return;
+          var c0 = { x:r.x + m2p(r.w) / 2, y:r.y + m2p(r.h) / 2 };
+          if (nearAny(FIRE_DET, c0.x, c0.y, 3)) return;
+          rec('fire_standalone', c0.x, c0.y, 'גלאי עשן עצמאי — ' + lb, 'גלאי עשן עם צופר מובנה (ת״י 1220-5) — במבואת חדרי השינה ובחלל המגורים, בכל קומה.');
+          placedOnFloor++;
+          return;
+        }
+        var heat = heatRe.test(lb), type = heat ? 'fire_heat' : 'fire_smoke';
+        var area = r.w * r.h, perArea = heat ? 50 : 80, sp = heat ? 7.5 : 9;
+        var nx = Math.max(1, Math.ceil(r.w / sp)), ny = Math.max(1, Math.ceil(r.h / sp));
+        while (nx * ny < Math.ceil(area / perArea)) { if (r.w / nx >= r.h / ny) nx++; else ny++; }
+        var need = nx * ny;
+        if (have.length >= need) return;
+        var k = 0;
+        for (var i = 0; i < nx; i++) for (var j = 0; j < ny; j++) {
+          var x = r.x + m2p(r.w) * (i + 0.5) / nx, y = r.y + m2p(r.h) * (j + 0.5) / ny;
+          k++;
+          if (nearAny(FIRE_DET, x, y, Math.min(sp, Math.min(r.w / nx, r.h / ny)) * 0.6)) continue;
+          rec(type, x, y, (heat ? 'גלאי חום — ' : 'גלאי עשן — ') + lb + (need > 1 ? ' (' + k + '/' + need + ')' : ''),
+            heat ? 'חלל שבו עשן או אדים יגרמו להתרעות שווא — גלאי חום. כ-50 מ״ר לגלאי, מרווח עד 7.5 מ׳.'
+                 : 'כ-80 מ״ר לגלאי, מרווח עד 9 מ׳, 0.5–4.5 מ׳ מהקירות' + (need > 1 ? ' — ' + need + ' גלאים לחלל של ' + Math.round(area) + ' מ״ר' : '') + '.');
+        }
+      });
+      if (res) {
+        if (!placedOnFloor && !all.some(function(d){ return FIRE_DET.indexOf(d.type) > -1 && (d.floor || 0) === f; })) {
+          var big = rooms.filter(function(r){ return !dry.test(r.label || ''); }).sort(function(a, b){ return b.w * b.h - a.w * a.h; })[0];
+          if (big) rec('fire_standalone', big.x + m2p(big.w) / 2, big.y + m2p(big.h) / 2, 'גלאי עשן עצמאי — ' + (big.label || 'קומה'), 'לפחות גלאי עשן אחד בכל קומה (ת״י 1220-5).');
+        }
+        continue;
+      }
+      // manual call points: beside every exit door, on the inside
+      state.openings.filter(function(o){ return (o.type === 'door_main' || o.type === 'door_ext') && Math.floor(o.y / FLOOR_Y_STRIDE) === f; }).forEach(function(o){
+        var rr = roomOf(o); if (!rr) return;
+        tag = { door:o.id };
+        var w3 = computeWallOrientation(o);
+        var cx = o.x + (w3.orient === 'h' ? -m2p(0.8) : w3.inSign * m2p(0.35)), cy = o.y + (w3.orient === 'h' ? w3.inSign * m2p(0.35) : -m2p(0.8));
+        if (nearAny(['fire_call_point'], cx, cy, 2)) return;
+        rec('fire_call_point', cx, cy, 'לחצן אש ידני — ' + (o.type === 'door_main' ? 'יציאה ראשית' : 'יציאה') + ' ב״' + (rr.label || 'חדר') + '״', 'בכל יציאה, בגובה 1.2–1.4 מ׳, בצד הדלת; מרחק הליכה עד כ-45 מ׳ ללחצן.');
+      });
+      // sounders: a sounder-flasher in the main space of every floor, plus a sounder in every other space over 60 m²
+      var sorted = rooms.filter(function(r){ return !dry.test(r.label || ''); }).sort(function(a, b){ return b.w * b.h - a.w * a.h; });
+      var SND = ['fire_sounder', 'fire_sounder_strobe'];
+      sorted.forEach(function(r, idx){
+        if (idx > 0 && r.w * r.h <= 60) return;
+        tag = { room:r.id };
+        if (all.some(function(d){ return SND.indexOf(d.type) > -1 && inRoom(d, r); })) return;
+        var sx = r.x + m2p(r.w) - m2p(0.4), sy = r.y + m2p(0.4);
+        rec(idx === 0 ? 'fire_sounder_strobe' : 'fire_sounder', sx, sy, (idx === 0 ? 'צופר-נצנץ — ' : 'צופר אש — ') + (r.label || 'חלל'),
+          'אות פינוי של לפחות 65 dB(A) ו-5 dB מעל רעש הרקע בכל החללים' + (idx === 0 ? '; נצנץ לכבדי שמיעה בחלל המרכזי.' : ' — חלל מעל 60 מ״ר מקבל צופר משלו.'));
+      });
+    }
+    return out;
+  }
+
+
+  /* ---------- fire detection: standards check and installation guidance ----------
+     fireAudit() looks at the fire design the agent has drawn and lists what is missing or wrong
+     against the SI 1220 rules used by the app (reference values NFPA 72 / BS 5839-1 — the final
+     design belongs to a certified fire-detection designer). Every finding that can be fixed
+     automatically carries a fix(); the findings are shown in the recommendations panel, in a
+     pop-up after a fire device is placed or moved, and before a quote with fire items opens. */
+  var FIRE_ALL_DET = ['fire_smoke', 'fire_heat', 'fire_multi', 'fire_beam', 'fire_standalone'];
+  var FIRE_WET = /שירותים|אמבט|מקלחת|רחצה/, FIRE_HEAT_ROOM = /מטבח|חניה|חניון|דוד|כביסה|מכונות|גנרטור|מחסן חומרים/;
+  function fireDevs(){ return state.devices.filter(function(d){ return /^fire_/.test(d.type); }); }
+  function fireInRoom(d, r){ return (d.floor || 0) === (r.floor || 0) && d.x >= r.x - 2 && d.x <= r.x + m2p(r.w) + 2 && d.y >= r.y - 2 && d.y <= r.y + m2p(r.h) + 2; }
+  function fireAudit(){
+    var out = [], fd = fireDevs();
+    function add(o){ out.push(o); }
+    function addRecs(list){ list.forEach(function(r){ recAdd(r.type, r.x, r.y, r.rot, recFloor(r)); }); return list.length; }
+    function swap(ids, type){ state.devices.forEach(function(d){ if (ids.indexOf(d.id) > -1) d.type = type; }); }
+    if (!fireAllowed()) {
+      if (fd.length) add({ id:'res', sev:'crit', devs:fd.map(function(d){ return d.id; }), title:'מערכת גילוי אש מוצעת רק לעסק או למשרד',
+        text:'בבית פרטי ובדירה האפליקציה אינה מתכננת מערכת גילוי אש. הסירו את ' + fd.length + ' אביזרי האש, או שנו את סוג הנכס.',
+        fixLabel:'הסרת אביזרי האש', fix:function(){ state.devices = state.devices.filter(function(d){ return !/^fire_/.test(d.type); }); return 'אביזרי גילוי האש הוסרו'; } });
+      return out;
+    }
+    if (!fd.length && !firePlanOn()) return out;
+    var recs = []; try { recs = fireRecommendations(); } catch(e) {}
+    var panels = fd.filter(function(d){ return d.type === 'fire_panel'; });
+    var mainDoor = state.openings.filter(function(o){ return o.type === 'door_main'; })[0];
+    // the panel
+    if (!panels.length) {
+      var pr = recs.filter(function(r){ return r.type === 'fire_panel'; });
+      add({ id:'panel', sev:'crit', first:true, title:'חסרה רכזת גילוי אש', text:'כל הגלאים, הלחצנים והצופרים מתחברים לרכזת כתובתית — ליד הכניסה הראשית, נגישה לכוחות ההצלה, עם סוללות גיבוי ל-24 שעות + 30 דקות התרעה.',
+        fixLabel:pr.length ? 'הוספת רכזת' : '', fix:pr.length ? function(){ addRecs(pr); return 'נוספה רכזת גילוי אש'; } : null });
+    } else {
+      if (panels.length > 1) add({ id:'panels', sev:'info', devs:panels.slice(1).map(function(d){ return d.id; }), title:'יותר מרכזת אחת', text:'מערכת עם כמה רכזות מחייבת רשת רכזות מאותו יצרן וחיווי מרוכז בכניסה — לתאם עם המתכנן. ברוב העסקים רכזת אחת מספיקה.' });
+      if (mainDoor && (panels[0].floor || 0) === (mainDoor.floor || Math.floor(mainDoor.y / FLOOR_Y_STRIDE)) ) {
+        var dist = p2m(Math.hypot(panels[0].x - mainDoor.x, panels[0].y - mainDoor.y));
+        var rep2 = fd.some(function(d){ return d.type === 'fire_repeater' && p2m(Math.hypot(d.x - mainDoor.x, d.y - mainDoor.y)) < 4; });
+        if (dist > 8 && !rep2) add({ id:'panelfar', sev:'warn', devs:[panels[0].id], title:'הרכזת רחוקה מהכניסה (' + dist.toFixed(0) + ' מ׳)', text:'כוחות ההצלה צריכים לראות את מצב המערכת בכניסה. העבירו את הרכזת לליד הכניסה הראשית, או הוסיפו לוח משנה (רפיטר) בכניסה.',
+          fixLabel:'הוספת רפיטר בכניסה', fix:function(){ var w = computeWallOrientation(mainDoor); recAdd('fire_repeater', mainDoor.x + (w.orient === 'h' ? m2p(1.2) : w.inSign * m2p(0.4)), mainDoor.y + (w.orient === 'h' ? w.inSign * m2p(0.4) : m2p(1.2)), 0, Math.floor(mainDoor.y / FLOOR_Y_STRIDE)); return 'נוסף לוח משנה בכניסה'; } });
+      }
+    }
+    // detectors, room by room
+    var dets = fd.filter(function(d){ return FIRE_ALL_DET.indexOf(d.type) > -1; });
+    if (panels.length && !dets.length) add({ id:'nodet', sev:'crit', title:'אין גלאים במערכת', text:'הרכזת לבדה לא מגלה אש — יש להציב גלאי עשן / חום בכל החללים.' });
+    var orphan = dets.filter(function(d){ return !state.rooms.some(function(r){ return r.type !== 'yard' && fireInRoom(d, r); }); });
+    if (orphan.length) add({ id:'orphan', sev:'warn', devs:orphan.map(function(d){ return d.id; }), title:orphan.length + ' גלאים מחוץ לחדר', text:'גלאי מוצב בתוך חלל סגור, בתקרה — לא בחוץ ולא בחצר. גררו אותו לתוך החדר.' });
+    state.rooms.filter(function(r){ return r.type !== 'yard'; }).forEach(function(r){
+      var lb = r.label || 'חדר', inR = dets.filter(function(d){ return fireInRoom(d, r); });
+      if (FIRE_WET.test(lb)) return;
+      var heat = FIRE_HEAT_ROOM.test(lb), perArea = heat ? 50 : 80, sp = heat ? 7.5 : 9, area = r.w * r.h;
+      var nx = Math.max(1, Math.ceil(r.w / sp)), ny = Math.max(1, Math.ceil(r.h / sp));
+      while (nx * ny < Math.ceil(area / perArea)) { if (r.w / nx >= r.h / ny) nx++; else ny++; }
+      var need = nx * ny, have = inR.filter(function(d){ return d.type !== 'fire_standalone'; }).length;
+      var rr = recs.filter(function(x){ return x.roomId === r.id && FIRE_ALL_DET.indexOf(x.type) > -1; });
+      if (!have && !inR.some(function(d){ return d.type === 'fire_beam'; })) add({ id:'room-' + r.id, sev:'crit', room:r.id, title:'אין גלאי ב״' + lb + '״', text:'כל חלל במבנה מוגן בגלאי (למעט חדרי רחצה ושירותים קטנים) — ' + (heat ? 'כאן גלאי חום.' : 'גלאי עשן, כ-80 מ״ר לגלאי.'),
+        fixLabel:rr.length ? 'הוספת ' + (rr.length > 1 ? rr.length + ' גלאים' : 'גלאי') : '', fix:rr.length ? function(){ addRecs(rr); return 'נוספו גלאים ב״' + lb + '״'; } : null });
+      else if (have < need) add({ id:'roomn-' + r.id, sev:'warn', room:r.id, title:'חסרים גלאים ב״' + lb + '״ (' + have + ' מתוך ' + need + ')', text:Math.round(area) + ' מ״ר — ' + (heat ? 'עד 50 מ״ר ומרווח 7.5 מ׳ לגלאי חום.' : 'עד 80 מ״ר ומרווח 9 מ׳ לגלאי עשן.'),
+        fixLabel:rr.length ? 'הוספת החסרים' : '', fix:rr.length ? function(){ addRecs(rr); return 'נוספו גלאים ב״' + lb + '״'; } : null });
+      // detector type for the space
+      var smokeHere = inR.filter(function(d){ return d.type === 'fire_smoke' || d.type === 'fire_multi'; }).map(function(d){ return d.id; });
+      var heatHere = inR.filter(function(d){ return d.type === 'fire_heat'; }).map(function(d){ return d.id; });
+      if (heat && smokeHere.length) add({ id:'type-' + r.id, sev:'warn', devs:smokeHere, title:'גלאי עשן ב״' + lb + '״', text:'אדים, בישול או גזי פליטה יגרמו להתרעות שווא — בחלל כזה מתקינים גלאי חום.',
+        fixLabel:'החלפה לגלאי חום', fix:function(){ swap(smokeHere, 'fire_heat'); return 'הוחלף לגלאי חום'; } });
+      if (!heat && heatHere.length) add({ id:'typeh-' + r.id, sev:'info', devs:heatHere, title:'גלאי חום ב״' + lb + '״', text:'גלאי חום מגיב רק כשהאש כבר מפותחת. בחלל רגיל (משרד, מכירה, המתנה) מתקינים גלאי עשן.',
+        fixLabel:'החלפה לגלאי עשן', fix:function(){ swap(heatHere, 'fire_smoke'); return 'הוחלף לגלאי עשן'; } });
+      // distance from the walls (0.5 m)
+      var nearWall = inR.filter(function(d){ if (d.type === 'fire_beam') return false; var m = Math.min(d.x - r.x, r.x + m2p(r.w) - d.x, d.y - r.y, r.y + m2p(r.h) - d.y); return m < m2p(0.5) && r.w > 1.4 && r.h > 1.4; });
+      if (nearWall.length) add({ id:'wall-' + r.id, sev:'warn', devs:nearWall.map(function(d){ return d.id; }), title:'גלאי צמוד לקיר ב״' + lb + '״', text:'גלאי תקרה מותקן לפחות 50 ס״מ מהקיר — בפינה האוויר עומד והעשן מגיע באיחור.',
+        fixLabel:'הזזה פנימה', fix:function(){ nearWall.forEach(function(d){ var g = m2p(0.6); d.x = Math.max(r.x + g, Math.min(r.x + m2p(r.w) - g, d.x)); d.y = Math.max(r.y + g, Math.min(r.y + m2p(r.h) - g, d.y)); }); return 'הגלאים הוזזו 60 ס״מ מהקיר'; } });
+    });
+    var standalone = fd.filter(function(d){ return d.type === 'fire_standalone'; });
+    if (standalone.length) add({ id:'standalone', sev:'crit', devs:standalone.map(function(d){ return d.id; }), title:'גלאי עצמאי במערכת עסקית', text:'גלאי עצמאי (ת״י 1220-5) מיועד למגורים ואינו מתחבר לרכזת. בעסק / משרד מתקינים גלאי עשן כתובתי.',
+      fixLabel:'החלפה לגלאי כתובתי', fix:function(){ swap(standalone.map(function(d){ return d.id; }), 'fire_smoke'); return 'הוחלף לגלאי עשן כתובתי'; } });
+    // manual call points at the exits
+    var exits = state.openings.filter(function(o){ return o.type === 'door_main' || o.type === 'door_ext'; });
+    var cps = fd.filter(function(d){ return d.type === 'fire_call_point'; });
+    exits.forEach(function(o){
+      if (cps.some(function(d){ return Math.hypot(d.x - o.x, d.y - o.y) < m2p(3); })) return;
+      var cr = recs.filter(function(x){ return x.doorId === o.id && x.type === 'fire_call_point'; });
+      add({ id:'cp-' + o.id, sev:'crit', title:'חסר לחצן אש ידני ב' + (o.type === 'door_main' ? 'יציאה הראשית' : 'יציאה'), text:'לחצן ידני בכל יציאה, בצד הדלת, בגובה 1.2–1.4 מ׳ — מרחק הליכה עד כ-45 מ׳ מכל נקודה.',
+        fixLabel:cr.length ? 'הוספת לחצן' : '', fix:cr.length ? function(){ addRecs(cr); return 'נוסף לחצן אש ידני'; } : null });
+    });
+    if (!exits.length && !cps.length && fd.length) add({ id:'cp', sev:'crit', title:'אין לחצן אש ידני', text:'לא סומנה דלת יציאה בשרטוט — סמנו את דלת הכניסה (פתחים במבנה) והציבו לידה לחצן ידני.' });
+    // evacuation alarm
+    var SND = ['fire_sounder', 'fire_sounder_strobe'], snd = fd.filter(function(d){ return SND.indexOf(d.type) > -1; });
+    for (var f = 0; f < Math.max(1, state.floorCount || 1); f++) {
+      var fr = state.rooms.filter(function(r){ return r.type !== 'yard' && (r.floor || 0) === f; });
+      if (!fr.length) continue;
+      if (!snd.some(function(d){ return (d.floor || 0) === f; })) {
+        var sr = recs.filter(function(x){ return SND.indexOf(x.type) > -1 && fr.some(function(r){ return r.id === x.roomId; }); });
+        add({ id:'snd-' + f, sev:'crit', title:'אין צופר פינוי' + (usesMultiFloor() ? ' ב' + floorLabelFor(f) : ''), text:'אות פינוי של לפחות 65 dB(A), ו-5 dB מעל רעש הרקע, בכל החללים; צופר-נצנץ בחלל המרכזי לכבדי שמיעה.',
+          fixLabel:sr.length ? 'הוספת צופרים' : '', fix:sr.length ? function(){ addRecs(sr); return 'נוספו צופרים'; } : null });
+      } else {
+        fr.filter(function(r){ return r.w * r.h > 60 && !FIRE_WET.test(r.label || ''); }).forEach(function(r){
+          if (snd.some(function(d){ return fireInRoom(d, r); })) return;
+          var s2 = recs.filter(function(x){ return x.roomId === r.id && SND.indexOf(x.type) > -1; });
+          add({ id:'sndr-' + r.id, sev:'warn', title:'אין צופר ב״' + (r.label || 'חלל') + '״ (' + Math.round(r.w * r.h) + ' מ״ר)', text:'בחלל גדול צופר מחוץ לחדר לא יישמע מספיק חזק — מוסיפים צופר בחלל עצמו.',
+            fixLabel:s2.length ? 'הוספת צופר' : '', fix:s2.length ? function(){ addRecs(s2); return 'נוסף צופר'; } : null });
+        });
+      }
+    }
+    var plainSnd = snd.filter(function(d){ return d.type === 'fire_sounder'; });
+    if (snd.length && !snd.some(function(d){ return d.type === 'fire_sounder_strobe'; })) add({ id:'strobe', sev:'warn', devs:[plainSnd[0].id], title:'אין נצנץ פינוי', text:'בנוסף לצופר — נצנץ אור (צופר-נצנץ) בחלל המרכזי ובשירותי נכים, לאנשים עם לקות שמיעה.',
+      fixLabel:'החלפה לצופר-נצנץ', fix:function(){ plainSnd[0].type = 'fire_sounder_strobe'; return 'הוחלף לצופר-נצנץ'; } });
+    if (fd.length && mainDoor && !fd.some(function(d){ return d.type === 'fire_strobe_out'; })) {
+      var so = recs.filter(function(x){ return x.type === 'fire_strobe_out'; });
+      add({ id:'out', sev:'warn', title:'אין נצנץ חיצוני', text:'נצנץ מעל הכניסה מסמן לכוחות ההצלה איזה מבנה בהתרעה.', fixLabel:so.length ? 'הוספת נצנץ חיצוני' : '', fix:so.length ? function(){ addRecs(so); return 'נוסף נצנץ חיצוני'; } : null });
+    }
+    // interfaces with the other systems
+    var locks = state.devices.filter(function(d){ return d.type === 'smart_lock' || d.type === 'spider_ctrl'; });
+    var io = fd.some(function(d){ return d.type === 'fire_io_module'; });
+    var duct = fd.some(function(d){ return d.type === 'fire_duct'; });
+    if ((locks.length || duct) && !io && panels.length) add({ id:'io', sev:'warn', title:locks.length ? 'נעילות חשמליות ביציאות' : 'גלאי תעלה ללא מודול בקרה', text:(locks.length ? 'מנעול חשמלי / שער חשמלי חייב להשתחרר אוטומטית באזעקת אש, כדי לא לחסום את הפינוי.' : 'גלאי תעלה מפסיק את מערכת המיזוג באזעקה — דרך מודול כניסה/יציאה.') + ' מוסיפים מודול IO ליד הרכזת.',
+      fixLabel:'הוספת מודול IO', fix:function(){ recAdd('fire_io_module', panels[0].x + m2p(0.6), panels[0].y, 0, panels[0].floor || 0); return 'נוסף מודול IO'; } });
+    if (state.devices.some(function(d){ return d.type === 'smoke'; })) add({ id:'alarmsmoke', sev:'info', title:'גלאי העשן של האזעקה אינו חלק ממערכת האש', text:'גלאי עשן אלחוטי של מערכת האזעקה אינו עומד בת״י 1220 ואינו מחליף גלאי של מערכת גילוי האש.' });
+    var addr = fd.filter(function(d){ return d.type !== 'fire_panel' && d.type !== 'fire_standalone'; }).length;
+    if (addr > 125) add({ id:'loops', sev:'info', title:addr + ' אביזרים כתובתיים', text:'מעבר לכ-125 אביזרים ללולאה נדרשת רכזת עם 2 לולאות לפחות — יש לבחור דגם בהתאם.' });
+    return out;
+  }
+  function fireIssueHtml(i, k){
+    var ic = i.sev === 'crit' ? '⛔' : i.sev === 'warn' ? '⚠️' : 'ℹ️';
+    return '<li class="fa-' + i.sev + '"><span class="fa-ic">' + ic + '</span><div><b>' + escapeHtml(i.title) + '</b><span>' + escapeHtml(i.text) + '</span>' +
+      (i.fix && i.fixLabel ? '<button type="button" class="btn btn-ghost btn-sm fa-fix" data-fa="' + k + '">' + escapeHtml(i.fixLabel) + '</button>' : '') + '</div></li>';
+  }
+  function fireApplyFix(i){
+    if (!i || !i.fix) return;
+    pushUndo(snapshotState()); fireMute = true;
+    var msg = ''; try { msg = i.fix(); } catch(e) { console.warn('fire fix', e); }
+    render(); fireMute = false; fireSeen = fireSnapshot();
+    if (msg) showCanvasToast('✓ ' + msg);
+  }
+  function fireBindFixes(root, list, after){
+    Array.prototype.forEach.call(root.querySelectorAll('.fa-fix'), function(b){ b.onclick = function(){ fireApplyFix(list[+b.dataset.fa]); if (after) after(); }; });
+  }
+  // the pop-up: guidance after placing a device, a summary before the quote
+  var firePopTimer = null, fireTipShown = {}, fireFirstShown = false, fireLastSummary = { sig:'', t:0 };
+  function firePop(title, intro, list, opts){
+    opts = opts || {};
+    var old = document.getElementById('firePop'); if (old) old.remove(); clearInterval(firePopTimer);
+    if (!intro && !list.length) return;
+    var el = document.createElement('div'); el.id = 'firePop'; el.className = 'rec-pop fire-pop' + (opts.quote ? ' over-modal' : ''); el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-label', title); el.setAttribute('data-html2canvas-ignore', 'true');
+    var fixable = list.filter(function(i){ return i.fix && i.fixLabel; });
+    el.innerHTML = '<div class="rp-head"><b>' + escapeHtml(title) + ' <span class="beta-tag">בהרצה</span></b><button type="button" class="rp-x" aria-label="סגירה">×</button></div>' +
+      (intro ? '<p class="fp-intro">' + intro + '</p>' : '') +
+      (list.length ? '<ul class="fire-audit">' + list.slice(0, 6).map(fireIssueHtml).join('') + '</ul>' + (list.length > 6 ? '<p class="fp-more">ועוד ' + (list.length - 6) + ' — ברשימת ההמלצות › גילוי אש</p>' : '') : '') +
+      '<div class="rp-acts">' + (fixable.length > 1 ? '<button type="button" class="btn btn-primary btn-sm fp-all">תיקון הכול (' + fixable.length + ')</button>' : '') +
+      '<button type="button" class="btn btn-ghost btn-sm fp-ok">' + (opts.quote ? 'המשך להצעה' : 'הבנתי') + '</button></div>' + (opts.quote ? '' : '<i class="rp-bar"></i>');
+    document.body.appendChild(el);
+    function close(){ clearInterval(firePopTimer); el.classList.add('out'); setTimeout(function(){ el.remove(); }, 250); }
+    el.querySelector('.rp-x').onclick = close; el.querySelector('.fp-ok').onclick = close;
+    fireBindFixes(el, list, function(){ if (opts.onFix) opts.onFix(); close(); });
+    var all = el.querySelector('.fp-all'); if (all) all.onclick = function(){
+      pushUndo(snapshotState()); fireMute = true;
+      for (var pass = 0; pass < 3; pass++) { var l = fireAudit().filter(function(i){ return i.fix && i.fixLabel; }); if (!l.length) break; l.forEach(function(i){ try { i.fix(); } catch(e) {} }); }
+      render(); fireMute = false; fireSeen = fireSnapshot();
+      var left = fireAudit().filter(function(i){ return i.sev === 'crit'; }).length;
+      showCanvasToast(left ? '✓ תוקן מה שאפשר — נשארו ' + left + ' פריטים לבדיקה ידנית' : '✓ תכנון גילוי האש עודכן לפי כללי התקן');
+      if (opts.onFix) opts.onFix(); close();
+    };
+    if (!opts.quote) {
+      var left = opts.ms || 15000, t0 = Date.now(), paused = false, bar = el.querySelector('.rp-bar'), full = left;
+      firePopTimer = setInterval(function(){ if (paused) { t0 = Date.now(); return; } var now = Date.now(); left -= now - t0; t0 = now; bar.style.width = Math.max(0, left / full * 100) + '%'; if (left <= 0) close(); }, 100);
+      el.onmouseenter = function(){ paused = true; }; el.onmouseleave = function(){ paused = false; };
+      el.addEventListener('touchstart', function(){ paused = true; }, { passive:true });
+      el.addEventListener('focusin', function(){ paused = true; });
+    }
+  }
+  // watching the drawing: a fire device that was just placed or moved gets its installation guidance
+  var fireSeen = null, fireSeenState = null, fireMute = false, fireWatchT = null;
+  function fireSnapshot(){ var m = {}; state.devices.forEach(function(d){ if (/^fire_/.test(d.type)) m[d.id] = d.type + '@' + Math.round(d.x) + ',' + Math.round(d.y); }); return m; }
+  function fireWatch(){
+    if (CONSUMER) return;
+    var cur = fireSnapshot();
+    if (fireSeen === null || fireSeenState !== state || fireMute) { fireSeen = cur; fireSeenState = state; return; }
+    var changed = Object.keys(cur).filter(function(id){ return fireSeen[id] !== cur[id]; });
+    fireSeen = cur;
+    if (!changed.length || changed.length > 3) return;      // a batch (accept-all, a fix) is summarised elsewhere
+    clearTimeout(fireWatchT); fireWatchT = setTimeout(function(){ fireOnPlaced(changed); }, 300);
+  }
+  function fireOnPlaced(ids){
+    var devs = state.devices.filter(function(d){ return ids.indexOf(d.id) > -1; }); if (!devs.length) return;
+    var iss = fireAudit().filter(function(i){
+      if (i.devs && i.devs.some(function(id){ return ids.indexOf(id) > -1; })) return true;
+      if (i.first && !fireFirstShown && devs.some(function(d){ return d.type !== 'fire_panel'; })) { fireFirstShown = true; return true; }   // still no panel — said once
+      if (i.room && devs.some(function(d){ var r = state.rooms.filter(function(x){ return x.id === i.room; })[0]; return r && fireInRoom(d, r) && /^roomn-/.test(i.id); })) return true;
+      return false;
+    });
+    var d0 = devs[devs.length - 1], tip = '';
+    if (!fireTipShown[d0.type] && TIPS[d0.type]) { fireTipShown[d0.type] = 1; tip = '<b>הנחיות התקנה:</b> ' + escapeHtml(TIPS[d0.type]); }
+    if (!tip && !iss.length) return;
+    firePop((DEVICE_DEFS[d0.type] || {}).label || 'גילוי אש', tip, iss, { ms: iss.some(function(i){ return i.sev === 'crit'; }) ? 20000 : 12000 });
+  }
+  // a summary when the recommendations open / after accept-all, at most every 3 minutes unless something changed
+  function fireSummaryPop(force){
+    if (CONSUMER || !fireDevs().length) return;
+    var l = fireAudit().filter(function(i){ return i.sev !== 'info'; }); if (!l.length) return;
+    var sig = l.map(function(i){ return i.id; }).join('|');
+    if (!force && sig === fireLastSummary.sig && Date.now() - fireLastSummary.t < 3 * 60e3) return;
+    fireLastSummary = { sig:sig, t:Date.now() };
+    var nc = l.filter(function(i){ return i.sev === 'crit'; }).length;
+    firePop('בדיקת גילוי אש · ת״י 1220', nc ? 'נמצאו ' + nc + ' חוסרים לפי כללי התקן בתכנון גילוי האש:' : 'הערות לתכנון גילוי האש:', l, { ms:20000 });
+  }
+
+  /* ============================= client plan import =============================
+     The agent receives the customer's architectural plan (photo, scan or PDF). It is placed under
+     the drawing as a tracing layer at true scale (the agent marks two points of a known
+     dimension), and — when the product manager connected an AI key in the admin page — Claude
+     reads the rooms and openings and they are created in this app's own model (axis-aligned rooms
+     in meters, openings on walls), ready for the usual recommendations and quote. Nothing is
+     trusted blindly: low-confidence items are skipped, edges are squared up, and the agent
+     reviews against the underlay (one undo restores the previous drawing). */
+  // One tracing layer per floor (a two-storey house gets a plan for each floor).
+  var underlays = {}, UL_KEY = 'g1sg_underlay', ulMove = false;
+  function curUL(){ return underlays[state.activeFloor || 0] || null; }
+  function loadUnderlay(){
+    var o = null; try { o = JSON.parse(localStorage.getItem(UL_KEY) || 'null'); } catch(e) {}
+    underlays = {};
+    if (o && o.src) underlays[o.floor || 0] = o;                 // saved by v123 (single layer)
+    else if (o && typeof o === 'object') Object.keys(o).forEach(function(k){ if (o[k] && typeof o[k].src === 'string') underlays[k] = o[k]; });
+  }
+  function saveUnderlay(){
+    try { if (Object.keys(underlays).length) localStorage.setItem(UL_KEY, JSON.stringify(underlays)); else localStorage.removeItem(UL_KEY); }
+    catch(e) { showCanvasToast('התוכנית גדולה מדי לשמירה במכשיר — היא תוצג עד לסגירת הדף', true); }
+  }
+  function clearUnderlays(){ if (window.__keepUnderlay || !Object.keys(underlays).length) return; underlays = {}; ulMove = false; saveUnderlay(); }
+  function renderUnderlay(){
+    var L = document.getElementById('underlayLayer'); if (!L) return;
+    L.innerHTML = '';
+    ulBar();
+    var U = curUL(), planSvg = document.getElementById('plan'), on = !!(U && U.visible);
+    if (planSvg) planSvg.classList.toggle('has-underlay', on);
+    if (!on) return;
+    var img = el('image', { x:U.x, y:U.y, width:U.w, height:U.h, preserveAspectRatio:'none', opacity:U.opacity, class:'underlay-img' + (ulMove ? ' movable' : '') });
+    img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', U.src); img.setAttribute('href', U.src);
+    if (ulMove) img.addEventListener('pointerdown', function(ev){
+      ev.stopPropagation(); ev.preventDefault();
+      var p0 = clientToPlan(ev), x0 = U.x, y0 = U.y;
+      function mv(e){ var p = clientToPlan(e); U.x = Math.round(x0 + p.x - p0.x); U.y = Math.round(y0 + p.y - p0.y); img.setAttribute('x', U.x); img.setAttribute('y', U.y); }
+      function up(){ window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); saveUnderlay(); }
+      window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up);
+    });
+    L.appendChild(img);
+  }
+  function clientToPlan(ev){
+    var svg = document.getElementById('plan'), pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    var m = svg.getScreenCTM(); return m ? pt.matrixTransform(m.inverse()) : { x:0, y:0 };
+  }
+  function ulBar(){
+    var bar = document.getElementById('ulBar'), U = curUL();
+    if (!U || CONSUMER) { if (bar) bar.remove(); return; }
+    if (!bar) {
+      bar = document.createElement('div'); bar.id = 'ulBar'; bar.className = 'ul-bar'; bar.setAttribute('data-html2canvas-ignore', 'true');
+      var host = document.querySelector('.canvas-wrap') || document.body; host.appendChild(bar);
+    }
+    bar.innerHTML = '<b>תוכנית הלקוח' + (usesMultiFloor() ? ' · ' + floorLabelFor(state.activeFloor || 0) : '') + '</b><span class="beta-tag">בהרצה</span>' +
+      '<label title="שקיפות">שקיפות <input type="range" id="ulOp" min="0.1" max="1" step="0.05" value="' + U.opacity + '"></label>' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="ulVis">' + (U.visible ? 'הסתרה' : 'הצגה') + '</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm' + (ulMove ? ' active' : '') + '" id="ulMv">' + (ulMove ? 'נעילה' : 'הזזה') + '</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="ulDel">הסרה</button>';
+    bar.querySelector('#ulOp').oninput = function(){ U.opacity = +this.value; var i = document.querySelector('#underlayLayer image'); if (i) i.setAttribute('opacity', U.opacity); };
+    bar.querySelector('#ulOp').onchange = saveUnderlay;
+    bar.querySelector('#ulVis').onclick = function(){ U.visible = !U.visible; saveUnderlay(); renderUnderlay(); };
+    bar.querySelector('#ulMv').onclick = function(){ ulMove = !ulMove; renderUnderlay(); if (ulMove) showCanvasToast('גררו את התוכנית למקום — ואז "נעילה"'); };
+    bar.querySelector('#ulDel').onclick = function(){ if (!confirm('להסיר את תוכנית הלקוח מהרקע של הקומה הזו? השרטוט עצמו לא ישתנה.')) return; delete underlays[state.activeFloor || 0]; ulMove = false; saveUnderlay(); renderUnderlay(); };
+  }
+
+  // ---- loading the file: images directly, PDFs through pdf.js (fetched once, only when needed)
+  function loadPdfJs(){
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    // self-hosted next to the app (also works from the desktop copy), cdnjs as a fallback
+    var bases = ['https://yhj842dhyb-design.github.io/g1-siteguard/lib/', 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/'];
+    function tryBase(i){
+      if (i >= bases.length) return Promise.reject(new Error('pdf'));
+      return new Promise(function(res, rej){
+        var sc = document.createElement('script'); sc.src = bases[i] + 'pdf.min.js';
+        sc.onload = function(){ try { window.pdfjsLib.GlobalWorkerOptions.workerSrc = bases[i] + 'pdf.worker.min.js'; res(window.pdfjsLib); } catch(e) { rej(e); } };
+        sc.onerror = function(){ sc.remove(); rej(new Error('pdf')); }; document.head.appendChild(sc);
+      }).catch(function(){ return tryBase(i + 1); });
+    }
+    return tryBase(0);
+  }
+  var IMPORT_ERR = {
+    pdf:'לא ניתן לטעון את קורא ה-PDF (נדרש חיבור לאינטרנט). אפשר לשלוח צילום מסך של התוכנית.',
+    'pdf-locked':'קובץ ה-PDF מוגן בסיסמה. בקשו מהלקוח קובץ פתוח, או צלמו מסך של התוכנית.',
+    'pdf-bad':'קובץ ה-PDF פגום או לא שלם. בקשו מהלקוח לשלוח אותו שוב, או צלמו מסך של התוכנית.',
+    heic:'תמונת HEIC (אייפון) לא נפתחת בדפדפן הזה. שלחו אותה כ-JPG או צלמו מסך של התמונה.',
+    big:'הקובץ גדול מדי (מעל 60MB). שלחו עמוד בודד או צילום מסך של התוכנית.',
+    type:'סוג הקובץ לא נתמך. אפשר תמונה (JPG / PNG / WEBP) או PDF.',
+    img:'התמונה לא נפתחה. נסו JPG / PNG אחר, או צילום מסך של התוכנית.'
+  };
+  function fileToCanvas(file, pageNo){
+    var MAX = 2200, isPdf = /pdf$/i.test(file.type) || /\.pdf$/i.test(file.name), isHeic = /hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
+    if (file.size > 60 * 1024 * 1024) return Promise.reject(new Error('big'));
+    if (!isPdf && !isHeic && file.type && !/^image\//.test(file.type)) return Promise.reject(new Error('type'));
+    if (isPdf) {
+      return loadPdfJs().then(function(lib){
+        return file.arrayBuffer().then(function(buf){ return lib.getDocument({ data:buf }).promise; })
+          .catch(function(e){ throw new Error(e && e.name === 'PasswordException' ? 'pdf-locked' : 'pdf-bad'); });
+      }).then(function(doc){
+        return doc.getPage(Math.min(pageNo || 1, doc.numPages)).then(function(pg){
+          var v = pg.getViewport({ scale:1 }), sc = Math.min(4, MAX / Math.max(v.width, v.height)), vp = pg.getViewport({ scale:sc });
+          var cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+          var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+          return pg.render({ canvasContext:cx, viewport:vp }).promise.then(function(){ cv._pages = doc.numPages; return cv; });
+        }).catch(function(e){ throw new Error(e && /^pdf/.test(e.message) ? e.message : 'pdf-bad'); });
+      });
+    }
+    return new Promise(function(res, rej){
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function(){
+        if (!im.width || !im.height) { URL.revokeObjectURL(url); rej(new Error('img')); return; }
+        var sc = Math.min(1, MAX / Math.max(im.width, im.height)); var cv = document.createElement('canvas'); cv.width = Math.round(im.width * sc); cv.height = Math.round(im.height * sc);
+        var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+        cv._pages = 1; cv._small = Math.max(im.width, im.height) < 700; res(cv); };
+      im.onerror = function(){ URL.revokeObjectURL(url); rej(new Error(isHeic ? 'heic' : 'img')); };
+      im.src = url;
+    });
+  }
+  function rotateCanvas(cv){
+    var c2 = document.createElement('canvas'); c2.width = cv.height; c2.height = cv.width;
+    var x = c2.getContext('2d'); x.translate(c2.width, 0); x.rotate(Math.PI / 2); x.drawImage(cv, 0, 0);
+    c2._pages = cv._pages; c2._small = cv._small; return c2;
+  }
+  function scaledCanvas(cv, maxSide){
+    var sc = Math.min(1, maxSide / Math.max(cv.width, cv.height)), c2 = document.createElement('canvas');
+    c2.width = Math.round(cv.width * sc); c2.height = Math.round(cv.height * sc); c2.getContext('2d').drawImage(cv, 0, 0, c2.width, c2.height);
+    return c2;
+  }
+  function scaledJpeg(cv, maxSide, q){ return scaledCanvas(cv, maxSide).toDataURL('image/jpeg', q); }
+  function aiEndpoint(){ var b = typeof G1C !== 'undefined' && G1C.cfg && G1C.cfg.backend; return (b && /^https:\/\/script\.google\.com\//.test(b.endpoint || '')) ? b.endpoint : ''; }
+  function aiStatus(){
+    var ep = aiEndpoint(); if (!ep) return Promise.resolve(false);
+    return fetch(ep + '?action=aiStatus&t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){ return !!(j && j.ai); }, function(){ return false; });
+  }
+  // "12,5" / "12.5 מ׳" / "1250" → number (meters or cm, per the unit picker)
+  function parseLenInput(v, unit){
+    var s = String(v || '').replace(/[^\d.,]/g, '').replace(',', '.'), n = parseFloat(s);
+    if (!(n > 0)) return 0;
+    return unit === 'cm' ? n / 100 : n;
+  }
+  // a printed dimension → meters. Israeli plans print centimeters without a unit ("350" = 3.50 m).
+  function dimMeters(d){
+    if (!d) return null;
+    var v = +d.value_m; if (isFinite(v) && v >= 0.3 && v <= 200) return v;
+    var t = String(d.text || '').replace(',', '.'), m = t.match(/\d+(?:\.\d+)?/); if (!m) return null;
+    var n = parseFloat(m[0]);
+    if (/ס"?מ|ס״מ|cm/i.test(t)) n = n / 100;
+    else if (/\./.test(m[0])) { if (n > 60) return null; }        // 3.50 → meters
+    else if (n >= 50 && n <= 20000) n = n / 100;                   // 350 → 3.50 m
+    else return null;
+    return n >= 0.3 && n <= 200 ? n : null;
+  }
+
+  // ---- reading Claude's answer defensively: any field may be missing, of the wrong type, or in pixels
+  function planCoordMapper(plan, sentW, sentH){
+    var nums = [];
+    function grab(a){ if (Array.isArray(a)) a.forEach(function(v){ if (Array.isArray(v)) grab(v); else if (isFinite(+v)) nums.push(Math.abs(+v)); }); }
+    (Array.isArray(plan.rooms) ? plan.rooms : []).forEach(function(r){ if (r) { grab(r.bbox); grab(r.polygon); } });
+    (Array.isArray(plan.openings) ? plan.openings : []).forEach(function(o){ if (o) grab(o.center); });
+    var mx = nums.length ? Math.max.apply(null, nums) : 0, sx = 1, sy = 1;
+    if (mx > 1.02) {
+      if (mx <= Math.max(sentW, sentH) * 1.05) { sx = sentW; sy = sentH; }   // pixels of the image that was sent
+      else if (mx <= 1000) { sx = sy = 1000; }                               // 0..1000 grid
+      else return null;
+    }
+    return function(x, y){ x = +x / sx; y = +y / sy; return isFinite(x) && isFinite(y) ? [Math.max(0, Math.min(1, x)), Math.max(0, Math.min(1, y))] : null; };
+  }
+  function roomBox(r, mapXY){
+    var pts = [];
+    if (Array.isArray(r.bbox) && r.bbox.length === 4) pts = [mapXY(r.bbox[0], r.bbox[1]), mapXY(r.bbox[2], r.bbox[3])];
+    else if (Array.isArray(r.polygon)) pts = r.polygon.map(function(p){ return Array.isArray(p) ? mapXY(p[0], p[1]) : null; });
+    pts = pts.filter(Boolean); if (pts.length < 2) return null;
+    var xs = pts.map(function(p){ return p[0]; }), ys = pts.map(function(p){ return p[1]; });
+    return { x0:Math.min.apply(null, xs), x1:Math.max.apply(null, xs), y0:Math.min.apply(null, ys), y1:Math.max.apply(null, ys) };
+  }
+  // calibration from the dimensions Claude read (image px → plan px factor), or null when they don't agree
+  function aiScale(plan, mapXY, imgW, imgH){
+    var ks = [];
+    (Array.isArray(plan.dimensions) ? plan.dimensions : []).forEach(function(d){
+      if (!d || !Array.isArray(d.start) || !Array.isArray(d.end) || (d.confidence != null && +d.confidence < 0.5)) return;
+      var m = dimMeters(d), a = mapXY(d.start[0], d.start[1]), b = mapXY(d.end[0], d.end[1]); if (!m || !a || !b) return;
+      var px = Math.hypot((b[0] - a[0]) * imgW, (b[1] - a[1]) * imgH); if (px < 40) return;
+      ks.push(m * PPM / px);
+    });
+    if (!ks.length) return null;
+    ks.sort(function(a, b){ return a - b; });
+    var med = ks[Math.floor(ks.length / 2)], agree = ks.filter(function(k){ return Math.abs(k / med - 1) <= 0.06; }).length;
+    return { k:med, n:ks.length, agree:agree, sure: agree >= 2 || ks.length === 1 };
+  }
+
+  // ---- the import dialog
+  function openPlanImport(){
+    if (CONSUMER) return;
+    var ov = document.getElementById('planImp'); if (ov) ov.remove();
+    ov = document.createElement('div'); ov.id = 'planImp'; ov.className = 'g1-sv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'piT');
+    ov.innerHTML = '<div class="g1-sv-card pi-card"><div class="g1-sv-head"><div><span class="g1-sv-kick">תוכנית מהלקוח <span class="beta-tag">בהרצה</span></span><h2 id="piT">ייבוא תוכנית אדריכלית</h2></div><button type="button" class="g1-sv-x" aria-label="סגירה">×</button></div>' +
+      '<div class="g1-sv-body">' +
+        '<p class="pi-beta">האפשרות בהרצה: התוצאה היא טיוטה לבדיקה — השוו כל חדר מול התוכנית לפני שליחת הצעה.</p>' +
+        '<div class="pi-step" id="piS1"><label class="pi-drop" for="piFile"><b>בחירת קובץ</b><span>תמונה (צילום / סריקה) או PDF של התוכנית</span></label><input type="file" id="piFile" accept="image/*,application/pdf,.pdf" hidden>' +
+        '<p class="pi-note">טיפ: צילום ישר מלמעלה, בלי צל ובלי זווית — וכל הדף בתמונה. PDF מקורי מהאדריכל נותן את התוצאה הטובה ביותר.</p></div>' +
+        '<div class="pi-step" id="piS2" hidden>' +
+          '<div class="pi-row pi-tools"><span id="piPages"></span><button type="button" class="btn btn-ghost btn-sm" id="piRot" title="סיבוב התוכנית ברבע סיבוב">↻ סיבוב</button>' +
+            '<span class="pi-zoom"><button type="button" class="btn btn-ghost btn-sm" id="piZo" aria-label="הקטנה">−</button><span id="piZv">100%</span><button type="button" class="btn btn-ghost btn-sm" id="piZi" aria-label="הגדלה">+</button></span></div>' +
+          '<p class="pi-instr"><b>כיול קנה מידה:</b> הקישו על שתי נקודות שהמרחק ביניהן ידוע (קצוות קו מידה, או קיר חיצוני מלא), והזינו את המרחק. בטלפון — הגדילו (+) לסימון מדויק.</p>' +
+          '<div class="pi-canvas-wrap"><canvas id="piCv"></canvas></div>' +
+          '<div class="pi-row"><label for="piLen">המרחק בין הנקודות</label><input type="text" id="piLen" inputmode="decimal" autocomplete="off" placeholder="למשל 11.5">' +
+            '<select id="piUnit" aria-label="יחידות"><option value="m">מ׳</option><option value="cm">ס״מ</option></select>' +
+            '<button type="button" class="btn btn-ghost btn-sm" id="piReset">סימון מחדש</button><span class="pi-hint" id="piHint"></span></div>' +
+          '<label class="pi-ai" id="piAiRow" hidden><input type="checkbox" id="piAi" checked> זיהוי חדרים ופתחים אוטומטי (AI) — יוצר את החדרים בשרטוט לבדיקתכם</label>' +
+          '<p class="pi-note" id="piAiNote"></p>' +
+        '</div>' +
+        '<p class="pi-err" id="piErr" role="alert"></p>' +
+      '</div>' +
+      '<div class="g1-sv-foot"><span class="g1-sv-err"></span><button type="button" class="g1-sv-send" id="piGo" disabled>הצבה בשרטוט</button></div></div>';
+    document.body.appendChild(ov);
+    var file = null, cv = null, pts = [], page = 1, aiOn = false, zoom = 1, closed = false, busy = false, placed = false, ctrl = null;
+    var $ = function(id){ return ov.querySelector('#' + id); };
+    function err(t){ $('piErr').textContent = t || ''; }
+    function close(){ closed = true; if (ctrl) try { ctrl.abort(); } catch(e) {} ov.remove(); document.removeEventListener('keydown', onKey); if (placed) render(); }
+    function onKey(e){ if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    ov.querySelector('.g1-sv-x').onclick = close;
+    aiStatus().then(function(on){
+      if (closed) return;
+      aiOn = on;
+      $('piAiRow').hidden = !on;
+      $('piAiNote').innerHTML = on ? 'התוכנית תישלח לניתוח בשירות Claude (Anthropic) דרך הגיליון של G1 — לשימוש בתכנון בלבד. אין מידה ידועה? אפשר לדלג על הסימון — הזיהוי ינסה לכייל לפי המידות שכתובות בתוכנית.'
+                                   : 'זיהוי חדרים אוטומטי יופעל אחרי שמנהל המוצר יחבר מפתח AI בעמוד הניהול. בינתיים התוכנית מוצבת כרקע בקנה מידה — ומשרטטים עליה את החדרים.';
+      check();
+    });
+    function draw(){
+      if (!cv) return;
+      var c = $('piCv'), wrapW = Math.min(ov.querySelector('.pi-canvas-wrap').clientWidth || 640, 900);
+      var sc = wrapW * zoom / cv.width; c.width = Math.round(cv.width * sc); c.height = Math.round(cv.height * sc); c._sc = sc;
+      var x = c.getContext('2d'); x.drawImage(cv, 0, 0, c.width, c.height);
+      x.lineWidth = 2; x.strokeStyle = '#d23b2a'; x.fillStyle = '#d23b2a';
+      pts.forEach(function(p){ x.beginPath(); x.arc(p.x * sc, p.y * sc, 6, 0, Math.PI * 2); x.fill(); });
+      if (pts.length === 2) { x.beginPath(); x.moveTo(pts[0].x * sc, pts[0].y * sc); x.lineTo(pts[1].x * sc, pts[1].y * sc); x.stroke(); }
+      $('piZv').textContent = Math.round(zoom * 100) + '%';
+      check();
+    }
+    function lenM(){ return parseLenInput($('piLen').value, $('piUnit').value); }
+    function wantAi(){ return aiOn && $('piAi').checked; }
+    function check(){
+      var len = lenM(), raw = parseLenInput($('piLen').value, 'm'), calib = pts.length === 2 && len >= 0.3 && len <= 300;
+      $('piHint').textContent = $('piUnit').value === 'm' && raw >= 100 ? 'מידה בס״מ? בחרו ס״מ' : (len > 300 ? 'המרחק גדול מדי' : '');
+      if (busy) return;
+      $('piGo').disabled = !(cv && (calib || (wantAi() && pts.length === 0)));
+      $('piGo').textContent = wantAi() ? (calib ? 'הצבה + זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : 'הצבה כרקע בשרטוט';
+    }
+    function load(){
+      err(''); $('piGo').disabled = true; $('piS1').querySelector('.pi-drop span').textContent = 'טוען…';
+      fileToCanvas(file, page).then(function(c){
+        if (closed) return;
+        cv = c; pts = []; zoom = 1; $('piS2').hidden = false;
+        $('piS1').querySelector('.pi-drop span').textContent = file.name + ' — לחצו להחלפה';
+        $('piPages').innerHTML = c._pages > 1 ? 'עמוד <select id="piPage">' + Array.apply(null, { length:c._pages }).map(function(_, i){ return '<option' + (i + 1 === page ? ' selected' : '') + '>' + (i + 1) + '</option>'; }).join('') + '</select> מתוך ' + c._pages : '';
+        var ps = $('piPage'); if (ps) ps.onchange = function(){ page = +this.value; load(); };
+        if (c._small) err('התמונה ברזולוציה נמוכה — הסימון והזיהוי יהיו פחות מדויקים. עדיף PDF או צילום חד יותר.');
+        setTimeout(draw, 0);
+      }).catch(function(e){
+        if (closed) return;
+        err(IMPORT_ERR[e && e.message] || IMPORT_ERR.img); cv = null; $('piS2').hidden = true; check();
+        $('piS1').querySelector('.pi-drop span').textContent = 'תמונה (צילום / סריקה) או PDF של התוכנית';
+      });
+    }
+    $('piFile').onchange = function(){ if (busy) return; file = this.files[0]; if (file) { page = 1; load(); } this.value = ''; };
+    $('piCv').onclick = function(ev){
+      if (busy) return;
+      var r = this.getBoundingClientRect(), sc = this._sc || 1;
+      var p = { x:(ev.clientX - r.left) * (this.width / r.width) / sc, y:(ev.clientY - r.top) * (this.height / r.height) / sc };
+      if (pts.length >= 2) pts = []; pts.push(p); draw();
+      if (pts.length === 2) $('piLen').focus();
+    };
+    $('piRot').onclick = function(){ if (!cv || busy) return; cv = rotateCanvas(cv); pts = []; draw(); };
+    $('piZi').onclick = function(){ zoom = Math.min(4, zoom * 1.5); draw(); };
+    $('piZo').onclick = function(){ zoom = Math.max(1, zoom / 1.5); draw(); };
+    $('piLen').oninput = check; $('piUnit').onchange = check; $('piAi').onchange = check;
+    $('piReset').onclick = function(){ pts = []; draw(); };
+
+    // put the image under the drawing at k plan-px per image-px; `at` = image point to place at a plan point
+    function place(k, at){
+      var fl = state.activeFloor || 0, off = fl * FLOOR_Y_STRIDE, w = Math.round(cv.width * k), h = Math.round(cv.height * k), x = 20, y = off + 20;
+      if (at) { x = Math.round(at.px - at.ix * k); y = Math.round(off + at.py - at.iy * k); }
+      else if (w > 960 || h > 640) {   // bigger than the drawing area: centre the marked dimension, which usually lies on the building
+        var mx = pts.length === 2 ? (pts[0].x + pts[1].x) / 2 : cv.width / 2, my = pts.length === 2 ? (pts[0].y + pts[1].y) / 2 : cv.height / 2;
+        x = Math.round(500 - mx * k); y = Math.round(off + 340 - my * k);
+      }
+      var prev = underlays[fl];
+      underlays[fl] = { src:(prev && prev._cv === cv && prev.src) || scaledJpeg(cv, 1600, 0.7), x:x, y:y, w:w, h:h, opacity:0.55, visible:true, floor:fl, imgW:cv.width, imgH:cv.height };
+      Object.defineProperty(underlays[fl], '_cv', { value:cv, enumerable:false });
+      saveUnderlay(); placed = true;
+      return underlays[fl];
+    }
+    $('piGo').onclick = function(){
+      if (busy) return;
+      var calib = pts.length === 2, k = 0;
+      if (calib) {
+        var len = lenM(), dpx = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+        if (dpx < 10) { err('הנקודות קרובות מדי — סמנו מרחק ארוך יותר.'); return; }
+        k = len * PPM / dpx;
+        var spanM = Math.max(cv.width, cv.height) * k / PPM;
+        if (spanM < 3 || spanM > 500) { err('קנה המידה לא סביר (הדף יוצא ' + spanM.toFixed(0) + ' מ׳). בדקו את המרחק והיחידות.'); return; }
+        place(k);
+      }
+      if (!wantAi()) {
+        var U0 = curUL(); close();
+        showCanvasToast(U0.w > 1000 || U0.h > 680 ? 'התוכנית הוצבה בקנה מידה — היא גדולה משטח השרטוט; "הזזה" בסרגל התוכנית ממקמת אותה' : 'התוכנית הוצבה כרקע בקנה מידה — שרטטו עליה את החדרים (חדרים מוכנים / ציור חדר)');
+        return;
+      }
+      busy = true; $('piGo').disabled = true; $('piGo').textContent = 'קורא את התוכנית… (עד דקה וחצי)'; err('');
+      var auth = (typeof g1Auth !== 'undefined' && g1Auth) || {}, sent = scaledCanvas(cv, 1568), sentCv = cv;
+      ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, 100000);
+      fetch(aiEndpoint(), { method:'POST', signal:ctrl ? ctrl.signal : undefined, headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body: JSON.stringify({ type:'analyzePlan', uid:auth.uid || '', image:sent.toDataURL('image/jpeg', 0.85).split(',')[1], mime:'image/jpeg' }) })
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          clearTimeout(timer);
+          if (closed || sentCv !== cv) return;                       // dialog closed / file changed meanwhile
+          if (!j || !j.ok) throw new Error((j && j.error) || 'x');
+          var res = applyPlanAI(j.plan, { k:k, calibrated:calib, cv:cv, sentW:sent.width, sentH:sent.height, place:place });
+          if (res.needCalib) { busy = false; err(res.msg); check(); return; }
+          close(); render();
+          showCanvasToast(res.msg, !res.rooms || res.warn);
+        })
+        .catch(function(e){
+          clearTimeout(timer);
+          if (closed) return;
+          busy = false;
+          var m = String(e && (e.name === 'AbortError' ? 'timeout' : e.message) || ''), tail = placed ? ' התוכנית הוצבה כרקע — אפשר לשרטט עליה.' : ' אפשר לסמן שתי נקודות ומרחק ולהציב כרקע.';
+          if (placed && /^(daily-cap|unknown user|ai-not-configured)$/.test(m)) {   // retrying won't help: continue with the tracing layer
+            close(); showCanvasToast((m === 'daily-cap' ? 'הגעתם למכסת הזיהויים היומית' : m === 'unknown user' ? 'הזיהוי האוטומטי זמין לסוכנים מחוברים בלבד' : 'הזיהוי האוטומטי לא מחובר') + ' — התוכנית הוצבה כרקע בקנה מידה, שרטטו עליה את החדרים', true); return;
+          }
+          err((m === 'daily-cap' ? 'הגעתם למכסת הזיהויים היומית.' : m === 'unknown user' ? 'הזיהוי האוטומטי זמין לסוכנים מחוברים בלבד.' :
+               m === 'ai-not-configured' ? 'הזיהוי האוטומטי לא מחובר (מפתח AI בעמוד הניהול).' : m === 'timeout' ? 'הזיהוי לקח יותר מדי זמן.' :
+               /^ai-http-(429|529|503)/.test(m) ? 'שירות הזיהוי עמוס כרגע — נסו שוב בעוד דקה.' : m === 'ai-truncated' ? 'התוכנית מורכבת מדי לזיהוי אחד — נסו עמוד / אזור מצומצם יותר.' :
+               'הזיהוי האוטומטי לא הצליח כרגע.') + tail);
+          check(); if (placed) render();
+        });
+    };
+    $('piFile').click();
+  }
+
+  // ---- turning Claude's reading into this app's model
+  // ctx: { k: plan px per image px (0 = not calibrated yet), calibrated, cv, sentW, sentH, place(k, at) }
+  var OUTDOOR_RE = /מרפסת|חצר|גינה|חניה|חנייה|חניון|פטיו|בריכה|גג/;
+  function applyPlanAI(plan, ctx){
+    if (!plan || typeof plan !== 'object') plan = {};
+    var imgW = ctx.cv.width, imgH = ctx.cv.height, notes = [], warn = false;
+    var docType = String(plan.document_type || '');
+    var mapXY = planCoordMapper(plan, ctx.sentW, ctx.sentH);
+    var bad = function(t){ return ctx.calibrated ? { rooms:0, msg:t + ' — התוכנית הוצבה כרקע בלבד' } : { rooms:0, needCalib:true, msg:t + '. סמנו שתי נקודות ומרחק כדי להציב כרקע.' }; };
+    if (docType === 'not_a_plan') return bad('הקובץ לא זוהה כתוכנית קומה');
+    if (!mapXY) return bad('תשובת הזיהוי לא הייתה תקינה');
+    // scale: the agent's marking, cross-checked against the dimensions printed on the plan
+    var S = aiScale(plan, mapXY, imgW, imgH), k = ctx.k;
+    if (!ctx.calibrated) {
+      if (!S || !S.sure) return { rooms:0, needCalib:true, msg:'לא נמצאו בתוכנית מידות קריאות לכיול אוטומטי. סמנו שתי נקודות שהמרחק ביניהן ידוע והזינו אותו.' };
+      k = S.k; notes.push('קנה המידה נקבע לפי ' + S.n + ' מידות שכתובות בתוכנית');
+    } else if (S && S.sure && Math.abs(S.k / k - 1) > 0.15) {
+      var pct = Math.round((S.k / k - 1) * 100);
+      if (confirm('לפי המידות שכתובות בתוכנית, קנה המידה שסימנתם סוטה ב-' + Math.abs(pct) + '%.\nלתקן לפי המידות בתוכנית? (ביטול = להשאיר את הסימון שלכם)')) { k = S.k; notes.push('קנה המידה תוקן לפי המידות בתוכנית'); }
+      else { notes.push('הכיול שלכם שונה ב-' + Math.abs(pct) + '% מהמידות בתוכנית — כדאי לבדוק'); warn = true; }
+    }
+    var conf = function(x){ var c = parseFloat(x); return isNaN(c) ? 1 : c; };
+    var rooms = (Array.isArray(plan.rooms) ? plan.rooms : []).filter(function(r){ return r && typeof r === 'object' && conf(r.confidence) >= 0.35; }).map(function(r){
+      var b = roomBox(r, mapXY); if (!b) return null;
+      return { name:String(r.name || 'חדר').replace(/[<>"]/g, '').trim().slice(0, 30) || 'חדר', conf:conf(r.confidence),
+               x0:b.x0 * imgW * k, x1:b.x1 * imgW * k, y0:b.y0 * imgH * k, y1:b.y1 * imgH * k };   // plan px, relative to the image corner
+    }).filter(function(r){ var w = r.x1 - r.x0, h = r.y1 - r.y0; return r && w >= m2p(0.8) && h >= m2p(0.8) && w <= m2p(40) && h <= m2p(40) && w * h >= m2p(1) * m2p(1); });
+    // a space read twice, or a closet/alcove inside a bigger room: keep the bigger one
+    rooms.sort(function(a, b){ return (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0); });
+    var inner = 0;
+    rooms = rooms.filter(function(r, i){
+      var a = (r.x1 - r.x0) * (r.y1 - r.y0);
+      var hit = rooms.slice(0, i).some(function(o){ var ix = Math.min(r.x1, o.x1) - Math.max(r.x0, o.x0), iy = Math.min(r.y1, o.y1) - Math.max(r.y0, o.y0); return ix > 0 && iy > 0 && ix * iy > 0.6 * a; });
+      if (hit) inner++; return !hit;
+    });
+    if (inner) notes.push(inner + ' שטחים פנימיים / כפולים דולגו');
+    if (!rooms.length) return bad('לא זוהו חדרים בבירור');
+    // square up shared walls: edges closer than 30 cm (a wall's thickness) are merged
+    function snapAxis(keys){
+      var vals = []; rooms.forEach(function(r){ keys.forEach(function(kk){ vals.push({ r:r, k:kk, v:r[kk] }); }); });
+      vals.sort(function(a, b){ return a.v - b.v; });
+      var tol = m2p(0.3), grp = [];
+      function flush(){ if (!grp.length) return; var m = grp.reduce(function(s, g){ return s + g.v; }, 0) / grp.length; grp.forEach(function(g){ g.r[g.k] = m; }); grp = []; }
+      vals.forEach(function(v){ if (grp.length && (v.v - grp[grp.length - 1].v > tol || v.v - grp[0].v > tol * 1.5)) flush(); grp.push(v); }); flush();
+    }
+    snapAxis(['x0', 'x1']); snapAxis(['y0', 'y1']);
+    rooms = rooms.filter(function(r){ return r.x1 - r.x0 >= m2p(0.8) && r.y1 - r.y0 >= m2p(0.8); });
+    // Claude outlines room interiors; on the building's outer edge add half an exterior wall so sizes match wall centrelines
+    (function(){
+      var ins = rooms.filter(function(r){ return !OUTDOOR_RE.test(r.name); }); if (!ins.length) return;
+      var b = { x0:Math.min.apply(null, ins.map(function(r){ return r.x0; })), y0:Math.min.apply(null, ins.map(function(r){ return r.y0; })),
+                x1:Math.max.apply(null, ins.map(function(r){ return r.x1; })), y1:Math.max.apply(null, ins.map(function(r){ return r.y1; })) }, e = m2p(0.1);
+      ins.forEach(function(r){ if (r.x0 - b.x0 < 2) r.x0 -= e; if (r.y0 - b.y0 < 2) r.y0 -= e; if (b.x1 - r.x1 < 2) r.x1 += e; if (b.y1 - r.y1 < 2) r.y1 += e; });
+    })();
+    // place the building inside the drawing area: its top-left corner at (30, 30)
+    var ux0 = Math.min.apply(null, rooms.map(function(r){ return r.x0; })), uy0 = Math.min.apply(null, rooms.map(function(r){ return r.y0; }));
+    var ux1 = Math.max.apply(null, rooms.map(function(r){ return r.x1; })), uy1 = Math.max.apply(null, rooms.map(function(r){ return r.y1; }));
+    var fl = state.activeFloor || 0, off = fl * FLOOR_Y_STRIDE, AW = 1000, AH = 680;
+    var dx = 30 - ux0, dy = 30 - uy0;
+    if (ux1 - ux0 > AW - 40) { dx = (AW - (ux1 - ux0)) / 2 - ux0; }
+    if (uy1 - uy0 > AH - 40) { dy = (AH - (uy1 - uy0)) / 2 - uy0; }
+    ctx.place(k, { ix:0, iy:0, px:dx, py:dy });
+    var clipped = 0;
+    rooms = rooms.map(function(r){
+      var x0 = Math.max(0, r.x0 + dx), x1 = Math.min(AW, r.x1 + dx), y0 = Math.max(0, r.y0 + dy), y1 = Math.min(AH, r.y1 + dy);
+      if (x0 !== r.x0 + dx || x1 !== r.x1 + dx || y0 !== r.y0 + dy || y1 !== r.y1 + dy) clipped++;
+      return x1 - x0 >= m2p(0.8) && y1 - y0 >= m2p(0.8) ? { name:r.name, x0:x0, x1:x1, y0:y0 + off, y1:y1 + off } : null;
+    }).filter(Boolean);
+    if (clipped) { notes.push('התוכנית גדולה משטח השרטוט (25×17 מ׳) — ' + clipped + ' חדרים נחתכו בקצה'); warn = true; }
+    if (!rooms.length) return bad('החדרים שזוהו נמצאים מחוץ לשטח השרטוט');
+    var existing = state.rooms.some(function(r){ return (r.floor || 0) === fl; });
+    if (existing && !confirm('בקומה הזו כבר יש חדרים. להחליף אותם בחדרים שזוהו בתוכנית?\n(ביטול = השרטוט הקיים נשאר כמו שהוא, והתוכנית מוצגת מתחתיו כרקע)')) {
+      return { rooms:0, msg:'השרטוט הקיים נשמר. התוכנית מוצגת כרקע — "הזזה" בסרגל התוכנית מיישרת אותה לשרטוט' };
+    }
+    pushUndo(snapshotState());
+    if (existing) {
+      state.rooms = state.rooms.filter(function(r){ return (r.floor || 0) !== fl; });
+      state.openings = state.openings.filter(function(o){ return Math.floor(o.y / FLOOR_Y_STRIDE) !== fl; });
+    }
+    var made = [];
+    rooms.forEach(function(r){
+      var w = Math.round((r.x1 - r.x0) / PPM * 10) / 10, h = Math.round((r.y1 - r.y0) / PPM * 10) / 10;
+      var outdoor = OUTDOOR_RE.test(r.name);
+      made.push(addRoom({ x:Math.round(r.x0), y:Math.round(r.y0), w:Math.max(0.8, w), h:Math.max(0.8, h), label:r.name, type:outdoor ? 'yard' : 'room', floor:fl, imported:true }));
+    });
+    // openings: snapped onto the nearest wall of the rooms just created
+    var nOp = 0, mainDone = state.openings.some(function(o){ return o.type === 'door_main'; }), firstExtDoor = null;
+    (Array.isArray(plan.openings) ? plan.openings : []).filter(function(o){ return o && Array.isArray(o.center) && conf(o.confidence) >= 0.35; }).forEach(function(o){
+      var c = mapXY(o.center[0], o.center[1]); if (!c) return;
+      var px = c[0] * imgW * k + dx, py = c[1] * imgH * k + dy + off, best = null;
+      made.forEach(function(r){
+        var x0 = r.x, y0 = r.y, x1 = r.x + m2p(r.w), y1 = r.y + m2p(r.h);
+        [['h', y0, px, x0, x1], ['h', y1, px, x0, x1], ['v', x0, py, y0, y1], ['v', x1, py, y0, y1]].forEach(function(cc){
+          var along = cc[2]; if (along < cc[3] - 2 || along > cc[4] + 2) return;
+          var d = cc[0] === 'h' ? Math.abs(py - cc[1]) : Math.abs(px - cc[1]);
+          if (d < m2p(0.8) && (!best || d < best.d)) best = { d:d, x:cc[0] === 'h' ? Math.max(cc[3] + 6, Math.min(cc[4] - 6, px)) : cc[1], y:cc[0] === 'h' ? cc[1] : Math.max(cc[3] + 6, Math.min(cc[4] - 6, py)) };
+        });
+      });
+      if (!best) return;
+      if (state.openings.some(function(q){ return Math.hypot(q.x - best.x, q.y - best.y) < m2p(0.5); })) return;
+      var kind = String(o.kind || '').toLowerCase(), ext = o.exterior === true || o.exterior === 'true', wide = (parseFloat(o.width_m) || 0) >= 1.8, type;
+      if (/window/.test(kind)) type = wide ? 'window_lg' : 'window';
+      else if (/slid/.test(kind)) type = ext ? 'door_ext' : 'door_int';
+      else if (/door/.test(kind)) {
+        if ((o.main_entrance === true || o.main_entrance === 'true') && !mainDone) { type = 'door_main'; mainDone = true; }
+        else type = ext ? 'door_ext' : 'door_int';
+      } else return;
+      var op = addOpening({ type:type, x:Math.round(best.x), y:Math.round(best.y), floor:fl, imported:true }); nOp++;
+      if (type === 'door_ext' && !firstExtDoor && /door/.test(kind) && !/slid/.test(kind)) firstExtDoor = op;
+    });
+    // no door was marked as the main entrance: the first exterior door on the ground floor becomes it
+    if (!mainDone && fl === 0 && firstExtDoor) {
+      firstExtDoor.type = 'door_main'; notes.push('הדלת החיצונית סומנה כדלת כניסה — בדקו');
+    }
+    var U = curUL(); if (U) { U.opacity = 0.35; saveUnderlay(); }
+    return { rooms:made.length, warn:warn, msg:'זוהו ' + made.length + ' חדרים ו-' + nOp + ' פתחים' + (notes.length ? ' · ' + notes.join(' · ') : '') + ' — בדקו כל חדר מול הרקע (ביטול מחזיר את השרטוט הקודם)' };
+  }
+  loadUnderlay();
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); } };   // local tests only
 
   var KIND_LABEL_HE = { house:'בית פרטי', apartment:'דירה', store:'עסק / חנות', clinic:'קליניקה / משרד' };
   // The recommendations panel scopes itself to whatever floor is currently being viewed: a
@@ -6562,7 +7594,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return 'הרכזת, יחידת ה-NVR והסירנה החיצונית מוצבות פעם אחת בלבד (לרוב בקומת הקרקע) ומשרתות יחד את כל קומות הבית — כל גלאי, מצלמה או חיישן בכל קומה מתחבר חזרה אליהן, וכך גם הגדר וההיקף החיצוני, שאינם תלויי-קומה. פריסת האביזרים הנוכחית לפי קומה: ' + counts.join(' · ') + '.';
   }
   function recCardHtml(r){
-    return '<div class="rec-card sev-' + r.sev + '" data-rec-id="' + r.recId + '">' +
+    return '<div class="rec-card sev-' + r.sev + (r.fire ? ' fire' : '') + '" data-rec-id="' + r.recId + '">' +
       '<div class="rec-card-body"><b>' + r.title + '</b><span>' + r.reason + '</span></div>' +
       '<button type="button" class="btn btn-ghost btn-sm rec-add-btn" data-rec-id="' + r.recId + '">+ הוסף</button>' +
       '</div>';
@@ -6616,6 +7648,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         : 'מומלץ כיסוי מצלמות בנקודות הגישה המרכזיות (כניסה, שערים, ויטרינות).') +
       perimeterSummaryHtml();
 
+    if (!CONSUMER && noteEl) {
+      var fb = document.getElementById('recsFireBox'), fdev = fireDevs();
+      if (!fireAllowed() && !fdev.length) { if (fb) fb.remove(); }
+      else {
+        if (!fb) { fb = document.createElement('div'); fb.id = 'recsFireBox'; fb.className = 'fire-box'; noteEl.parentNode.insertBefore(fb, noteEl.nextSibling); }
+        var fon = firePlanOn(), aud = fireAudit(), ncrit = aud.filter(function(i){ return i.sev === 'crit'; }).length;
+        fb.innerHTML = (fireAllowed() ? '<label><input type="checkbox" id="fireToggle"' + (fon ? ' checked' : '') + '> תכנון גילוי אש (ת״י 1220) <span class="beta-tag">בהרצה</span></label>' : '<b>גילוי אש</b>') +
+          (fon ? '<p><b>שימו לב:</b> ' + escapeHtml(QUOTE_TXT.fireLong) + '</p>' : (fireAllowed() ? '<p>להוספת רכזת, גלאים, לחצנים וצופרים לפי כללי התקן — סמנו את התיבה.</p>' : '')) +
+          (fdev.length ? '<div class="fa-head">' + (aud.length ? 'בדיקת תקן: ' + (ncrit ? ncrit + ' חוסרים' : 'אין חוסרים') + (aud.length - ncrit ? ' · ' + (aud.length - ncrit) + ' הערות' : '') : '✓ בדיקת תקן: לא נמצאו חוסרים') + '</div>' +
+            (aud.length ? '<ul class="fire-audit">' + aud.map(fireIssueHtml).join('') + '</ul>' : '') : '');
+        var tg = fb.querySelector('#fireToggle'); if (tg) tg.onchange = function(){ state.firePlan = this.checked; refreshRecommendations(); };
+        fireBindFixes(fb, aud);
+      }
+    }
     var floorCtxEl = document.getElementById('recsFloorContext');
     if (floorCtxEl){
       floorCtxEl.innerHTML = usesMultiFloor()
@@ -6808,6 +7854,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       return;
     }
     var result = computeRecommendations();
+    if (!CONSUMER && firePlanOn()) { try { result.recs = result.recs.concat(fireRecommendations()); } catch(e) { console.warn('fire recs', e); } }
     currentRecs = CONSUMER ? consumerFilterRecs(result.recs) : result.recs;
     currentPerimeter = result.perimeter;
     // The panel's score-impact and cabling-impact text must reflect exactly what "✓ הוסף הכל
@@ -6880,6 +7927,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       pirItem.title = pirLocked ? 'יש חיית מחמד בנכס — יש להשתמש בגלאי נפח מתעלם מחיות (PIR-P) במקום' : pirItem._title;
     });
     updateRoomPresetGroupsForKind();
+    // fire detection: business / office only
+    var fg = document.getElementById('palFireGroup'), fOn = fireAllowed();
+    if (fg) fg.hidden = !fOn;
+    Array.prototype.forEach.call(document.querySelectorAll('.m-cat-chips button'), function(b){ if (/אש/.test(b.textContent)) b.hidden = !fOn; });
+    if (!fOn && armedType && /^fire_/.test(armedType)) disarmPalette();
   }
   // Shows/hides each room-preset sub-menu group (see the markup comment above .room-presets)
   // according to the current project kind — a group whose data-kinds doesn't list the current
@@ -6938,6 +7990,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (typeof mUpdateTitle === 'function') mUpdateTitle();
     applyFloorViewBox();
     refreshAllPlacementNotes();
+    renderUnderlay();
     renderRooms();
     renderFurniture();
     renderFences();
@@ -6949,6 +8002,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     renderProps();
     updatePaletteAvailability();
     refreshRecommendations();
+    fireWatch();
   }
 
   // A lighter re-render for the HOT path of an active drag/resize/rotate — called on every
@@ -8525,6 +9579,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         : 'רכזת ממוחשבת · 8 אזורים מובנים, הרחבה עד 32 · חלוקה לאזורי דריכה · סלולר / IP · ספק כוח וסוללת גיבוי',
       keypad: 'לוח מקשים עם תצוגה · מקשי מצב בית / לילה / יציאה · חיבור BUS',
       zexp_int: 'כרטיס הרחבה פנימי · 8 אזורים (9–16) · התקנה בתוך הרכזת',
+      alarm_battery: 'מצבר אטום נטען 12V 4.5Ah · גיבוי לרכזת ולגלאים בהפסקת חשמל · מותקן בארגז הרכזת',
+      fire_panel: 'רכזת גילוי אש כתובתית/אזורית · תצוגת אירועים · יציאות לצופרים ולמוקד · לפי ת״י 1220',
+      fire_battery: 'זוג מצברים אטומים 12V · גודל לפי חישוב צריכה (24 ש׳ המתנה + 30 דק׳ התרעה)',
+      fire_dialer: 'חייגן / מודול IP להעברת התרעות אש למוקד ולכבאות',
+      fire_smoke: 'גלאי עשן אופטי נקודתי · מאושר ת״י 1220',
+      fire_heat: 'גלאי חום קבוע / קצב עלייה · למטבחים, חניונים וחדרי מכונות',
+      fire_multi: 'גלאי רב-חיישני עשן + חום · להפחתת התרעות שווא',
+      fire_beam: 'גלאי עשן קרן אופטית · לחללים גבוהים ורחבים',
+      fire_duct: 'גלאי עשן לתעלת מיזוג · לניתוק יחידת המיזוג',
+      fire_call_point: 'לחצן אש ידני כתובתי · אדום · ליד יציאות',
+      fire_sounder: 'צופר התרעת אש · עוצמה לפי חישוב (≥65 dB(A))',
+      fire_sounder_strobe: 'צופר עם נצנץ · התרעה קולית וחזותית',
+      fire_strobe_out: 'נצנץ/צופר חיצוני מוגן מים · חזית המבנה',
+      fire_io_module: 'מודול כתובתי · בקרת מיזוג / מעליות / ממסר זרימה / דלתות',
+      fire_repeater: 'לוח משנה מרוחק · תצוגה והפעלה',
+      fire_standalone: 'גלאי עשן עצמאי עם צופר וסוללת גיבוי · ת״י 1220-5',
       zexp8: 'מרחיב אזורים 8 · קופסה עצמאית · חיבור BUS' + (conc ? ' · ריכוז קומתי' : ''),
       zexp16: 'מרחיב אזורים 16 · קופסה עצמאית · חיבור BUS' + (conc ? ' · ריכוז קומתי' : ''),
       pir: 'PIR דיגיטלי · 90–110° · טווח 12 מ׳ · מגן חבלה',
@@ -8588,6 +9658,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return Object.keys(floors).reduce(function(sum, f){ return sum + Math.abs(+f - tf) * FLOOR_HEIGHT_M + 3; }, 0);
   }
 
+  // Fixed order for every quantities table and quote: system by system, the fixed core items first
+  // (panel, battery, keypad, recorder, switches…), then the variable ones (detectors, cameras…).
+  var QUOTE_SYS = ['alarm', 'camera', 'intercom', 'network', 'music', 'smart', 'fire'];
+  var QUOTE_CORE = {
+    alarm:   ['hub', 'alarm_battery', 'zexp_int', 'zexp8', 'zexp16', 'keypad', 'siren_in', 'siren_out'],
+    camera:  ['nvr', 'poe16', 'poe8', 'poe4', 'comm_cabinet', 'ups'],
+    intercom:['intercom_int'],
+    network: ['switch'],
+    music:   ['amplifier'],
+    fire:    ['fire_panel', 'fire_battery', 'fire_repeater', 'fire_dialer', 'fire_io_module']
+  };
+  function quoteRank(t, i){
+    var cat = (DEVICE_DEFS[t] && DEVICE_DEFS[t].cat) || 'zz', si = QUOTE_SYS.indexOf(cat); if (si < 0) si = QUOTE_SYS.length;
+    var core = QUOTE_CORE[cat] || [], ci = core.indexOf(t);
+    return si * 1000 + (ci > -1 ? ci : 100 + i);
+  }
+  function quoteOrder(counts){
+    var keys = Object.keys(counts).map(function(t, i){ return { t:t, r:quoteRank(t, i) }; }).sort(function(a, b){ return a.r - b.r; });
+    var out = {}; keys.forEach(function(k){ out[k.t] = counts[k.t]; }); return out;
+  }
   function computeBom(){
     var counts = {};
     state.devices.forEach(function(d){ counts[d.type] = (counts[d.type]||0)+1; });
@@ -8602,7 +9692,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
 
     var anchors = getAnchors();
-    var cableTotals = { alarm:0, cat6:0, power:0, intercom:0, speaker:0, network:0 };
+    var cableTotals = { alarm:0, cat6:0, power:0, intercom:0, speaker:0, network:0, fire:0 };
     var warnings = [];
     state.devices.forEach(function(d){
       var def = DEVICE_DEFS[d.type];
@@ -8617,6 +9707,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     if (!state.alarmWireless) cableTotals.alarm += riserRuns(state.devices, 'alarm', anchors.hub);
     cableTotals.cat6 += riserRuns(state.devices, 'cat6', anchors.nvr);
+    cableTotals.fire += riserRuns(state.devices, 'fire', anchors.fire);
     var waste = 1 + (parseFloat(document.getElementById('rateWaste').value)||0)/100;
     Object.keys(cableTotals).forEach(function(k){ cableTotals[k] = Math.ceil(cableTotals[k]*waste); });
 
@@ -8635,7 +9726,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (anchorKey && extra[anchorKey]) { extra[anchorKey].forEach(function(x){ push(x[0], x[1]); }); delete extra[anchorKey]; }
     });
     Object.keys(extra).forEach(function(k){ extra[k].forEach(function(x){ push(x[0], x[1]); }); }); // no panel/recorder drawn yet
-    return { counts:ordered, cableTotals:cableTotals, warnings:warnings, refs:refs, plan:plan };
+    // wired alarm: a standby battery for every panel
+    if (!state.alarmWireless && counts.hub) { ordered.alarm_battery = counts.hub; refs.alarm_battery = ['בארגז הרכזת']; }
+    if (counts.fire_panel) {
+      ordered.fire_battery = counts.fire_panel; refs.fire_battery = ['בארון רכזת גילוי האש'];
+      ordered.fire_dialer = counts.fire_panel; refs.fire_dialer = ['ליד רכזת גילוי האש'];
+    }
+    return { counts:quoteOrder(ordered), cableTotals:cableTotals, warnings:warnings, refs:refs, plan:plan };
   }
 
   function syncFloorConcToggles(){
@@ -8660,7 +9757,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var cableRows = [
       ['alarm','כבל פיקוד לאזעקה (רב-גידי)'], ['cat6','כבל CAT7 למצלמות (PoE)'],
       ['power','כבל חשמל 220V'], ['intercom','כבל גידים לאינטרקום (רב-גידי)'],
-      ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)']
+      ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)'], ['fire','כבל חסין אש ללולאות גילוי אש']
     ].filter(function(r){ return bom.cableTotals[r[0]] > 0; });
     var wirelessNote = state.alarmWireless ? '<tr><td colspan="2" style="color:var(--ink-dim);font-size:11px">מערכת האזעקה סומנה כאלחוטית — לא נדרשת כבילת אזעקה</td></tr>' : '';
     var warningRowsHtml = bom.warnings.map(function(w){ return '<tr><td colspan="2" style="color:var(--danger);font-size:11px">⚠ ' + w + '</td></tr>'; }).join('');
@@ -8753,6 +9850,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (isMobileLayout()) openMobilePanel('inspector');
     }
     refreshRecommendations();
+    if (recsVisible) setTimeout(agentRecPopups, 700);
   });
   document.querySelector('.tab-btn[data-tab="recs"]').addEventListener('click', function(){
     recsVisible = true;
@@ -8907,6 +10005,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }));
     }
     var frontOfHouse = (kind === 'checkout' || kind === 'reception');
+    // In a business a sales counter / reception desk stands inside the sales hall or lobby —
+    // it may be placed fully inside a larger indoor space instead of being walled off beside it.
+    var insideHall = frontOfHouse && state.kind !== 'house' && state.kind !== 'apartment';
+    function canHost(o, c){ return insideHall && o.r.type !== 'yard' && pxContains(o.px, c) && o.px.w * o.px.h >= c.w * c.h * 3; }
     var backOfHouse = (kind === 'storage' || kind === 'lab' || (kind === 'office' && /אחורי/.test(label || '')));
 
     // Hard rules. An outdoor addition may be built into exactly one garden (it must then lie
@@ -8920,6 +10022,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (!pxOverlap(c, o.px)) continue;
         var isGarden = o.r.type === 'yard' && (o.k === 'yard');
         if (isGarden && kind !== 'yard' && !host && pxContains(o.px, c)) { host = o; continue; }
+        if (!host && canHost(o, c)) { host = o; continue; }
         return null;
       }
       return { host:host };
@@ -8962,7 +10065,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       });
       if (!outdoor) cost += Math.hypot(c.x + c.w/2 - bcx, c.y + c.h/2 - bcy) * 0.05;
       if (host) {
-        cost += outdoor ? 20 : 140;
+        cost += outdoor ? 20 : (insideHall && host.r.type !== 'yard' ? -150 : 140);
         // keep the garden's own name (top-right) and size caption (bottom-left) readable
         var hp = host.px, hlw = estRoomLabelW(host.r.label, hp.w);
         if (pxOverlap(c, { x:hp.x + hp.w - 14 - hlw, y:hp.y, w:hlw + 14, h:32 })) cost += 260;
@@ -9032,6 +10135,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
               var livGap = livingRooms.length ? Math.min.apply(null, livingRooms.map(function(o){ return rectGap(c, o.px); })) : houseGap;
               var extra = -200 + Math.abs(houseGap - 70) * 1.2 + (houseGap < 24 ? 300 : 0) + livGap * 0.8;
               consider(c, null, 0, extra);
+            }
+          }
+        });
+      });
+    }
+
+    // 1b) A counter / reception desk in a business: inside the sales hall, near the entrance.
+    if (insideHall) {
+      var doorPts = visibleOpenings().filter(function(o){ return /^door/.test(o.type); });
+      var clear = m2p(1.3);   // keep the doorway and its swing free
+      indoor.filter(function(o){ return o.px.w * o.px.h >= W * H * 3; }).forEach(function(hall){
+        var hp = hall.px, m = m2p(0.6);
+        sizes.forEach(function(sz){
+          for (var x = hp.x + m; x <= hp.x + hp.w - sz.w - m; x += 10){
+            for (var yy = hp.y + m; yy <= hp.y + hp.h - sz.h - m; yy += 10){
+              var cand = { x:x, y:yy, w:sz.w, h:sz.h, rot:sz.rot };
+              if (doorPts.some(function(o){ return o.x > cand.x - clear && o.x < cand.x + cand.w + clear && o.y > cand.y - clear && o.y < cand.y + cand.h + clear; })) continue;
+              consider(cand, hall, 0, 0);
             }
           }
         });
@@ -9213,7 +10334,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var mChips = document.createElement('div'); mChips.className = 'm-cat-chips m-only'; mChips.setAttribute('role', 'tablist');
   mCatGroups.forEach(function(g, i){
     var label = (g.querySelector('.cat-title-label') || {}).textContent || '';
-    var b = document.createElement('button'); b.type = 'button'; b.textContent = M_CAT_SHORT[label.trim()] || label.trim();
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = /גילוי אש/.test(label) ? 'אש · בהרצה' : (M_CAT_SHORT[label.trim()] || label.trim());
     b.style.setProperty('--cat-accent', g.style.getPropertyValue('--cat-accent'));
     b.addEventListener('click', function(){ mSetCat(i); });
     mChips.appendChild(b);
@@ -9812,10 +10933,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var sel = document.getElementById('fKind');
     if (sel) sel.value = (state.kind === 'apartment' || state.kind === 'store' || state.kind === 'clinic') ? state.kind : 'house';
   }
-  document.getElementById('fKind').addEventListener('change', function(){ state.kind = this.value; updatePaletteAvailability(); });
+  document.getElementById('fKind').addEventListener('change', function(){
+    state.kind = this.value; updatePaletteAvailability();
+    var fd = state.devices.filter(function(d){ return /^fire_/.test(d.type); });
+    if (!fireAllowed() && fd.length && confirm('מערכת גילוי אש מוצעת רק לעסק / חנות או למשרד / קליניקה.\nלהסיר מהתכנון את ' + fd.length + ' אביזרי גילוי האש?')) {
+      pushUndo(snapshotState()); state.devices = state.devices.filter(function(d){ return !/^fire_/.test(d.type); }); showCanvasToast('אביזרי גילוי האש הוסרו מהתכנון');
+    }
+    render();
+  });
 
-  function clearProject(){ disarmPalette(); state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 }; selected=null; roomEditId=null; resetRecommendationsView(); syncKindSelect(); render(); }
+  function clearProject(){ disarmPalette(); clearUnderlays(); state = { rooms:[], openings:[], devices:[], fences:[], nextId:1, alarmWireless:false, kind:'house', hasSafe:false, floorType:null, hasPet:false, hasBasement:false, floorCount:1, activeFloor:0 }; selected=null; roomEditId=null; resetRecommendationsView(); syncKindSelect(); render(); }
   armConfirm(document.getElementById('btnClear'), '🗑️ נקה שרטוט', 'לאשר ניקוי? לחצו שוב', clearProject);
+  (function(){ var b = document.getElementById('btnImportPlan'); if (b && CONSUMER) { b.hidden = true; return; } if (b) b.addEventListener('click', function(){ var m = document.getElementById('moreMenu'); if (m) m.hidden = true; openPlanImport(); }); })();
 
   // "⋯ עוד" menu (project-file housekeeping: save / open / sample / help / clear). It closes on
   // an outside click, Escape, or after any item runs — except while "נקה שרטוט" is armed for its
@@ -9881,6 +11010,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function applyProjectData(data){
     if (!data || !data.state || !Array.isArray(data.state.rooms)) throw new Error('invalid project file');
     disarmPalette();
+    clearUnderlays();   // the tracing plan belonged to the project that was open
     state = {
       rooms: data.state.rooms || [], openings: data.state.openings || [],
       devices: data.state.devices || [], fences: data.state.fences || [],
@@ -10157,6 +11287,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // both confirms the intent to start over AND seeds a realistic, fully-adjustable room
   // layout for that kind of premises (private house / apartment / store), or a blank canvas.
   function startNewProject(kind, guidingAnswers){
+    if (typeof clearUnderlays === 'function') clearUnderlays();
     guidingAnswers = guidingAnswers || {};
     // 'blank' has no dedicated recommendation policy of its own — default it to 'house'
     // (cameras recommended) until the agent says otherwise via the property-kind selector.
@@ -10921,8 +12052,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   var QUOTE_CABLE_DEFS = [
     ['alarm','כבל פיקוד לאזעקה (רב-גידי)'], ['cat6','כבל CAT7 למצלמות (PoE)'], ['intercom','כבל גידים לאינטרקום (רב-גידי)'],
-    ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)']
+    ['speaker','כבל רמקולים (מולטי-קור)'], ['network','כבל רשת CAT7 (תקשורת)'], ['fire','כבל חסין אש ללולאות גילוי אש']
   ];
+  function quoteTermsHtml(dateStr){
+    var L = 'אבגדהוזחטי', n = 0;
+    return ['validity', 'cabling', 'ownership', 'extra', 'errors'].map(function(k){
+      var t = String(QUOTE_TXT[k] || '').trim(); if (!t) return '';
+      return '<li><b>' + L.charAt(n++) + '.</b> ' + escapeHtml(t.replace('{date}', dateStr)) + '</li>';
+    }).join('');
+  }
   function buildQuote(bom){
     document.getElementById('qAlarmWirelessToggle').checked = state.alarmWireless;
     var rows = Object.keys(bom.counts);
@@ -11018,12 +12156,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var dateStr = now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('qNotes').innerHTML =
       '<div style="font-weight:700;color:var(--ink-on-paper);margin:0 0 6px">הערות ותנאים:</div>' +
-      '<ol class="q-terms">' +
-      '<li><b>א.</b> הצעת המחיר תקפה ל-7 ימים מיום הוצאתה (הופקה בתאריך ' + dateStr + ').</li>' +
-      '<li><b>ב.</b> אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.</li>' +
-      '<li><b>ג.</b> הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.</li>' +
-      '<li><b>ד.</b> ט.ל.ח.</li>' +
-      '</ol>';
+      '<ol class="q-terms">' + quoteTermsHtml(dateStr) + '</ol>' +
+      (Object.keys(bom.counts).some(function(t){ return /^fire_/.test(t); }) ? '<div class="q-fire-note"><b>גילוי אש:</b> ' + escapeHtml(QUOTE_TXT.fireQuote) +
+        (String(QUOTE_TXT.fireApproval || '').trim() ? '<p class="q-fire-appr"><b>אישור מכון התקנים:</b> ' + escapeHtml(QUOTE_TXT.fireApproval) + '</p>' : '') + '</div>' : '');
 
     var sigLines = [];
     if (agentInfo.name) sigLines.push('<div style="font-weight:700;font-size:13px">' + escapeHtml(agentInfo.name) + '</div>');
@@ -11388,6 +12523,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qCustomer').textContent = document.getElementById('fCustomer').value || 'לקוח';
     document.getElementById('qAddress').textContent = document.getElementById('fAddress').value || '';
     buildQuote(r.bom);
+    if (!CONSUMER && Object.keys(r.bom.counts).some(function(t){ return /^fire_/.test(t); })) {
+      var fq = fireAudit().filter(function(i){ return i.sev !== 'info'; });
+      if (fq.length) setTimeout(function(){ firePop('לפני שליחת ההצעה — גילוי אש', 'בהצעה יש מערכת גילוי אש, ובתכנון חסרים פריטים לפי כללי התקן. מומלץ להשלים לפני השליחה:', fq, { quote:true, onFix:function(){ buildQuote(runBom().bom); } }); }, 250);
+    }
     updateQuoteNumberBadge();
     updateCustomerDetails();
     setClientView(false);
@@ -13440,8 +14579,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // basic = control panel, keypad, entry-door magnets and indoor motion · recommended = + window /
   // perimeter detectors and the outdoor siren · maximum = + glass-break and a smoke & heat detector.
   var CONSUMER_TIERS = [
-    { k:'basic', name:'בסיסית',   desc:'דלתות כניסה, גלאי תנועה וסירנה חיצונית' },
-    { k:'rec',   name:'מומלצת',   desc:'+ מגנט על כל חלון', star:true },
+    { k:'basic', name:'בסיסית',   desc:'מגנט בדלת הכניסה, גלאי תנועה בחללים המרכזיים וסירנה חיצונית' },
+    { k:'rec',   name:'מומלצת',   desc:'+ גלאי תנועה בכל חדר וחלל', star:true },
     { k:'max',   name:'מקסימלית', desc:'+ שבר זכוכית וגלאי עשן בחדרי השינה' }
   ];
   var TIER_RANK = { basic:0, rec:1, max:2 };
@@ -13456,8 +14595,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return 2; // glassbreak, smoke
   }
   // Professional corrections on top of the generic engine, for the consumer packages:
-  // every exterior door/window sash gets a magnet (the Israeli standard, instead of outdoor
-  // curtain beams aimed into the yard), the control panel goes to a central hidden room (not the
+  // a magnet on the entrance door and a motion detector in every room / space (one detector
+  // covers all of a room's windows — no magnet on every window sash, no outdoor curtain beams), the control panel goes to a central hidden room (not the
   // entrance), the outdoor siren goes on the entrance façade, glass-break detectors face the
   // glass from inside the room, long corridors get a second motion detector, and the maximum
   // package adds smoke detectors in the corridor and bedrooms.
@@ -13470,19 +14609,38 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     cRecSeq = 0;
     var floors = Math.max(1, state.floorCount || 1);
     var middleApt = state.kind === 'apartment' && state.floorType === 'middle';
-    // 1. drop outdoor curtain beams; windows are protected by magnets below
-    out = out.filter(function(r){ return r.type !== 'curtain_out'; });
+    // 1. drop outdoor curtain beams and window magnets — rooms get motion detectors instead (below)
+    out = out.filter(function(r){
+      if (r.type === 'curtain_out') return false;
+      if (r.type !== 'contact') return true;
+      return state.openings.some(function(o){ return o.type === 'door_main' && Math.hypot(o.x - r.x, o.y - r.y) < m2p(0.8); });
+    });
     var near = function(type, x, y, dm){ var lim = m2p(dm); return out.some(function(r){ return r.type === type && Math.hypot(r.x - x, r.y - y) < lim; }) || state.devices.some(function(d){ return d.type === type && Math.hypot(d.x - x, d.y - y) < lim; }); };
     for (var f = 0; f < floors; f++) {
       var rooms = roomsOnFloor(f); if (!rooms.length) continue;
-      // 2. magnets on every exterior opening
-      state.openings.forEach(function(o){
-        var def = OPENING_DEFS[o.type]; if (!def || !def.exterior) return;
-        var rr = roomAtPoint(o, f); if (!rr) return;
-        if (def.kind === 'window' && middleApt) return;
+      // 2. a magnet on the entrance door only — rooms are protected by motion detectors (below),
+      //    which cover every window and opening in the room with one device
+      var entr = state.openings.filter(function(o){ return o.type === 'door_main' && roomAtPoint(o, f); });
+      if (!entr.length && f === 0) entr = state.openings.filter(function(o){ var d = OPENING_DEFS[o.type]; return d && d.exterior && d.kind === 'door' && roomAtPoint(o, f); }).slice(0, 1);
+      entr.forEach(function(o){
         if (near('contact', o.x, o.y, 0.6)) return;
-        var isDoor = def.kind === 'door';
-        out.push(cRec('contact', o.x, o.y, 0, isDoor ? 0 : 1, 'מגנט — ' + def.label.replace(' / חלון גדול', '') + ' ב״' + (rr.label || 'חדר') + '״', isDoor ? 'מתריע ברגע שהדלת נפתחת — ההגנה הראשונה בכל כניסה.' : 'מתריע ברגע שהחלון נפתח — לפי התקן המקובל, מגנט על כל כנף חיצונית.'));
+        out.push(cRec('contact', o.x, o.y, 0, 0, 'מגנט — דלת הכניסה', 'מתריע ברגע שדלת הכניסה נפתחת — ההגנה הראשונה, עוד לפני שמישהו נכנס.'));
+      });
+      // 2b. a motion detector in every room / space (living spaces in the basic package, the rest in the recommended one)
+      var hc = rooms.reduce(function(a, q){ var c = roomCenter(q); a.x += c.x / rooms.length; a.y += c.y / rooms.length; return a; }, { x:0, y:0 });
+      rooms.forEach(function(r){
+        var lb = r.label || '';
+        if (/שירותים|אמבט|מקלחת|רחצה|מרפסת|כביסה/.test(lb)) return;
+        var x0 = r.x, y0 = r.y, x1 = r.x + m2p(r.w), y1 = r.y + m2p(r.h);
+        var inRoom = function(q){ return /^pir/.test(q.type) && q.x >= x0 - 2 && q.x <= x1 + 2 && q.y >= y0 - 2 && q.y <= y1 + 2 && (q.floor == null || (q.floor || 0) === f || q.recId); };
+        if (out.some(inRoom) || state.devices.some(inRoom)) return;
+        // inner corner (toward the middle of the home), looking into the room and its windows
+        var cx = (hc.x - x0 < x1 - hc.x) ? x0 : x1, cy = (hc.y - y0 < y1 - hc.y) ? y0 : y1, c = roomCenter(r);
+        var ins = m2p(0.25), px = cx === x0 ? cx + ins : cx - ins, py = cy === y0 ? cy + ins : cy - ins;
+        var rot = Math.round((Math.atan2(c.x - px, -(c.y - py)) * 180 / Math.PI + 360) % 360);
+        var main = /סלון|חלל|מבואה|כניסה|מסדרון|פינת|לובי/.test(lb);
+        var type = state.hasPet ? 'pir_pet' : 'pir';
+        out.push(cRec(type, px, py, rot, main ? 0 : 1, 'גלאי תנועה — ' + (lb || 'חדר'), 'גלאי אחד בפינה מכסה את כל החדר — כולל החלונות והפתחים שבו.'));
       });
       // 3. long corridors → a second motion detector
       rooms.forEach(function(r){
@@ -13500,6 +14658,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         out.push(cRec('smoke', c.x, c.y, 0, 2, 'גלאי עשן וחום — ' + r.label, 'התרעה מוקדמת על שריפה — במרכז התקרה, ליד אזורי השינה.'));
       });
     }
+    // motion detectors from the generic engine: living spaces in the basic package, other rooms in the recommended one
+    out = out.map(function(r){
+      if (!/^pir/.test(r.type) || r.ctier != null) return r;
+      var fl = Math.floor(r.y / FLOOR_Y_STRIDE), rm = roomAtPoint(r, fl) || roomAtPoint(r, 0);
+      var main = !rm || /סלון|חלל|מבואה|כניסה|מסדרון|פינת|לובי/.test(rm.label || '');
+      return Object.assign({}, r, { ctier: main ? 0 : 1 });
+    });
     var f0 = state.activeFloor || 0, rooms0 = roomsOnFloor(0);
     out = out.map(function(r){
       // 5. control panel: central, hidden — never in the entrance, ממ״ד, bath or kitchen
@@ -14254,6 +15419,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       });
     }).then(function(cfg){
       if (!cfg || typeof cfg !== 'object') throw new Error('offline');
+      // bootstrap file without the user list (the sheet could not be reached): keep the last good copy, nothing is "fresh"
+      if (cfg._src !== 'sheet' && cfg.access && cfg.access.sheetOnly) {
+        if (cached && (cached.access && (cached.access.users || []).length)) throw new Error('offline');
+        G1C.cfg = cfg; G1C.loaded = true; G1C.listeners.forEach(function(fn){ try { fn(cfg, false); } catch(e) {} }); return null;
+      }
       var fresh = cfg !== cached;
       G1C.cfg = cfg; G1C.fresh = fresh || G1C.fresh; G1C.loaded = true; g1cWrite('g1sg_config', cfg);
       G1C.listeners.forEach(function(fn){ try { fn(cfg, fresh); } catch(e) {} });
@@ -14288,20 +15458,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!a || !a.deviceLock || !u || !u.devices || !u.devices.length) return true;
     return u.devices.indexOf(g1DeviceId()) >= 0;
   }
-  // 'ok' | 'locked' | 'blocked' | 'device' | 'offline-expired'
+  // 'ok' | 'locked' | 'blocked' | 'changed' | 'removed' | 'device' | 'offline-expired'
   function g1AccessState(){
     if (!g1AccessOn()) return 'ok';
     if (!g1Auth || !G1C.cfg) return 'locked';
     var u = g1FindUser(g1Auth.uid);
     if (G1C.fresh) {
-      if (!u || u.hash !== g1Auth.hash) return 'blocked';
+      if (!u) return 'removed';
       if (u.status !== 'active') return 'blocked';
+      if (u.hash !== g1Auth.hash) return 'changed';
       if (u.phoneHash && g1Auth.phoneHash !== u.phoneHash) return 'locked';
       if (!g1DeviceOk(u)) return 'device';
       return 'ok';
     }
     var days = ((G1C.cfg.access && G1C.cfg.access.offlineDays) || 7);
-    if (u && (u.status !== 'active' || u.hash !== g1Auth.hash)) return 'blocked';
+    if (u && u.status !== 'active') return 'blocked';
+    if (u && u.hash !== g1Auth.hash) return 'changed';
     if (u && !g1DeviceOk(u)) return 'device';
     if (!g1Auth.verifiedAt || Date.now() - g1Auth.verifiedAt > days * 864e5) return 'offline-expired';
     return 'ok';
@@ -14342,6 +15514,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     var msg = (G1C.cfg && G1C.cfg.access && G1C.cfg.access.message) || 'האפליקציה בשלב פיילוט — הכניסה למורשים בלבד.';
     var why = reason === 'blocked' ? 'הגישה שלך הושהתה על ידי מנהל המוצר. לבירור — פנו אליו.' :
+              reason === 'changed' ? 'קוד הכניסה שלך הוחלף. הזינו את הקוד החדש שקיבלתם.' :
+              reason === 'removed' ? 'המשתמש שלך לא נמצא ברשימת המורשים. לבירור — פנו למנהל המוצר.' :
+              reason === 'nosync' ? 'אין כרגע חיבור לשרת ההרשאות. בדקו את החיבור לאינטרנט ונסו שוב.' :
               reason === 'device' ? 'המכשיר הזה עוד לא אושר לשימוש. מנהל המוצר יאשר אותו בעמוד הניהול — ואז אפשר להיכנס.' :
               reason === 'offline-expired' ? 'עבר זמן רב מאז האימות האחרון. התחברו לרשת והזינו את הפרטים שוב.' : '';
     var needPhone = ((G1C.cfg && G1C.cfg.access && G1C.cfg.access.users) || []).some(function(u){ return !!u.phoneHash; });
@@ -14351,7 +15526,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       (why ? '<p class="g1-lock-why">' + escapeHtml(why) + '</p>' : '') +
       '<label for="g1LockCode">קוד הקצאה אישי</label>' +
       '<input id="g1LockCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="הקוד שקיבלתם" dir="ltr">' +
-      (needPhone ? '<label for="g1LockPhone">מספר הנייד שלך</label><input id="g1LockPhone" class="g1-lock-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05X-XXXXXXX" dir="ltr">' : '') +
+      (needPhone ? '<label for="g1LockPhone">מספר הנייד שלך</label><input id="g1LockPhone" class="g1-lock-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="05X-XXXXXXX" dir="ltr"><small class="g1-lock-hint">נדרש למשתמשים עם אימות נייד</small>' : '') +
       '<div class="g1-lock-err" id="g1LockErr" role="alert"></div>' +
       '<button type="button" class="g1-lock-go" id="g1LockGo">כניסה</button>' +
       '<small>אין לכם קוד? פנו למנהל המוצר.</small></div>';
@@ -14362,12 +15537,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function submit(){
       var code = inp.value, phone = ph ? ph.value : ''; err.textContent = '';
       if (g1cNormCode(code).length < 6) { err.textContent = 'הזינו את הקוד המלא שקיבלתם.'; return; }
-      if (ph && g1NormPhone(phone).length < 9) { err.textContent = 'הזינו את מספר הנייד המלא.'; ph.focus(); return; }
+      if (ph && phone.trim() && g1NormPhone(phone).length < 9) { err.textContent = 'מספר הנייד לא מלא.'; ph.focus(); return; }
       go.disabled = true; go.textContent = 'בודק…';
-      var p = G1C.fresh ? Promise.resolve(G1C.cfg) : g1cFetchConfig();
       var matched = null;
-      p.then(function(){
-        if (!G1C.fresh) throw new Error('offline');
+      g1cFetchConfig().then(function(){
+        if (!G1C.fresh) throw new Error(G1C.cfg && G1C.cfg.access && G1C.cfg.access.sheetOnly && !(G1C.cfg.access.users || []).length ? 'nosync' : 'offline');
         var users = ((G1C.cfg.access && G1C.cfg.access.users) || []);
         return Promise.all(users.map(function(u){ return g1cHash(code, u.id, G1C.cfg.access.salt).then(function(h){ return h === u.hash ? u : null; }); }));
       }).then(function(found){
@@ -14375,6 +15549,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (!u) { err.textContent = 'הקוד או מספר הנייד לא תואמים. בדקו ונסו שוב.'; return null; }
         matched = u;
         if (!u.phoneHash) return '';
+        if (!ph || g1NormPhone(phone).length < 9) { err.textContent = 'למשתמש שלך נדרש גם מספר הנייד. הזינו אותו ולחצו שוב.'; matched = null; if (ph) ph.focus(); return null; }
         return g1PhoneHash(phone, u.id, G1C.cfg.access.salt);
       }).then(function(phHash){
         var u = matched; if (!u) return;
@@ -14392,7 +15567,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (after) after();
         setTimeout(g1SurveyCheck, 1500);
       }).catch(function(e){
-        err.textContent = (e && e.message === 'no-crypto') ? 'פתחו את האפליקציה מהקישור הרשמי (https) כדי להזין קוד.' : 'אין חיבור לרשת. לאימות הראשון נדרש חיבור.';
+        err.textContent = (e && e.message === 'no-crypto') ? 'פתחו את האפליקציה מהקישור הרשמי (https) כדי להזין קוד.' : (e && e.message === 'nosync') ? 'אין כרגע חיבור לשרת ההרשאות. בדקו את החיבור לאינטרנט ונסו שוב בעוד רגע.' : 'אין חיבור לרשת. לאימות הראשון נדרש חיבור.';
       }).then(function(){ go.disabled = false; go.textContent = 'כניסה'; });
     }
     go.onclick = submit;
@@ -14412,7 +15587,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function g1RequireAccess(then){
     var st = g1AccessState();
     if (st === 'ok') { g1MarkVerified(); if (then) then(); return true; }
-    if (st === 'blocked') { g1Auth = null; g1cWrite('g1sg_auth', null); }
+    if (st === 'blocked' || st === 'changed' || st === 'removed') { g1Auth = null; g1cWrite('g1sg_auth', null); }
     g1LockScreen(st, then);
     return false;
   }
@@ -14429,7 +15604,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var st = g1AccessState();
       var npOpen = !document.getElementById('newProjectBackdrop').hidden;
       // a blocked code locks at once; otherwise lock only when the agent is past the project-type step
-      if (st === 'blocked' || st === 'device' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
+      if (st === 'blocked' || st === 'changed' || st === 'removed' || st === 'device' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
       else if (st === 'ok') { g1MarkVerified(); g1ApplyRole(); g1Flush(); g1SurveyCheck(); }
     }
     g1cOnConfig(function(cfg, fresh){ if (fresh || G1C.loaded) recheck(); });
@@ -14447,7 +15622,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var isCable = tr.dataset.row === 'cable', p = g1AgentPrice(isCable ? 'cable' : 'equip', isCable ? tr.dataset.ctype : tr.dataset.type);
       var inp = tr.querySelector('.q-price'); if (!inp || !p) return;
       if (p.list != null && p.list !== '' && !inp.value) inp.value = p.list;
-      if (p.min != null && p.min !== '') { inp.dataset.min = p.min; inp.min = p.min; inp.title = 'מחיר מינימום: ₪' + p.min; }
+      if (p.min != null && p.min !== '') { inp.dataset.min = p.min; inp.min = p.min; inp.removeAttribute('title'); }
       if (!inp.dataset.g1Bound) { inp.dataset.g1Bound = '1'; inp.addEventListener('input', g1CheckQuoteMins); }
     });
     try { recalcQuoteInstall(); } catch(e) {}
@@ -14475,10 +15650,32 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!isNaN(maxDisc) && pct > maxDisc + 0.01) problems.push('הנחה מעל המותר (עד ' + maxDisc + '%)');
       if (minTotal && sub - disc < minTotal - 0.5) problems.push('ההנחה מורידה את הציוד מתחת לסכום המינימום (₪' + Math.round(minTotal).toLocaleString('he-IL') + ')');
     }
-    var box = document.getElementById('g1MinWarn');
-    if (!box) { var tbl = document.getElementById('qEquipTable'); if (tbl) { tbl.insertAdjacentHTML('beforebegin', '<div class="g1-min-warn" id="g1MinWarn" role="alert" hidden></div>'); box = document.getElementById('g1MinWarn'); } }
-    if (box) { box.hidden = !problems.length; box.innerHTML = problems.length ? '<b>לא ניתן לשלוח את ההצעה:</b> ' + problems.map(escapeHtml).join(' · ') : ''; }
+    // no minimum prices inside the quote itself (the customer may be looking at it, and it goes into the PDF):
+    // the agent gets a short notice now, and the details only in the send check
+    var old = document.getElementById('g1MinWarn'); if (old) old.remove();
+    var n = problems.length;
+    if (n > (g1CheckQuoteMins.last || 0)) { try { showCanvasToast('יש מחיר מתחת למינימום שנקבע — ההצעה לא תישלח עד לתיקון', true); } catch(e) {} }
+    g1CheckQuoteMins.last = n;
     return problems;
+  }
+  // agent-only check before sending: names first, the minimum prices only on request
+  function g1MinDialog(problems){
+    var ov = document.getElementById('g1MinDlg'); if (ov) ov.remove();
+    ov = document.createElement('div'); ov.id = 'g1MinDlg'; ov.className = 'g1-sv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('data-html2canvas-ignore', 'true');
+    var names = problems.map(function(t){ return t.replace(/ — מינימום ₪[\d.,]+$/, ''); });
+    ov.innerHTML = '<div class="g1-sv-card" style="max-width:460px"><div class="g1-sv-head"><div><span class="g1-sv-kick">לסוכן בלבד</span><h2>אי אפשר לשלוח עדיין</h2></div><button type="button" class="g1-sv-x" aria-label="סגירה">×</button></div>' +
+      '<div class="g1-sv-body"><p>חלק מהמחירים או ההנחה מתחת למה שמנהל המוצר אישר:</p><ul class="g1-min-list">' + names.map(function(t){ return '<li>' + escapeHtml(t) + '</li>'; }).join('') + '</ul>' +
+      '<div class="g1-min-detail" hidden><ul>' + problems.map(function(t){ return '<li>' + escapeHtml(t) + '</li>'; }).join('') + '</ul></div></div>' +
+      '<div class="g1-sv-foot"><button type="button" class="g1-sv-later g1-min-show">הצגת המינימום</button><button type="button" class="g1-sv-send g1-min-fix">עדכון למחיר המינימום</button></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('.g1-sv-x').onclick = function(){ ov.remove(); };
+    ov.querySelector('.g1-min-show').onclick = function(){ ov.querySelector('.g1-min-detail').hidden = false; ov.querySelector('.g1-min-list').hidden = true; this.remove(); };
+    ov.querySelector('.g1-min-fix').onclick = function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price'), function(inp){ var mn = parseFloat(inp.dataset.min); if (!isNaN(mn) && (parseFloat(inp.value) || 0) < mn) { inp.value = mn; inp.dispatchEvent(new Event('input', { bubbles:true })); } });
+      try { recalcQuoteInstall(); } catch(e) {}
+      var left = g1CheckQuoteMins(); ov.remove();
+      try { showCanvasToast(left.length ? 'נשאר לתקן: ' + left.length + ' (למשל ההנחה)' : 'המחירים עודכנו למינימום — אפשר לשלוח', !!left.length); } catch(e) {}
+    };
   }
   function initG1AgentPrices(){
     var baseBuild = buildQuote;
@@ -14488,7 +15685,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var baseSend = sendQuoteFlow;
     sendQuoteFlow = function(){
       var p = g1CheckQuoteMins();
-      if (p.length) { var box = document.getElementById('g1MinWarn'); if (box) box.scrollIntoView({ block:'center', behavior:'smooth' }); return Promise.resolve(); }
+      if (p.length) { g1MinDialog(p); return Promise.resolve(); }
       if (g1AccessOn() && g1AccessState() !== 'ok') { g1RequireAccess(null); return Promise.resolve(); }
       return baseSend.apply(this, arguments);
     };
@@ -14625,7 +15822,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var T = (cfg && cfg.texts) || {}, O = G1_TXT_ORIG;
     function str(v){ return typeof v === 'string' && v.trim() ? v.trim().replace(/[<>]/g, '') : ''; }
     if (!O) {
-      O = G1_TXT_ORIG = { svc:Object.assign({}, SVC_TXT), items:{}, tiers:{}, dev:{}, tips:{}, pal:{} };
+      O = G1_TXT_ORIG = { svc:Object.assign({}, SVC_TXT), quote:(typeof QUOTE_TXT !== 'undefined' ? Object.assign({}, QUOTE_TXT) : {}), items:{}, tiers:{}, dev:{}, tips:{}, pal:{} };
       Object.keys(CONSUMER_ITEMS).forEach(function(t){ O.items[t] = { name:CONSUMER_ITEMS[t].name, spec:CONSUMER_ITEMS[t].spec }; });
       CONSUMER_TIERS.forEach(function(t){ O.tiers[t.k] = { name:t.name, desc:t.desc }; });
       Object.keys(DEVICE_DEFS).forEach(function(t){ O.dev[t] = DEVICE_DEFS[t].label; O.tips[t] = TIPS[t]; });
@@ -14633,6 +15830,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     var S = T.services || {}, C = T.consumer || {}, TI = T.tiers || {}, A = T.agent || {};
     Object.keys(O.svc).forEach(function(k){ SVC_TXT[k] = str(S[k]) || O.svc[k]; });
+    var Q = T.quote || {};
+    Object.keys(O.quote).forEach(function(k){ QUOTE_TXT[k] = (typeof Q[k] === 'string') ? Q[k].replace(/[<>]/g, '') : O.quote[k]; });
     Object.keys(O.items).forEach(function(t){ var o = C[t] || {}; CONSUMER_ITEMS[t].name = str(o.name) || O.items[t].name; CONSUMER_ITEMS[t].spec = str(o.spec) || O.items[t].spec; });
     CONSUMER_TIERS.forEach(function(t){ var o = TI[t.k] || {}; if (!O.tiers[t.k]) return; t.name = str(o.name) || O.tiers[t.k].name; t.desc = str(o.desc) || O.tiers[t.k].desc; });
     if (CONSUMER) {
