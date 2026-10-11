@@ -995,6 +995,7 @@
   .q-terms{ margin:0; padding:0; list-style:none; }
   .q-terms li{ margin:0 0 4px; }
   .q-terms li b{ color:var(--ink-on-paper); margin-inline-end:4px; }
+  .q-small{ margin:6px 0 0; font-size:10px; line-height:1.5; color:#6b7686; }
   .send-ok{
     background:#eaf3ef; border:1px solid #bcdccf; color:#1f5c4c; border-radius:var(--radius-s);
     padding:12px 14px; font-size:13px; margin-top:16px; display:none; align-items:center; gap:8px;
@@ -2764,7 +2765,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 125</div>
+              <div class="app-version" id="appVersion">גרסה 126</div>
             </div>
           </div>
         </div>
@@ -6811,6 +6812,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     extra: '',
     fireQuote: 'מערכת גילוי אש היא מערכת מצילת חיים. הצעה זו מבוססת על תכנון ראשוני; הכמויות והמיקומים הסופיים ייקבעו בתכנון מפורט על ידי מתכנן מוסמך לגילוי אש לפי ת״י 1220, ובכפוף לבדיקת מעבדה מוסמכת ולאישור רשות הכבאות וההצלה.',
     fireApproval: 'במידה והלקוח יידרש לאישור מכון התקנים, הדבר אינו נכלל בהצעה זו.',
+    roomDev: 'מידות החדרים בשרטוט משוערות וייתכנו סטיות של עד כ-30 ס״מ בכל חדר; הכמויות והמיקומים הסופיים ייקבעו בסקר בשטח.',
+    roomDevPlan: 'מידות החדרים נקלטו מתוכנית הלקוח בזיהוי אוטומטי (בהרצה) וייתכנו סטיות של כ-10–30 ס״מ בכל חדר; הכמויות והמיקומים הסופיים ייקבעו בסקר בשטח.',
     fireLong: 'מערכת גילוי אש היא מערכת מצילת חיים. התכנון המוצג כאן הוא ראשוני ואינדיקטיבי בלבד ואינו תכנון מפורט או אישור לביצוע. יש לתכנן, להתקין ולתחזק את המערכת על ידי מתכנן/מתקין מוסמך לגילוי אש לפי ת״י 1220 על חלקיו, ולקבל בדיקה ואישור של מעבדה מוסמכת ורשות הכבאות וההצלה לפני הפעלתה. ערכי הכיסוי באפליקציה הם ערכי ייחוס (NFPA 72 / BS 5839-1) — יש לאמתם מול ת״י 1220-3.'
   };
   /* ---------- fire detection (SI 1220): recommendations ---------- */
@@ -12610,6 +12613,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qNotes').innerHTML =
       '<div style="font-weight:700;color:var(--ink-on-paper);margin:0 0 6px">הערות ותנאים:</div>' +
       '<ol class="q-terms">' + quoteTermsHtml(dateStr) + '</ol>' +
+      (function(){ var tx = String(QUOTE_TXT[state.rooms.some(function(r){ return r.imported; }) ? 'roomDevPlan' : 'roomDev'] || '').trim(); return tx ? '<p class="q-small">* ' + escapeHtml(tx) + '</p>' : ''; })() +
       (Object.keys(bom.counts).some(function(t){ return /^fire_/.test(t); }) ? '<div class="q-fire-note"><b>גילוי אש:</b> ' + escapeHtml(QUOTE_TXT.fireQuote) +
         (String(QUOTE_TXT.fireApproval || '').trim() ? '<p class="q-fire-appr"><b>אישור מכון התקנים:</b> ' + escapeHtml(QUOTE_TXT.fireApproval) + '</p>' : '') + '</div>' : '');
 
