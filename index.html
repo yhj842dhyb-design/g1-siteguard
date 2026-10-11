@@ -1347,6 +1347,14 @@
   .underlay-img.movable{ pointer-events:all; cursor:move; outline:2px dashed #1aace3; }
   body.pdf-export #underlayLayer, body.pdf-export .ul-bar{ display:none !important; }
   .pi-card{ max-width:760px; }
+  .rec-pop.plan-choice{ border-top-color:#22395a; width:min(420px, calc(100vw - 32px)); }
+  .plan-choice p{ margin:6px 0 10px; }
+  .plan-choice .pc-opts{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .plan-choice .pc-opts .btn{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 8px; height:auto; line-height:1.3; white-space:normal; }
+  .plan-choice .pc-opts small{ font-weight:500; font-size:11px; opacity:.85; }
+  .plan-choice .pc-link{ margin-top:10px; background:none; border:0; padding:0; color:#1a6fb0; font-size:12.5px; text-decoration:underline; cursor:pointer; }
+  @media (max-width:760px){ .rec-pop.plan-choice{ bottom:calc(78px + env(safe-area-inset-bottom, 0px)); max-height:60vh; overflow:auto; } }
+  .ul-nocal{ font-size:11px; font-weight:700; color:#8a5a00; background:#fff3cd; border-radius:999px; padding:1px 8px; }
   .beta-tag{ display:inline-block; font-size:10.5px; font-weight:800; line-height:1.5; padding:0 7px; border-radius:999px; background:#fff3cd; color:#7a4f00; border:1px solid #efd27e; margin-inline-start:6px; vertical-align:middle; letter-spacing:0; white-space:nowrap; }
   .pi-beta{ font-size:12.5px; background:#fff8e1; border:1px solid #f1dc9a; color:#6b4b00; border-radius:10px; padding:7px 10px; margin:0 0 10px; }
   .pi-tools{ margin-top:0; margin-bottom:6px; }
@@ -2765,7 +2773,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 126</div>
+              <div class="app-version" id="appVersion">גרסה 127</div>
             </div>
           </div>
         </div>
@@ -7579,7 +7587,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       bar = document.createElement('div'); bar.id = 'ulBar'; bar.className = 'ul-bar'; bar.setAttribute('data-html2canvas-ignore', 'true');
       var host = document.querySelector('.canvas-wrap') || document.body; host.appendChild(bar);
     }
-    bar.innerHTML = '<b>תוכנית הלקוח' + (usesMultiFloor() ? ' · ' + floorLabelFor(state.activeFloor || 0) : '') + '</b><span class="beta-tag">בהרצה</span>' +
+    bar.innerHTML = '<b>תוכנית הלקוח' + (usesMultiFloor() ? ' · ' + floorLabelFor(state.activeFloor || 0) : '') + '</b><span class="beta-tag">בהרצה</span>' + (U.calibrated === false ? '<span class="ul-nocal" title="התוכנית הועלתה כפי שהיא — בלי קנה מידה">ללא קנה מידה</span>' : '') +
+      '<button type="button" class="btn btn-ghost btn-sm" id="ulMatch">התאמה לשרטוט</button>' +
       '<label title="שקיפות">שקיפות <input type="range" id="ulOp" min="0.1" max="1" step="0.05" value="' + U.opacity + '"></label>' +
       '<button type="button" class="btn btn-ghost btn-sm" id="ulVis">' + (U.visible ? 'הסתרה' : 'הצגה') + '</button>' +
       '<button type="button" class="btn btn-ghost btn-sm' + (ulMove ? ' active' : '') + '" id="ulMv">' + (ulMove ? 'נעילה' : 'הזזה') + '</button>' +
@@ -7589,6 +7598,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     bar.querySelector('#ulOp').onchange = saveUnderlay;
     bar.querySelector('#ulVis').onclick = function(){ U.visible = !U.visible; saveUnderlay(); renderUnderlay(); };
     bar.querySelector('#ulMv').onclick = function(){ ulMove = !ulMove; renderUnderlay(); if (ulMove) showCanvasToast('גררו את התוכנית למקום — ואז "נעילה"'); };
+    bar.querySelector('#ulMatch').onclick = function(){ openPlanMatch(false); };
     bar.querySelector('#ulFree').onclick = function(){ U.free = U.free === false; saveUnderlay(); renderUnderlay(); updatePaletteAvailability(); showCanvasToast(U.free !== false ? 'הצבה חופשית: כל אביזר נשאר בדיוק במקום שבחרתם' : 'הצבה חכמה: הצמדה למיקום המקצועי ומגבלות לפי חדר'); };
     bar.querySelector('#ulDel').onclick = function(){ if (!confirm('להסיר את תוכנית הלקוח מהרקע של הקומה הזו? השרטוט עצמו לא ישתנה.')) return; delete underlays[state.activeFloor || 0]; ulMove = false; saveUnderlay(); renderUnderlay(); };
   }
@@ -7718,11 +7728,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
 
   // ---- the import dialog
-  function openPlanImport(){
+  function openPlanImport(opts){
     if (CONSUMER) return;
+    opts = opts || {};
+    var MATCH = !!opts.cv;
     var ov = document.getElementById('planImp'); if (ov) ov.remove();
     ov = document.createElement('div'); ov.id = 'planImp'; ov.className = 'g1-sv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'piT');
-    ov.innerHTML = '<div class="g1-sv-card pi-card"><div class="g1-sv-head"><div><span class="g1-sv-kick">תוכנית מהלקוח <span class="beta-tag">בהרצה</span></span><h2 id="piT">ייבוא תוכנית אדריכלית</h2></div><button type="button" class="g1-sv-x" aria-label="סגירה">×</button></div>' +
+    ov.innerHTML = '<div class="g1-sv-card pi-card"><div class="g1-sv-head"><div><span class="g1-sv-kick">תוכנית מהלקוח <span class="beta-tag">בהרצה</span></span><h2 id="piT">' + (MATCH ? (opts.calibOnly ? 'כיול קנה מידה' : 'התאמת השרטוט לתוכנית') : 'ייבוא תוכנית אדריכלית') + '</h2></div><button type="button" class="g1-sv-x" aria-label="סגירה">×</button></div>' +
       '<div class="g1-sv-body">' +
         '<p class="pi-beta">האפשרות בהרצה: התוצאה היא טיוטה לבדיקה — השוו כל חדר מול התוכנית לפני שליחת הצעה.</p>' +
         '<div class="pi-step" id="piS1"><label class="pi-drop" for="piFile"><b>בחירת קובץ</b><span>תמונה (צילום / סריקה) או PDF של התוכנית</span></label><input type="file" id="piFile" accept="image/*,application/pdf,.pdf" hidden>' +
@@ -7730,20 +7742,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<div class="pi-step" id="piS2" hidden>' +
           '<div class="pi-row pi-tools"><span id="piPages"></span><button type="button" class="btn btn-ghost btn-sm" id="piRot" title="סיבוב התוכנית ברבע סיבוב">↻ סיבוב</button>' +
             '<span class="pi-zoom"><button type="button" class="btn btn-ghost btn-sm" id="piZo" aria-label="הקטנה">−</button><span id="piZv">100%</span><button type="button" class="btn btn-ghost btn-sm" id="piZi" aria-label="הגדלה">+</button></span></div>' +
-          '<p class="pi-instr"><b>כיול קנה מידה:</b> הקישו על שתי נקודות שהמרחק ביניהן ידוע (קצוות קו מידה, או קיר חיצוני מלא), והזינו את המרחק. בטלפון — הגדילו (+) לסימון מדויק.</p>' +
+          '<p class="pi-instr pi-match"><b>כיול קנה מידה:</b> הקישו על שתי נקודות שהמרחק ביניהן ידוע (קצוות קו מידה, או קיר חיצוני מלא), והזינו את המרחק. בטלפון — הגדילו (+) לסימון מדויק.</p>' +
           '<div class="pi-canvas-wrap"><canvas id="piCv"></canvas></div>' +
-          '<div class="pi-row"><label for="piLen">המרחק בין הנקודות</label><input type="text" id="piLen" inputmode="decimal" autocomplete="off" placeholder="למשל 11.5">' +
+          '<div class="pi-row pi-match"><label for="piLen">המרחק בין הנקודות</label><input type="text" id="piLen" inputmode="decimal" autocomplete="off" placeholder="למשל 11.5">' +
             '<select id="piUnit" aria-label="יחידות"><option value="m">מ׳</option><option value="cm">ס״מ</option></select>' +
             '<button type="button" class="btn btn-ghost btn-sm" id="piReset">סימון מחדש</button><span class="pi-hint" id="piHint"></span></div>' +
-          '<label class="pi-ai" id="piAiRow"><input type="checkbox" id="piAi" checked> <span id="piAiLbl">זיהוי חדרים, דלתות וחלונות — יוצר אותם בשרטוט ומציג המלצות</span></label>' +
-          '<div class="pi-row"><label for="piKind">סוג הנכס</label><select id="piKind"><option value="house">בית פרטי</option><option value="apartment">דירה</option><option value="store">עסק / חנות</option><option value="clinic">משרד / קליניקה</option></select></div>' +
-          '<p class="pi-note" id="piAiNote"></p>' +
+          '<label class="pi-ai pi-match" id="piAiRow"><input type="checkbox" id="piAi" checked> <span id="piAiLbl">זיהוי חדרים, דלתות וחלונות — יוצר אותם בשרטוט</span></label>' +
+          '<div class="pi-row pi-match"><label for="piKind">סוג הנכס</label><select id="piKind"><option value="house">בית פרטי</option><option value="apartment">דירה</option><option value="store">עסק / חנות</option><option value="clinic">משרד / קליניקה</option></select></div>' +
+          '<p class="pi-note pi-match" id="piAiNote"></p>' +
+          '<p class="pi-note pi-upload">התוכנית תועלה לשרטוט כפי שהיא, כרקע. אחרי ההעלאה תבחרו: התאמה אוטומטית של השרטוט לתוכנית, או הצבת אביזרים חופשית עליה.</p>' +
         '</div>' +
         '<p class="pi-err" id="piErr" role="alert"></p>' +
       '</div>' +
       '<div class="g1-sv-foot"><span class="g1-sv-err"></span><button type="button" class="g1-sv-send" id="piGo" disabled>הצבה בשרטוט</button></div></div>';
     document.body.appendChild(ov);
-    var file = null, cv = null, pts = [], page = 1, aiOn = false, zoom = 1, closed = false, busy = false, placed = false, ctrl = null;
+    var file = null, cv = MATCH ? opts.cv : null, pts = [], page = 1, aiOn = false, zoom = 1, closed = false, busy = false, placed = false, ctrl = null;
+    Array.prototype.forEach.call(ov.querySelectorAll('.pi-match'), function(e){ e.hidden = !MATCH; });
+    Array.prototype.forEach.call(ov.querySelectorAll('.pi-upload'), function(e){ e.hidden = MATCH; });
+    if (MATCH) { ov.querySelector('#piS1').hidden = true; ov.querySelector('#piS2').hidden = false; ov.querySelector('.pi-beta').hidden = !!opts.calibOnly; if (opts.calibOnly) { ov.querySelector('#piAi').checked = false; ov.querySelector('#piAiRow').hidden = true; ov.querySelector('#piAiNote').hidden = true; } setTimeout(function(){ draw(); }, 0); }
     var $ = function(id){ return ov.querySelector('#' + id); };
     function err(t){ $('piErr').textContent = t || ''; }
     function close(){ closed = true; if (ctrl) try { ctrl.abort(); } catch(e) {} ov.remove(); document.removeEventListener('keydown', onKey); if (placed) render(); }
@@ -7769,14 +7785,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       check();
     }
     function lenM(){ return parseLenInput($('piLen').value, $('piUnit').value); }
-    function wantAi(){ return aiOn && $('piAi').checked; }
-    function wantLocal(){ return !aiOn && $('piAi').checked; }
+    function wantAi(){ return MATCH && aiOn && $('piAi').checked; }
+    function wantLocal(){ return MATCH && !aiOn && $('piAi').checked; }
     function check(){
       var len = lenM(), raw = parseLenInput($('piLen').value, 'm'), calib = pts.length === 2 && len >= 0.3 && len <= 300;
       $('piHint').textContent = $('piUnit').value === 'm' && raw >= 100 ? 'מידה בס״מ? בחרו ס״מ' : (len > 300 ? 'המרחק גדול מדי' : '');
       if (busy) return;
+      if (!MATCH) { $('piGo').disabled = !cv; $('piGo').textContent = 'העלאה לשרטוט כפי שהיא'; return; }
       $('piGo').disabled = !(cv && (calib || (wantAi() && pts.length === 0)));
-      $('piGo').textContent = wantAi() ? (calib ? 'הצבה + זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : wantLocal() ? (calib ? 'הצבה + זיהוי חדרים' : 'סמנו שתי נקודות ומרחק') : 'הצבה כרקע בשרטוט';
+      $('piGo').textContent = wantAi() ? (calib ? 'התאמה: זיהוי חדרים' : 'זיהוי + כיול אוטומטי') : wantLocal() ? (calib ? 'התאמה: זיהוי חדרים' : 'סמנו שתי נקודות ומרחק') : (calib ? 'כיול קנה המידה' : 'סמנו שתי נקודות ומרחק');
     }
     function load(){
       err(''); $('piGo').disabled = true; $('piS1').querySelector('.pi-drop span').textContent = 'טוען…';
@@ -7809,7 +7826,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     $('piReset').onclick = function(){ pts = []; draw(); };
 
     // put the image under the drawing at k plan-px per image-px; `at` = image point to place at a plan point
-    function place(k, at){
+    function place(k, at, uncal){
       var fl = state.activeFloor || 0, off = fl * FLOOR_Y_STRIDE, w = Math.round(cv.width * k), h = Math.round(cv.height * k), x = 20, y = off + 20;
       if (at) { x = Math.round(at.px - at.ix * k); y = Math.round(off + at.py - at.iy * k); }
       else if (w > 960 || h > 640) {   // bigger than the drawing area: centre the marked dimension, which usually lies on the building
@@ -7817,13 +7834,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         x = Math.round(500 - mx * k); y = Math.round(off + 340 - my * k);
       }
       var prev = underlays[fl];
-      underlays[fl] = { src:(prev && prev._cv === cv && prev.src) || scaledJpeg(cv, 1600, 0.7), x:x, y:y, w:w, h:h, opacity:0.55, visible:true, floor:fl, imgW:cv.width, imgH:cv.height };
+      underlays[fl] = { src:(prev && (prev._cv === cv || cv._fromSrc) && prev.src) || scaledJpeg(cv, 1600, 0.7), x:x, y:y, w:w, h:h, opacity:0.55, visible:true, floor:fl, imgW:cv.width, imgH:cv.height, calibrated:!uncal, free:prev ? prev.free : undefined };
       Object.defineProperty(underlays[fl], '_cv', { value:cv, enumerable:false });
       saveUnderlay(); placed = true;
       return underlays[fl];
     }
     $('piGo').onclick = function(){
       if (busy) return;
+      if (!MATCH) {   // upload as it is: fitted to the drawing area, not to scale yet
+        var kf = Math.min(960 / cv.width, 640 / cv.height);
+        place(kf, { ix:0, iy:0, px:20, py:20 }, true);
+        close(); render(); showPlanChoice();
+        return;
+      }
       var calib = pts.length === 2, k = 0;
       if (calib) {
         var len = lenM(), dpx = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
@@ -7838,7 +7861,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (wantLocal()) { runLocal(k, ''); return; }
       if (!wantAi()) {
         var U0 = curUL(); close();
-        showCanvasToast(U0.w > 1000 || U0.h > 680 ? 'התוכנית הוצבה בקנה מידה — היא גדולה משטח השרטוט; "הזזה" בסרגל התוכנית ממקמת אותה' : 'התוכנית הוצבה כרקע בקנה מידה — שרטטו עליה את החדרים (חדרים מוכנים / ציור חדר)');
+        showCanvasToast(U0.w > 1000 || U0.h > 680 ? 'קנה המידה כויל — התוכנית גדולה משטח השרטוט; "הזזה" בסרגל התוכנית ממקמת אותה' : 'קנה המידה כויל — התוכנית ברקע במידות אמיתיות');
         return;
       }
       busy = true; $('piGo').disabled = true; $('piGo').textContent = 'קורא את התוכנית… (עד דקה וחצי)'; err('');
@@ -7874,8 +7897,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     };
     function finish(res, extra){
       close(); render();
-      showCanvasToast(res.msg + (extra || ''), !res.rooms || res.warn);
-      if (res.rooms) setTimeout(openRecsAfterImport, 700);
+      showCanvasToast(res.msg + (extra || '') + (res.rooms ? ' · להמלצות מיגון — כפתור "המלצות מיגון", או הציבו אביזרים בעצמכם' : ''), !res.rooms || res.warn);
     }
     function runLocal(k, note){
       busy = true; $('piGo').disabled = true; err('');
@@ -7891,7 +7913,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         err('הזיהוי במכשיר לא הצליח בתוכנית הזו. התוכנית הוצבה כרקע — אפשר לשרטט עליה.'); check(); render();
       });
     }
-    $('piFile').click();
+    if (!MATCH) $('piFile').click();
+  }
+  // after an upload: the agent decides what happens with the plan
+  function showPlanChoice(){
+    var old = document.getElementById('planChoice'); if (old) old.remove();
+    var el = document.createElement('div'); el.id = 'planChoice'; el.className = 'rec-pop plan-choice'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'מה עושים עם התוכנית'); el.setAttribute('data-html2canvas-ignore', 'true');
+    el.innerHTML = '<div class="rp-head"><b>התוכנית הועלתה לשרטוט <span class="beta-tag">בהרצה</span></b><button type="button" class="rp-x" aria-label="סגירה">×</button></div>' +
+      '<p>מה עושים עכשיו?</p>' +
+      '<div class="pc-opts"><button type="button" class="btn btn-primary btn-sm" id="pcMatch">התאמה לשרטוט<small>זיהוי חדרים, דלתות וחלונות</small></button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="pcFree">הצבה על בסיס ההעלאה<small>אביזרים בדיוק במקום שתבחרו</small></button></div>' +
+      '<button type="button" class="pc-link" id="pcCal">כיול קנה מידה בלבד (לחישוב כיסוי ומרחקים)</button>';
+    document.body.appendChild(el);
+    function close(){ el.remove(); }
+    el.querySelector('.rp-x').onclick = close;
+    el.querySelector('#pcMatch').onclick = function(){ close(); openPlanMatch(false); };
+    el.querySelector('#pcCal').onclick = function(){ close(); openPlanMatch(true); };
+    el.querySelector('#pcFree').onclick = function(){ close(); showCanvasToast('הציבו אביזרים מהרשימה — כל אביזר נשאר בדיוק במקום שבחרתם. "התאמה לשרטוט" זמינה תמיד בסרגל התוכנית'); };
+  }
+  function openPlanMatch(calibOnly){
+    var U = curUL(); if (!U) return;
+    if (U._cv) { openPlanImport({ cv:U._cv, calibOnly:calibOnly }); return; }
+    var im = new Image();
+    im.onload = function(){ var c = document.createElement('canvas'); c.width = im.width; c.height = im.height; var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0); c._fromSrc = true; c._pages = 1; openPlanImport({ cv:c, calibOnly:calibOnly }); };
+    im.onerror = function(){ showCanvasToast('לא ניתן לפתוח את התוכנית השמורה — העלו אותה שוב', true); };
+    im.src = U.src;
   }
 
   // ---- turning Claude's reading into this app's model
