@@ -1325,6 +1325,22 @@
   .update-banner{ position:fixed; z-index:10400; left:50%; transform:translateX(-50%); top:calc(10px + env(safe-area-inset-top,0px));
     display:flex; align-items:center; gap:10px; background:#00AAE7; color:#fff; padding:10px 14px; border-radius:999px; font:600 13px var(--font-body); box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:calc(100% - 24px); }
   .update-banner button{ background:#fff; color:#006c94; border:0; border-radius:999px; padding:6px 12px; font:700 12.5px var(--font-body); cursor:pointer; }
+  .place-mode{ display:flex; flex-direction:column; gap:5px; padding:8px 10px 10px; margin:0 0 6px; border-bottom:1px solid var(--line); }
+  .place-mode > span{ font-size:11px; font-weight:700; color:var(--ink-dim); }
+  .pm-seg{ display:flex; gap:3px; background:var(--panel-2,#eef1f5); border-radius:10px; padding:3px; }
+  .pm-seg button{ flex:1 1 0; border:0; background:none; border-radius:8px; padding:6px 4px; font:700 11.5px var(--font-body); color:var(--ink-dim); cursor:pointer; white-space:nowrap; }
+  .pm-seg button[aria-pressed="true"]{ background:#fff; color:#0A6E9C; box-shadow:0 1px 4px rgba(20,35,60,.18); }
+  .pm-seg button:focus-visible{ outline:2px solid #00AAE7; outline-offset:1px; }
+  .canvas-hint .pm-hint{ background:rgba(255,255,255,.14); flex:0 0 auto; }
+  .canvas-hint .pm-hint button{ width:auto; height:auto; color:rgba(255,255,255,.85); background:none; padding:4px 9px; font-size:11.5px; border-radius:999px; }
+  .canvas-hint .pm-hint button[aria-pressed="true"]{ background:#fff; color:#0A6E9C; }
+  body.consumer .place-mode, body.consumer .pm-hint{ display:none !important; }
+  @media (max-width:640px){ .canvas-hint{ flex-wrap:wrap; justify-content:center; border-radius:18px; } .canvas-hint .pm-hint{ order:3; } }
+  .dev-tip{ position:fixed; z-index:10500; pointer-events:none; transform:translate(-50%, calc(-100% - 14px)); background:#0B1F33; color:#fff; border-radius:10px; padding:6px 10px; font:600 12.5px/1.35 var(--font-body); text-align:center; box-shadow:0 8px 22px rgba(0,0,0,.28); max-width:240px; white-space:normal; }
+  .dev-tip b{ display:block; font-weight:800; }
+  .dev-tip small{ display:block; color:#9FD8F2; font-size:11px; font-weight:600; }
+  .dev-tip::after{ content:''; position:absolute; left:50%; bottom:-5px; width:10px; height:10px; background:#0B1F33; transform:translateX(-50%) rotate(45deg); }
+  .dev-tip[hidden]{ display:none; }
   .canvas-hint button.finish{ width:auto; padding:0 12px; border-radius:999px; font-weight:700; background:#00AAE7; color:#fff; }
   /* quick-place bar: floats over the bottom of the plan while a detector/camera is selected */
   .canvas-quick{
@@ -2515,6 +2531,7 @@
         <button type="button" class="btn btn-ghost btn-sm mobile-panel-close" id="btnClosePalette" aria-label="סגירת חלונית האביזרים">✕ סגירה</button>
       </div>
       <div class="panel-scroll">
+        <div class="place-mode" id="palPlaceMode" role="group" aria-label="אופן הצבת אביזרים"><span>אופן הצבה</span><div class="pm-seg"><button type="button" data-pm="snap" title="האביזר נקלט למיקום המקצועי בחדר, לפי המגבלות. אחד בכל בחירה">מיקום מורשה</button><button type="button" data-pm="quick" title="כל הקשה על השרטוט מוסיפה עוד אחד, עם קליטה למיקום המקצועי">הצבה מהירה</button><button type="button" data-pm="single" title="אביזר אחד, בדיוק בנקודה שהקשתם, בלי קליטה">הצבה בודדת</button></div></div>
 
         <div class="cat-group" style="--cat-accent:var(--ink-dim)">
           <button type="button" class="cat-title" data-cat-toggle><span class="cat-dot"></span><span class="cat-title-label">מבנה — חדרים ואזורים</span><span class="cat-badge"></span><span class="cat-chevron"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -2808,7 +2825,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 132</div>
+              <div class="app-version" id="appVersion">גרסה 133</div>
             </div>
           </div>
         </div>
@@ -2819,6 +2836,7 @@
         <div class="canvas-hint-wrap">
           <div class="canvas-hint" id="canvasHint" hidden>
             <span id="canvasHintLabel"></span>
+            <span class="pm-seg pm-hint" id="hintPlaceMode" role="group" aria-label="אופן הצבה" hidden><button type="button" data-pm="snap" title="האביזר נקלט למיקום המקצועי בחדר, לפי המגבלות. אחד בכל בחירה">מיקום מורשה</button><button type="button" data-pm="quick" title="כל הקשה על השרטוט מוסיפה עוד אחד, עם קליטה למיקום המקצועי">הצבה מהירה</button><button type="button" data-pm="single" title="אביזר אחד, בדיוק בנקודה שהקשתם, בלי קליטה">הצבה בודדת</button></span>
             <button type="button" id="canvasHintCancel" aria-label="ביטול הוספה">✕</button>
           </div>
         </div>
@@ -5555,16 +5573,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         g.appendChild(plLbl);
       }
 
+      // the whole device is a comfortable finger target (it used to be covered by the enlarged
+      // rotate-handle target on a phone, so touching a placed device rotated it instead of moving it)
+      var hdSel = CONSUMER ? 34 : 26;
+      g.appendChild(el('circle', { cx:0, cy:0, r:15, fill:'transparent', class:'device-body-hit', style:touchHitTransform(15, __ts, isSel && def.rotatable ? Math.max(10, hdSel * __ts * 0.62) : undefined) }));
       if (def.rotatable && (isSel || !CONSUMER)) {
-        var handleDist = isSel ? (CONSUMER ? 34 : 26) : 20;
+        var handleDist = isSel ? hdSel : 20;
         if (isSel) {
           g.appendChild(el('circle', { cx:0, cy:0, r:handleDist, fill:'none', class:'rotate-guide' }));
         }
         var rx = handleDist * Math.cos((d.rot-90)*Math.PI/180);
         var ry = handleDist * Math.sin((d.rot-90)*Math.PI/180);
-        var rhHit = el('circle', { cx:rx, cy:ry, r:16, fill:'transparent', class:'rotate-handle-hit', style:touchHitTransform(16, __ts) });
-        rhHit.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); startRotateDevice(ev, d); });
-        g.appendChild(rhHit);
+        if (isSel) {   // rotating only once the device is selected; its target never reaches over the device itself
+          var rhHit = el('circle', { cx:rx, cy:ry, r:16, fill:'transparent', class:'rotate-handle-hit', style:touchHitTransform(16, __ts, Math.max(8, (handleDist - 12) * __ts)) });
+          rhHit.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); startRotateDevice(ev, d); });
+          g.appendChild(rhHit);
+        }
         var rh = el('g', { transform:'translate(' + rx.toFixed(1) + ',' + ry.toFixed(1) + ')', class:'rotate-handle', style:'pointer-events:none' });
         rh.appendChild(el('circle', { cx:0, cy:0, r:7, fill:'var(--accent-2)', stroke:'#fff', 'stroke-width':2 }));
         rh.appendChild(el('path', { d:'M-2.6,-1.4 L1.6,0 L-2.6,1.4 Z', fill:'#fff', transform:'rotate(' + d.rot + ')' }));
@@ -5572,6 +5596,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
 
       g.addEventListener('pointerdown', function(ev){ startDragDevice(ev, d); });
+      g.addEventListener('pointerenter', function(ev){ if (ev.pointerType === 'mouse' && !armedType) showDevTip(d); });
+      g.addEventListener('pointerleave', function(ev){ if (ev.pointerType === 'mouse') hideDevTip(d.id); });
       g.addEventListener('click', function(ev){ if (suppressNextSvgClick) { return; } if (drawMode) return; ev.stopPropagation(); selectItem('device', d.id); });
       devicesLayer.appendChild(g);
     });
@@ -8186,12 +8212,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     if (!CONSUMER && noteEl) {
       var fb = document.getElementById('recsFireBox'), fdev = fireDevs();
-      if (!fireAllowed() && !fdev.length) { if (fb) fb.remove(); }
+      if (!fdev.length) { if (fb) fb.remove(); }
       else {
         if (!fb) { fb = document.createElement('div'); fb.id = 'recsFireBox'; fb.className = 'fire-box'; noteEl.parentNode.insertBefore(fb, noteEl.nextSibling); }
         var fon = firePlanOn(), aud = fireAudit(), ncrit = aud.filter(function(i){ return i.sev === 'crit'; }).length;
-        fb.innerHTML = (fireAllowed() ? '<label><input type="checkbox" id="fireToggle"' + (fon ? ' checked' : '') + '> תכנון גילוי אש (ת״י 1220) <span class="beta-tag">בהרצה</span></label>' : '<b>גילוי אש</b>') +
-          (fon ? '<p><b>שימו לב:</b> ' + escapeHtml(QUOTE_TXT.fireLong) + '</p>' : (fireAllowed() ? '<p>להוספת רכזת, גלאים, לחצנים וצופרים לפי כללי התקן — סמנו את התיבה.</p>' : '')) +
+        fb.innerHTML = '<b>גילוי אש — בדיקת התכנון שלכם <span class="beta-tag">בהרצה</span></b>' +
+          '<p>ההמלצות לא מתכננות מערכת גילוי אש: את המערכת מתכנן הסוכן מרשימת האביזרים, והבדיקה כאן מסמנת חוסרים לפי ת״י 1220.</p>' +
+          (fireAllowed() ? '<p><b>שימו לב:</b> ' + escapeHtml(QUOTE_TXT.fireLong) + '</p>' : '') +
           (fdev.length ? '<div class="fa-head">' + (aud.length ? 'בדיקת תקן: ' + (ncrit ? ncrit + ' חוסרים' : 'אין חוסרים') + (aud.length - ncrit ? ' · ' + (aud.length - ncrit) + ' הערות' : '') : '✓ בדיקת תקן: לא נמצאו חוסרים') + '</div>' +
             (aud.length ? '<ul class="fire-audit">' + aud.map(fireIssueHtml).join('') + '</ul>' : '') : '');
         var tg = fb.querySelector('#fireToggle'); if (tg) tg.onchange = function(){ state.firePlan = this.checked; refreshRecommendations(); };
@@ -8390,7 +8417,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       return;
     }
     var result = computeRecommendations();
-    if (!CONSUMER && firePlanOn()) { try { result.recs = result.recs.concat(fireRecommendations()); } catch(e) { console.warn('fire recs', e); } }
     currentRecs = CONSUMER ? consumerFilterRecs(result.recs) : result.recs;
     currentPerimeter = result.perimeter;
     // The panel's score-impact and cabling-impact text must reflect exactly what "✓ הוסף הכל
@@ -9098,12 +9124,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     trackGesture(ev, move, up);
   }
 
+  // the device's name over it: on hover with a mouse, for a few seconds after one tap on a phone
+  var devTipEl = null, devTipFor = null, devTipTimer = null;
+  function showDevTip(d, ms){
+    if (!d || !DEVICE_DEFS[d.type]) return;
+    if (!devTipEl) { devTipEl = document.createElement('div'); devTipEl.className = 'dev-tip'; devTipEl.setAttribute('role', 'tooltip'); devTipEl.setAttribute('data-html2canvas-ignore', 'true'); document.body.appendChild(devTipEl); }
+    var def = DEVICE_DEFS[d.type], g = document.querySelector('#devicesLayer [data-id="' + d.id + '"]');
+    var tag = g && g.querySelector('.device-tag') ? g.querySelector('.device-tag').textContent.replace(/[\u2066-\u2069]/g, '').trim() : '';
+    var sub = [tag && tag !== def.label ? tag : '', d.placement || ''].filter(Boolean).join(' · ');
+    devTipEl.innerHTML = '<b>' + escapeHtml(def.label) + '</b>' + (sub ? '<small>' + escapeHtml(sub) + '</small>' : '');
+    var r = g ? g.getBoundingClientRect() : null, pt = r && r.width ? { x:r.left + r.width / 2, y:r.top } : planToScreen(d.x, d.y);
+    devTipEl.style.left = Math.max(70, Math.min(window.innerWidth - 70, pt.x)) + 'px'; devTipEl.style.top = Math.max(56, pt.y) + 'px';
+    devTipEl.hidden = false; devTipFor = d.id;
+    clearTimeout(devTipTimer); if (ms) devTipTimer = setTimeout(function(){ hideDevTip(); }, ms);
+  }
+  function hideDevTip(id){ if (devTipEl && (!id || id === devTipFor)) { devTipEl.hidden = true; devTipFor = null; clearTimeout(devTipTimer); } }
   function startDragDevice(ev, d){
     if (drawMode) return;
     ev.preventDefault(); ev.stopPropagation();
     if (touchCount() > 1) return;
-    if (isConsumerTouchUnselected(ev, 'device', d.id)) {
-      panOrTap(ev, function(){ selectItem('device', d.id); }, function(){ selectItem('device', d.id); startDragDevice(ev, d); });
+    hideDevTip();
+    // touch: the first tap selects and shows the name (a drag pans the plan); once selected, a touch-and-drag moves it
+    if (ev.pointerType === 'touch' && !(selected && selected.kind === 'device' && selected.id === d.id)) {
+      panOrTap(ev, function(){ selectItem('device', d.id); setTimeout(function(){ showDevTip(d, 3000); }, 30); }, function(){ selectItem('device', d.id); startDragDevice(ev, d); });
       return;
     }
     if (!(selected && selected.kind === 'device' && selected.id === d.id)) selectItem('device', d.id);
@@ -9173,8 +9216,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!armedType) return;
     ev.preventDefault();
     ev.stopPropagation();
-    var placedItem = placeAtPoint(armedType, svgPoint(ev));
-    if (REPEAT_PLACE_TYPES[armedType]) { if (placedItem) { armedCount++; updateArmHint(); updateCanvasQuick(); } }
+    var placedItem = placeAtPoint(armedType, svgPoint(ev), { exact: exactNow(armedType) });
+    if (repeatNow(armedType)) { if (placedItem) { armedCount++; updateArmHint(); updateCanvasQuick(); } }
     else if (placedItem || !DEVICE_DEFS[armedType]) disarmPalette();
     suppressNextSvgClick = true;
     setTimeout(function(){ suppressNextSvgClick = false; }, 400);
@@ -10962,12 +11005,33 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function freePlace(){ var U = !CONSUMER && typeof curUL === 'function' && curUL(); return !!(U && U.free !== false); }
   function singletonPlaced(type){ return !freePlace() && !!SINGLETON_TYPES[type] && state.devices.some(function(d){ return d.type === type; }); }
   function singletonMsg(type){ return 'כבר יש בפרויקט ' + DEVICE_DEFS[type].label + ' — אין צורך ביותר מאחד. להזזה, גררו את הקיים בשרטוט.'; }
+  // How a device picked from the list goes onto the plan (agent app):
+  //  snap   — "מיקום מורשה": one device, seated at the professional position in the room, within the room's limits
+  //  quick  — "הצבה מהירה": every tap adds another one, seated the same way (until "✓ סיום")
+  //  single — "הצבה בודדת": one device exactly where the agent tapped, no seating, no room limits
+  var PLACE_MODE = (function(){ try { var v = localStorage.getItem('g1sg_place_mode'); return /^(snap|quick|single)$/.test(v) ? v : 'snap'; } catch(e) { return 'snap'; } })();
+  function agentDevicePlacing(type){ return !CONSUMER && !!DEVICE_DEFS[type]; }
+  function repeatNow(type){ return agentDevicePlacing(type) ? (PLACE_MODE === 'quick' && !SINGLETON_TYPES[type]) : !!REPEAT_PLACE_TYPES[type]; }
+  function exactNow(type){ return agentDevicePlacing(type) && PLACE_MODE === 'single'; }
+  function syncPlaceModeUI(){
+    Array.prototype.forEach.call(document.querySelectorAll('.pm-seg button'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.pm === PLACE_MODE)); });
+  }
+  function setPlaceMode(m){
+    PLACE_MODE = m; try { localStorage.setItem('g1sg_place_mode', m); } catch(e) {}
+    syncPlaceModeUI(); if (armedType) updateArmHint();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.pm-seg button'), function(b){
+    b.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+    b.addEventListener('click', function(e){ e.stopPropagation(); setPlaceMode(b.dataset.pm); });
+  });
+  syncPlaceModeUI();
   function updateArmHint(){
     var cancelBtn = document.getElementById('canvasHintCancel');
-    var repeat = !!REPEAT_PLACE_TYPES[armedType];
+    var repeat = repeatNow(armedType);
+    var pmHint = document.getElementById('hintPlaceMode'); if (pmHint) pmHint.hidden = !agentDevicePlacing(armedType);
     canvasHintLabel.textContent = repeat
       ? ('📍 ' + paletteItemLabel(armedType) + ' — הצבה רציפה: הקישו בכל מקום להוספה' + (armedCount ? ' · הוצבו ' + armedCount : ''))
-      : ('📍 ' + paletteItemLabel(armedType) + ' — הקישו על מיקום בשרטוט להוספה');
+      : ('📍 ' + paletteItemLabel(armedType) + (exactNow(armedType) ? ' — הקישו בדיוק במקום הרצוי' : ' — הקישו על מיקום בשרטוט להוספה'));
     cancelBtn.textContent = repeat ? '✓ סיום' : '✕';
     cancelBtn.classList.toggle('finish', repeat);
     cancelBtn.setAttribute('aria-label', repeat ? 'סיום הצבה רציפה' : 'ביטול הוספה');
@@ -10982,7 +11046,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var hadType = armedType, placedCount = armedCount;
     armedType = null; armedItemEl = null; armedCount = 0;
     canvasHint.hidden = true;
-    if (hadType && REPEAT_PLACE_TYPES[hadType] && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
+    if (hadType && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (typeof mSyncNav === 'function') mSyncNav();
   }
@@ -11078,7 +11142,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     return best && bd < m2p(3) ? best : p;
   }
-  function placeAtPoint(type, p){
+  function placeAtPoint(type, p, opts){
+    opts = opts || {};
     pushUndo(snapshotState());
     if (OPENING_DEFS[type] && CONSUMER) p = snapToNearestWall(p);
     if (OPENING_DEFS[type]) {
@@ -11088,6 +11153,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     } else if (DEVICE_DEFS[type]) {
       if (CONSUMER && !consumerAllowed(type)) { openConsultModal(type); return null; }
       if (singletonPlaced(type)) { showCanvasToast(singletonMsg(type), true); return null; }
+      if (opts.exact) {   // "הצבה בודדת": exactly where the agent tapped, facing into the room
+        var er = roomContainingPoint(p), erot = type.indexOf('out') > -1 ? 180 : 0;
+        if (er && ROOM_FIT_FOV_TYPES.indexOf(type) > -1) erot = defaultRoomFacingRot(er, p);
+        var ed = addDevice({ type:type, x:p.x, y:p.y, rot:erot });
+        selectItem('device', ed.id);
+        return ed;
+      }
       var limitMsg = roomLimitBlock(type, p);
       if (limitMsg) { showCanvasToast(limitMsg, true); return null; }
       if (freePlace()) {   // exactly where the agent tapped
@@ -11216,7 +11288,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     disarmPalette();
     var type = ev.dataTransfer.getData('text/plain');
     if (!type) return;
-    placeAtPoint(type, svgPoint(ev));
+    placeAtPoint(type, svgPoint(ev), { exact: exactNow(type) });
   });
 
   /* ============================= touch-target scale compensation ============================= */
