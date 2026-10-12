@@ -1341,6 +1341,9 @@
   .dev-tip small{ display:block; color:#9FD8F2; font-size:11px; font-weight:600; }
   .dev-tip::after{ content:''; position:absolute; left:50%; bottom:-5px; width:10px; height:10px; background:#0B1F33; transform:translateX(-50%) rotate(45deg); }
   .dev-tip[hidden]{ display:none; }
+  .agent-conn{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding:10px 12px; border:1px dashed var(--line); border-radius:12px; font-size:12px; }
+  .agent-conn b{ display:block; font-size:12.5px; } .agent-conn span{ color:var(--ink-dim); }
+  .agent-conn.ok span{ color:#0F8A5F; font-weight:700; } .agent-conn.bad span{ color:#C2362B; font-weight:700; }
   .canvas-hint button.finish{ width:auto; padding:0 12px; border-radius:999px; font-weight:700; background:#00AAE7; color:#fff; }
   /* quick-place bar: floats over the bottom of the plan while a detector/camera is selected */
   .canvas-quick{
@@ -2825,7 +2828,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 133</div>
+              <div class="app-version" id="appVersion">גרסה 134</div>
             </div>
           </div>
         </div>
@@ -3103,6 +3106,10 @@
       <div class="agent-field">
         <label for="fAgentEmail">אימייל (לקבלת הצעות חתומות מלקוחות)</label>
         <input type="email" id="fAgentEmail" placeholder="name@g1-group.com" style="direction:ltr;text-align:right">
+      </div>
+      <div class="agent-conn" id="agentConn">
+        <div><b>חיבור לניהול הפיילוט</b><span id="agentConnTxt">—</span></div>
+        <button type="button" class="btn btn-ghost btn-sm" id="agentConnBtn">בדיקת חיבור</button>
       </div>
     </div>
     <div class="modal-actions">
@@ -12866,9 +12873,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('fAgentPhone').value = agentInfo.phone || '';
     document.getElementById('fAgentBranch').value = agentInfo.branch || '';
     document.getElementById('fAgentEmail').value = agentInfo.email || '';
+    try { var ac = document.getElementById('agentConn'); if (ac) { ac.hidden = CONSUMER; document.getElementById('agentConnTxt').textContent = (g1Auth && g1Auth.name ? g1Auth.name + ' · ' : '') + g1ConnText(); } } catch(e) {}
     agentBackdrop.hidden = false;
   }
   document.getElementById('btnAgentInfo').onclick = function(){ pendingOpenQuote = false; openAgentDialog(); };
+  document.getElementById('agentConnBtn').onclick = function(){
+    var b = this, box = document.getElementById('agentConn'), tx = document.getElementById('agentConnTxt');
+    b.disabled = true; tx.textContent = 'בודק…'; box.classList.remove('ok', 'bad');
+    (typeof g1ConnCheck === 'function' ? g1ConnCheck() : Promise.resolve({ ok:false, msg:'לא זמין' })).then(function(r){
+      b.disabled = false; tx.textContent = r.msg; box.classList.add(r.ok ? 'ok' : 'bad'); });
+  };
   document.getElementById('agentClose').onclick = function(){ agentBackdrop.hidden = true; pendingOpenQuote = false; };
   agentBackdrop.addEventListener('click', function(ev){ if (ev.target === agentBackdrop) { agentBackdrop.hidden = true; pendingOpenQuote = false; } });
   document.getElementById('btnAgentSave').onclick = function(){
@@ -16158,23 +16172,39 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     g1Auth.verifiedAt = Date.now(); g1Auth.name = u.name; g1Auth.role = u.role; g1cWrite('g1sg_auth', g1Auth);
     // at most one "seen" entry per device per day in the admin's access log
     var day = new Date().toISOString().slice(0, 10);
-    if (g1cRead('g1sg_seen') !== day) { g1cWrite('g1sg_seen', day); g1Log('login', { event:'seen', uid:u.id, name:u.name }); }
+    var pend = (g1cRead('g1sg_outbox') || []).some(function(x){ return x.event === 'seen' && String(x.ts || '').slice(0, 10) === day; });
+    if (g1cRead('g1sg_seen') !== day && !pend && !g1MarkVerified.sent) { g1MarkVerified.sent = true; g1Log('login', { event:'seen', uid:u.id, name:u.name }).then(function(){ g1MarkVerified.sent = false; }); }
     g1TrackFlush();
   }
   function g1NormPhone(p){ var d = String(p || '').replace(/\D/g, ''); return d.slice(-9); }
   function g1PhoneHash(phone, uid, salt){ return g1cHash(g1NormPhone(phone), uid, (salt || '') + ':phone'); }
   /* ---------- outbound data (Google Sheet endpoint set in the admin page): logins + survey answers ---------- */
   function g1Endpoint(){ var b = G1C.cfg && G1C.cfg.backend; return (b && b.endpoint) || ''; }
+  // Resolves with the sheet's answer: { ok:true } = written. A sheet that answered { ok:false } (busy,
+  // unknown user, script error) or a network failure rejects, so the entry stays in the outbox and is
+  // sent again — an entry is never dropped silently. When the answer can't be read (no-cors fallback)
+  // it counts as sent ('opaque').
   function g1Send(payload){
     var ep = g1Endpoint(); if (!ep) return Promise.reject(new Error('no-endpoint'));
-    return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
-      .catch(function(){ return fetch(ep, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) }); });
+    var body = JSON.stringify(payload);
+    return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:body })
+      .then(function(r){ return r.text().then(function(t){ var j = null; try { j = JSON.parse(t); } catch(e) {}
+        if (j && j.ok) return j;
+        var err = new Error((j && j.error) || ('http-' + r.status)); err.server = true; throw err; }); },
+        function(){ return fetch(ep, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:body }).then(function(){ return { ok:true, opaque:true }; }); });
   }
-  function g1Queue(payload){ var q = g1cRead('g1sg_outbox') || []; q.push(payload); g1cWrite('g1sg_outbox', q.slice(-200)); }
+  function g1LogStatus(ok, err){ var st = g1cRead('g1sg_logstat') || {}; if (ok) { st.okAt = Date.now(); st.err = ''; } else { st.errAt = Date.now(); st.err = String(err || ''); } g1cWrite('g1sg_logstat', st); }
+  function g1Queue(payload){ var q = g1cRead('g1sg_outbox') || []; payload.tries = (payload.tries || 0) + 1; if (payload.tries <= 30) q.push(payload); g1cWrite('g1sg_outbox', q.slice(-200)); }
+  var g1Flushing = false;
   function g1Flush(){
-    var q = g1cRead('g1sg_outbox') || []; if (!q.length || !g1Endpoint()) return;
-    g1cWrite('g1sg_outbox', []);
-    q.forEach(function(item){ g1Send(item).catch(function(){ g1Queue(item); }); });
+    var q = g1cRead('g1sg_outbox') || []; if (!q.length || !g1Endpoint() || g1Flushing) return;
+    g1cWrite('g1sg_outbox', []); g1Flushing = true;
+    // one after another, so a busy sheet isn't hit by a burst
+    q.reduce(function(pr, item){ return pr.then(function(){ return g1Deliver(item); }); }, Promise.resolve()).then(function(){ g1Flushing = false; }, function(){ g1Flushing = false; });
+  }
+  function g1Deliver(payload){
+    return g1Send(payload).then(function(j){ g1LogStatus(true); if (payload.event === 'seen') g1cWrite('g1sg_seen', (payload.ts || '').slice(0, 10)); return j; },
+      function(e){ g1LogStatus(false, e && e.message); g1Queue(payload); });
   }
   /* pilot usage metrics: a few key actions go to the same access log as 'use:<action>|key=value' rows
      (the admin's "מדדי פיילוט" tab counts them). Nothing about the customer is sent — only counts,
@@ -16194,8 +16224,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function g1TrackFlush(){ if (!g1Auth || !g1Auth.uid) return; var w = g1TrackWait; g1TrackWait = []; w.forEach(function(s){ g1Log('login', { event:s, uid:g1Auth.uid, name:g1Auth.name || '' }); }); }
   function g1Log(type, data){
     var payload = Object.assign({ type:type, ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') }, data || {});
-    if (!g1Endpoint()) { g1Queue(payload); return; }
-    g1Send(payload).catch(function(){ g1Queue(payload); });
+    if (!g1Endpoint()) { g1Queue(payload); return Promise.resolve(null); }
+    return g1Deliver(payload);
+  }
+  // the agent's own check (agent details dialog): send a test entry and show what the sheet answered
+  function g1ConnCheck(){
+    if (!g1Auth || !g1Auth.uid) return Promise.resolve({ ok:false, msg:'עוד לא בוצעה כניסה עם קוד במכשיר הזה' });
+    if (!g1Endpoint()) return Promise.resolve({ ok:false, msg:'אין כתובת לגיליון — האפליקציה לא קיבלה את ההגדרות מהשרת. בדקו חיבור לאינטרנט ופתחו מחדש' });
+    var payload = { type:'login', event:'ping', uid:g1Auth.uid, name:g1Auth.name || '', ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') };
+    return g1Send(payload).then(function(j){ g1LogStatus(true); g1Flush(); return { ok:true, msg: j.opaque ? 'נשלח (בלי אישור קריאה מהשרת)' : 'נרשם בגיליון ✓' }; },
+      function(e){ var m = e && e.message || ''; g1LogStatus(false, m);
+        return { ok:false, msg: m === 'unknown user' ? 'הגיליון לא מזהה את המשתמש — פנו למנהל המוצר (המשתמש לא נמצא ברשימה שפורסמה)' : /^http-|Failed|NetworkError|Load failed/i.test(m) || !m ? 'אין חיבור לגיליון כרגע (' + (m || 'רשת') + ')' : 'הגיליון החזיר שגיאה: ' + m }; });
+  }
+  function g1ConnText(){
+    var st = g1cRead('g1sg_logstat') || {}, q = (g1cRead('g1sg_outbox') || []).length;
+    var t = function(ms){ return new Date(ms).toLocaleString('he-IL', { day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit' }); };
+    if (st.err && (!st.okAt || st.errAt > st.okAt)) return '⚠ הרישום האחרון לא הגיע לגיליון (' + t(st.errAt) + ')' + (q ? ' · ' + q + ' ממתינים לשליחה' : '');
+    if (st.okAt) return '✓ נרשם לאחרונה ' + t(st.okAt) + (q ? ' · ' + q + ' ממתינים' : '');
+    return q ? q + ' רישומים ממתינים לשליחה' : 'עוד לא נשלח רישום מהמכשיר הזה';
   }
   function g1LockScreen(reason, after){
     var ov = document.getElementById('g1Lock');
@@ -16505,6 +16551,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var baseSend2 = sendQuoteFlow;
     sendQuoteFlow = function(){ var r = baseSend2.apply(this, arguments); Promise.resolve(r).then(function(){ var ss = document.getElementById('shareSheetBackdrop'); if (ss && !ss.hidden) g1PulseAfterVisit(); }); return r; };
     window.addEventListener('online', function(){ g1Flush(); });
+    setInterval(function(){ if (navigator.onLine !== false) g1Flush(); }, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') setTimeout(g1Flush, 1500); });
   }
 
   // ---- names & descriptions edited in the admin page (config.texts) ----
