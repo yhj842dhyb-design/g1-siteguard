@@ -1043,6 +1043,15 @@
   .signed-badge{ display:inline-block; font-size:10.5px; font-weight:700; color:#fff; background:#1f9d55; border-radius:999px; padding:1px 8px; margin-inline-start:4px; }
   .quote-lib-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .quote-lib-row-actions .btn{ padding:4px 9px; font-size:11px; }
+  .q-stat{ font:700 12px var(--font-body); border-radius:999px; padding:4px 8px; border:1px solid var(--line); background:#fff; color:#14202E; cursor:pointer; min-height:30px; }
+  .q-stat-won{ background:#E6F6EE; border-color:#9AD8B8; color:#0F7A50; } .q-stat-lost{ background:#F3F4F6; color:#6B7280; }
+  .fb-ov .msg-panel textarea{ width:100%; min-height:120px; border:1px solid #D5DCE4; border-radius:14px; padding:10px 12px; font:15px/1.5 var(--font-body); resize:vertical; box-sizing:border-box; }
+  .fb-cats{ display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 12px; }
+  .fb-cats button{ border:1px solid #D5DCE4; background:#fff; border-radius:999px; padding:8px 14px; font:700 14px var(--font-body); color:#14202E; cursor:pointer; min-height:40px; }
+  .fb-cats button[aria-pressed=true]{ background:#14202E; border-color:#14202E; color:#fff; }
+  .fb-send{ width:100%; margin-top:12px; min-height:48px; border:0; border-radius:14px; background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; font:800 16px var(--font-body); cursor:pointer; }
+  .fb-send:disabled{ opacity:.5; cursor:default; }
+  .msg-fb{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; margin-top:12px; min-height:46px; border:1px dashed #B9C4D0; border-radius:14px; background:#F7F9FB; color:#0A4E86; font:800 14.5px var(--font-body); cursor:pointer; }
   #quoteLibTable td{ vertical-align:middle; }
   /* Client-facing quote view: the agent enters prices per line to compute the total,
      but what actually goes out to the customer shows only the general calculation —
@@ -1344,6 +1353,46 @@
   .agent-conn{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding:10px 12px; border:1px dashed var(--line); border-radius:12px; font-size:12px; }
   .agent-conn b{ display:block; font-size:12.5px; } .agent-conn span{ color:var(--ink-dim); }
   .agent-conn.ok span{ color:#0F8A5F; font-weight:700; } .agent-conn.bad span{ color:#C2362B; font-weight:700; }
+  .msg-bell{ position:relative; width:40px; height:40px; flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; border:1px solid var(--line); background:var(--panel-2); color:var(--ink-on-dark); cursor:pointer; }
+  .msg-bell[hidden]{ display:none; }
+  .msg-bell.has{ color:#0A7FBF; border-color:#9FD3EE; }
+  .msg-badge{ position:absolute; top:-5px; inset-inline-end:-5px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#D9342B; color:#fff; font:800 11px/18px var(--font-body); font-style:normal; text-align:center; box-shadow:0 0 0 2px var(--panel); }
+  .msg-badge[hidden]{ display:none; }
+  .msg-ov{ position:fixed; inset:0; z-index:10450; background:rgba(12,22,38,.45); display:flex; align-items:flex-end; justify-content:center; }
+  @media (min-width:761px){ .msg-ov{ align-items:center; } }
+  .msg-panel{ background:#fff; color:#14202E; width:min(560px,100%); max-height:86vh; overflow:auto; border-radius:22px 22px 0 0; padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px)); box-shadow:0 -10px 40px rgba(0,0,0,.25); font-family:var(--font-body); }
+  @media (min-width:761px){ .msg-panel{ border-radius:20px; } }
+  .msg-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .msg-head h2{ margin:0; font-size:19px; }
+  .msg-x{ width:40px; height:40px; border:0; border-radius:12px; background:#F1F4F7; font-size:18px; cursor:pointer; }
+  .msg-chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:6px; }
+  .msg-chips button{ flex:none; border:1px solid #DCE3EA; background:#fff; border-radius:99px; padding:7px 13px; font:700 13px var(--font-body); color:#45566A; cursor:pointer; }
+  .msg-chips button[aria-pressed="true"]{ background:#14202E; color:#fff; border-color:#14202E; }
+  .msg-card{ border:1px solid #E3E8EE; border-radius:16px; padding:12px 14px; margin:0 0 10px; cursor:pointer; background:#fff; text-align:start; width:100%; display:block; font:inherit; color:inherit; }
+  .msg-card.unread{ border-color:#9FD3EE; background:#F5FBFF; }
+  .msg-card .mc-top{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .msg-tag{ display:inline-block; font:800 11.5px var(--font-body); color:#fff; border-radius:99px; padding:2px 9px; }
+  .msg-dot{ width:8px; height:8px; border-radius:50%; background:#0A7FBF; flex:none; }
+  .msg-pin{ font-size:12px; color:#8A97A6; margin-inline-start:auto; }
+  .msg-card h3{ margin:2px 0; font-size:15.5px; line-height:1.35; }
+  .msg-card p{ margin:2px 0 0; font-size:14px; line-height:1.55; color:#384858; white-space:pre-line; }
+  .msg-card:not(.open) p{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .msg-meta{ font-size:12px; color:#7A8796; margin-top:6px; }
+  .msg-meta .soon{ color:#C2362B; font-weight:700; }
+  .msg-acts{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .msg-acts a, .msg-acts button{ flex:1 1 auto; min-height:44px; border-radius:12px; border:0; font:800 14.5px var(--font-body); display:inline-flex; align-items:center; justify-content:center; padding:0 14px; text-decoration:none; cursor:pointer; }
+  .msg-cta{ background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; }
+  .msg-ok{ background:#14202E; color:#fff; }
+  .msg-later{ background:#F1F4F7; color:#34465A; flex:0 1 auto !important; }
+  .msg-need{ display:inline-block; font:800 11px var(--font-body); color:#C2362B; background:#FDECEA; border-radius:99px; padding:2px 8px; }
+  .msg-empty{ text-align:center; color:#6B7A8C; padding:26px 10px; }
+  .msg-empty b{ display:block; color:#14202E; font-size:16px; margin-bottom:4px; }
+  .msg-arch{ border:0; background:none; color:#0A7FBF; font:700 13.5px var(--font-body); padding:10px 4px; cursor:pointer; }
+  .msg-pop h2{ font-size:20px; margin:6px 0 8px; line-height:1.3; }
+  .msg-pop .mp-body{ font-size:15px; line-height:1.65; color:#2B3B4C; white-space:pre-line; }
+  .g1-maint{ position:fixed; inset:0; z-index:10600; background:#0E1B2B; color:#fff; display:flex; align-items:center; justify-content:center; padding:24px; text-align:center; font-family:var(--font-body); }
+  .g1-maint .in{ max-width:420px; } .g1-maint h2{ font-size:22px; margin:0 0 10px; } .g1-maint p{ color:#BFD0E2; line-height:1.7; white-space:pre-line; }
+  .g1-maint button{ margin-top:16px; min-height:48px; padding:0 22px; border-radius:14px; border:0; background:#1AACE3; color:#fff; font:800 15px var(--font-body); cursor:pointer; }
   .canvas-hint button.finish{ width:auto; padding:0 12px; border-radius:999px; font-weight:700; background:#00AAE7; color:#fff; }
   /* quick-place bar: floats over the bottom of the plan while a detector/camera is selected */
   .canvas-quick{
@@ -2423,6 +2472,9 @@
   .g1-lock-go:disabled{ opacity:.6; cursor:wait; }
   .g1-lock-card small{ color:#5B6B7E; font-size:12px; }
   body.g1-locked{ overflow:hidden; }
+  .g1-bio-face{ width:76px; height:76px; margin:0 auto 6px; border-radius:22px; display:grid; place-items:center; color:#0A63C2; background:#EAF5FC; }
+  .g1-bio-alt{ border:0; background:none; color:#0A7FBF; font:700 14px 'Heebo',sans-serif; padding:8px; cursor:pointer; min-height:40px; }
+  .g1-bio-code{ display:flex; flex-direction:column; gap:8px; }
   .q-price.g1-below-min{ border-color:#C2362B !important; background:#FFF0EE !important; color:#C2362B; font-weight:700; }
   body.pdf-export .q-price.g1-below-min{ border-color:inherit !important; background:inherit !important; color:inherit; font-weight:inherit; }
   .g1-min-list, .g1-min-detail ul{ margin:8px 0 0; padding-inline-start:20px; line-height:1.8; }
@@ -2519,6 +2571,7 @@
       <div class="score-ring" id="scoreRing">–</div>
       <div class="score-label">ציון הגנה<b id="scoreText">—</b></div>
     </div>
+    <button type="button" class="msg-bell" id="btnMsgs" hidden aria-label="הודעות"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><i class="msg-badge" id="msgBadge" hidden></i></button>
     <button class="btn btn-ghost btn-sm" id="btnAgentInfo">פרטי סוכן</button>
     <button class="btn btn-ghost btn-sm" id="btnReset">פרויקט חדש</button>
     <button type="button" class="m-only m-ico" id="btnMMore" aria-label="עוד — פרויקט, הצעות שמורות, פרטי סוכן">⋯</button>
@@ -2828,7 +2881,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 134</div>
+              <div class="app-version" id="appVersion">גרסה 138</div>
             </div>
           </div>
         </div>
@@ -3111,6 +3164,7 @@
         <div><b>חיבור לניהול הפיילוט</b><span id="agentConnTxt">—</span></div>
         <button type="button" class="btn btn-ghost btn-sm" id="agentConnBtn">בדיקת חיבור</button>
       </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="agentFbBtn" hidden style="margin-top:10px;width:100%">💬 דיווח על תקלה או רעיון לשיפור</button>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="btnAgentSave">שמירה</button>
@@ -6895,7 +6949,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   };
   /* ---------- fire detection (SI 1220): recommendations ---------- */
   // Fire detection (SI 1220) is offered only for businesses and offices/clinics — never for a private house or an apartment.
-  function fireAllowed(){ return !CONSUMER && (state.kind === 'store' || state.kind === 'clinic'); }
+  function fireAllowed(){ return !CONSUMER && (state.kind === 'store' || state.kind === 'clinic') && (typeof g1FlagOn !== 'function' || g1FlagOn('fire')); }
   function firePlanOn(){ return fireAllowed() && (state.firePlan != null ? !!state.firePlan : true); }
   function fireResidential(){ return state.kind === 'house' || state.kind === 'apartment'; }
   var FIRE_DET = ['fire_smoke', 'fire_heat', 'fire_multi', 'fire_standalone'];
@@ -8137,7 +8191,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return { rooms:made.length, warn:warn, msg:'זוהו ' + made.length + ' חדרים ו-' + nOp + ' פתחים' + (notes.length ? ' · ' + notes.join(' · ') : '') + ' — בדקו כל חדר מול הרקע (ביטול מחזיר את השרטוט הקודם)' };
   }
   loadUnderlay();
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); } };   // local tests only
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); }, bio:function(){ return { ok:bioOk, start:BIO_START_ACT, req:bioRequired(), st:g1AccessState(), cfg:bioCfg() }; } };   // local tests only
 
   var KIND_LABEL_HE = { house:'בית פרטי', apartment:'דירה', store:'עסק / חנות', clinic:'קליניקה / משרד' };
   // The recommendations panel scopes itself to whatever floor is currently being viewed: a
@@ -13016,9 +13070,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       customerEmail: document.getElementById('qCustomerEmail').value || '',
       customerContact: getCustomerContact(),
       quoteInputs: captureQuoteInputs(),
-      project: serializeProject()
+      project: serializeProject(),
+      total: Math.round(+String((document.getElementById('qTotal') || {}).textContent || '').replace(/[^\d.]/g, '') || 0)
     };
     var library = loadQuoteLibrary();
+    var prev = library.filter(function(r){ return r.number === record.number; })[0];
+    if (prev) { if (prev.status) { record.status = prev.status; record.statusAt = prev.statusAt; } if (prev.signed && !record.signed) record.signed = prev.signed; }
     var idx = -1;
     for (var i = 0; i < library.length; i++) { if (library[i].number === record.number) { idx = i; break; } }
     if (idx >= 0) library[idx] = record; else library.push(record);
@@ -13050,6 +13107,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (record.customerContact) setCustomerContact(record.customerContact);
     else if (record.customerEmail) setCustomerContact({ email: record.customerEmail });
   }
+  function qStatusOf(rec){ return rec.status || (rec.signed ? 'won' : 'open'); }
+  function qStatusTrack(rec, s, src){ try { if (typeof g1Track === 'function') g1Track('qstat', { q:rec.number, s:s, v:rec.total || '', src:src || '' }); } catch(e) {} }
   function renderQuoteLibrary(){
     var library = loadQuoteLibrary().slice().sort(function(a,b){ return b.number - a.number; });
     var empty = document.getElementById('quoteLibEmpty');
@@ -13071,6 +13130,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<td>' + dateStr + '</td>' +
         '<td>' + escapeHtml(rec.agentName || '—') + '</td>' +
         '<td><div class="quote-lib-row-actions">' +
+          '<select class="q-stat q-stat-' + qStatusOf(rec) + '" data-act="status" aria-label="סטטוס ההצעה">' + [['open','פתוחה'],['won','נחתמה ✓'],['lost','לא רלוונטית']].map(function(o){ return '<option value="' + o[0] + '"' + (qStatusOf(rec) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
           '<button type="button" class="btn btn-primary btn-sm" data-act="open">✎ פתיחה לעריכה</button>' +
           '<button type="button" class="btn btn-ghost btn-sm" data-act="download">⬇ הורדת PDF</button>' +
           '<button type="button" class="btn btn-danger btn-sm" data-act="delete">🗑️ מחיקה</button>' +
@@ -13124,7 +13184,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var libS = loadQuoteLibrary();
       signedRecs.forEach(function(sr){
         var tgt = libS.filter(function(x){ return x.number === sr.number; })[0];
-        if (tgt) { tgt.signed = { name: sr.signer.name, id: sr.signer.id, phone: sr.signer.phone, email: sr.signer.email, at: sr.signedAt, code: sr.code }; signedMsg.push('✓ הצעה ' + sr.number + ' סומנה כחתומה ע״י ' + sr.signer.name); }
+        if (tgt) { tgt.signed = { name: sr.signer.name, id: sr.signer.id, phone: sr.signer.phone, email: sr.signer.email, at: sr.signedAt, code: sr.code }; if (tgt.status !== 'won') { tgt.status = 'won'; tgt.statusAt = new Date().toISOString(); qStatusTrack(tgt, 'won', 'sign'); } signedMsg.push('✓ הצעה ' + sr.number + ' סומנה כחתומה ע״י ' + sr.signer.name); }
         else signedMsg.push('הצעה ' + sr.number + ' חתומה, אך אינה בספרייה במכשיר זה — שחזרו קודם את קובץ ה-PDF המקורי שלה');
       });
       saveQuoteLibraryRecords(libS);
@@ -13145,6 +13205,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.getElementById('btnQuoteLibrary').onclick = function(){ renderQuoteLibrary(); quoteLibBackdrop.hidden = false; };
   document.getElementById('quoteLibClose').onclick = function(){ quoteLibBackdrop.hidden = true; };
   quoteLibBackdrop.addEventListener('click', function(ev){ if (ev.target === quoteLibBackdrop) quoteLibBackdrop.hidden = true; });
+  document.getElementById('quoteLibTable').addEventListener('change', function(ev){
+    var sel = ev.target.closest ? ev.target.closest('select[data-act="status"]') : null; if (!sel) return;
+    var tr = sel.closest('tr[data-number]'); if (!tr) return;
+    var number = parseInt(tr.getAttribute('data-number'), 10), lib = loadQuoteLibrary();
+    var rec = lib.filter(function(r){ return r.number === number; })[0]; if (!rec) return;
+    rec.status = sel.value; rec.statusAt = new Date().toISOString(); saveQuoteLibraryRecords(lib);
+    qStatusTrack(rec, sel.value, 'agent');
+    sel.className = 'q-stat q-stat-' + sel.value;
+    try { showCanvasToast(sel.value === 'won' ? 'מעולה! ההצעה סומנה כנחתמה' : sel.value === 'lost' ? 'ההצעה סומנה כלא רלוונטית' : 'ההצעה סומנה כפתוחה'); } catch(e) {}
+  });
   document.getElementById('quoteLibTable').addEventListener('click', function(ev){
     var btn = ev.target.closest ? ev.target.closest('button[data-act]') : null;
     if (!btn) return;
@@ -16236,6 +16306,293 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       function(e){ var m = e && e.message || ''; g1LogStatus(false, m);
         return { ok:false, msg: m === 'unknown user' ? 'הגיליון לא מזהה את המשתמש — פנו למנהל המוצר (המשתמש לא נמצא ברשימה שפורסמה)' : /^http-|Failed|NetworkError|Load failed/i.test(m) || !m ? 'אין חיבור לגיליון כרגע (' + (m || 'רשת') + ')' : 'הגיליון החזיר שגיאה: ' + m }; });
   }
+  /* ---------- messages from the product manager + remote control ----------
+     Messages live in the published settings (cfg.messages). The inbox (bell) is the record: every
+     message stays there until it expires (then moves to the archive). A message marked important
+     opens once, as a card in the middle of the screen with no timer — it closes only on "הבנתי",
+     the action button or "אחר כך" (back in the next app open, at most 3 times); one card per app
+     open. "Requires confirmation" stays pinned until the agent confirms. Seen / read / clicked /
+     confirmed go to the activity log so the manager sees who read what. */
+  var MSG_TYPES = { promo:['מבצע','#E8590C'], benefit:['הטבה','#0F8A5F'], price:['עדכון מחיר','#C2362B'], product:['עדכון מוצר','#0A7FBF'], general:['הודעה','#5B6B7E'] };
+  var MSG_OPEN_ID = Date.now(), msgPopShown = false, msgFilter = 'all', msgArchive = false;
+  function msgState(){ return g1cRead('g1sg_msgs') || {}; }
+  function msgKey(m){ return m.id + '@' + (m.v || 1); }
+  function msgVisible(){
+    if (CONSUMER) return [];
+    var list = (G1C.cfg && G1C.cfg.messages) || [], uid = g1Auth && g1Auth.uid, now = Date.now();
+    return list.filter(function(m){ return m && m.id && !m.draft && (!m.from || Date.parse(m.from) <= now) &&
+      (!m.to || m.to === 'all' || (Array.isArray(m.to) && uid && m.to.indexOf(uid) > -1)); });
+  }
+  function msgActive(m){ return !m.until || Date.parse(m.until) >= Date.now(); }
+  function msgDone(m, st){ var x = (st || msgState())[msgKey(m)]; return !!(x && (m.ack ? x.ack : (x.read || x.ack))); }
+  function msgUnread(){ var st = msgState(); return msgVisible().filter(function(m){ return msgActive(m) && !msgDone(m, st); }); }
+  function msgMark(m, field){
+    var st = msgState(), k = msgKey(m), x = st[k] || (st[k] = {});
+    if (!x[field]) { x[field] = Date.now(); g1cWrite('g1sg_msgs', st); try { g1Track('msg', { id:m.id, v:m.v || 1, a:field }); } catch(e) {} }
+    msgBadge();
+  }
+  function msgBadge(){
+    var b = document.getElementById('btnMsgs'), bd = document.getElementById('msgBadge'); if (!b) return;
+    var show = !CONSUMER && !!(g1Auth && g1Auth.uid) && (msgVisible().length > 0 || fbOn()), n = show ? msgUnread().length : 0;
+    b.hidden = !show; bd.hidden = !n; bd.textContent = n > 9 ? '9+' : n; b.classList.toggle('has', !!n);
+    b.setAttribute('aria-label', n ? 'הודעות, ' + n + ' שלא נקראו' : 'הודעות');
+    try { if (navigator.setAppBadge) { if (n) navigator.setAppBadge(n).catch(function(){}); else navigator.clearAppBadge().catch(function(){}); } } catch(e) {}
+  }
+  function msgDate(iso){ var d = new Date(iso); return isNaN(d) ? '' : d.getDate() + '.' + (d.getMonth() + 1); }
+  function msgAgo(iso){ var t = Date.parse(iso); if (isNaN(t)) return ''; var m = Math.round((Date.now() - t) / 60000); return m < 60 ? 'לפני ' + Math.max(1, m) + ' דק׳' : m < 1440 ? 'לפני ' + Math.round(m / 60) + ' שעות' : 'לפני ' + Math.round(m / 1440) + ' ימים'; }
+  function msgTag(m){ var t = MSG_TYPES[m.type] || MSG_TYPES.general; return '<span class="msg-tag" style="background:' + t[1] + '">' + t[0] + '</span>'; }
+  function msgMeta(m){
+    var parts = [];
+    if (m.until) { var left = Date.parse(m.until) - Date.now(); parts.push(left < 0 ? 'פג תוקף ' + msgDate(m.until) : '<span' + (left < 48 * 3600e3 ? ' class="soon"' : '') + '>בתוקף עד ' + msgDate(m.until) + '</span>'); }
+    if (m.from || m.at) parts.push(msgAgo(m.from || m.at));
+    return parts.join(' · ');
+  }
+  function msgCta(m){ return m.cta && m.cta.url && /^(https?:|tel:|mailto:|https:\/\/wa\.me)/i.test(m.cta.url) ? '<a class="msg-cta" data-cta href="' + escapeHtml(m.cta.url) + '" target="_blank" rel="noopener">' + escapeHtml(m.cta.label || 'לפרטים') + '</a>' : ''; }
+  function msgCardHtml(m, st, open){
+    var done = msgDone(m, st), x = st[msgKey(m)] || {};
+    return '<div class="msg-card' + (done ? '' : ' unread') + (open ? ' open' : '') + '" role="button" tabindex="0" data-id="' + escapeHtml(m.id) + '">' +
+      '<div class="mc-top">' + msgTag(m) + (done ? '' : '<span class="msg-dot" aria-label="לא נקראה"></span>') + (m.ack && !x.ack ? '<span class="msg-need">נדרש אישור</span>' : '') + (m.pin ? '<span class="msg-pin">📌 נעוצה</span>' : '') + '</div>' +
+      '<h3>' + escapeHtml(m.title || '') + '</h3><p>' + escapeHtml(m.body || '') + '</p><div class="msg-meta">' + msgMeta(m) + '</div>' +
+      (open ? '<div class="msg-acts">' + msgCta(m) + (m.ack && !x.ack ? '<button type="button" class="msg-ok" data-ack>קראתי ואני מאשר/ת</button>' : '') + '</div>' : '') + '</div>';
+  }
+  function msgSort(a, b){ return (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || (Date.parse(b.from || b.at || 0) || 0) - (Date.parse(a.from || a.at || 0) || 0); }
+  function openMsgInbox(focusId){
+    closeMsgUi();
+    var ov = document.createElement('div'); ov.className = 'msg-ov'; ov.id = 'msgOv'; ov.setAttribute('data-html2canvas-ignore', 'true');
+    ov.innerHTML = '<div class="msg-panel" role="dialog" aria-modal="true" aria-label="הודעות"></div>';
+    document.body.appendChild(ov);
+    var openId = focusId || null;
+    function draw(){
+      var st = msgState(), all = msgVisible(), act = all.filter(msgActive).sort(msgSort), old = all.filter(function(m){ return !msgActive(m); }).sort(msgSort);
+      var groups = { all:null, promo:['promo'], benefit:['benefit'], upd:['price', 'product', 'general'] };
+      var f = function(m){ return !groups[msgFilter] || groups[msgFilter].indexOf(m.type || 'general') > -1; };
+      var list = act.filter(f), arch = old.filter(f), unread = msgUnread().length;
+      var chips = [['all', 'הכול'], ['promo', 'מבצעים'], ['benefit', 'הטבות'], ['upd', 'עדכונים']].map(function(c){ return '<button type="button" data-f="' + c[0] + '" aria-pressed="' + (msgFilter === c[0]) + '">' + c[1] + '</button>'; }).join('');
+      ov.firstChild.innerHTML = '<div class="msg-head"><h2>הודעות' + (unread ? ' · ' + unread + ' חדשות' : '') + '</h2><button type="button" class="msg-x" aria-label="סגירה">✕</button></div>' +
+        '<div class="msg-chips" role="group" aria-label="סינון">' + chips + '</div>' +
+        (list.length ? list.map(function(m){ return msgCardHtml(m, st, m.id === openId); }).join('') : '<div class="msg-empty"><b>אין הודעות כרגע</b>מבצעים, הטבות ועדכוני מחירים יופיעו כאן</div>') +
+        (arch.length ? '<button type="button" class="msg-arch" data-arch>' + (msgArchive ? 'הסתרת הארכיון' : 'ארכיון (' + arch.length + ')') + '</button>' + (msgArchive ? arch.map(function(m){ return msgCardHtml(m, st, m.id === openId); }).join('') : '') : '') +
+        (fbOn() ? '<button type="button" class="msg-fb" data-fb>💬 כתיבה למנהל המוצר — תקלה, רעיון או שאלה</button>' : '');
+      ov.querySelector('.msg-x').onclick = closeMsgUi;
+      Array.prototype.forEach.call(ov.querySelectorAll('.msg-chips button'), function(b){ b.onclick = function(){ msgFilter = b.dataset.f; draw(); }; });
+      var ab = ov.querySelector('[data-arch]'); if (ab) ab.onclick = function(){ msgArchive = !msgArchive; draw(); };
+      var fbb = ov.querySelector('[data-fb]'); if (fbb) fbb.onclick = function(){ openFeedback(); };
+      Array.prototype.forEach.call(ov.querySelectorAll('.msg-card'), function(c){
+        var m = all.filter(function(x){ return x.id === c.dataset.id; })[0]; if (!m) return;
+        var openIt = function(){ openId = openId === m.id ? null : m.id; msgMark(m, 'seen'); if (openId) { msgMark(m, 'open'); if (!m.ack) msgMark(m, 'read'); } draw(); };
+        c.addEventListener('click', function(e){ if (e.target.closest('[data-cta],[data-ack]')) return; openIt(); });
+        c.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIt(); } });
+        var cta = c.querySelector('[data-cta]'); if (cta) cta.addEventListener('click', function(){ msgMark(m, 'cta'); if (!m.ack) msgMark(m, 'read'); });
+        var ak = c.querySelector('[data-ack]'); if (ak) ak.addEventListener('click', function(){ msgMark(m, 'ack'); msgMark(m, 'read'); draw(); try { showCanvasToast('תודה — האישור נרשם'); } catch(e) {} });
+      });
+      if (openId) { var oc = ov.querySelector('.msg-card.open'); if (oc) { var om = all.filter(function(x){ return x.id === openId; })[0]; if (om) { msgMark(om, 'seen'); msgMark(om, 'open'); if (!om.ack) msgMark(om, 'read'); } setTimeout(function(){ oc.scrollIntoView({ block:'center' }); }, 30); openId = openId; } }
+    }
+    ov.addEventListener('click', function(e){ if (e.target === ov) closeMsgUi(); });
+    document.addEventListener('keydown', msgEsc);
+    draw();
+  }
+  /* reports and ideas from the agent go to the manager's "פניות מהסוכנים" inbox (sheet code v4 and up).
+     With the text go only technical details: app version, device and what was on screen — nothing about the customer. */
+  function fbOn(){ return !CONSUMER && !!(g1Auth && g1Auth.uid) && !!(G1C.cfg && G1C.cfg.backend && +G1C.cfg.backend.scriptVer >= 4); }
+  var FB_CATS = [['bug', 'תקלה'], ['idea', 'רעיון לשיפור'], ['question', 'שאלה'], ['price', 'מחיר או מוצר']];
+  function openFeedback(cat){
+    closeMsgUi(); document.getElementById('agentBackdrop').hidden = true;
+    var ov = document.createElement('div'); ov.className = 'msg-ov fb-ov'; ov.id = 'msgOv'; ov.setAttribute('data-html2canvas-ignore', 'true');
+    var sel = cat || 'bug';
+    ov.innerHTML = '<div class="msg-panel" role="dialog" aria-modal="true" aria-labelledby="fbT"><div class="msg-head"><h2 id="fbT">כתיבה למנהל המוצר</h2><button type="button" class="msg-x" aria-label="סגירה">✕</button></div>' +
+      '<div class="fb-cats" role="group" aria-label="סוג הפנייה">' + FB_CATS.map(function(c){ return '<button type="button" data-c="' + c[0] + '" aria-pressed="' + (c[0] === sel) + '">' + c[1] + '</button>'; }).join('') + '</div>' +
+      '<label for="fbTxt" style="display:block;font:700 13px var(--font-body);margin-bottom:6px">מה קרה / מה כדאי לשפר?</label><textarea id="fbTxt" maxlength="2000" placeholder="למשל: בהדפסת הצעה בבית פרטי המחיר של המצלמה לא מופיע"></textarea>' +
+      '<div class="msg-meta" style="margin-top:6px">יחד עם ההודעה נשלחים רק פרטים טכניים (גרסה, מכשיר, סוג הפרויקט) — בלי פרטי לקוח. התשובה תגיע לתיבת ההודעות.</div>' +
+      '<button type="button" class="fb-send" disabled>שליחה</button></div>';
+    document.body.appendChild(ov);
+    var ta = ov.querySelector('#fbTxt'), go = ov.querySelector('.fb-send');
+    ov.querySelector('.msg-x').onclick = closeMsgUi;
+    ov.addEventListener('click', function(e){ if (e.target === ov) closeMsgUi(); });
+    document.addEventListener('keydown', msgEsc);
+    ov.querySelector('.fb-cats').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; sel = b.dataset.c; Array.prototype.forEach.call(this.children, function(x){ x.setAttribute('aria-pressed', String(x === b)); }); };
+    ta.oninput = function(){ go.disabled = ta.value.trim().length < 3; };
+    setTimeout(function(){ ta.focus(); }, 60);
+    go.onclick = function(){
+      var ctx = [];
+      try { ctx.push('פרויקט: ' + (state.kind || '—')); ctx.push(state.rooms.length + ' חדרים'); ctx.push(state.devices.length + ' אביזרים'); if (state.quoteNumber) ctx.push('הצעה ' + state.quoteNumber); ctx.push(innerWidth + '×' + innerHeight); } catch(e) {}
+      var payload = { type:'feedback', id:'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), uid:g1Auth.uid, name:g1Auth.name || '', cat:sel, text:ta.value.trim(), context:ctx.join(' · '),
+        ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') };
+      go.disabled = true; go.textContent = 'שולח…';
+      g1Send(payload).then(function(){ closeMsgUi(); try { showCanvasToast('נשלח — תודה! התשובה תגיע לתיבת ההודעות'); } catch(e) {} },
+        function(){ g1Queue(payload); closeMsgUi(); try { showCanvasToast('אין חיבור כרגע — הפנייה תישלח אוטומטית כשיחזור החיבור'); } catch(e) {} });
+    };
+  }
+  document.getElementById('agentFbBtn').onclick = function(){ openFeedback(); };
+  function msgEsc(e){ if (e.key === 'Escape') closeMsgUi(); }
+  function closeMsgUi(){ var o = document.getElementById('msgOv'); if (o) o.remove(); document.removeEventListener('keydown', msgEsc); msgBadge(); }
+  function msgBusy(){ return !!document.querySelector('#msgOv, #g1Bio:not([hidden]), #g1Lock:not([hidden]), .g1-sv, .g1-maint, #modalBackdrop:not([hidden]), #newProjectBackdrop:not([hidden]), #sketchBackdrop:not([hidden]), .rec-pop') || (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)); }
+  // one important message per app open, never on top of other work
+  function msgMaybePopup(tries){
+    if (msgPopShown || CONSUMER || !(g1Auth && g1Auth.uid)) return;
+    if (msgBusy()) { if ((tries || 0) < 20) setTimeout(function(){ msgMaybePopup((tries || 0) + 1); }, 4000); return; }
+    var st = msgState(), rank = { critical:2, high:1 };
+    var cand = msgUnread().filter(function(m){ var x = st[msgKey(m)] || {}; return rank[m.pri] && (x.snoozes || 0) < 3 && x.snoozeOpen !== MSG_OPEN_ID; })
+      .sort(function(a, b){ return rank[b.pri] - rank[a.pri] || msgSort(a, b); });
+    var m = cand[0]; if (!m) return;
+    msgPopShown = true; msgMark(m, 'seen');
+    var x = st[msgKey(m)] || {}, canLater = (x.snoozes || 0) < 2 || m.pri !== 'critical';
+    var ov = document.createElement('div'); ov.className = 'msg-ov'; ov.id = 'msgOv'; ov.setAttribute('data-html2canvas-ignore', 'true');
+    ov.innerHTML = '<div class="msg-panel msg-pop" role="dialog" aria-modal="true" aria-labelledby="mpT">' +
+      '<div class="msg-head"><div>' + msgTag(m) + (cand.length > 1 ? ' <span class="msg-meta">ועוד ' + (cand.length - 1) + ' בתיבת ההודעות</span>' : '') + '</div><button type="button" class="msg-x" aria-label="סגירה — אחר כך">✕</button></div>' +
+      '<h2 id="mpT">' + escapeHtml(m.title || '') + '</h2><div class="mp-body">' + escapeHtml(m.body || '') + '</div><div class="msg-meta">' + msgMeta(m) + '</div>' +
+      '<div class="msg-acts">' + msgCta(m) + '<button type="button" class="msg-ok" data-ok>' + (m.ack ? 'קראתי ואני מאשר/ת' : 'הבנתי') + '</button>' + (canLater ? '<button type="button" class="msg-later" data-later>אחר כך</button>' : '') + '</div></div>';
+    document.body.appendChild(ov);
+    var later = function(){ var s2 = msgState(), y = s2[msgKey(m)] || (s2[msgKey(m)] = {}); y.snoozes = (y.snoozes || 0) + 1; y.snoozeOpen = MSG_OPEN_ID; g1cWrite('g1sg_msgs', s2); try { g1Track('msg', { id:m.id, v:m.v || 1, a:'snooze' }); } catch(e) {} closeMsgUi(); };
+    ov.querySelector('[data-ok]').onclick = function(){ msgMark(m, 'open'); if (m.ack) msgMark(m, 'ack'); msgMark(m, 'read'); closeMsgUi(); };
+    var lb = ov.querySelector('[data-later]'); if (lb) lb.onclick = later;
+    ov.querySelector('.msg-x').onclick = later;
+    var cta = ov.querySelector('[data-cta]'); if (cta) cta.addEventListener('click', function(){ msgMark(m, 'cta'); msgMark(m, 'open'); if (!m.ack) msgMark(m, 'read'); setTimeout(closeMsgUi, 200); });
+    setTimeout(function(){ var b = ov.querySelector('[data-ok]'); if (b) b.focus(); }, 50);
+  }
+  /* remote control from the admin: minimum / recommended version, maintenance, quote sending, beta features per agent */
+  function g1AppVer(){ var m = String((document.getElementById('appVersion') || {}).textContent || '').match(/(\d+)/); return m ? +m[1] : 0; }
+  function g1FlagOn(name){
+    var f = G1C.cfg && G1C.cfg.flags && G1C.cfg.flags[name];
+    if (!f || !f.mode || f.mode === 'all') return true;
+    if (g1Auth && g1Auth.role === 'manager') return true;
+    if (f.mode === 'off') return false;
+    return !!(g1Auth && (f.agents || []).indexOf(g1Auth.uid) > -1);
+  }
+  function g1HardRefresh(){
+    var go = function(){ location.replace(location.pathname + '?v=' + Date.now() + location.hash); };
+    try { Promise.all([window.caches ? caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }) : null,
+      navigator.serviceWorker && navigator.serviceWorker.getRegistration ? navigator.serviceWorker.getRegistration().then(function(r){ return r && r.update(); }) : null]).then(go, go); } catch(e) { go(); }
+  }
+  function g1RemoteApply(){
+    if (CONSUMER || !G1C.cfg) return;
+    var a = G1C.cfg.app || {}, v = g1AppVer(), mgr = g1Auth && g1Auth.role === 'manager';
+    var mt = document.getElementById('g1Maint');
+    var needUpd = a.minVersion && v && v < +a.minVersion, maint = a.maintenance && a.maintenance.on && !mgr;
+    if (needUpd || maint) {
+      if (!mt) { mt = document.createElement('div'); mt.className = 'g1-maint'; mt.id = 'g1Maint'; document.body.appendChild(mt); }
+      mt.innerHTML = needUpd ? '<div class="in"><h2>נדרש עדכון של האפליקציה</h2><p>' + escapeHtml(a.updateMsg || 'יצאה גרסה חדשה עם תיקונים חשובים. העדכון לוקח כמה שניות.') + '</p><button type="button" id="g1UpdNow">עדכון עכשיו</button></div>'
+        : '<div class="in"><h2>האפליקציה בתחזוקה קצרה</h2><p>' + escapeHtml(a.maintenance.msg || 'נחזור בהקדם. אפשר להמשיך ולתכנן על נייר — תודה על הסבלנות.') + '</p><button type="button" id="g1UpdNow">בדיקה שוב</button></div>';
+      mt.querySelector('#g1UpdNow').onclick = needUpd ? g1HardRefresh : function(){ g1cFetchConfig(); };
+    } else if (mt) mt.remove();
+    var rb = document.getElementById('g1RecUpd');
+    if (!needUpd && a.recVersion && v && v < +a.recVersion) {
+      if (!rb && g1cRead('g1sg_recupd_skip') !== String(a.recVersion)) {
+        rb = document.createElement('div'); rb.className = 'update-banner'; rb.id = 'g1RecUpd';
+        rb.innerHTML = '<span>יש גרסה חדשה — מומלץ לעדכן</span><button type="button">עדכון</button><button type="button" aria-label="אחר כך" style="background:transparent;color:#fff">✕</button>';
+        rb.querySelectorAll('button')[0].onclick = g1HardRefresh;
+        rb.querySelectorAll('button')[1].onclick = function(){ g1cWrite('g1sg_recupd_skip', String(a.recVersion)); rb.remove(); };
+        document.body.appendChild(rb);
+      }
+    } else if (rb) rb.remove();
+    var pi = g1FlagOn('planImport');
+    ['btnImportPlan', 'mmImportPlan'].forEach(function(id){ var e = document.getElementById(id); if (e) e.hidden = !pi; });
+    try { updatePaletteAvailability(); } catch(e) {}
+    msgBadge();
+    var afb = document.getElementById('agentFbBtn'); if (afb) afb.hidden = !fbOn();
+    bioCheck('cfg');
+    if (location.hash.indexOf('#msg=') === 0) { var mid = decodeURIComponent(location.hash.slice(5)); try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {} if (g1Auth && g1Auth.uid) setTimeout(function(){ openMsgInbox(mid); }, 600); }
+    else setTimeout(msgMaybePopup, 1800);
+  }
+
+  /* ---------- Face ID / fingerprint lock, required by the manager (access.bio = { on, idleHours }) ----------
+     After the first sign-in with the code, the agent turns on the phone's own face / fingerprint unlock once
+     (a passkey on this device, user verification required). From then on the app opens with a look after
+     idleHours without use (0 = every time it comes back after a minute in the background). The code always
+     works as a way in. Managers are never locked; a phone without biometrics is let through and reported. */
+  var BIO_KEY = 'g1sg_bio', BIO_ACT = 'g1sg_bio_act', bioOk = false, bioHiddenAt = 0, bioSkipEnroll = false;
+  function bioLastAct(){ try { return +(localStorage.getItem(BIO_ACT) || 0); } catch(e) { return 0; } }
+  var BIO_START_ACT = bioLastAct();
+  function bioTouch(){ try { localStorage.setItem(BIO_ACT, String(Date.now())); } catch(e) {} }
+  function bioCfg(){ var b = G1C.cfg && G1C.cfg.access && G1C.cfg.access.bio; return b && b.on ? b : null; }
+  function bioRequired(){ return !CONSUMER && g1AccessOn() && !!bioCfg() && !!(g1Auth && g1Auth.uid) && g1Auth.role !== 'manager' && g1AccessState() === 'ok'; }
+  function bioIdle(){ var h = (bioCfg() || {}).idleHours; h = h == null ? 4 : +h; return isNaN(h) ? 4 * 3600e3 : h * 3600e3; }
+  function bioRead(){ var b = g1cRead(BIO_KEY); return b && g1Auth && b.uid === g1Auth.uid ? b : null; }
+  function bioSupported(){
+    if (!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && window.isSecureContext)) return Promise.resolve(false);
+    try { return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; }); } catch(e) { return Promise.resolve(false); }
+  }
+  function bioRnd(n){ var a = new Uint8Array(n); crypto.getRandomValues(a); return a; }
+  function bioB64(buf){ var b = new Uint8Array(buf), x = ''; for (var i = 0; i < b.length; i++) x += String.fromCharCode(b[i]); return btoa(x).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function bioUnb64(t){ t = String(t).replace(/-/g, '+').replace(/_/g, '/'); while (t.length % 4) t += '='; var bin = atob(t), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+  function bioEnroll(){
+    return navigator.credentials.create({ publicKey:{ challenge:bioRnd(32), rp:{ name:'G1 SiteGuard' },
+      user:{ id:new TextEncoder().encode(g1Auth.uid), name:g1Auth.name || g1Auth.uid, displayName:g1Auth.name || 'סוכן G1' },
+      pubKeyCredParams:[{ type:'public-key', alg:-7 }, { type:'public-key', alg:-257 }],
+      authenticatorSelection:{ authenticatorAttachment:'platform', userVerification:'required', residentKey:'preferred' }, timeout:60000, attestation:'none' } })
+      .then(function(c){ if (!c) throw new Error('none'); g1cWrite(BIO_KEY, { uid:g1Auth.uid, id:bioB64(c.rawId), at:Date.now() }); try { g1Track('bio', { a:'on' }); } catch(e) {} });
+  }
+  function bioAssert(b){
+    return navigator.credentials.get({ publicKey:{ challenge:bioRnd(32), allowCredentials:[{ type:'public-key', id:bioUnb64(b.id), transports:['internal', 'hybrid'] }], userVerification:'required', timeout:60000 } })
+      .then(function(a){ if (!a) throw new Error('none'); });
+  }
+  function bioDone(){ var ov = document.getElementById('g1Bio'); if (ov) ov.hidden = true; document.body.classList.remove('g1-locked'); bioOk = true; bioTouch(); setTimeout(function(){ try { msgMaybePopup(); } catch(e) {} }, 800); }
+  function bioScreen(mode){
+    var ov = document.getElementById('g1Bio');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'g1Bio'; ov.className = 'g1-lock'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-labelledby', 'g1BioT'); ov.setAttribute('data-html2canvas-ignore', 'true'); document.body.appendChild(ov); }
+    try { closeMsgUi(); } catch(e) {}
+    var first = String((g1Auth && g1Auth.name) || '').split(' ')[0], enroll = mode === 'enroll';
+    ov.innerHTML = '<div class="g1-lock-card"><div class="g1-bio-face" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg></div>' +
+      (enroll ? '<h2 id="g1BioT">כניסה עם זיהוי פנים</h2><p>מנהל המוצר הפעיל נעילה של האפליקציה עם זיהוי הפנים (או טביעת האצבע) של הטלפון. מפעילים פעם אחת — ומעכשיו האפליקציה נפתחת במבט, בלי קוד.</p>'
+        : '<h2 id="g1BioT">' + (first ? 'שלום ' + escapeHtml(first) : 'האפליקציה נעולה') + '</h2><p>פותחים במבט — כדי שאף אחד אחר לא יראה מחירים ופרטי לקוחות.</p>') +
+      '<div class="g1-lock-err" id="g1BioErr" role="alert"></div>' +
+      '<button type="button" class="g1-lock-go" id="g1BioGo">' + (enroll ? 'הפעלת זיהוי פנים' : 'פתיחה עם זיהוי פנים') + '</button>' +
+      '<div class="g1-bio-code" id="g1BioCodeW" hidden><label for="g1BioCode">קוד ההקצאה האישי</label><input id="g1BioCode" inputmode="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" dir="ltr" placeholder="הקוד שקיבלתם"><button type="button" class="g1-lock-go" id="g1BioCodeGo">כניסה עם הקוד</button></div>' +
+      '<button type="button" class="g1-bio-alt" id="g1BioAlt">' + (enroll ? 'הטלפון לא מצליח? כניסה עם הקוד' : 'כניסה עם הקוד במקום') + '</button></div>';
+    ov.hidden = false; document.body.classList.add('g1-locked');
+    var err = ov.querySelector('#g1BioErr'), go = ov.querySelector('#g1BioGo'), fails = 0;
+    go.onclick = function(){
+      err.textContent = ''; go.disabled = true;
+      var b = bioRead();
+      (enroll || !b ? bioEnroll() : bioAssert(b)).then(function(){ bioDone(); try { showCanvasToast(enroll ? 'הופעל — מעכשיו פותחים במבט' : 'ברוך שובך'); } catch(e) {} }, function(e){
+        var n = e && e.name; fails++;
+        if (enroll && (n === 'NotSupportedError' || n === 'SecurityError')) { g1cWrite('g1sg_bio_unsup', 1); try { g1Track('bio', { a:'unsupported' }); } catch(x) {} bioDone(); return; }
+        err.textContent = n === 'NotAllowedError' ? (fails > 1 && !enroll ? 'הזיהוי לא הצליח. אפשר להיכנס עם הקוד ולהפעיל מחדש.' : 'הזיהוי בוטל או לא הצליח — נסו שוב.') : 'הזיהוי לא זמין כרגע (' + (n || (e && e.message) || 'שגיאה') + ').';
+        if (fails > 1) ov.querySelector('#g1BioAlt').click();
+      }).then(function(){ go.disabled = false; });
+    };
+    ov.querySelector('#g1BioAlt').onclick = function(){ ov.querySelector('#g1BioCodeW').hidden = false; this.hidden = true; setTimeout(function(){ ov.querySelector('#g1BioCode').focus(); }, 40); };
+    var codeGo = ov.querySelector('#g1BioCodeGo'), codeIn = ov.querySelector('#g1BioCode');
+    codeIn.onkeydown = function(e){ if (e.key === 'Enter') codeGo.click(); };
+    codeGo.onclick = function(){
+      err.textContent = ''; var code = codeIn.value;
+      if (g1cNormCode(code).length < 6) { err.textContent = 'הזינו את הקוד המלא.'; return; }
+      g1cHash(code, g1Auth.uid, G1C.cfg.access.salt).then(function(h){
+        if (h !== g1Auth.hash) { err.textContent = 'הקוד לא תואם.'; return; }
+        try { g1Track('bio', { a:'code' }); } catch(e) {}
+        // signed in with the code: a broken face sign-in is set up again next time
+        if (!enroll && fails) g1cWrite(BIO_KEY, null);
+        if (enroll || fails) bioSkipEnroll = true;
+        bioDone();
+      }, function(){ err.textContent = 'לא ניתן לבדוק את הקוד כאן.'; });
+    };
+  }
+  function bioCheck(trigger){
+    if (!bioRequired()) return;
+    var ov = document.getElementById('g1Bio'); if (ov && !ov.hidden) return;
+    bioSupported().then(function(ok){
+      if (!bioRequired()) return;
+      if (!ok || g1cRead('g1sg_bio_unsup')) { if (!g1cRead('g1sg_bio_unsup')) { g1cWrite('g1sg_bio_unsup', 1); try { g1Track('bio', { a:'unsupported' }); } catch(e) {} } bioOk = true; return; }
+      var b = bioRead(), idle = bioIdle();
+      if (!b) { if (bioSkipEnroll) { bioOk = true; return; } bioScreen('enroll'); return; }
+      if (trigger === 'resume') { var away = Date.now() - bioHiddenAt; if (bioOk && bioHiddenAt && (idle === 0 ? away > 60e3 : away > idle)) { bioOk = false; bioScreen('unlock'); } return; }
+      if (bioOk) return;
+      if (idle === 0 || Date.now() - BIO_START_ACT > idle) bioScreen('unlock'); else bioOk = true;
+    });
+  }
+  var bioTouchT = 0;
+  ['pointerdown', 'keydown'].forEach(function(ev){ document.addEventListener(ev, function(){ if (!bioOk) return; var n = Date.now(); if (n - bioTouchT > 30000) { bioTouchT = n; bioTouch(); } }, { passive:true, capture:true }); });
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'hidden') { bioHiddenAt = Date.now(); if (bioOk) bioTouch(); }
+    else bioCheck('resume');
+  });
+  // quote sending can be switched off from the admin (e.g. while prices are being fixed)
+  document.addEventListener('click', function(e){
+    var a = G1C.cfg && G1C.cfg.app; if (CONSUMER || !a || !a.stopQuotes || (g1Auth && g1Auth.role === 'manager')) return;
+    if (e.target.closest && e.target.closest('#btnConfirmSend, #btnPrint')) { e.preventDefault(); e.stopPropagation(); try { showCanvasToast('שליחת הצעות מחיר מושבתת זמנית' + (a.stopQuotesMsg ? ': ' + a.stopQuotesMsg : '') + '. פנו למנהל המוצר.', true); } catch(x) {} }
+  }, true);
+  document.getElementById('btnMsgs').onclick = function(){ openMsgInbox(); };
+  g1cOnConfig(function(){ try { g1RemoteApply(); } catch(e) { console.warn('remote', e); } });
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible' && !CONSUMER && (!g1RemoteApply.last || Date.now() - g1RemoteApply.last > 120000)) { g1RemoteApply.last = Date.now(); g1cFetchConfig(); } });
   function g1ConnText(){
     var st = g1cRead('g1sg_logstat') || {}, q = (g1cRead('g1sg_outbox') || []).length;
     var t = function(ms){ return new Date(ms).toLocaleString('he-IL', { day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit' }); };
@@ -16295,10 +16652,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (!g1DeviceOk(u)) { err.textContent = 'הפרטים נכונים, אבל המכשיר הזה עוד לא אושר. מנהל המוצר קיבל בקשה לאשר אותו.'; g1Log('login', { event:'device-pending', uid:u.id, name:u.name }); return; }
         g1Auth = { uid:u.id, hash:u.hash, phoneHash:u.phoneHash || '', name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
         g1cWrite('g1sg_seen', new Date().toISOString().slice(0, 10));
-        g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush();
+        g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush(); setTimeout(function(){ try { g1RemoteApply(); } catch(e) {} }, 400);
         // first sign-in on this device: the agent's quote signature comes from the access record
         try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && phone) agentInfo.phone = phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
         ov.hidden = true; document.body.classList.remove('g1-locked');
+        bioOk = true; bioTouch();   // just typed the code: no face check on top of it
         g1ApplyRole();
         try { showCanvasToast('שלום ' + (u.name || '') + ' — הכניסה אושרה'); } catch(e) {}
         if (after) after();

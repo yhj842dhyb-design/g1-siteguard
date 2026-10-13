@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>G1 SiteGuard · ניהול מוצר</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="admin-apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ניהול SiteGuard">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="format-detection" content="telephone=no">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap">
@@ -94,6 +101,193 @@ ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
 .att li.w{ background:#FFF7EA; border-color:#F0D9B0; color:var(--warn) } .att li.b{ background:rgba(194,54,43,.06); border-color:rgba(194,54,43,.25); color:var(--bad) }
 .pt th.s{ cursor:pointer; user-select:none } .pt th.s:hover{ color:var(--navy) } .pt td.n{ font-variant-numeric:tabular-nums; text-align:center } .pt th.n{ text-align:center }
 .pt td .dim{ color:var(--muted); font-size:12px }
+/* ===== phone: an app, not a page — bottom tabs, cards instead of tables, one thumb ===== */
+.mnav, .msheet, .mhead-me{ display:none }
+.fid-btn{ display:flex; align-items:center; justify-content:center; gap:10px }
+.me-list{ display:flex; flex-direction:column; gap:10px }
+.me-item{ display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--line); border-radius:16px; background:#fff; text-align:start; font:inherit; cursor:pointer; width:100% }
+.me-item svg{ flex:none; color:var(--cyanS) } .me-item b{ display:block } .me-item small{ display:block; color:var(--muted); font-size:13px }
+.me-item .chev{ margin-inline-start:auto; color:#9AA6B2; font-size:20px }
+.ios-steps{ margin:8px 0 0; padding-inline-start:20px; line-height:1.9 }
+@media (max-width:760px){
+  html{ -webkit-text-size-adjust:100% }
+  body{ font-size:16px; padding-bottom:0 }
+  header{ padding-top:env(safe-area-inset-top,0px) }
+  header .hd{ padding:8px 14px }
+  header .who{ display:none !important }
+  .tabs{ display:none !important }
+  main{ padding:16px 14px calc(150px + env(safe-area-inset-bottom,0px)) }
+  h1{ font-size:22px } h2{ font-size:18px }
+  .card{ padding:16px; border-radius:16px }
+  .btn{ min-height:46px; font-size:15px; border-radius:13px }
+  .btn.sm{ min-height:42px; padding:0 14px; font-size:14px; border-radius:12px }
+  input, select, textarea{ font-size:16px !important }   /* iOS zooms into smaller fields */
+  .f input, .f select, .f textarea, td input[type=number], td input[type=text], td input[type=tel], .u-phone{ min-height:44px !important } .hd .hd-word{ height:20px !important }
+  .sw input{ width:52px; height:32px } .sw input::after{ width:26px; height:26px } .sw input:checked::after{ inset-inline-start:23px }
+  .grid2{ grid-template-columns:1fr 1fr; gap:10px } .stat{ padding:12px } .stat b{ font-size:24px }
+  .kpis{ grid-template-columns:1fr 1fr; gap:10px } .kpi b{ font-size:22px }
+  .row{ gap:8px }
+  /* tables become cards: each row is a card, each cell "label · value" */
+  .tbl-wrap{ overflow:visible }
+  table.mcards, table.mcards tbody, table.mcards tr, table.mcards td{ display:block; width:auto }
+  table.mcards thead{ display:none }
+  table.mcards tr{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px 14px; margin:0 0 10px; box-shadow:0 4px 14px rgba(17,27,41,.04) }
+  table.mcards td{ border:0; padding:7px 0; display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:start }
+  table.mcards td[data-label]::before{ content:attr(data-label); flex:0 1 auto; color:var(--muted); font-size:13px; font-weight:700 }
+  table.mcards td:first-child{ display:block; font-weight:800; font-size:16px; padding-top:2px }
+  table.mcards td:first-child::before{ display:none }
+  table.mcards td:empty{ display:none }
+  table.mcards td .row{ flex-wrap:wrap !important; justify-content:flex-end }
+  table.mcards td input[type=number]{ max-width:140px }
+  table.mcards td input[type=text]{ max-width:none }
+  table.mcards tr.cat-h{ background:none; border:0; box-shadow:none; padding:10px 2px 2px; margin:0 }
+  table.mcards tr.cat-h td{ background:none; font-size:14px; color:var(--navy) }
+  .pt td.n{ text-align:start }
+  /* publish bar sits on the tab bar */
+  .pubbar{ bottom:calc(64px + env(safe-area-inset-bottom,0px)); padding:8px 12px; box-shadow:0 -6px 18px -10px rgba(17,27,41,.35) }
+  .pubbar .in{ gap:8px; flex-wrap:nowrap } .pubbar .msg{ font-size:13px; line-height:1.3; flex:1; min-width:0 } .pubbar .sp{ display:none }
+  .pubbar .btn{ min-height:42px; padding:0 14px; white-space:nowrap } .pubbar #btnDiscard{ display:none }
+  .pubbar:not(.has-changes) .btn.primary{ display:none }
+  .toast{ bottom:calc(140px + env(safe-area-inset-bottom,0px)); max-width:calc(100% - 32px); text-align:center }
+  /* bottom tab bar */
+  .mnav{ display:grid; grid-template-columns:repeat(5,1fr); position:fixed; inset-inline:0; bottom:0; z-index:35; background:rgba(255,255,255,.97); backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:4px 4px env(safe-area-inset-bottom,0px) }
+  .mnav button{ border:0; background:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-height:58px; font:700 11.5px Heebo,Arial,sans-serif; color:#6B7A8C; cursor:pointer; border-radius:12px; -webkit-tap-highlight-color:transparent }
+  .mnav button[aria-current="page"]{ color:var(--cyanS) }
+  .mnav button[aria-current="page"] svg{ stroke-width:2.3 }
+  .mnav button:active{ background:#EEF2F6 }
+  /* "more" as a bottom sheet */
+  .msheet{ display:block; position:fixed; inset:0; z-index:45; background:rgba(17,27,41,.45); opacity:0; pointer-events:none; transition:opacity .2s }
+  .msheet.open{ opacity:1; pointer-events:auto }
+  .msheet .sh{ position:absolute; inset-inline:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:10px 14px calc(16px + env(safe-area-inset-bottom,0px)); transform:translateY(100%); transition:transform .25s cubic-bezier(.2,.8,.2,1); max-height:82vh; overflow:auto }
+  .msheet.open .sh{ transform:none }
+  .msheet .grab{ width:42px; height:5px; border-radius:9px; background:#D5DCE4; margin:2px auto 12px }
+  .msheet .mi{ display:flex; align-items:center; gap:14px; width:100%; border:0; background:none; padding:14px 8px; font:600 16px Heebo,Arial,sans-serif; color:var(--ink); border-bottom:1px solid #EEF1F4; text-align:start; cursor:pointer }
+  .msheet .mi svg{ color:var(--cyanS); flex:none } .msheet .mi.cur{ color:var(--cyanS) } .msheet .mi:last-child{ border-bottom:0 }
+  .msheet .mi.danger, .msheet .mi.danger svg{ color:var(--bad) }
+  /* dialogs slide up from the bottom, in reach of the thumb */
+  .modal-bd{ place-items:end center; padding:0 }
+  .modal{ width:100%; border-radius:22px 22px 0 0; padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px)); max-height:88vh }
+  .modal .row:last-child{ position:sticky; bottom:-18px; background:#fff; padding-top:10px }
+  .modal .row:last-child .btn{ flex:1 }
+  .login{ min-height:calc(100vh - 70px); align-items:start; padding-top:28px }
+  .login .card{ padding:24px 20px }
+  .code-in{ font-size:22px !important; min-height:56px }
+}
+@media (max-width:760px) and (display-mode: standalone){ header{ position:sticky } }
+
+/* viewer (צפייה בניהול) */
+body.ro .pubbar, body.ro [data-rw], body.ro #btnAdd, body.ro #meCode{ display:none !important }
+.ro-band{ background:#EEF4FA; border:1px solid #CFE0F0; color:#0A4E86; border-radius:12px; padding:8px 12px; font-size:13.5px; font-weight:700; margin:0 0 12px }
+/* history */
+.hs-list{ list-style:none; margin:0; padding:0; display:grid; gap:10px }
+.hs-list li{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+.hs-list .hs-t{ flex:1 1 260px; min-width:0 } .hs-list .hs-t b{ display:block } .hs-list .hs-t small{ color:var(--muted); font-size:13px }
+.hs-list .hs-s{ display:block; font-size:13.5px; color:#33404F; margin-top:3px }
+.hs-list li.cur{ border-color:var(--cyanS); box-shadow:inset 0 0 0 1px var(--cyanS) }
+.hs-sec{ border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-top:8px } .hs-sec label{ display:flex; gap:10px; align-items:flex-start; font-weight:800; cursor:pointer } .hs-sec input{ width:18px; height:18px; accent-color:var(--navy); margin-top:3px; flex:none } .hs-sec ul{ margin:6px 0 0; padding-inline-start:28px; font-size:13px; color:#33404F; font-weight:500 }
+/* deals */
+.dl-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:14px }
+.dl-k{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px 16px } .dl-k b{ display:block; font-size:24px; font-weight:900; font-variant-numeric:tabular-nums } .dl-k span{ color:var(--muted); font-size:13px; font-weight:700 } .dl-k small{ display:block; color:var(--muted); font-size:12.5px; margin-top:2px }
+.dl-k.won b{ color:var(--ok) } .dl-k.stale b{ color:#B4570A }
+.dl-bar{ display:flex; height:14px; border-radius:9px; overflow:hidden; background:#E7ECF1; margin:6px 0 4px } .dl-bar i{ display:block; height:100% }
+.dl-leg{ display:flex; flex-wrap:wrap; gap:12px; font-size:12.5px; color:var(--muted); font-weight:700 } .dl-leg i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-inline-end:5px; vertical-align:-1px }
+.dst{ display:inline-block; font-size:12px; font-weight:800; border-radius:99px; padding:2px 9px; white-space:nowrap }
+.dst.won{ background:rgba(15,138,95,.12); color:var(--ok) } .dst.open{ background:#E8F3FB; color:var(--cyanS) } .dst.stale{ background:#FFF4D6; color:#8A5A12 } .dst.lost{ background:#F1F3F6; color:var(--muted) }
+/* feedback inbox */
+.fb-list{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); align-items:start }
+.fbc{ background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:14px 16px; display:flex; flex-direction:column; gap:8px }
+.fbc.new{ border-color:#9CC9EA; box-shadow:0 0 0 1px #9CC9EA }
+.fbc .top{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12.5px; color:var(--muted) } .fbc .top b{ color:var(--ink); font-size:14.5px }
+.fbc .txt{ margin:0; white-space:pre-line; font-size:14.5px } .fbc .ctx{ font-size:12px; color:var(--muted) } .fbc .nt{ font-size:13px; background:#F7F9FB; border-radius:10px; padding:6px 10px }
+.fbc .acts{ display:flex; gap:8px; flex-wrap:wrap } .fbc .acts .btn{ flex:1 1 auto }
+@media (max-width:760px){ .fb-list{ grid-template-columns:1fr } .dl-kpis{ grid-template-columns:1fr 1fr; gap:8px } .dl-k b{ font-size:20px } }
+/* messages to agents */
+.seg .cnt{ font-style:normal; display:inline-block; min-width:18px; height:18px; line-height:18px; border-radius:9px; background:var(--navy); color:#fff; font-size:11px; margin-inline-start:4px; padding:0 5px }
+.msg-seg{ margin:0 0 14px }
+.msg-list{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:14px; align-items:start }
+.am{ background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:16px; box-shadow:0 8px 22px rgba(17,27,41,.05); display:flex; flex-direction:column; gap:8px }
+.am-top{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px; color:var(--muted) }
+.am-tag{ color:#fff; font-weight:800; font-size:11.5px; border-radius:99px; padding:2px 9px }
+.am-pri{ font-weight:800; font-size:11.5px; border-radius:99px; padding:1px 8px; border:1px solid currentColor }
+.am-pri.high{ color:#B4570A } .am-pri.critical{ color:var(--bad) } .am-pri.normal{ color:var(--muted); border-color:var(--line) }
+.am-when{ margin-inline-start:auto }
+.am h3{ margin:0; font-size:16.5px; line-height:1.35 }
+.am-body{ margin:0; color:#384858; font-size:14px; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden }
+.am-aud{ font-size:13px; color:var(--muted); font-weight:600 }
+.am-st{ display:flex; flex-direction:column; gap:5px; font-size:13px; font-weight:700; color:var(--navy); min-height:30px }
+.am-bar{ height:8px; border-radius:9px; background:#E7ECF1; overflow:hidden; display:flex }
+.am-bar i{ display:block; height:100% } .am-bar .r{ background:var(--ok) } .am-bar .s{ background:#9BD3BE }
+.am-act{ display:flex; gap:8px; margin-top:2px } .am-act .btn{ flex:1 } .am-act .btn.more{ flex:0 0 46px; padding:0; font-size:20px; letter-spacing:1px }
+.msg-empty{ background:#fff; border:1px dashed #C9D2DC; border-radius:var(--r); padding:26px; text-align:center; color:var(--muted); grid-column:1/-1 }
+.msg-how{ margin-top:18px } .msg-how summary{ cursor:pointer; font-weight:800; color:var(--navy) } .msg-how ul{ margin:10px 0 0; padding-inline-start:20px; line-height:1.8; font-size:14px }
+.cm h2{ margin-bottom:2px } .cm .sec{ margin-top:14px } .cm .lbl{ font-size:13px; font-weight:800; margin:0 0 6px; display:flex; justify-content:space-between; gap:8px } .cm .lbl small{ color:var(--muted); font-weight:600 }
+.chips{ display:flex; flex-wrap:wrap; gap:7px }
+.chips button{ border:1px solid var(--line); background:#fff; border-radius:99px; padding:7px 13px; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--ink); min-height:38px }
+.chips button[aria-pressed=true]{ border-color:transparent; color:#fff; background:var(--c, var(--navy)) }
+.chips.tpl button{ border-style:dashed; color:var(--cyanS) }
+.cm input[type=text], .cm input[type=url], .cm input[type=datetime-local], .cm textarea, .cm select{ width:100%; padding:10px 12px; border:1px solid #C9D2DC; border-radius:12px; background:#fff; font:inherit }
+.cm textarea{ resize:vertical; min-height:96px }
+.cm .pri{ display:grid; gap:8px } .cm .pri .cf-opt b{ display:block } .cm .pri .cf-opt small{ display:block; color:var(--muted); font-size:12.5px }
+.cm .two{ display:grid; grid-template-columns:1fr 1.6fr; gap:8px }
+.pick{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:6px; max-height:220px; overflow:auto; padding:2px; margin-top:8px }
+.pick label{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:14px; font-weight:600; cursor:pointer; min-height:42px }
+.pick label:has(input:checked){ border-color:var(--navy); background:#F3F6FA }
+.pick input{ width:18px; height:18px; accent-color:var(--navy); margin:0; flex:none }
+.cm .pv{ background:#F2F4F7; border-radius:16px; padding:12px; margin-top:6px }
+.cm .pv .card-a{ background:#fff; border:1px solid #E3E8EE; border-radius:14px; padding:12px 14px; box-shadow:inset 3px 0 0 var(--cyan) }
+.cm .pv h4{ margin:4px 0 2px; font-size:15px } .cm .pv p{ margin:0; font-size:13.5px; color:#384858; white-space:pre-line } .cm .pv .cta{ display:inline-block; margin-top:8px; background:var(--navy); color:#fff; border-radius:10px; padding:6px 12px; font-weight:800; font-size:13px }
+.cm .warns .note{ margin-top:10px }
+.cm .err{ color:var(--bad); font-weight:700; min-height:1.3em; margin-top:8px; font-size:13.5px }
+.who-l{ list-style:none; margin:10px 0 0; padding:0 } .who-l li{ display:flex; align-items:center; gap:10px; padding:10px 2px; border-bottom:1px solid #EEF1F4 } .who-l li b{ flex:1 } .who-l .s{ font-size:12.5px; font-weight:800; border-radius:99px; padding:2px 9px }
+.who-l .s.ack,.who-l .s.read{ background:rgba(15,138,95,.12); color:var(--ok) } .who-l .s.seen{ background:#FFF4D6; color:#8A5A12 } .who-l .s.none{ background:#F1F3F6; color:var(--muted) }
+.acts-l{ display:grid; gap:8px; margin-top:12px } .acts-l .btn{ justify-content:flex-start; min-height:50px }
+/* remote control */
+.rc{ display:grid; gap:14px } .rc .card h2{ display:flex; align-items:center; gap:10px } .rc .card .sub{ margin:2px 0 12px }
+.rc .line{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:10px 0; border-top:1px solid #EEF1F4 } .rc .line:first-of-type{ border-top:0 }
+.rc .line > span{ flex:1 1 220px; font-weight:700 } .rc .line > span small{ display:block; font-weight:500; color:var(--muted); font-size:12.5px }
+.rc input[type=number]{ width:96px; padding:9px 10px; border:1px solid #C9D2DC; border-radius:10px; text-align:center; font-variant-numeric:tabular-nums }
+.rc input[type=text]{ width:100%; padding:10px 12px; border:1px solid #C9D2DC; border-radius:12px }
+.rc .on-state{ font-size:12px; font-weight:800; border-radius:99px; padding:2px 10px; background:rgba(194,54,43,.1); color:var(--bad) }
+.vers{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px } .vers span{ background:#F1F4F8; border-radius:99px; padding:3px 10px; font-size:12.5px; font-weight:700 } .vers span.old{ background:#FFF4D6; color:#8A5A12 }
+@media (max-width:760px){
+  .msg-list{ grid-template-columns:1fr }
+  #msgNew{ position:fixed; left:16px; bottom:calc(76px + env(safe-area-inset-bottom,0px)); z-index:34; min-height:56px; padding:0 22px; border-radius:28px; font-size:16px; box-shadow:0 12px 28px rgba(0,80,180,.35) }
+  body.pub-on #msgNew{ bottom:calc(134px + env(safe-area-inset-bottom,0px)) }
+  .msg-seg{ display:flex; width:100% } .msg-seg button{ flex:1; padding:9px 4px; min-height:40px }
+  .cm .two{ grid-template-columns:1fr }
+  .rc .line > span{ flex-basis:100% }
+}
+
+.tgl{ margin-inline-start:auto; flex:none; width:51px; height:31px; border-radius:99px; background:#E9E9EA; position:relative; transition:background .2s }
+.tgl::after{ content:''; position:absolute; top:2px; inset-inline-start:2px; width:27px; height:27px; border-radius:50%; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.2); transition:inset-inline-start .2s }
+.tgl.on{ background:#34C759 } .tgl.on::after{ inset-inline-start:22px }
+.nbadge{ display:inline-block; min-width:17px; height:17px; border-radius:9px; background:var(--bad); color:#fff; font:800 11px/17px Heebo,Arial,sans-serif; font-style:normal; padding:0 4px; margin-inline-start:4px; vertical-align:1px }
+#vLogin .card.fid-first > .sub:not(#fidHint){ display:none } #vLogin .card.fid-first #fidHint{ order:1; font-size:15px; color:var(--ink); font-weight:700 } #vLogin .card.fid-first #btnFid{ order:2 } #vLogin .card.fid-first #btnUseCode{ order:3 } #vLogin .card.fid-first #loginCode{ order:4 } #vLogin .card.fid-first #loginErr{ order:5 } #vLogin .card.fid-first #btnLogin{ order:6 }
+#vLogin .card{ display:flex; flex-direction:column }
+@media (max-width:760px){
+  .pubbar:not(.has-changes){ display:none }
+  .toast{ top:calc(64px + env(safe-area-inset-top,0px)); bottom:auto; max-width:358px; white-space:normal; line-height:1.35; padding:12px 16px }
+  .modal .grid2{ grid-template-columns:1fr }
+  .card .row > a.btn{ flex:1 1 100%; justify-content:space-between }
+  .card .row > a.btn::after{ content:'↗'; color:var(--muted) }
+  /* agent cards: the name reads as a title, the phone as a compact field, actions in one row */
+  #pane tr[data-i] .u-name{ border-color:transparent; background:transparent; font-size:17px !important; font-weight:800; padding:4px 0; min-height:36px }
+  #pane tr[data-i] .u-name:focus{ border-color:#C9D2DC; background:#fff; padding:4px 10px }
+  #pane tr[data-i] td:last-child .row{ display:grid !important; grid-template-columns:1fr 1fr 1fr; width:100% }
+  #pane tr[data-i] td:last-child{ display:block }
+  #pane tr[data-i] td:last-child::before{ display:none }
+  #pane tr[data-i] .u-phone{ max-width:170px !important; margin-top:0 !important }
+  #pane tr[data-i] td:last-child .btn.sm{ padding:0 6px; font-size:14px; white-space:nowrap }
+  /* "+ סוכן" within the thumb's reach */
+  #btnAdd{ position:fixed; left:16px; bottom:calc(76px + env(safe-area-inset-bottom,0px)); z-index:34; min-height:56px; padding:0 22px; border-radius:28px; font-size:16px; box-shadow:0 12px 28px rgba(0,80,180,.35) }
+  body.pub-on #btnAdd{ bottom:calc(134px + env(safe-area-inset-bottom,0px)) }
+  /* prices: list price and minimum side by side */
+  table.mc-grid2 tr:not(.cat-h){ display:grid; grid-template-columns:1fr 1fr; column-gap:12px }
+  table.mc-grid2 tr:not(.cat-h) td:first-child{ grid-column:1 / -1 }
+  table.mc-grid2 td[data-label]{ flex-direction:column; align-items:stretch; gap:4px }
+  table.mc-grid2 td input[type=number]{ max-width:none; width:100% }
+  .msheet .mi.danger{ margin-top:8px; border-top:1px solid #EEF1F4 }
+}
 .beta{display:inline-block;font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px;background:#fff3cd;color:#7a4f00;border:1px solid #efd27e;vertical-align:middle}
 </style>
 </head>
@@ -106,9 +300,12 @@ ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
     <div class="hex"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.4 8.6-7 10-3.6-1.4-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
     <h1>כניסת מנהל המוצר</h1>
     <p class="sub" style="margin:0">הזינו את קוד הניהול האישי שלכם</p>
-    <input class="code-in" id="loginCode" placeholder="G1-XXXX-XXXX" dir="ltr" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false">
+    <input class="code-in" id="loginCode" placeholder="הקוד שלך" dir="ltr" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false">
     <div class="err" id="loginErr" role="alert"></div>
     <button class="btn primary" id="btnLogin" style="min-height:50px;font-size:16px">כניסה</button>
+    <button type="button" class="btn" id="btnUseCode" hidden style="border:0;background:none;color:var(--cyanS);min-height:40px">כניסה עם קוד</button>
+    <button class="btn fid-btn" id="btnFid" hidden style="min-height:52px;font-size:16px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg><span>כניסה עם Face ID</span></button>
+    <small id="fidHint" class="sub" style="margin:0" hidden></small>
   </div>
 </section>
 
@@ -116,17 +313,45 @@ ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-t="overview" aria-selected="true">סקירה</button>
     <button class="tab" role="tab" data-t="pilot" aria-selected="false">מדדי פיילוט</button>
+    <button class="tab" role="tab" data-t="msgs" aria-selected="false">הודעות לסוכנים</button>
+    <button class="tab" role="tab" data-t="inbox" aria-selected="false">פניות סוכנים<i class="nbadge" id="tbInbox" hidden></i></button>
+    <button class="tab" role="tab" data-t="deals" aria-selected="false">צינור הצעות</button>
     <button class="tab" role="tab" data-t="users" aria-selected="false">משתמשים והרשאות</button>
     <button class="tab" role="tab" data-t="logins" aria-selected="false">כניסות ומכשירים</button>
     <button class="tab" role="tab" data-t="surveys" aria-selected="false">סקרים ומשוב</button>
     <button class="tab" role="tab" data-t="agent" aria-selected="false">אפליקציית סוכנים · מחירים</button>
     <button class="tab" role="tab" data-t="consumer" aria-selected="false">אפליקציית לקוחות</button>
     <button class="tab" role="tab" data-t="texts" aria-selected="false">שמות ותיאורים</button>
+    <button class="tab" role="tab" data-t="remote" aria-selected="false">שליטה מרחוק</button>
+    <button class="tab" role="tab" data-t="history" aria-selected="false">היסטוריית שינויים</button>
     <button class="tab" role="tab" data-t="publish" aria-selected="false">פרסום וגיבוי</button>
+    <button class="tab" role="tab" data-t="me" aria-selected="false">כניסה וקוד המנהל</button>
   </div>
   <div id="pane"></div>
 </main>
 
+<nav class="mnav" id="mnav" hidden aria-label="ניווט">
+  <button type="button" data-t="pilot"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg><span>מדדים</span></button>
+  <button type="button" data-t="users"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.4 3.4 0 0 1 0 6.8"/><path d="M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg><span>סוכנים</span></button>
+  <button type="button" data-t="logins"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>כניסות<i class="nbadge" id="nbLogins" hidden></i></span></button>
+  <button type="button" data-t="msgs"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.6 2H4.4z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span>הודעות</span></button>
+  <button type="button" data-t="more"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>עוד<i class="nbadge" id="nbMore" hidden></i></span></button>
+</nav>
+<div class="msheet" id="msheet" aria-hidden="true"><div class="sh" role="dialog" aria-label="עוד">
+  <div class="grab"></div>
+  <button type="button" class="mi" data-t="inbox"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13l2.5-8h11L20 13v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg>פניות מהסוכנים<i class="nbadge" id="shInbox" hidden></i></button>
+  <button type="button" class="mi" data-t="deals"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>צינור הצעות מחיר</button>
+  <button type="button" class="mi" data-t="surveys"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>סקרים ומשוב</button>
+  <button type="button" class="mi" data-t="agent"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg>מחירים · אפליקציית הסוכנים</button>
+  <button type="button" class="mi" data-t="consumer"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6 8 6v9H4z"/><path d="M9 20v-5h6v5"/></svg>אפליקציית הלקוחות</button>
+  <button type="button" class="mi" data-t="texts"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13"/></svg>שמות ותיאורים</button>
+  <button type="button" class="mi" data-t="remote"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>שליטה מרחוק · גרסאות ותחזוקה</button>
+  <button type="button" class="mi" data-t="history"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>היסטוריית שינויים ושחזור</button>
+  <button type="button" class="mi" data-t="publish"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8.5 4.2 4.2 0 0 1 17.5 18z"/><path d="M12 11v5M9.5 13.5 12 11l2.5 2.5"/></svg>פרסום וגיבוי</button>
+  <button type="button" class="mi" data-t="overview"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>סקירה וקישורים</button>
+  <button type="button" class="mi" data-t="me"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg>כניסה במבט, קוד המנהל והתקנה</button>
+  <button type="button" class="mi danger" data-act="logout"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/></svg>יציאה</button>
+</div></div>
 <div class="pubbar" id="pubbar" hidden><div class="in">
   <span class="msg" id="pubMsg">הכול מעודכן</span><span class="sp"></span>
   <button class="btn" id="btnDiscard" hidden>ביטול השינויים</button>
@@ -217,7 +442,9 @@ var KEY_RE = /^[A-Za-z0-9_-]{16,80}$/;
 function storedKey(){ var k = lsGet('g1sg_admin_sheetkey') || ''; return KEY_RE.test(k) ? k : ''; }
 // the sheet key is derived from the manager's own login code, so every device where the manager signs in has it
 function deriveKey(code, uid, salt){ return crypto.subtle.digest('SHA-256', new TextEncoder().encode('g1sheet:' + uid + ':' + (salt || '') + ':' + norm(code))).then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); }); }
-var GOOD_KEY = '', PENDING_KEYS = [], PENDING_SELF = '';
+var GOOD_KEY = '', PENDING_KEYS = [], PENDING_SELF = '', PENDING_VIEW = [];
+function isAdm(u){ return u.role === 'manager' || u.role === 'viewer'; }
+function RO(){ return !!(me && me.role === 'viewer'); }
 function keyList(){ var a = []; [GOOD_KEY, me && me.dk, storedKey()].forEach(function(k){ if (k && a.indexOf(k) < 0) a.push(k); }); return a; }
 function sheetKey(){ return keyList()[0] || ''; }
 // try each known key until the sheet accepts one (unauthorized -> next)
@@ -257,8 +484,8 @@ function loadConfig(){
 function fetchPublic(){ return fetch(CFG_URL + '?t=' + Date.now(), { cache:'no-store' }).then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 function dirty(){ return JSON.stringify(cfg) !== JSON.stringify(saved); }
-var PUB_FAIL = '';
-function markDirty(){ var d = dirty(), first = !d && SRC !== 'sheet' && !!adminEp(cfg), m = $('#pubMsg'); m.textContent = PUB_FAIL && d ? '⚠ ' + PUB_FAIL : d ? 'יש שינויים שעוד לא פורסמו' : first ? 'ההגדרות עוד לא נשמרו בגיליון — לחצו פרסום' : 'הכול מעודכן — המשתמשים רואים את ההגדרות האלה'; m.classList.toggle('dirty', d || first); $('#btnDiscard').hidden = !d; $('#btnPublish').disabled = !d && !first; }
+var PUB_FAIL = '', PUB_NOTE = '';
+function markDirty(){ var d = dirty(), first = !d && SRC !== 'sheet' && !!adminEp(cfg), m = $('#pubMsg'); $('#pubbar').classList.toggle('has-changes', !!d || !!first); document.body.classList.toggle('pub-on', !!d || !!first); m.textContent = PUB_FAIL && d ? '⚠ ' + PUB_FAIL : d ? pendingText() : first ? 'ההגדרות עוד לא נשמרו בגיליון — לחצו פרסום' : 'הכול מעודכן — המשתמשים רואים את ההגדרות האלה'; m.classList.toggle('dirty', d || first); $('#btnDiscard').hidden = !d; $('#btnPublish').disabled = !d && !first; }
 window.addEventListener('beforeunload', function(e){ if (cfg && dirty()) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ---------- login ---------- */
@@ -268,14 +495,21 @@ function doLogin(){
   if (!(window.crypto && crypto.subtle)) { err.textContent = 'פתחו את הדף מהקישור הרשמי (https).'; return; }
   btn.disabled = true; btn.textContent = 'בודק…';
   loadConfig().then(function(c){
-    var mgrs = (c.access && c.access.users || []).filter(function(u){ return u.role === 'manager'; });
+    var mgrs = (c.access && c.access.users || []).filter(isAdm);
     return Promise.all(mgrs.map(function(u){ return hash(code, u.id, c.access.salt).then(function(h){ return h === u.hash ? u : null; }); })).then(function(f){
       var u = f.filter(Boolean)[0];
       if (!u) { err.textContent = 'קוד ניהול לא תקין.'; return; }
       if (u.status !== 'active') { err.textContent = 'קוד הניהול הזה מושהה.'; return; }
       return deriveKey(code, u.id, c.access.salt).then(function(dk){
-        me = { id:u.id, name:u.name, hash:u.hash, dk:dk }; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {}
+        me = { id:u.id, name:u.name, hash:u.hash, dk:dk, role:u.role }; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {}
         start(c);
+        if (!fidRead()) fidAvailable().then(function(ok){ if (!ok || lsGet('g1sg_fid_skip')) return;
+          modal('<h2>להיכנס בפעם הבאה עם Face ID?</h2><p class="sub" style="margin:6px 0 0">בלי להקליד את קוד המנהל. אפשר לכבות בכל רגע במסך "כניסה וקוד המנהל".</p>' +
+            '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" id="fidNo">לא עכשיו</button><button class="btn primary" id="fidYes">הפעלת Face ID</button></div>', function(bd){
+              bd.querySelector('#fidNo').onclick = function(){ lsSet('g1sg_fid_skip', '1'); bd.remove(); };
+              bd.querySelector('#fidYes').onclick = function(){ bd.remove(); fidEnable().then(function(m){ toast('הכניסה במבט הופעלה'); }, function(e){ toast(e && e.name === 'NotAllowedError' ? 'ההפעלה בוטלה' : 'לא ניתן להפעיל Face ID'); }); };
+            });
+        });
       });
     });
   }).catch(function(e){ err.textContent = 'לא ניתן לטעון את ההגדרות (' + e.message + '). בדקו את החיבור.'; })
@@ -289,29 +523,763 @@ function start(c){
   cfg.backend = cfg.backend || { endpoint:'' };
   if (!Array.isArray(cfg.surveys)) cfg.surveys = clone(SURVEY_TEMPLATES);
   if (cfg.access.deviceLock == null) cfg.access.deviceLock = false;
+  // shapes the screens fill in when opened — set before the snapshot so just looking never reads as an unpublished change
+  cfg.texts = cfg.texts || {}; (cfg.access.users || []).forEach(function(u){ if (!u.devices) u.devices = []; });
+  if (!Array.isArray(cfg.messages)) cfg.messages = []; if (!cfg.app || typeof cfg.app !== 'object') cfg.app = {}; if (!cfg.flags || typeof cfg.flags !== 'object') cfg.flags = {};
   saved = clone(cfg);
   // phones are never stored in clear in the public settings file: hash + masked display only
   var plain = (cfg.access.users || []).filter(function(u){ return u.phone; });
   if (plain.length) Promise.all(plain.map(function(u){ return setPhone(u, u.phone); })).then(function(){ toast('מספרי הנייד הוצפנו — פרסמו כדי לשמור'); render(); });
-  $('#vLogin').hidden = true; $('#vApp').hidden = false; $('#pubbar').hidden = false; $('#who').hidden = false; $('#whoName').textContent = me.name;
-  render(); markDirty();
+  $('#vLogin').hidden = true; $('#vApp').hidden = false; $('#pubbar').hidden = false; $('#who').hidden = false; $('#whoName').textContent = me.name; $('#mnav').hidden = false;
+  if (window.matchMedia && matchMedia('(max-width:760px)').matches && tab === 'overview') tab = 'pilot';
+  document.body.classList.toggle('ro', RO()); var pl = document.querySelector('#who .pill'); if (pl) pl.textContent = RO() ? 'צפייה בלבד' : 'מנהל המוצר';
+  render(); markDirty(); bgSync();
   if (KEY_FROM_LINK) { KEY_FROM_LINK = false; toast('מפתח הניהול נשמר בדפדפן הזה — אפשר לפרסם מכאן'); }
 }
 $('#btnLogin').onclick = doLogin; $('#loginCode').onkeydown = function(e){ if (e.key === 'Enter') doLogin(); };
+// iPhone: the installed admin opens WhatsApp itself (whatsapp://), falling back to wa.me; elsewhere a new tab
+var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function waNum(p){ var d = String(p || '').replace(/\D/g, ''); if (!d) return ''; if (d.indexOf('972') === 0) return d; if (d.charAt(0) === '0') d = d.slice(1); return d.length >= 8 ? '972' + d : ''; }
+function openWA(text, phone){
+  var n = waNum(phone), q = 'text=' + encodeURIComponent(text);
+  var web = 'https://wa.me/' + (n || '') + '?' + q;
+  if (IOS) {
+    var left = false, onHide = function(){ if (document.visibilityState === 'hidden') left = true; };
+    document.addEventListener('visibilitychange', onHide);
+    location.href = 'whatsapp://send?' + (n ? 'phone=' + n + '&' : '') + q;
+    setTimeout(function(){ document.removeEventListener('visibilitychange', onHide); if (!left && document.visibilityState === 'visible') location.href = web; }, 1600);
+    return;
+  }
+  var w = window.open(web, '_blank', 'noopener'); if (!w) location.href = web;
+}
 function phoneLink(){ var k = storedKey(); return 'https://wa.me/?text=' + encodeURIComponent('עמוד הניהול של G1 SiteGuard — נכנסים עם קוד המנהל:\n' + location.origin + location.pathname + (k ? '#k=' + k : '')); }
-function goTab(t){ tab = t; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x.dataset.t === t)); }); render(); }
+function goTab(t){ tab = t; render(); }
 $('#btnPhone').onclick = function(){
   var l = phoneLink();
   modal('<h2>ניהול מהטלפון</h2><p class="sub" style="margin:6px 0 0">שלחו לעצמכם בוואטסאפ את הקישור לעמוד הניהול, פתחו אותו בטלפון והיכנסו עם קוד המנהל — זה הכול: הטלפון יוכל לערוך ולפרסם. (אם בלשונית "פרסום וגיבוי" מופיע "צריך עדכון" — מבצעים קודם את העדכון החד-פעמי מהמחשב.)</p>' +
-    '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><a class="btn primary" target="_blank" rel="noopener" href="' + l + '" data-x>פתיחת וואטסאפ</a></div>');
+    '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn primary" id="phGo">פתיחת וואטסאפ</button></div>', function(bd){
+      bd.querySelector('#phGo').onclick = function(){ var k = storedKey(); openWA('עמוד הניהול של G1 SiteGuard — נכנסים עם קוד המנהל:\n' + location.origin + location.pathname + (k ? '#k=' + k : '')); bd.remove(); };
+    });
 };
 $('#btnLogout').onclick = function(){ if (dirty() && !confirm('יש שינויים שלא פורסמו. לצאת בכל זאת?')) return; try { sessionStorage.removeItem('g1sg_admin_me'); } catch(e) {} location.reload(); };
 (function resume(){ var m = null; try { m = JSON.parse(sessionStorage.getItem('g1sg_admin_me') || 'null'); } catch(e) {}
-  if (!m) return; loadConfig().then(function(c){ var u = (c.access.users || []).filter(function(x){ return x.id === m.id && x.hash === m.hash && x.role === 'manager' && x.status === 'active'; })[0]; if (u) { me = m; start(c); } }).catch(function(){}); })();
+  if (!m) return; loadConfig().then(function(c){ var u = (c.access.users || []).filter(function(x){ return x.id === m.id && x.hash === m.hash && isAdm(x) && x.status === 'active'; })[0]; if (u) { me = m; me.role = u.role; start(c); } }).catch(function(){}); })();
+
+/* ---------- Face ID (passkey on this iPhone) ----------
+   After one sign-in with the code, the manager can unlock this device with Face ID / Touch ID: a passkey
+   is created on the device (WebAuthn, platform authenticator, user verification required). Where the
+   device supports the passkey PRF extension, the saved sign-in is encrypted with a key that only a
+   successful Face ID produces; otherwise Face ID guards a sign-in kept on this device only. The code
+   always works, and a changed code turns the saved sign-in off. */
+var FID_KEY = 'g1sg_admin_fid';
+function rnd(n){ var a = new Uint8Array(n); crypto.getRandomValues(a); return a; }
+function b64u(buf){ var b = new Uint8Array(buf), s = ''; for (var i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function unb64u(s){ s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var bin = atob(s), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return a; }
+function fidRead(){ try { return JSON.parse(lsGet(FID_KEY) || 'null'); } catch(e) { return null; } }
+function fidSupported(){ return !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && window.isSecureContext && window.crypto && crypto.subtle); }
+function fidAvailable(){ if (!fidSupported()) return Promise.resolve(false); try { return PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function(){ return false; }); } catch(e) { return Promise.resolve(false); } }
+function prfKey(prf){ return crypto.subtle.importKey('raw', prf, 'HKDF', false, ['deriveKey']).then(function(k){ return crypto.subtle.deriveKey({ name:'HKDF', hash:'SHA-256', salt:new TextEncoder().encode('g1sg-admin-fid'), info:new Uint8Array(0) }, k, { name:'AES-GCM', length:256 }, false, ['encrypt', 'decrypt']); }); }
+function fidSeal(prf, obj){
+  var json = JSON.stringify(obj);
+  if (!prf) return Promise.resolve({ plain:json });
+  var iv = rnd(12);
+  return prfKey(prf).then(function(k){ return crypto.subtle.encrypt({ name:'AES-GCM', iv:iv }, k, new TextEncoder().encode(json)); }).then(function(ct){ return { iv:b64u(iv), ct:b64u(ct) }; });
+}
+function fidOpen(prf, blob){
+  if (blob.plain) return Promise.resolve(JSON.parse(blob.plain));
+  if (!prf) return Promise.reject(new Error('no-prf'));
+  return prfKey(prf).then(function(k){ return crypto.subtle.decrypt({ name:'AES-GCM', iv:unb64u(blob.iv) }, k, unb64u(blob.ct)); }).then(function(pt){ return JSON.parse(new TextDecoder().decode(pt)); });
+}
+function fidAssert(id, salt){
+  var pk = { challenge:rnd(32), rpId:location.hostname, allowCredentials:[{ type:'public-key', id:unb64u(id), transports:['internal', 'hybrid'] }], userVerification:'required', timeout:60000 };
+  if (salt) pk.extensions = { prf:{ eval:{ first:unb64u(salt) } } };
+  return navigator.credentials.get({ publicKey:pk }).then(function(a){
+    var ext = a && a.getClientExtensionResults ? a.getClientExtensionResults() : {};
+    return { prf: ext.prf && ext.prf.results && ext.prf.results.first ? new Uint8Array(ext.prf.results.first) : null };
+  });
+}
+function fidEnable(){
+  var salt = rnd(32), saltB = b64u(salt);
+  return navigator.credentials.create({ publicKey:{
+    rp:{ name:'G1 SiteGuard · ניהול', id:location.hostname },
+    user:{ id:rnd(16), name:(me.name || 'manager') + ' · SiteGuard', displayName:me.name || 'מנהל המוצר' },
+    challenge:rnd(32), pubKeyCredParams:[{ type:'public-key', alg:-7 }, { type:'public-key', alg:-257 }],
+    authenticatorSelection:{ authenticatorAttachment:'platform', userVerification:'required', residentKey:'preferred' },
+    timeout:60000, attestation:'none', extensions:{ prf:{ eval:{ first:salt } } } } })
+  .then(function(cred){
+    var id = b64u(cred.rawId), ext = cred.getClientExtensionResults ? cred.getClientExtensionResults() : {};
+    var first = ext.prf && ext.prf.results && ext.prf.results.first ? new Uint8Array(ext.prf.results.first) : null;
+    var getPrf = first ? Promise.resolve(first) : (ext.prf && ext.prf.enabled ? fidAssert(id, saltB).then(function(r){ return r.prf; }) : Promise.resolve(null));
+    return getPrf.then(function(prf){
+      return fidSeal(prf, { id:me.id, name:me.name, hash:me.hash, dk:me.dk }).then(function(blob){
+        lsSet(FID_KEY, JSON.stringify({ id:id, salt:prf ? saltB : '', mode:prf ? 'prf' : 'gate', data:blob, uid:me.id, name:me.name, hash:me.hash, at:Date.now() }));
+        return prf ? 'prf' : 'gate';
+      });
+    });
+  });
+}
+function fidLogin(){
+  var f = fidRead(), err = $('#loginErr'), btn = $('#btnFid'); if (!f) return;
+  err.textContent = ''; btn.disabled = true;
+  fidAssert(f.id, f.salt).then(function(r){ return fidOpen(r.prf, f.data); }).then(function(m){
+    return loadConfig().then(function(c){
+      var u = (c.access.users || []).filter(function(x){ return x.id === m.id && isAdm(x); })[0]; if (u) m.role = u.role;
+      if (!u || u.hash !== m.hash) { lsSet(FID_KEY, null); fidLoginUi(); err.textContent = 'קוד הניהול הוחלף מאז ההפעלה של Face ID — היכנסו עם הקוד החדש והפעילו Face ID מחדש.'; return; }
+      if (u.status !== 'active') { err.textContent = 'קוד הניהול הזה מושהה.'; return; }
+      me = m; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {}
+      start(c);
+    });
+  }).catch(function(e){ var n = e && e.name; err.textContent = n === 'NotAllowedError' ? 'Face ID בוטל. אפשר לנסות שוב או להיכנס עם הקוד.' : n === 'InvalidStateError' || n === 'NotFoundError' ? 'ה-Face ID של המכשיר הזה לא נמצא — היכנסו עם הקוד.' : 'לא ניתן להיכנס עם Face ID (' + (e && e.message || n || 'שגיאה') + '). היכנסו עם הקוד.'; })
+    .then(function(){ btn.disabled = false; });
+}
+function fidLoginUi(){
+  var f = fidRead(), b = $('#btnFid'), h = $('#fidHint'), card = $('#vLogin .card');
+  b.hidden = !f; h.hidden = !f; if (f) h.textContent = 'שלום ' + String(f.name || '').split(' ')[0] + ' — נכנסים במבט';
+  card.classList.toggle('fid-first', !!f);
+  ['#loginCode', '#btnLogin'].forEach(function(sel){ $(sel).hidden = !!f; });
+  $('#btnUseCode').hidden = !f;
+  b.classList.toggle('primary', !!f);
+  if (f && !me && !fidLoginUi.tried && /[?&]fid=1/.test(location.search) === false) { fidLoginUi.tried = true; }
+}
+$('#btnFid').onclick = fidLogin;
+$('#btnUseCode').onclick = function(){ ['#loginCode', '#btnLogin'].forEach(function(sel){ $(sel).hidden = false; }); this.hidden = true; $('#btnFid').classList.remove('primary'); setTimeout(function(){ $('#loginCode').focus(); }, 30); };
+fidLoginUi();
+// after a publish that changed my own code, the saved Face ID sign-in is out of date
+function afterPublish(){
+  var f = fidRead(); if (!f || !me) return;
+  if (f.hash !== me.hash) { lsSet(FID_KEY, null); toast('קוד המנהל הוחלף — הפעילו שוב את Face ID במסך "כניסה וקוד המנהל"'); }
+}
+function myUser(){ return (cfg.access.users || []).filter(function(u){ return u.id === me.id; })[0]; }
+function changeMyCode(){
+  var u = myUser(); if (!u) return;
+  modal('<h2>שינוי קוד המנהל שלי</h2><p class="sub" style="margin:4px 0 12px">בחרו קוד קצר שקל לזכור: 6 עד 12 ספרות או אותיות באנגלית. הקוד הנוכחי יפסיק לעבוד אחרי השמירה.</p>' +
+    '<label class="f">קוד חדש<input id="mcA" class="mono" dir="ltr" inputmode="text" autocomplete="new-password" autocapitalize="characters" spellcheck="false" maxlength="14" placeholder="למשל 250777" style="font-size:22px;letter-spacing:.1em;text-align:center"></label>' +
+    '<label class="f" style="margin-top:10px">שוב, לאימות<input id="mcB" class="mono" dir="ltr" inputmode="text" autocomplete="new-password" autocapitalize="characters" spellcheck="false" maxlength="14" style="font-size:22px;letter-spacing:.1em;text-align:center"></label>' +
+    '<small id="mcErr" style="display:block;color:var(--bad);font-weight:700;min-height:1.4em;margin-top:6px"></small>' +
+    (dirty() ? '<div class="note warn">יש שינויים אחרים שעוד לא פורסמו — הם יפורסמו יחד עם הקוד החדש.</div>' : '') +
+    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn primary" id="mcGo">שמירת הקוד החדש</button></div>', function(bd){
+      var a = bd.querySelector('#mcA'), b2 = bd.querySelector('#mcB'), er = bd.querySelector('#mcErr'), go = bd.querySelector('#mcGo');
+      setTimeout(function(){ a.focus(); }, 60);
+      a.oninput = b2.oninput = function(){ er.textContent = ''; };
+      b2.onkeydown = function(e){ if (e.key === 'Enter') go.click(); };
+      go.onclick = function(){
+        var code = norm(a.value);
+        if (code.length > 12) { er.textContent = 'עד 12 תווים'; return; }
+        var w = weakCode(code); if (w) { er.textContent = w; a.focus(); return; }
+        if (norm(b2.value) !== code) { er.textContent = 'שני הקודים לא זהים'; b2.focus(); return; }
+        if (!adminEp(cfg) || !sheetKey()) { er.textContent = 'קודם צריך לחבר את עמוד הניהול לגיליון (פרסום וגיבוי)'; return; }
+        go.disabled = true; go.textContent = 'שומר…';
+        codeTaken(code, u.id).then(function(other){
+          if (other) { go.disabled = false; go.textContent = 'שמירת הקוד החדש'; er.textContent = 'הקוד הזה כבר שייך למשתמש אחר — בחרו קוד אחר'; return; }
+          return Promise.all([hash(code, u.id, cfg.access.salt), deriveKey(code, u.id, cfg.access.salt)]).then(function(r){
+            u.hash = r[0]; PENDING_KEYS.push(r[1]); PENDING_SELF = r[1];
+            me.hash = r[0]; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {}
+            markDirty(); bd.remove();
+            toast('שומר ומפרסם את הקוד החדש…');
+            $('#btnPublish').click();
+          });
+        });
+      };
+    });
+}
+function rMe(){
+  var f = fidRead(), standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  $('#pane').innerHTML = '<h1>כניסה וקוד המנהל</h1><p class="sub">הגדרות הכניסה שלך לניהול, במכשיר הזה.</p>' +
+    '<div class="me-list">' +
+      '<button type="button" class="me-item" id="meFid">' + '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9.5v1M15 9.5v1M12 9.5v3.5h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg>' + '<span><b>' + (f ? 'כניסה במבט פעילה' : 'כניסה עם <bdi>Face ID</bdi>') + '</b><small>' + (f ? (f.mode === 'prf' ? 'הכניסה השמורה מוצפנת ונפתחת רק במבט' : 'נפתחת רק במבט, במכשיר הזה') : 'בפעם הבאה נכנסים במבט, בלי להקליד קוד') + '</small></span><span class="tgl' + (f ? ' on' : '') + '" aria-hidden="true"></span></button>' +
+      '<button type="button" class="me-item" id="meCode">' + '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>' + '<span><b>שינוי קוד המנהל שלי</b><small>קוד קצר שאתה בוחר, 6 עד 12 תווים</small></span><span class="chev">›</span></button>' +
+      '<button type="button" class="me-item" id="mePhone">' + '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>' + '<span><b>שליחת קישור הניהול לטלפון אחר</b><small>בוואטסאפ, לפתיחה במכשיר נוסף</small></span><span class="chev">›</span></button>' +
+    '</div>' +
+    (standalone ? '' : '<div class="card" style="margin-top:16px"><h2>התקנה כאפליקציה באייפון</h2><ol class="ios-steps"><li>פותחים את הדף הזה ב-<b>Safari</b></li><li>לוחצים על כפתור <b>השיתוף</b> (ריבוע עם חץ למעלה)</li><li>בוחרים <b>"הוסף למסך הבית"</b> ← <b>הוסף</b></li></ol><p class="sub" style="margin:8px 0 0">האייקון "ניהול SiteGuard" ייפתח במסך מלא, כמו אפליקציה. אחרי הכניסה הראשונה מפעילים כאן כניסה במבט.</p></div>');
+  $('#meCode').onclick = changeMyCode;
+  $('#mePhone').onclick = function(){ $('#btnPhone').click(); };
+  $('#meFid').onclick = function(){
+    if (fidRead()) { if (confirm('לכבות את הכניסה עם Face ID במכשיר הזה?')) { lsSet(FID_KEY, null); toast('הכניסה במבט כובתה'); rMe(); } return; }
+    fidAvailable().then(function(ok){
+      if (!ok) { toast('המכשיר או הדפדפן לא תומכים בכניסה ביומטרית. באייפון: Safari, iOS 16 ומעלה'); return; }
+      return fidEnable().then(function(mode){ toast('הכניסה במבט הופעלה'); rMe(); });
+    }).catch(function(e){ toast(e && e.name === 'NotAllowedError' ? 'ההפעלה בוטלה' : 'לא ניתן להפעיל Face ID (' + (e && (e.message || e.name)) + ')'); });
+  };
+}
+
+
+
+/* ---------- what changed: used for the publish bar, the change history and restoring ---------- */
+var SEC_HE = { prices:'מחירים', users:'משתמשים והרשאות', msgs:'הודעות לסוכנים', remote:'שליטה מרחוק ושמירת נתונים', texts:'שמות ותיאורים', surveys:'סקרים', consumer:'אפליקציית הלקוחות', sys:'מערכת' };
+function cfgDiff(a, b){
+  a = a || {}; b = b || {}; var out = [], J = JSON.stringify;
+  var cnt = function(x, y){ x = x || {}; y = y || {}; var ks = {}, n = 0; Object.keys(x).concat(Object.keys(y)).forEach(function(k){ ks[k] = 1; }); Object.keys(ks).forEach(function(k){ if (J(x[k]) !== J(y[k])) n++; }); return n; };
+  var pa = a.agent || {}, pb = b.agent || {};
+  var np = cnt(pa.prices, pb.prices) + cnt(pa.cablePrices, pb.cablePrices) + (J(pa.maxDiscountPct) !== J(pb.maxDiscountPct) ? 1 : 0);
+  if (np) out.push({ s:'prices', t:'מחירי סוכנים (' + np + ')' });
+  var nc = cnt((a.consumer || {}).prices, (b.consumer || {}).prices); if (nc) out.push({ s:'prices', t:'מחירי לקוחות (' + nc + ')' });
+  var ua = {}, ub = {}; ((a.access || {}).users || []).forEach(function(u){ ua[u.id] = u; }); ((b.access || {}).users || []).forEach(function(u){ ub[u.id] = u; });
+  var uu = [];
+  Object.keys(ub).forEach(function(id){ var x = ua[id], y = ub[id];
+    if (!x) uu.push('נוסף ' + y.name); else if (x.status !== y.status) uu.push((y.status === 'active' ? 'הופעל ' : 'הושהה ') + y.name);
+    else if (x.hash !== y.hash) uu.push('קוד חדש ל' + y.name); else if (J(x) !== J(y)) uu.push('עודכן ' + y.name); });
+  Object.keys(ua).forEach(function(id){ if (!ub[id]) uu.push('הוסר ' + ua[id].name); });
+  if (uu.length) out.push({ s:'users', t:uu.length > 3 ? 'משתמשים (' + uu.length + ' שינויים)' : uu.join(', ') });
+  var aa = clone(a.access || {}), ab = clone(b.access || {}); delete aa.users; delete ab.users;
+  if (J(aa.bio || null) !== J(ab.bio || null)) out.push({ s:'users', t:(ab.bio && ab.bio.on ? (aa.bio && aa.bio.on ? 'עודכנה נעילת זיהוי פנים' : 'הופעלה נעילת זיהוי פנים') : 'כובתה נעילת זיהוי פנים') });
+  delete aa.bio; delete ab.bio; if (J(aa) !== J(ab)) out.push({ s:'users', t:'הגדרות כניסה' });
+  var ma = {}, mb = {}; (a.messages || []).forEach(function(m){ ma[m.id] = m; }); (b.messages || []).forEach(function(m){ mb[m.id] = m; });
+  Object.keys(mb).forEach(function(id){ var x = ma[id], y = mb[id];
+    if (!x) out.push({ s:'msgs', t:(y.draft ? 'טיוטת הודעה' : 'הודעה') + ' "' + y.title + '"' });
+    else if (J(x) !== J(y)) out.push({ s:'msgs', t:(x.until !== y.until && y.until && Date.parse(y.until) <= Date.now() + 6e4 ? 'הסתיימה הודעה' : 'עודכנה הודעה') + ' "' + y.title + '"' }); });
+  Object.keys(ma).forEach(function(id){ if (!mb[id]) out.push({ s:'msgs', t:'נמחקה הודעה "' + ma[id].title + '"' }); });
+  if (J(a.app || {}) !== J(b.app || {}) || J(a.flags || {}) !== J(b.flags || {})) out.push({ s:'remote', t:'שליטה מרחוק' });
+  if (J(a.retention || {}) !== J(b.retention || {})) out.push({ s:'remote', t:'שמירת נתונים' });
+  var nt = cnt(a.texts, b.texts); if (nt) out.push({ s:'texts', t:'שמות ותיאורים (' + nt + ')' });
+  if (J(a.surveys || []) !== J(b.surveys || [])) out.push({ s:'surveys', t:'סקרים' });
+  var ca = clone(a.consumer || {}), cb = clone(b.consumer || {}); delete ca.prices; delete cb.prices; if (J(ca) !== J(cb)) out.push({ s:'consumer', t:'אפליקציית הלקוחות' });
+  if ((a.backend || {}).scriptVer !== (b.backend || {}).scriptVer && (b.backend || {}).scriptVer) out.push({ s:'sys', t:'קוד הגיליון גרסה ' + b.backend.scriptVer });
+  return out;
+}
+function pendingText(){ var d = cfgDiff(saved, cfg).map(function(x){ return x.t; }); return d.length ? 'לא פורסם: ' + d.slice(0, 2).join(' · ') + (d.length > 2 ? ' ועוד ' + (d.length - 2) : '') : 'יש שינויים שעוד לא פורסמו'; }
+// in the background after sign-in: the sheet code version (agents see the feedback button from v4) and the report for badges
+var SHEET_VER = 0;
+function bgSync(){
+  var ep = adminEp(cfg); if (!ep) return;
+  fetch(ep + '?action=ping&t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){
+    SHEET_VER = +(j && j.ver) || 0;
+    if (SHEET_VER >= 4 && !RO() && (cfg.backend || {}).scriptVer !== SHEET_VER) { cfg.backend.scriptVer = SHEET_VER; markDirty(); }
+  }).catch(function(){});
+  if (sheetKey()) loadReport(false).then(function(){ syncNav(); }).catch(function(){});
+}
+// viewers: everything can be looked at, nothing can be changed
+var RO_OK = '.seg button, #plRef, #plCsv, #plMgr, .pl-wa, [data-a=who], .ro-ok, #meFid, #mePhone, #dlCsv, .msg-seg button, [data-hs], th button';
+function roApply(){
+  if (!RO()) return;
+  var p = $('#pane');
+  if (!p.querySelector('.ro-band')) p.insertAdjacentHTML('afterbegin', '<div class="ro-band">מצב צפייה — אפשר לראות הכול, בלי לשנות. לשינויים פנו למנהל המוצר.</div>');
+  Array.prototype.forEach.call(p.querySelectorAll('input, select, textarea, button'), function(el){ if (!el.matches(RO_OK)) el.disabled = true; });
+}
+
+/* ---------- change history & restore (sheet code v4) ---------- */
+var HS_SECTIONS = [
+  { k:'prices', get:function(c){ return [c.agent || {}, (c.consumer || {}).prices || {}]; }, set:function(c, v){ c.agent = clone(v.agent || {}); c.consumer = c.consumer || {}; c.consumer.prices = clone((v.consumer || {}).prices || {}); } },
+  { k:'msgs', get:function(c){ return c.messages || []; }, set:function(c, v){ c.messages = clone(v.messages || []); } },
+  { k:'remote', get:function(c){ return [c.app || {}, c.flags || {}, c.retention || {}]; }, set:function(c, v){ c.app = clone(v.app || {}); c.flags = clone(v.flags || {}); if (v.retention) c.retention = clone(v.retention); else delete c.retention; } },
+  { k:'texts', get:function(c){ return c.texts || {}; }, set:function(c, v){ c.texts = clone(v.texts || {}); } },
+  { k:'surveys', get:function(c){ return c.surveys || []; }, set:function(c, v){ c.surveys = clone(v.surveys || []); } },
+  { k:'consumer', get:function(c){ var x = clone(c.consumer || {}); delete x.prices; return x; }, set:function(c, v){ var p = (c.consumer || {}).prices; c.consumer = clone(v.consumer || {}); c.consumer.prices = p || {}; } },
+  { k:'users', get:function(c){ return c.access || {}; }, set:function(c, v){ var mine = myUser(); c.access = clone(v.access); var us = c.access.users || (c.access.users = []); var i = us.map(function(u){ return u.id; }).indexOf(me.id); if (mine) { if (i > -1) us[i] = clone(mine); else us.push(clone(mine)); } } }
+];
+function sheetGet(params){ var ep = cfg.backend && cfg.backend.endpoint; return withKey(function(key){ return fetch(ep + (ep.indexOf('?') < 0 ? '?' : '&') + params + '&key=' + encodeURIComponent(key) + '&t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }); }); }
+function dt(t){ var d = new Date(t); return isNaN(d) ? '' : d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric', year:'2-digit' }) + ' · ' + d.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' }); }
+function needV4(what){ return '<div class="note warn">' + what + ' צריך את קוד הגיליון בגרסה 4. מעדכנים פעם אחת: לשונית "פרסום וגיבוי" ← העתקת הקוד ← ב-Apps Script מדביקים ומפרסמים גרסה חדשה (Deploy ← Manage deployments ← עריכה ← New version).</div>'; }
+function rHistory(){
+  $('#pane').innerHTML = '<h1>היסטוריית שינויים</h1><p class="sub">כל פרסום נשמר בגיליון — מי פרסם, מתי ומה השתנה. אפשר לשחזר חלקים מגרסה קודמת: השחזור נטען כטיוטה, ונכנס לתוקף רק אחרי "פרסום".</p><div id="hsB">טוען…</div>';
+  if (!(cfg.backend && cfg.backend.endpoint && sheetKey())) { $('#hsB').innerHTML = '<div class="note warn">כדי לראות היסטוריה, חברו את הגיליון בלשונית "פרסום וגיבוי".</div>'; return; }
+  sheetGet('action=history').then(function(j){
+    if (!j || !j.ok || !Array.isArray(j.history)) { $('#hsB').innerHTML = needV4('היסטוריית שינויים ושחזור'); return; }
+    if (!j.history.length) { $('#hsB').innerHTML = '<div class="msg-empty">עוד לא נשמרו פרסומים.</div>'; return; }
+    $('#hsB').innerHTML = '<ul class="hs-list">' + j.history.map(function(h, i){
+      return '<li' + (i === 0 ? ' class="cur"' : '') + '><div class="hs-t"><b>' + dt(h.time) + (i === 0 ? ' · הגרסה הנוכחית' : '') + '</b><small>' + esc(h.by || '—') + '</small><span class="hs-s">' + (h.summary ? esc(h.summary) : '<span style="color:var(--muted)">פרסום (מלפני שתיעוד השינויים נוסף)</span>') + '</span></div>' +
+        (i === 0 ? '' : '<button class="btn sm" data-hs="' + h.row + '">צפייה ושחזור</button>') + '</li>'; }).join('') + '</ul>';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-hs]'), function(b){ b.onclick = function(){ var h = j.history.filter(function(x){ return String(x.row) === b.dataset.hs; })[0]; hsOpen(h); }; });
+    roApply();
+  }).catch(function(e){ $('#hsB').innerHTML = '<div class="note warn">לא ניתן לטעון את ההיסטוריה (' + esc(e.message) + ').</div>'; });
+}
+function hsOpen(h){
+  modal('<h2>גרסה מ־' + dt(h.time) + '</h2><p class="sub" style="margin:2px 0 0">פורסמה ע״י ' + esc(h.by || '—') + (h.summary ? ' · ' + esc(h.summary) : '') + '</p><div id="hsD" style="margin-top:12px">טוען…</div>' +
+    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>סגירה</button><button class="btn primary" id="hsGo" hidden data-rw>טעינת השחזור כטיוטה</button></div>', function(bd){
+    sheetGet('action=version&row=' + h.row).then(function(j){
+      if (!j || !j.ok || !j.config) throw new Error(j && j.error || 'לא נמצא');
+      var v = j.config, diff = cfgDiff(cfg, v), J = JSON.stringify;
+      var secs = HS_SECTIONS.filter(function(s){ return J(s.get(cfg)) !== J(s.get(v)); });
+      if (!secs.length) { bd.querySelector('#hsD').innerHTML = '<div class="note">הגרסה הזו זהה להגדרות הנוכחיות — אין מה לשחזר.</div>'; return; }
+      var saltDiff = (v.access || {}).salt !== (cfg.access || {}).salt;
+      bd.querySelector('#hsD').innerHTML = '<p style="margin:0 0 4px;font-weight:700">מה ישתנה אם תשחזרו (בחרו מה להחזיר):</p>' + secs.map(function(s){
+        var items = diff.filter(function(x){ return x.s === s.k; }).map(function(x){ return '<li>' + esc(x.t) + '</li>'; }).join('');
+        var block = s.k === 'users' && saltDiff;
+        return '<div class="hs-sec"><label><input type="checkbox" value="' + s.k + '"' + (s.k !== 'users' && !block ? ' checked' : '') + (block ? ' disabled' : '') + '><span>' + SEC_HE[s.k] + (s.k === 'users' ? '<small style="display:block;font-weight:500;color:var(--muted)">' + (block ? 'לא ניתן לשחזר — קודי הכניסה הוחלפו מאז' : 'שימו לב: מחזיר גם קודי כניסה ישנים. המשתמש שלך נשאר כמו שהוא') + '</small>' : '') + '</span></label>' + (items ? '<ul>' + items + '</ul>' : '') + '</div>';
+      }).join('') + (dirty() ? '<div class="note warn" style="margin-top:10px">יש שינויים שעוד לא פורסמו — בחלקים שתשחזרו הם יוחלפו.</div>' : '');
+      var go = bd.querySelector('#hsGo'); go.hidden = RO();
+      go.onclick = function(){
+        var ks = Array.prototype.filter.call(bd.querySelectorAll('.hs-sec input'), function(i){ return i.checked; }).map(function(i){ return i.value; });
+        if (!ks.length) { toast('בחרו לפחות חלק אחד'); return; }
+        HS_SECTIONS.forEach(function(s){ if (ks.indexOf(s.k) > -1) s.set(cfg, v); });
+        bd.remove(); markDirty(); render();
+        toast('השחזור נטען — בדקו ולחצו "פרסום לכל המשתמשים"');
+      };
+    }).catch(function(e){ bd.querySelector('#hsD').innerHTML = '<div class="note warn">לא ניתן לטעון את הגרסה (' + esc(e.message) + ').</div>'; });
+  });
+}
+
+/* ---------- quote pipeline: quotes from the activity log + the status the agent marks ---------- */
+var dlRange = 30, dlView = 'all', DL_ST = { won:'נחתמה', open:'פתוחה', stale:'ממתינה למעקב', lost:'לא רלוונטית' };
+function dealStats(r){
+  var users = {}; (cfg.access.users || []).forEach(function(u){ users[u.id] = u; });
+  var Q = {};
+  ((r && r.logins) || []).forEach(function(l){
+    var u = parseUse(l.event); if (!u || (u.a !== 'quote' && u.a !== 'qstat') || !u.m.q) return;
+    var us = users[l.uid]; if (us && us.role !== 'agent' && !plMgr) return;
+    var t = new Date(l.time).getTime(); if (isNaN(t)) return;
+    var key = l.uid + '|' + u.m.q, d = Q[key] || (Q[key] = { uid:l.uid, name:us ? us.name : (l.name || '?'), q:u.m.q, v:0, k:'', n:0, created:0, vt:0, status:'open', st:0 });
+    if (u.a === 'quote') { if (!d.created || t < d.created) d.created = t; if (t >= d.vt) { d.vt = t; d.v = +u.m.v || d.v; d.k = u.m.k || d.k; d.n = +u.m.n || d.n; } }
+    else { if (t >= d.st) { d.st = t; d.status = u.m.s || 'open'; d.src = u.m.src || ''; } if (!d.v && u.m.v) d.v = +u.m.v; if (!d.created) d.created = t; }
+  });
+  var now = Date.now(), start = dlRange ? now - dlRange * 864e5 : 0;
+  var list = Object.keys(Q).map(function(k){ var d = Q[k]; d.age = Math.floor((now - d.created) / 864e5); d.view = d.status === 'open' && d.age > 7 ? 'stale' : d.status; return d; })
+    .filter(function(d){ return d.created >= start; }).sort(function(a, b){ return b.created - a.created; });
+  var S = { list:list, n:list.length, v:0, won:0, wonV:0, open:0, openV:0, stale:0, staleV:0, lost:0, ag:{} };
+  list.forEach(function(d){ S.v += d.v; S[d.view]++; if (d.view === 'won') S.wonV += d.v; if (d.view === 'open') S.openV += d.v; if (d.view === 'stale') S.staleV += d.v;
+    var a = S.ag[d.uid] || (S.ag[d.uid] = { uid:d.uid, name:d.name, n:0, won:0, wonV:0, stale:0, v:0 }); a.n++; a.v += d.v; if (d.view === 'won') { a.won++; a.wonV += d.v; } if (d.view === 'stale') a.stale++; });
+  return S;
+}
+function rDeals(){
+  var has = cfg.backend && cfg.backend.endpoint && sheetKey();
+  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><h1>צינור הצעות מחיר</h1><p class="sub" style="margin:0">כל הצעה שהסוכנים הפיקו, והסטטוס שהם מסמנים ב"הצעות מחיר שנשמרו" (הצעה שחוזרת חתומה מהלקוח מסומנת לבד). סכומים כולל מע״מ.</p></div>' +
+    '<div class="row"><div class="seg" role="group" aria-label="תקופה" id="dlR">' + [[30, '30 ימים'], [90, '90 ימים'], [0, 'הכול']].map(function(o){ return '<button type="button" data-r="' + o[0] + '" aria-pressed="' + (dlRange === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div><button class="btn sm ro-ok" id="dlCsv">ייצוא לאקסל</button></div></div>' +
+    (has ? '<div id="dlB">טוען…</div>' : '<div class="note warn">כדי לראות הצעות, חברו את הגיליון בלשונית "פרסום וגיבוי".</div>');
+  Array.prototype.forEach.call(document.querySelectorAll('#dlR button'), function(b){ b.onclick = function(){ dlRange = +b.dataset.r; rDeals(); }; });
+  if (!has) return;
+  loadReport(false).then(function(r){
+    var S = dealStats(r), pct = function(x){ return S.n ? Math.round(100 * x / S.n) : 0; };
+    $('#dlCsv').onclick = function(){ dealsCsv(S); };
+    var vis = S.list.filter(function(d){ return dlView === 'all' || d.view === dlView; });
+    var agents = Object.keys(S.ag).map(function(k){ return S.ag[k]; }).sort(function(a, b){ return b.wonV - a.wonV || b.n - a.n; });
+    $('#dlB').innerHTML = '<div class="dl-kpis">' +
+      '<div class="dl-k"><span>הצעות שהופקו</span><b>' + S.n + '</b><small>' + nis(S.v) + '</small></div>' +
+      '<div class="dl-k won"><span>נחתמו</span><b>' + S.won + '</b><small>' + nis(S.wonV) + ' · ' + pct(S.won) + '% המרה</small></div>' +
+      '<div class="dl-k"><span>פתוחות</span><b>' + S.open + '</b><small>' + nis(S.openV) + '</small></div>' +
+      '<div class="dl-k stale"><span>ממתינות למעקב (מעל 7 ימים)</span><b>' + S.stale + '</b><small>' + nis(S.staleV) + ' · תוקף ההצעה 7 ימים</small></div></div>' +
+      (S.n ? '<div class="card" style="margin-bottom:14px"><div class="dl-bar" role="img" aria-label="נחתמו ' + S.won + ', פתוחות ' + S.open + ', ממתינות ' + S.stale + ', לא רלוונטיות ' + S.lost + '">' +
+        [['won', 'var(--ok)'], ['open', 'var(--cyan)'], ['stale', '#E8A33D'], ['lost', '#C3CBD5']].map(function(x){ return S[x[0]] ? '<i style="width:' + (100 * S[x[0]] / S.n) + '%;background:' + x[1] + '"></i>' : ''; }).join('') + '</div>' +
+        '<div class="dl-leg">' + [['won', 'var(--ok)'], ['open', 'var(--cyan)'], ['stale', '#E8A33D'], ['lost', '#C3CBD5']].map(function(x){ return '<span><i style="background:' + x[1] + '"></i>' + DL_ST[x[0]] + ' ' + S[x[0]] + '</span>'; }).join('') + '</div>' +
+        (agents.length ? '<h3>לפי סוכן</h3><div class="tbl-wrap"><table><thead><tr><th>סוכן</th><th>הצעות</th><th>נחתמו</th><th>סכום שנחתם</th><th>המרה</th><th>ממתינות למעקב</th></tr></thead><tbody>' +
+          agents.map(function(a){ return '<tr><td><b>' + esc(a.name) + '</b></td><td>' + a.n + '</td><td>' + a.won + '</td><td>' + nis(a.wonV) + '</td><td>' + (a.n ? Math.round(100 * a.won / a.n) : 0) + '%</td><td>' + (a.stale ? '<span class="dst stale">' + a.stale + '</span>' : '0') + '</td></tr>'; }).join('') + '</tbody></table></div>' : '') + '</div>' : '') +
+      '<div class="seg msg-seg" role="group" aria-label="סינון" id="dlV">' + [['all', 'הכול', S.n], ['stale', 'למעקב', S.stale], ['open', 'פתוחות', S.open], ['won', 'נחתמו', S.won], ['lost', 'לא רלוונטיות', S.lost]].map(function(x){ return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (dlView === x[0]) + '">' + x[1] + (x[2] ? '<i class="cnt">' + x[2] + '</i>' : '') + '</button>'; }).join('') + '</div>' +
+      (vis.length ? '<div class="tbl-wrap"><table><thead><tr><th>הצעה</th><th>סוכן</th><th>סוג</th><th>סכום</th><th>הופקה</th><th>סטטוס</th><th></th></tr></thead><tbody>' + vis.map(function(d){
+        return '<tr><td><b>מס׳ ' + esc(d.q) + '</b></td><td>' + esc(d.name) + '</td><td>' + esc(KIND_HE[d.k] || d.k || '—') + (d.n ? ' · ' + d.n + ' אביזרים' : '') + '</td><td>' + nis(d.v) + '</td><td>' + agoHe(d.created) + '</td><td><span class="dst ' + d.view + '">' + DL_ST[d.view] + (d.src === 'sign' ? ' · חתימה דיגיטלית' : '') + '</span></td>' +
+          '<td>' + (d.view === 'stale' || d.view === 'open' ? '<button class="btn sm ro-ok" data-dw="' + esc(d.uid + '|' + d.q) + '">שאלה לסוכן</button>' : '') + '</td></tr>'; }).join('') + '</tbody></table></div>'
+        : '<div class="msg-empty">' + (S.n ? 'אין הצעות בסינון הזה.' : 'עוד אין הצעות מחיר בתקופה הזו. הצעות נרשמות כשהסוכן שולח או מדפיס הצעה.') + '</div>');
+    Array.prototype.forEach.call(document.querySelectorAll('#dlV button'), function(b){ b.onclick = function(){ dlView = b.dataset.v; rDeals(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-dw]'), function(b){ b.onclick = function(){
+      var d = S.list.filter(function(x){ return x.uid + '|' + x.q === b.dataset.dw; })[0]; if (!d) return; var u = userById(d.uid);
+      openWA('היי ' + String(d.name || '').split(' ')[0] + ', לגבי הצעה מס׳ ' + d.q + ' (' + nis(d.v) + ') מ' + agoHe(d.created).replace('לפני', 'לפני') + ' — מה המצב מול הלקוח? אם נסגרה או ירדה מהפרק, סמן/י אותה באפליקציה ב"הצעות מחיר שנשמרו". תודה!', u && PHONES[u.id]); }; });
+    roApply();
+  }).catch(function(e){ $('#dlB').innerHTML = '<div class="note warn">לא ניתן לטעון (' + esc(e.message) + ').</div>'; });
+}
+function dealsCsv(S){
+  var q = function(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  var lines = [['הצעה', 'סוכן', 'סוג', 'אביזרים', 'סכום כולל מע"מ', 'תאריך הפקה', 'סטטוס']].concat(S.list.map(function(d){ return [d.q, d.name, KIND_HE[d.k] || d.k, d.n, Math.round(d.v), new Date(d.created).toLocaleDateString('he-IL'), DL_ST[d.view]]; }));
+  var blob = new Blob(['﻿' + lines.map(function(l){ return l.map(q).join(','); }).join('\r\n')], { type:'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'G1-SiteGuard-quotes-' + dayKey(Date.now()) + '.csv'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/* ---------- feedback inbox: reports and ideas the agents send from the app (sheet code v4) ---------- */
+var fbView = 'new', FB_CAT = { bug:['תקלה', '#C2362B'], idea:['רעיון', '#0F8A5F'], question:['שאלה', '#0A7FBF'], price:['מחיר / מוצר', '#B4570A'] }, FB_ST = { 'new':'חדשה', doing:'בטיפול', done:'טופלה' };
+function fbRows(){ return ((REPORT && REPORT.feedback) || []).slice().reverse(); }
+function fbSet(f, status, note){
+  var old = [f.status, f.note]; f.status = status; if (note != null) f.note = note; rInbox(); syncNav();
+  withKey(function(key){ return fetch(cfg.backend.endpoint, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify({ type:'fbStatus', key:key, id:f.id, status:status, note:f.note || '' }) }).then(function(r){ return r.json(); }); })
+    .then(function(j){ if (!j || !j.ok) throw new Error(j && j.error || 'שגיאה'); }).catch(function(e){ f.status = old[0]; f.note = old[1]; rInbox(); syncNav(); toast('העדכון לא נשמר בגיליון (' + e.message + ')'); });
+}
+function rInbox(){
+  var has = cfg.backend && cfg.backend.endpoint && sheetKey();
+  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><h1>פניות מהסוכנים</h1><p class="sub" style="margin:0">תקלות, רעיונות ושאלות שהסוכנים שולחים מהאפליקציה (בתיבת ההודעות ובפרטי הסוכן). אפשר לענות להם ישירות לתיבת ההודעות.</p></div><button class="btn sm ro-ok" id="fbRef">רענון</button></div>' +
+    (has ? '<div id="fbB">טוען…</div>' : '<div class="note warn">כדי לראות פניות, חברו את הגיליון בלשונית "פרסום וגיבוי".</div>');
+  if (!has) return;
+  $('#fbRef').onclick = function(){ loadReport(true).then(function(){ rInbox(); syncNav(); }); };
+  loadReport(false).then(function(r){
+    if (!('feedback' in r)) { $('#fbB').innerHTML = needV4('קבלת פניות מהסוכנים'); return; }
+    var all = fbRows(), cnt = { 'new':0, doing:0, done:0 }; all.forEach(function(f){ cnt[f.status || 'new'] = (cnt[f.status || 'new'] || 0) + 1; });
+    var vis = all.filter(function(f){ return fbView === 'all' || (f.status || 'new') === fbView; });
+    $('#fbB').innerHTML = '<div class="seg msg-seg" role="group" aria-label="סינון" id="fbV">' + [['new', 'חדשות'], ['doing', 'בטיפול'], ['done', 'טופלו'], ['all', 'הכול']].map(function(x){ var n = x[0] === 'all' ? all.length : cnt[x[0]]; return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (fbView === x[0]) + '">' + x[1] + (n ? '<i class="cnt">' + n + '</i>' : '') + '</button>'; }).join('') + '</div>' +
+      '<div class="fb-list">' + (vis.length ? vis.map(function(f){ var c = FB_CAT[f.cat] || ['פנייה', '#5B6B7E'], st = f.status || 'new';
+        return '<article class="fbc' + (st === 'new' ? ' new' : '') + '" data-id="' + esc(f.id) + '"><div class="top"><span class="am-tag" style="background:' + c[1] + '">' + c[0] + '</span><b>' + esc(f.name || '?') + '</b><span>' + dt(f.time) + '</span><span class="dst ' + (st === 'done' ? 'won' : st === 'doing' ? 'open' : 'stale') + '" style="margin-inline-start:auto">' + FB_ST[st] + '</span></div>' +
+          '<p class="txt">' + esc(f.text) + '</p><div class="ctx">' + esc([f.appVersion, f.device, f.context].filter(Boolean).join(' · ')) + '</div>' + (f.note ? '<div class="nt">' + esc(f.note) + '</div>' : '') +
+          '<div class="acts" data-rw><button class="btn sm primary" data-f="reply">תשובה לתיבת ההודעות</button>' + (st !== 'doing' && st !== 'done' ? '<button class="btn sm" data-f="doing">בטיפול</button>' : '') + (st !== 'done' ? '<button class="btn sm" data-f="done">✓ טופלה</button>' : '<button class="btn sm" data-f="new">החזרה לחדשות</button>') + '<button class="btn sm" data-f="wa">וואטסאפ</button></div></article>'; }).join('')
+        : '<div class="msg-empty">' + (all.length ? 'אין פניות בסינון הזה.' : 'עוד לא הגיעו פניות. הסוכנים שולחים אותן מהאפליקציה — מתיבת ההודעות (הפעמון) או מפרטי הסוכן.') + '</div>') + '</div>';
+    Array.prototype.forEach.call(document.querySelectorAll('#fbV button'), function(b){ b.onclick = function(){ fbView = b.dataset.v; rInbox(); }; });
+    $('#fbB').addEventListener('click', function(e){
+      var b = e.target.closest('[data-f]'), card = e.target.closest('.fbc'); if (!b || !card) return;
+      var f = all.filter(function(x){ return String(x.id) === card.dataset.id; })[0]; if (!f) return;
+      var a = b.dataset.f, first = String(f.name || '').split(' ')[0], u = userById(f.uid);
+      if (a === 'reply') {
+        if (!u) { toast('הסוכן כבר לא ברשימת המשתמשים'); return; }
+        msgEdit(null, false, { type:'general', pri:'normal', to:[f.uid], title:'תשובה לפנייה שלך', body:'היי ' + first + ', לגבי מה שכתבת: "' + String(f.text).slice(0, 80) + (String(f.text).length > 80 ? '…' : '') + '"\n', onSent:function(){ fbSet(f, 'done', 'נענה בתיבת ההודעות · ' + new Date().toLocaleDateString('he-IL')); } });
+      } else if (a === 'wa') openWA('היי ' + first + ', לגבי הפנייה שלך באפליקציה ("' + String(f.text).slice(0, 60) + '"): ', u && PHONES[u.id]);
+      else fbSet(f, a);
+    });
+    roApply();
+  }).catch(function(e){ $('#fbB').innerHTML = '<div class="note warn">לא ניתן לטעון (' + esc(e.message) + ').</div>'; });
+}
+var RET = [
+  { k:'logsDays', n:'יומן כניסות ושימוש', d:'משמש למדדי הפיילוט, לצינור ההצעות ולנתוני קריאת הודעות' },
+  { k:'leadsDays', n:'פניות לקוחות מאפליקציית הלקוחות', d:'כוללות שם וטלפון של לקוחות — מומלץ חצי שנה' },
+  { k:'feedbackDays', n:'פניות מהסוכנים', d:'תקלות, רעיונות ושאלות' }
+];
+
+/* ---------- messages to agents ----------
+   Research-based shape: the inbox in the app (bell) is the record — every message stays there until it expires.
+   Only "important" messages also open once as a card in the middle of the screen (no timer: it waits for "הבנתי"),
+   and "requires confirmation" stays marked until the agent confirms. Read / confirmed / clicked come back through
+   the activity log (use:msg|id|v|a) so the manager sees who read what and can nudge the rest on WhatsApp. */
+var MSG_T = { promo:['מבצע','#E8590C'], benefit:['הטבה','#0F8A5F'], price:['עדכון מחיר','#C2362B'], product:['עדכון מוצר','#0A7FBF'], general:['הודעה','#5B6B7E'] };
+var MSG_PRI = { normal:['רגילה','נכנסת לתיבת ההודעות, עם מספר על הפעמון'], high:['חשובה','גם קופצת פעם אחת במרכז המסך, עד שלוחצים "הבנתי"'], critical:['מחייבת אישור','קופצת, ונשארת מסומנת עד שהסוכן מאשר "קראתי ואני מאשר/ת"'] };
+var MSG_TPL = [
+  { n:'מבצע', type:'promo', pri:'high', title:'מבצע החודש: ', body:'עד סוף החודש: \nבתוקף להצעות שנחתמות עד ה־\nפרטים מלאים אצל מנהל המוצר.', cta:null },
+  { n:'הטבה לסוכנים', type:'benefit', pri:'normal', title:'הטבה לסוכנים: ', body:'כל סוכן שסוגר החודש  עסקאות מקבל ', cta:null },
+  { n:'עדכון מחירון', type:'price', pri:'critical', title:'עדכון מחירים מתאריך ', body:'המחירים באפליקציה עודכנו. הצעות שכבר נשלחו ללקוחות נשארות בתוקף.\nמה השתנה: ', cta:null },
+  { n:'מוצר חדש', type:'product', pri:'normal', title:'חדש במחירון: ', body:'', cta:{ label:'לפרטים', url:'' } }
+];
+var msgView = 'live';
+function msgList(){ return Array.isArray(cfg.messages) ? cfg.messages : (cfg.messages = []); }
+function msgStatus(m){ var now = Date.now(); if (m.draft) return 'draft'; if (m.until && Date.parse(m.until) < now) return 'ended'; if (m.from && Date.parse(m.from) > now) return 'sched'; return 'live'; }
+function activeAgents(){ return (cfg.access.users || []).filter(function(u){ return u.role === 'agent' && u.status === 'active'; }); }
+function msgAudience(m){ var ag = activeAgents(); if (!m.to || m.to === 'all') return ag; return ag.filter(function(u){ return m.to.indexOf(u.id) > -1; }); }
+function dShort(iso){ var d = new Date(iso); return isNaN(d) ? '' : d.getDate() + '.' + (d.getMonth() + 1); }
+function toLocalInput(iso){ var d = iso ? new Date(iso) : new Date(); if (isNaN(d)) d = new Date(); var p = function(n){ return ('0' + n).slice(-2); }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+function msgStats(m, r){
+  var v = String(m.v || 1), per = {};
+  ((r && r.logins) || []).forEach(function(l){
+    var u = parseUse(l.event); if (!u || u.a !== 'msg' || u.m.id !== m.id || String(u.m.v || 1) !== v) return;
+    var p = per[l.uid] || (per[l.uid] = {}), t = new Date(l.time).getTime(); if (!p[u.m.a] || t < p[u.m.a]) p[u.m.a] = t;
+  });
+  var aud = msgAudience(m), S = { aud:aud.length, seen:0, read:0, ack:0, cta:0, notDone:[], per:per };
+  aud.forEach(function(u){ var p = per[u.id] || {};
+    if (p.seen || p.open || p.read || p.ack || p.cta) S.seen++; if (p.read || p.ack) S.read++; if (p.ack) S.ack++; if (p.cta) S.cta++;
+    if (!(m.ack ? p.ack : (p.read || p.ack))) S.notDone.push(u); });
+  return S;
+}
+function msgAudText(m){ var a = msgAudience(m); if (!m.to || m.to === 'all') return 'לכל הסוכנים (' + a.length + ')';
+  var names = a.map(function(u){ return u.name; }); return (names.length === 1 ? 'לסוכן אחד: ' : 'ל־' + names.length + ' סוכנים: ') + esc(names.slice(0, 3).join(', ')) + (names.length > 3 ? ' ועוד ' + (names.length - 3) : ''); }
+function msgCardHtml(m){
+  var t = MSG_T[m.type] || MSG_T.general, st = msgStatus(m), pri = m.pri || 'normal';
+  var when = st === 'draft' ? 'טיוטה' : st === 'sched' ? 'תישלח ב־' + dShort(m.from) : (st === 'ended' ? 'הסתיימה ' + dShort(m.until) : 'נשלחה ' + dShort(m.from || m.at) + (m.until ? ' · עד ' + dShort(m.until) : ''));
+  return '<article class="am" data-id="' + esc(m.id) + '">' +
+    '<div class="am-top"><span class="am-tag" style="background:' + t[1] + '">' + t[0] + '</span><span class="am-pri ' + pri + '">' + MSG_PRI[pri][0] + '</span>' + (m.pin ? '<span>📌</span>' : '') + '<span class="am-when">' + when + '</span></div>' +
+    '<h3>' + esc(m.title || '(בלי כותרת)') + '</h3>' + (m.body ? '<p class="am-body">' + esc(m.body) + '</p>' : '') +
+    '<div class="am-aud">' + msgAudText(m) + '</div>' +
+    (st === 'draft' || st === 'sched' ? '' : '<div class="am-st" data-st>' + (sheetKey() ? 'טוען נתוני קריאה…' : '') + '</div>') +
+    '<div class="am-act">' + (st === 'draft' ? '<button class="btn primary sm" data-a="edit">המשך עריכה ושליחה</button>' : (st === 'sched' ? '' : '<button class="btn sm" data-a="who">מי קרא</button>') + '<button class="btn sm" data-a="edit">עריכה</button>') +
+    '<button class="btn sm more" data-a="more" aria-label="פעולות נוספות">⋯</button></div></article>';
+}
+function msgFind(id){ return msgList().filter(function(m){ return m.id === id; })[0]; }
+function rMsgs(){
+  var L = msgList(), G = { live:[], sched:[], draft:[], ended:[] };
+  L.forEach(function(m){ G[msgStatus(m)].push(m); });
+  Object.keys(G).forEach(function(k){ G[k].sort(function(a, b){ return (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || (Date.parse(b.from || b.at) || 0) - (Date.parse(a.from || a.at) || 0); }); });
+  if (!G[msgView].length && msgView === 'live' && !L.length) msgView = 'live';
+  var segs = [['live', 'פעילות'], ['sched', 'מתוזמנות'], ['draft', 'טיוטות'], ['ended', 'הסתיימו']].map(function(x){ var n = G[x[0]].length;
+    return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (msgView === x[0]) + '">' + x[1] + (n ? '<i class="cnt">' + n + '</i>' : '') + '</button>'; }).join('');
+  var empty = { live:'אין כרגע הודעות פעילות.<br>לחצו "הודעה חדשה" כדי לשלוח מבצע, הטבה או עדכון לסוכנים.', sched:'אין הודעות מתוזמנות.', draft:'אין טיוטות.', ended:'עוד אין הודעות שהסתיימו.' }[msgView];
+  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><h1>הודעות לסוכנים</h1><p class="sub" style="margin:0">מבצעים, הטבות ועדכונים — נכנסים לתיבת ההודעות באפליקציה (הפעמון למעלה). הודעה חשובה גם קופצת פעם אחת.</p></div><button class="btn primary" id="msgNew" data-rw>+ הודעה חדשה</button></div>' +
+    (adminEp(cfg) && sheetKey() ? '' : '<div class="note warn" style="margin-bottom:12px">כדי לשלוח הודעות צריך קודם לחבר את עמוד הניהול לגיליון (לשונית "פרסום וגיבוי").</div>') +
+    '<div class="seg msg-seg" role="group" aria-label="סינון">' + segs + '</div>' +
+    '<div class="msg-list" id="msgL">' + (G[msgView].length ? G[msgView].map(msgCardHtml).join('') : '<div class="msg-empty">' + empty + '</div>') + '</div>' +
+    '<details class="card msg-how"><summary>איך זה נראה אצל הסוכן</summary><ul>' +
+      '<li><b>רגילה</b> — נכנסת לתיבת ההודעות. על הפעמון מופיע מספר ההודעות שלא נקראו (ובאנדרואיד גם על אייקון האפליקציה).</li>' +
+      '<li><b>חשובה</b> — גם נפתחת פעם אחת במרכז המסך בפתיחת האפליקציה, בלי טיימר: נסגרת רק ב"הבנתי", בכפתור הפעולה או ב"אחר כך" (חוזרת בפתיחה הבאה, עד 3 פעמים). לא יותר מהודעה קופצת אחת בכל פתיחה, ואף פעם לא באמצע עבודה על תוכנית.</li>' +
+      '<li><b>מחייבת אישור</b> — כמו חשובה, ונשארת מסומנת עד שהסוכן לוחץ "קראתי ואני מאשר/ת". מתאים לעדכוני מחירים ונהלים.</li>' +
+      '<li>מי ראה, קרא, אישר ולחץ — מגיע ליומן הפעילות בגיליון ומוצג כאן ב"מי קרא", עם תזכורת בוואטסאפ למי שלא קרא.</li>' +
+      '<li>ההודעות נשמרות בהגדרות האפליקציה — לא לכתוב בהן מידע רגיש (קודים, פרטים אישיים של לקוחות).</li></ul></details>';
+  Array.prototype.forEach.call(document.querySelectorAll('.msg-seg button'), function(b){ b.onclick = function(){ msgView = b.dataset.v; rMsgs(); }; });
+  $('#msgNew').onclick = function(){ msgEdit(null); };
+  $('#msgL').addEventListener('click', function(e){
+    var b = e.target.closest('[data-a]'), card = e.target.closest('.am'); if (!b || !card) return;
+    var m = msgFind(card.dataset.id); if (!m) return;
+    if (b.dataset.a === 'edit') msgEdit(m); else if (b.dataset.a === 'who') msgWho(m); else msgMore(m);
+  });
+  var cards = document.querySelectorAll('#msgL .am [data-st]');
+  if (cards.length && sheetKey()) loadReport(false).then(function(r){
+    Array.prototype.forEach.call(cards, function(el){
+      var m = msgFind(el.closest('.am').dataset.id); if (!m) return;
+      var S = msgStats(m, r), n = S.aud || 1, done = m.ack ? S.ack : S.read;
+      el.innerHTML = '<div class="am-bar" role="img" aria-label="' + done + ' מתוך ' + S.aud + '"><i class="r" style="width:' + (100 * done / n) + '%"></i><i class="s" style="width:' + (100 * Math.max(0, S.seen - done) / n) + '%"></i></div>' +
+        '<span>' + (m.ack ? 'אישרו ' + S.ack : 'קראו ' + S.read) + ' מתוך ' + S.aud + (S.seen > done ? ' · ראו ולא ' + (m.ack ? 'אישרו' : 'פתחו') + ' ' + (S.seen - done) : '') + (m.cta && m.cta.url ? ' · לחצו על הכפתור ' + S.cta : '') + '</span>';
+    });
+  }).catch(function(){ Array.prototype.forEach.call(cards, function(el){ el.textContent = 'נתוני הקריאה לא זמינים כרגע'; }); });
+}
+// one tap sends: the message goes into the settings and is published right away
+function msgCommit(fn, note){
+  var before = dirty(); fn();
+  if (!adminEp(cfg) || !sheetKey()) { render(); toast('נשמר כאן — כדי שיגיע לסוכנים צריך לחבר את הגיליון (פרסום וגיבוי)'); return; }
+  if (before && !confirm('יש שינויים אחרים שעוד לא פורסמו (למשל מחירים או משתמשים). הם יפורסמו יחד עם ההודעה. להמשיך?')) { render(); toast('נשמר — לחצו "פרסום" כשמוכנים'); return; }
+  PUB_NOTE = note; render(); $('#btnPublish').click();
+}
+function msgEdit(m0, dup, preset){
+  var isNew = !m0 || dup, live = m0 && !dup && !m0.draft;
+  var d = m0 ? clone(m0) : { type:'general', pri:'normal', title:'', body:'', cta:null, to:'all', from:'', until:new Date(Date.now() + 14 * 864e5).toISOString(), pin:false };
+  if (preset) Object.keys(preset).forEach(function(k){ if (k !== 'onSent') d[k] = preset[k]; });
+  if (dup) { delete d.id; d.v = 1; d.draft = true; d.from = ''; d.until = new Date(Date.now() + 14 * 864e5).toISOString(); }
+  var ag = activeAgents(), toAll = !d.to || d.to === 'all', sel = {}; if (!toAll) d.to.forEach(function(id){ sel[id] = 1; });
+  var later = !!(d.from && Date.parse(d.from) > Date.now() + 60000);
+  var dur = d.until ? Math.round((Date.parse(d.until) - Date.parse(d.from || d.at || new Date().toISOString())) / 864e5) : 0;
+  var durSel = !d.until ? '0' : [3, 7, 14, 30].indexOf(dur) > -1 ? String(dur) : 'd';
+  var chip = function(k){ return '<button type="button" data-ty="' + k + '" style="--c:' + MSG_T[k][1] + '" aria-pressed="' + (d.type === k) + '">' + MSG_T[k][0] + '</button>'; };
+  var html = '<div class="cm"><h2>' + (isNew ? 'הודעה חדשה לסוכנים' : live ? 'עריכת הודעה שנשלחה' : 'עריכת טיוטה') + '</h2>' +
+    (isNew && !dup && !preset ? '<div class="sec"><div class="lbl">להתחיל מתבנית <small>לא חובה</small></div><div class="chips tpl">' + MSG_TPL.map(function(t, i){ return '<button type="button" data-tp="' + i + '">' + t.n + '</button>'; }).join('') + '</div></div>' : '') +
+    '<div class="sec"><div class="lbl">סוג</div><div class="chips" id="cmTy">' + Object.keys(MSG_T).map(chip).join('') + '</div></div>' +
+    '<div class="sec"><div class="lbl"><label for="cmTitle">כותרת</label><small id="cmTc"></small></div><input type="text" id="cmTitle" maxlength="70" placeholder="למשל: 10% הנחה על מצלמות עד סוף החודש" value="' + esc(d.title) + '"></div>' +
+    '<div class="sec"><div class="lbl"><label for="cmBody">תוכן</label><small id="cmBc"></small></div><textarea id="cmBody" maxlength="700" rows="4" placeholder="הפרטים: למי, עד מתי, מה צריך לעשות">' + esc(d.body) + '</textarea></div>' +
+    '<div class="sec"><div class="lbl">חשיבות</div><div class="pri">' + Object.keys(MSG_PRI).map(function(k){ return '<label class="cf-opt"><input type="radio" name="cmPri" value="' + k + '"' + ((d.pri || 'normal') === k ? ' checked' : '') + '><span><b>' + MSG_PRI[k][0] + '</b><small>' + MSG_PRI[k][1] + '</small></span></label>'; }).join('') + '</div></div>' +
+    '<div class="sec"><div class="lbl">למי</div><div class="seg" role="group" id="cmTo"><button type="button" data-to="all" aria-pressed="' + toAll + '">כל הסוכנים (' + ag.length + ')</button><button type="button" data-to="some" aria-pressed="' + !toAll + '">סוכנים נבחרים</button></div>' +
+      '<div id="cmPickW"' + (toAll ? ' hidden' : '') + '><div class="pick" id="cmPick">' + ag.map(function(u){ return '<label><input type="checkbox" value="' + esc(u.id) + '"' + (sel[u.id] ? ' checked' : '') + '>' + esc(u.name) + '</label>'; }).join('') + '</div><small id="cmPickN" style="color:var(--muted)"></small></div></div>' +
+    '<div class="sec"><div class="lbl">כפתור פעולה <small>לא חובה — קישור לטופס, לקטלוג או לוואטסאפ</small></div><div class="two"><input type="text" id="cmCl" maxlength="24" placeholder="טקסט הכפתור" value="' + esc(d.cta && d.cta.label || '') + '"><input type="url" id="cmCu" dir="ltr" placeholder="https://…" value="' + esc(d.cta && d.cta.url || '') + '"></div></div>' +
+    '<div class="sec"><div class="two"><div><div class="lbl">מתי</div><div class="seg" role="group" id="cmWhen"><button type="button" data-w="now" aria-pressed="' + !later + '">עכשיו</button><button type="button" data-w="later" aria-pressed="' + later + '">במועד</button></div><input type="datetime-local" id="cmFrom" style="margin-top:8px" value="' + toLocalInput(later ? d.from : null) + '"' + (later ? '' : ' hidden') + '></div>' +
+      '<div><div class="lbl"><label for="cmDur">מוצגת עד</label></div><select id="cmDur"><option value="3">3 ימים</option><option value="7">שבוע</option><option value="14">שבועיים</option><option value="30">חודש</option><option value="d">תאריך מסוים</option><option value="0">בלי תאריך סיום</option></select><input type="datetime-local" id="cmUntil" style="margin-top:8px" value="' + toLocalInput(d.until) + '"' + (durSel === 'd' ? '' : ' hidden') + '></div></div></div>' +
+    '<div class="sec"><label class="sw"><input type="checkbox" id="cmPin"' + (d.pin ? ' checked' : '') + '> להצמיד לראש תיבת ההודעות</label></div>' +
+    (live ? '<div class="sec"><label class="sw"><input type="checkbox" id="cmBump"> להציג שוב כהודעה חדשה — גם למי שכבר קרא <small style="display:block;font-weight:500;color:var(--muted)">לשינוי מהותי. לתיקון ניסוח קטן — להשאיר כבוי</small></label></div>' : '') +
+    '<div class="sec"><div class="lbl">כך זה ייראה אצל הסוכן</div><div class="pv" id="cmPv"></div></div>' +
+    '<div class="warns" id="cmW"></div><div class="err" id="cmErr" role="alert"></div>' +
+    '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" data-x>ביטול</button>' + (live ? '' : '<button class="btn" id="cmDraft">שמירה כטיוטה</button>') + '<button class="btn primary" id="cmSend"></button></div></div>';
+  modal(html, function(bd){
+    var q = function(x){ return bd.querySelector(x); };
+    q('#cmDur').value = durSel;
+    function selIds(){ return Array.prototype.filter.call(bd.querySelectorAll('#cmPick input'), function(i){ return i.checked; }).map(function(i){ return i.value; }); }
+    function read(){
+      d.title = q('#cmTitle').value.trim(); d.body = q('#cmBody').value.trim();
+      d.pri = (q('input[name=cmPri]:checked') || {}).value || 'normal'; d.ack = d.pri === 'critical';
+      var some = q('#cmTo [data-to=some]').getAttribute('aria-pressed') === 'true'; d.to = some ? selIds() : 'all';
+      var cl = q('#cmCl').value.trim(), cu = q('#cmCu').value.trim();
+      if (cu && !/^(https?:|tel:|mailto:)/i.test(cu) && /^[\w-]+(\.[\w-]+)+/.test(cu)) cu = 'https://' + cu;
+      d.cta = cl || cu ? { label:cl || 'לפרטים', url:cu } : null;
+      var lat = q('#cmWhen [data-w=later]').getAttribute('aria-pressed') === 'true';
+      var fromT = lat ? new Date(q('#cmFrom').value).getTime() : NaN;
+      var base = isNaN(fromT) ? Date.now() : fromT, dv = q('#cmDur').value;
+      d._from = isNaN(fromT) ? '' : new Date(fromT).toISOString();
+      d._until = dv === '0' ? '' : dv === 'd' ? (isNaN(new Date(q('#cmUntil').value)) ? '' : new Date(q('#cmUntil').value).toISOString()) : new Date(base + (+dv) * 864e5).toISOString();
+      d.pin = q('#cmPin').checked;
+    }
+    function issues(){
+      var e = '';
+      if (!d.title) e = 'כתבו כותרת';
+      else if (d.cta && !d.cta.url) e = 'חסר קישור לכפתור הפעולה (או מחקו את הטקסט שלו)';
+      else if (d.cta && !/^(https?:\/\/|tel:|mailto:)/i.test(d.cta.url)) e = 'הקישור צריך להתחיל ב־https://';
+      else if (Array.isArray(d.to) && !d.to.length) e = 'בחרו לפחות סוכן אחד';
+      else if (d._until && Date.parse(d._until) <= (d._from ? Date.parse(d._from) : Date.now())) e = 'תאריך הסיום צריך להיות אחרי מועד השליחה';
+      return e;
+    }
+    function paint(){
+      read();
+      Array.prototype.forEach.call(bd.querySelectorAll('#cmTy button'), function(b){ b.setAttribute('aria-pressed', String(b.dataset.ty === d.type)); });
+      q('#cmTc').textContent = d.title.length + '/70'; q('#cmBc').textContent = d.body.length + '/700';
+      var n = Array.isArray(d.to) ? d.to.length : ag.length; q('#cmPickN').textContent = Array.isArray(d.to) ? 'נבחרו ' + n + ' סוכנים' : '';
+      var t = MSG_T[d.type] || MSG_T.general;
+      q('#cmPv').innerHTML = '<div class="card-a"><span class="am-tag" style="background:' + t[1] + '">' + t[0] + '</span>' + (d.ack ? ' <span class="am-pri critical">נדרש אישור</span>' : '') + (d.pin ? ' 📌' : '') + '<h4>' + esc(d.title || 'הכותרת תופיע כאן') + '</h4>' + (d.body ? '<p>' + esc(d.body) + '</p>' : '') + (d.cta ? '<span class="cta">' + esc(d.cta.label) + '</span>' : '') + (d.ack ? ' <span class="cta" style="background:var(--ok)">קראתי ואני מאשר/ת</span>' : '') + '</div>' +
+        (d.pri !== 'normal' ? '<small style="display:block;margin-top:6px;color:var(--muted)">נפתחת גם במרכז המסך, פעם אחת, בפתיחת האפליקציה הבאה.</small>' : '');
+      var w = [], week = Date.now() - 7 * 864e5;
+      var pops = msgList().filter(function(m){ return m !== m0 && !m.draft && (m.pri === 'high' || m.pri === 'critical') && Date.parse(m.from || m.at) > week; }).length;
+      if (d.pri !== 'normal' && pops >= 3) w.push('השבוע כבר נשלחו ' + pops + ' הודעות קופצות. יותר מדי הודעות קופצות גורמות לסוכנים לסגור אותן בלי לקרוא — כדאי לשלוח את זו כ"רגילה".');
+      if (/[:־]$|…|\.\.\./.test(d.title) || /[:־][ \t]*(\n|$)|\S  \S|…|\.\.\./.test(d.body)) w.push('נראה שנשארו מקומות למילוי בתבנית — בדקו את הכותרת והתוכן.');
+      if (!d.body && d.type !== 'general') w.push('אין תוכן — הסוכנים יראו רק את הכותרת.');
+      q('#cmW').innerHTML = w.map(function(x){ return '<div class="note warn">' + x + '</div>'; }).join('');
+      var lat = !!d._from && Date.parse(d._from) > Date.now() + 60000;
+      q('#cmSend').textContent = live ? 'שמירה ופרסום' : lat ? 'תזמון לשליחה ב־' + dShort(d._from) : (n === 1 ? 'שליחה לסוכן אחד' : 'שליחה ל־' + n + ' סוכנים');
+      q('#cmErr').textContent = '';
+    }
+    bd.addEventListener('input', paint); bd.addEventListener('change', paint);
+    q('#cmTy').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; d.type = b.dataset.ty; paint(); };
+    Array.prototype.forEach.call(bd.querySelectorAll('[data-tp]'), function(b){ b.onclick = function(){
+      var t = MSG_TPL[+b.dataset.tp]; d.type = t.type; q('#cmTitle').value = t.title; q('#cmBody').value = t.body;
+      var r = bd.querySelector('input[name=cmPri][value=' + t.pri + ']'); if (r) r.checked = true;
+      q('#cmCl').value = t.cta ? t.cta.label : ''; q('#cmCu').value = t.cta ? t.cta.url : '';
+      paint(); var ti = q('#cmTitle'); ti.focus(); try { ti.setSelectionRange(ti.value.length, ti.value.length); } catch(x) {} }; });
+    q('#cmTo').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; Array.prototype.forEach.call(this.children, function(x){ x.setAttribute('aria-pressed', String(x === b)); }); q('#cmPickW').hidden = b.dataset.to !== 'some'; paint(); };
+    q('#cmWhen').onclick = function(e){ var b = e.target.closest('button'); if (!b) return; Array.prototype.forEach.call(this.children, function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+      q('#cmFrom').hidden = b.dataset.w !== 'later'; if (b.dataset.w === 'later' && !q('#cmFrom').dataset.set) { q('#cmFrom').value = toLocalInput(new Date(Date.now() + 864e5).setHours(9, 0, 0, 0)); q('#cmFrom').dataset.set = 1; } paint(); };
+    q('#cmDur').addEventListener('change', function(){ q('#cmUntil').hidden = this.value !== 'd'; });
+    function save(asDraft){
+      read(); var e = issues(); if (e) { q('#cmErr').textContent = e; return; }
+      var bump = live && q('#cmBump') && q('#cmBump').checked;
+      msgCommit(function(){
+        var m = isNew ? { id:'m' + Date.now().toString(36), v:1 } : m0;
+        m.type = d.type; m.pri = d.pri; m.ack = d.ack; m.title = d.title; m.body = d.body; m.cta = d.cta; m.to = d.to; m.pin = d.pin;
+        if (!live) m.from = d._from || new Date().toISOString(); else if (d._from) m.from = d._from;
+        if (d._until) m.until = d._until; else delete m.until;
+        if (!m.cta) delete m.cta;
+        if (asDraft) m.draft = true; else delete m.draft;
+        if (bump) { m.v = (m.v || 1) + 1; m.from = new Date().toISOString(); }
+        m.at = m.at || new Date().toISOString(); m.by = me.name;
+        if (isNew) msgList().push(m);
+        msgView = asDraft ? 'draft' : (msgStatus(m) === 'sched' ? 'sched' : 'live');
+      }, asDraft ? 'הטיוטה נשמרה' : live ? 'ההודעה עודכנה אצל הסוכנים' : (d._from && Date.parse(d._from) > Date.now() + 60000 ? 'ההודעה תוזמנה ותופיע אצל הסוכנים ב־' + dShort(d._from) : 'ההודעה נשלחה — הסוכנים יראו אותה בפתיחה הבאה של האפליקציה, ותוך דקות אם היא פתוחה'));
+      bd.remove();
+      if (!asDraft && preset && preset.onSent) try { preset.onSent(); } catch(x) {}
+    }
+    q('#cmSend').onclick = function(){ save(false); };
+    if (q('#cmDraft')) q('#cmDraft').onclick = function(){ save(true); };
+    paint(); if (isNew && !dup) setTimeout(function(){ q('#cmTitle').focus(); }, 60);
+  });
+}
+function msgNudgeText(m){ return 'היי, ' + (String((me && me.name) || '').split(' ')[0] || 'מנהל המוצר') + ' מ־G1. שלחתי באפליקציית SiteGuard הודעה ' + (m.ack ? 'שצריך לאשר' : 'חשובה') + ': "' + m.title + '". פותחים את האפליקציה ולוחצים על הפעמון למעלה, או כאן: ' + APP_URL + '#msg=' + encodeURIComponent(m.id); }
+function msgWho(m){
+  modal('<h2>מי קרא · ' + esc(m.title) + '</h2><p class="sub" style="margin:4px 0 0">' + msgAudText(m) + '</p><div id="whoB">טוען…</div>' +
+    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>סגירה</button><button class="btn primary" id="whoWa" hidden>תזכורת בוואטסאפ למי שלא קרא</button></div>', function(bd){
+    loadReport(true).then(function(r){
+      var S = msgStats(m, r), rank = function(p){ return p.ack ? 3 : (p.read ? 2 : (p.seen || p.open || p.cta ? 1 : 0)); };
+      var aud = msgAudience(m).slice().sort(function(a, b){ return rank(S.per[a.id] || {}) - rank(S.per[b.id] || {}); });
+      var lbl = function(p){ return p.ack ? ['ack', 'אישר/ה'] : p.read ? ['read', m.ack ? 'קרא/ה, לא אישר/ה' : 'קרא/ה'] : (p.seen || p.open) ? ['seen', 'ראה/תה, לא פתח/ה'] : ['none', 'עוד לא ראה/תה']; };
+      bd.querySelector('#whoB').innerHTML = '<div class="kpis" style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">' +
+        '<div class="stat"><b>' + S.seen + '</b><span>ראו</span></div><div class="stat"><b>' + (m.ack ? S.ack : S.read) + '</b><span>' + (m.ack ? 'אישרו' : 'קראו') + '</span></div><div class="stat"><b>' + S.cta + '</b><span>לחצו על הכפתור</span></div></div>' +
+        '<ul class="who-l">' + aud.map(function(u){ var p = S.per[u.id] || {}, l = lbl(p), t = p.ack || p.read || p.seen || p.open;
+          return '<li><b>' + esc(u.name) + '</b><span class="s ' + l[0] + '">' + l[1] + '</span>' + (t ? '<small style="color:var(--muted)">' + agoHe(t) + '</small>' : '') +
+            (rank(p) < (m.ack ? 3 : 2) ? '<button class="btn sm" data-wa="' + esc(u.id) + '" aria-label="וואטסאפ ל' + esc(u.name) + '">וואטסאפ</button>' : '') + '</li>'; }).join('') + '</ul>' +
+        '<p class="sub" style="margin:10px 0 0;font-size:12.5px">הנתונים מגיעים מהמכשירים של הסוכנים כשהם מחוברים לרשת — לפעמים באיחור של כמה דקות.</p>';
+      var wa = bd.querySelector('#whoWa'); wa.hidden = !S.notDone.length; wa.textContent = 'תזכורת בוואטסאפ ל־' + S.notDone.length + ' שלא ' + (m.ack ? 'אישרו' : 'קראו');
+      wa.onclick = function(){ openWA(msgNudgeText(m)); };
+      Array.prototype.forEach.call(bd.querySelectorAll('[data-wa]'), function(b){ b.onclick = function(){ var u = userById(b.dataset.wa); openWA(msgNudgeText(m).replace('היי,', 'היי ' + String(u.name || '').split(' ')[0] + ','), PHONES[u.id]); }; });
+    }).catch(function(e){ bd.querySelector('#whoB').innerHTML = '<div class="note warn" style="margin-top:12px">לא ניתן לטעון את הנתונים מהגיליון כרגע (' + esc(e.message) + ').</div>'; });
+  });
+}
+function msgMore(m){
+  var st = msgStatus(m);
+  modal('<h2>' + esc(m.title) + '</h2><div class="acts-l">' +
+    (st === 'live' || st === 'sched' ? '<button class="btn" data-m="end">⏹ סיום עכשיו — תעבור לארכיון אצל הסוכנים</button>' : '') +
+    (st === 'live' ? '<button class="btn" data-m="wa">💬 תזכורת בוואטסאפ למי שלא קרא</button>' : '') +
+    (st === 'ended' ? '<button class="btn" data-m="again">↻ לשלוח שוב (עוד שבועיים)</button>' : '') +
+    '<button class="btn" data-m="dup">⧉ שכפול — הודעה חדשה על בסיס זו</button>' +
+    '<button class="btn danger" data-m="del">🗑 מחיקה — תיעלם גם מתיבת ההודעות של הסוכנים</button></div>' +
+    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>סגירה</button></div>', function(bd){
+    bd.querySelector('.acts-l').onclick = function(e){
+      var b = e.target.closest('[data-m]'); if (!b) return; var a = b.dataset.m; bd.remove();
+      if (a === 'end') msgCommit(function(){ m.until = new Date().toISOString(); msgView = 'ended'; }, 'ההודעה הסתיימה');
+      else if (a === 'again') msgCommit(function(){ m.v = (m.v || 1) + 1; m.from = new Date().toISOString(); m.until = new Date(Date.now() + 14 * 864e5).toISOString(); msgView = 'live'; }, 'ההודעה נשלחה שוב');
+      else if (a === 'wa') loadReport(true).then(function(r){ var S = msgStats(m, r); if (!S.notDone.length) { toast('כולם כבר קראו'); return; } openWA(msgNudgeText(m)); }, function(){ openWA(msgNudgeText(m)); });
+      else if (a === 'dup') msgEdit(m, true);
+      else if (a === 'del') { if (!confirm('למחוק את ההודעה "' + m.title + '"?')) return; msgCommit(function(){ cfg.messages = msgList().filter(function(x){ return x !== m; }); }, 'ההודעה נמחקה'); }
+    };
+  });
+}
+
+/* ---------- remote control: versions, maintenance, quotes, features in trial ---------- */
+var LIVE_VER = 0;
+function liveVer(){ if (LIVE_VER) return Promise.resolve(LIVE_VER);
+  return fetch('../sw.js?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.text(); }).then(function(t){ var m = t.match(/g1-siteguard-v(\d+)/); LIVE_VER = m ? +m[1] : 0; return LIVE_VER; }, function(){ return 0; }); }
+var FLAGS = [
+  { k:'planImport', n:'ייבוא תוכנית מהלקוח', d:'העלאת PDF או תמונה של תוכנית הבית וזיהוי החדרים' },
+  { k:'fire', n:'תכנון מערכת גילוי אש', d:'הצבת גלאי עשן וחום ובדיקת התכנון' }
+];
+function rRemote(){
+  var A = cfg.app, F = cfg.flags, ag = activeAgents(), bio = cfg.access.bio || {};
+  var maint = A.maintenance && A.maintenance.on, stopQ = !!A.stopQuotes;
+  $('#pane').innerHTML = '<h1>שליטה מרחוק</h1><p class="sub">משנים כאן — ונכנס לתוקף אצל הסוכנים אחרי "פרסום", בפתיחה הבאה של האפליקציה (או תוך דקות כשהיא פתוחה). מנהלים לא נחסמים אף פעם.</p><div class="rc">' +
+    '<div class="card"><h2>גרסת האפליקציה</h2><p class="sub">הגרסה באוויר: <b id="rcLive">…</b> · <span id="rcVers">טוען מי על איזו גרסה…</span></p>' +
+      '<div class="line"><span>להציע עדכון למי שמתחת לגרסה<small>פס עליון עם כפתור "עדכון" שאפשר לסגור</small></span><input type="number" id="rcRec" min="0" inputmode="numeric" value="' + (A.recVersion || '') + '" placeholder="—"><button class="btn sm" id="rcRecNow">הגרסה הנוכחית</button></div>' +
+      '<div class="line"><span>לחייב עדכון למי שמתחת לגרסה<small>מסך חוסם עד שמעדכנים. רק לתקלה חמורה בגרסה ישנה</small></span><input type="number" id="rcMin" min="0" inputmode="numeric" value="' + (A.minVersion || '') + '" placeholder="—"></div>' +
+      '<div class="line"><span style="flex-basis:100%">הסבר שיופיע בעדכון (לא חובה)<input type="text" id="rcUpdMsg" maxlength="140" value="' + esc(A.updateMsg || '') + '" placeholder="למשל: תוקנה בעיה בהדפסת הצעות מחיר" style="margin-top:6px"></span></div></div>' +
+    '<div class="card"><h2>מצב תחזוקה ' + (maint ? '<span class="on-state">פעיל</span>' : '') + '</h2><p class="sub">מסך "האפליקציה בתחזוקה קצרה" לכל הסוכנים — למשל בזמן תיקון מחירון. הכול נשמר אצלם ונפתח שוב כשמכבים.</p>' +
+      '<div class="line"><label class="sw"><input type="checkbox" id="rcMaint"' + (maint ? ' checked' : '') + '> להפעיל מצב תחזוקה</label></div>' +
+      '<div class="line"><span style="flex-basis:100%">הודעה לסוכנים<input type="text" id="rcMaintMsg" maxlength="140" value="' + esc(A.maintenance && A.maintenance.msg || '') + '" placeholder="נחזור בהקדם. אפשר להמשיך ולתכנן על נייר — תודה על הסבלנות." style="margin-top:6px"></span></div></div>' +
+    '<div class="card"><h2>עצירת שליחת הצעות מחיר ' + (stopQ ? '<span class="on-state">עצור</span>' : '') + '</h2><p class="sub">הסוכנים ממשיכים לתכנן, אבל "שליחה ללקוח" ו"הדפסה" חסומים — למשל כשמחיר שגוי נכנס למחירון.</p>' +
+      '<div class="line"><label class="sw"><input type="checkbox" id="rcStop"' + (stopQ ? ' checked' : '') + '> לעצור שליחת הצעות מחיר</label></div>' +
+      '<div class="line"><span style="flex-basis:100%">סיבה שתוצג לסוכן<input type="text" id="rcStopMsg" maxlength="120" value="' + esc(A.stopQuotesMsg || '') + '" placeholder="המחירון מתעדכן, חוזרים עד הצהריים" style="margin-top:6px"></span></div></div>' +
+    '<div class="card"><h2>יכולות בהרצה</h2><p class="sub">פותחים יכולת חדשה קודם לכמה סוכנים, ורק אחר כך לכולם.</p>' +
+      FLAGS.map(function(f){ var o = F[f.k] || { mode:'all' }, mode = o.mode || 'all', on = {}; (o.agents || []).forEach(function(id){ on[id] = 1; });
+        return '<div class="line" data-flag="' + f.k + '"><span>' + f.n + '<small>' + f.d + '</small></span><div class="seg" role="group" aria-label="' + f.n + '">' +
+          [['all', 'לכולם'], ['some', 'לנבחרים'], ['off', 'כבוי']].map(function(x){ return '<button type="button" data-m="' + x[0] + '" aria-pressed="' + (mode === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+          '<div class="pick" style="flex-basis:100%"' + (mode === 'some' ? '' : ' hidden') + '>' + ag.map(function(u){ return '<label><input type="checkbox" value="' + esc(u.id) + '"' + (on[u.id] ? ' checked' : '') + '>' + esc(u.name) + '</label>'; }).join('') + '</div></div>'; }).join('') +
+    '</div>' +
+    '<div class="card"><h2>נעילה בזיהוי פנים ' + (bio.on ? '<span class="on-state" style="background:rgba(15,138,95,.12);color:var(--ok)">פעילה</span>' : '') + '</h2><p class="sub">חובה לכל הסוכנים: אחרי הכניסה הראשונה עם הקוד, האפליקציה ננעלת ונפתחת רק בזיהוי הפנים (או טביעת האצבע) של הטלפון — כך שמי שמרים טלפון של סוכן לא רואה מחירים ופרטי לקוחות. הקוד תמיד עובד כדרך חלופית. מנהלים לא ננעלים.</p>' +
+      '<div class="line"><label class="sw"><input type="checkbox" id="rcBio"' + (bio.on ? ' checked' : '') + '> לחייב נעילה בזיהוי פנים</label></div>' +
+      '<div class="line"><span>לבקש זיהוי אחרי<small>זמן בלי שימוש באפליקציה</small></span><select id="rcBioIdle" style="padding:9px 10px;border:1px solid #C9D2DC;border-radius:10px;background:#fff"' + (bio.on ? '' : ' disabled') + '>' +
+        [['0', 'בכל פתיחה'], ['1', 'שעה'], ['4', '4 שעות (מומלץ)'], ['8', '8 שעות'], ['24', 'יום']].map(function(o){ return '<option value="' + o[0] + '"' + (String(bio.idleHours == null ? 4 : bio.idleHours) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+      '<div class="line" id="rcBioSt" style="font-size:13.5px;color:var(--muted)">' + (sheetKey() ? 'טוען מי כבר הפעיל…' : '') + '</div></div>' +
+    '<div class="card"><h2>שמירת נתונים ופרטיות</h2><p class="sub">כמה זמן נשמרים הנתונים בגיליון. מה שישן יותר נמחק אוטומטית פעם ביום (צריך קוד גיליון גרסה 4). כדאי לא לשמור פרטי לקוחות יותר מהנדרש.</p>' +
+      RET.map(function(x){ var v = (cfg.retention || {})[x.k] || '';
+        return '<div class="line"><span>' + x.n + '<small>' + x.d + '</small></span><select data-ret="' + x.k + '" style="padding:9px 10px;border:1px solid #C9D2DC;border-radius:10px;background:#fff">' +
+          [['', 'בלי הגבלה'], ['90', '3 חודשים'], ['180', 'חצי שנה'], ['365', 'שנה'], ['730', 'שנתיים']].map(function(o){ return '<option value="' + o[0] + '"' + (String(v) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>'; }).join('') +
+    '</div></div>';
+  $('#rcBio').onchange = function(){
+    if (this.checked && !confirm('אחרי הפרסום, כל סוכן יתבקש בפתיחה הבאה להפעיל זיהוי פנים, ומאז האפליקציה תיפתח רק במבט (או עם הקוד). להפעיל?')) { this.checked = false; return; }
+    if (this.checked) cfg.access.bio = { on:true, idleHours:+$('#rcBioIdle').value }; else delete cfg.access.bio;
+    markDirty(); rRemote(); };
+  $('#rcBioIdle').onchange = function(){ if (cfg.access.bio) { cfg.access.bio.idleHours = +this.value; markDirty(); } };
+  if (sheetKey()) loadReport(false).then(function(r){
+    var st = {}; ((r && r.logins) || []).forEach(function(l){ var u = parseUse(l.event); if (u && u.a === 'bio') { var x = st[l.uid] || (st[l.uid] = {}); x[u.m.a] = 1; } });
+    var on = ag.filter(function(u){ return st[u.id] && st[u.id].on; }), uns = ag.filter(function(u){ return st[u.id] && st[u.id].unsupported && !st[u.id].on; }), rest = ag.filter(function(u){ return on.indexOf(u) < 0 && uns.indexOf(u) < 0; });
+    var el = $('#rcBioSt'); if (!el) return;
+    el.innerHTML = '<span style="flex-basis:100%">הפעילו: <b>' + on.length + ' מתוך ' + ag.length + '</b>' + (uns.length ? ' · טלפון בלי זיהוי ביומטרי (נכנסים בלי נעילה): ' + esc(uns.map(function(u){ return u.name; }).join(', ')) : '') +
+      (rest.length && bio.on ? '<br>עוד לא הפעילו (יתבקשו בפתיחה הבאה): ' + esc(rest.map(function(u){ return u.name; }).join(', ')) : '') + '</span>';
+  }).catch(function(){});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ret]'), function(sel){ sel.onchange = function(){
+    var k = sel.dataset.ret, R = cfg.retention || {}, old = R[k], v = +sel.value || 0;
+    if (v && (!old || v < old) && !confirm('נתונים ישנים מ־' + v + ' ימים יימחקו לצמיתות מהגיליון' + (k === 'logsDays' ? ' (גם ממדדי הפיילוט)' : '') + '. להמשיך?')) { sel.value = old || ''; return; }
+    if (v) R[k] = v; else delete R[k];
+    if (Object.keys(R).length) cfg.retention = R; else delete cfg.retention; markDirty(); }; });
+  var setA = function(k, v){ if (v === '' || v == null || v === false || v === 0) delete A[k]; else A[k] = v; markDirty(); };
+  liveVer().then(function(v){ $('#rcLive').textContent = v || 'לא ידוע';
+    $('#rcRecNow').onclick = function(){ if (!v) return; $('#rcRec').value = v; setA('recVersion', v); };
+    var chk = function(inp, k){ inp.onchange = function(){ var n = +inp.value || 0;
+      if (n && v && n > v) { toast('אין עדיין גרסה ' + n + ' באוויר — הגרסה הנוכחית היא ' + v); inp.value = A[k] || ''; return; }
+      if (k === 'minVersion' && n && !confirm('סוכנים בגרסה נמוכה מ־' + n + ' לא יוכלו לעבוד עד שיעדכנו. להמשיך?')) { inp.value = A[k] || ''; return; }
+      setA(k, n); }; };
+    chk($('#rcRec'), 'recVersion'); chk($('#rcMin'), 'minVersion');
+  });
+  $('#rcUpdMsg').oninput = function(){ setA('updateMsg', this.value.trim()); };
+  $('#rcMaint').onchange = function(){
+    if (this.checked && !confirm('אחרי הפרסום, כל הסוכנים יראו מסך תחזוקה ולא יוכלו לעבוד עד שתכבו. להפעיל?')) { this.checked = false; return; }
+    var msg = $('#rcMaintMsg').value.trim(); if (this.checked) A.maintenance = { on:true, msg:msg }; else if (msg) A.maintenance = { on:false, msg:msg }; else delete A.maintenance; markDirty(); rRemote(); };
+  $('#rcMaintMsg').oninput = function(){ var on = $('#rcMaint').checked, msg = this.value.trim(); if (on || msg) A.maintenance = { on:on, msg:msg }; else delete A.maintenance; markDirty(); };
+  $('#rcStop').onchange = function(){ setA('stopQuotes', this.checked); rRemote(); };
+  $('#rcStopMsg').oninput = function(){ setA('stopQuotesMsg', this.value.trim()); };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-flag]'), function(row){
+    var k = row.dataset.flag, pick = row.querySelector('.pick');
+    var save = function(mode){ var ids = Array.prototype.filter.call(pick.querySelectorAll('input'), function(i){ return i.checked; }).map(function(i){ return i.value; });
+      if (mode === 'all') delete F[k]; else F[k] = mode === 'some' ? { mode:'some', agents:ids } : { mode:'off' }; markDirty(); };
+    row.querySelector('.seg').onclick = function(e){ var b = e.target.closest('button'); if (!b) return;
+      Array.prototype.forEach.call(this.children, function(x){ x.setAttribute('aria-pressed', String(x === b)); }); pick.hidden = b.dataset.m !== 'some'; save(b.dataset.m); };
+    pick.onchange = function(){ save('some'); };
+  });
+  if (sheetKey()) loadReport(false).then(function(r){
+    var S = pilotStats(r), by = {}, top = S.latest; S.list.forEach(function(a){ if (a.u.role === 'agent' && a.ver) { var n = verNum(a.ver); by[n] = (by[n] || 0) + 1; } });
+    var ks = Object.keys(by).sort(function(a, b){ return b - a; });
+    var old = ks.filter(function(k){ return +k < top; }).reduce(function(s, k){ return s + by[k]; }, 0);
+    $('#rcVers').innerHTML = ks.length ? (old ? old + ' סוכנים בגרסה ישנה' : 'כל הסוכנים בגרסה האחרונה') + '<span class="vers">' + ks.map(function(k){ return '<span' + (+k < top ? ' class="old"' : '') + '>גרסה ' + k + ' · ' + by[k] + '</span>'; }).join('') + '</span>' : 'עוד אין נתוני גרסה מהסוכנים';
+  }).catch(function(){ $('#rcVers').textContent = ''; });
+  else $('#rcVers').textContent = '';
+}
 
 /* ---------- tabs ---------- */
 Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){ t.onclick = function(){ tab = t.dataset.t; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x === t)); }); render(); }; });
-function render(){ ({ overview:rOverview, pilot:rPilot, users:rUsers, logins:rLogins, surveys:rSurveys, agent:rAgent, consumer:rConsumer, texts:rTexts, publish:rPublish })[tab](); markDirty(); }
+function render(){ ({ overview:rOverview, pilot:rPilot, users:rUsers, logins:rLogins, surveys:rSurveys, agent:rAgent, consumer:rConsumer, texts:rTexts, publish:rPublish, me:rMe, msgs:rMsgs, remote:rRemote, deals:rDeals, inbox:rInbox, history:rHistory })[tab](); roApply(); markDirty(); syncNav(); }
+function pendingDevices(){ var n = 0; ((REPORT && REPORT.logins) || []).forEach(function(l){ if (l.event === 'device-pending') { var u = userById(l.uid); if (u && (u.devices || []).indexOf(l.deviceId) < 0) n++; } }); return n; }
+function syncNav(){
+  var nb = $('#nbLogins'); if (nb) { var pd = cfg && cfg.access && cfg.access.deviceLock ? pendingDevices() : 0; nb.hidden = !pd; nb.textContent = pd; }
+  var fbN = fbRows().filter(function(f){ return (f.status || 'new') === 'new'; }).length;
+  ['#tbInbox', '#shInbox', '#nbMore'].forEach(function(sel){ var e = $(sel); if (e) { e.hidden = !fbN; e.textContent = fbN; } });
+  var main = { pilot:1, users:1, logins:1, msgs:1 };
+  Array.prototype.forEach.call(document.querySelectorAll('#mnav button'), function(b){ var on = b.dataset.t === tab || (b.dataset.t === 'more' && !main[tab]); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  Array.prototype.forEach.call(document.querySelectorAll('#msheet .mi[data-t]'), function(b){ b.classList.toggle('cur', b.dataset.t === tab); });
+  document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x.dataset.t === tab)); });
+}
+function openSheet(on){ var sh = $('#msheet'); sh.classList.toggle('open', on); sh.setAttribute('aria-hidden', String(!on)); }
+Array.prototype.forEach.call(document.querySelectorAll('#mnav button'), function(b){ b.onclick = function(){
+  if (b.dataset.t === 'more') { openSheet(true); return; }
+  if (tab === b.dataset.t) { window.scrollTo({ top:0, behavior:'smooth' }); return; }
+  goTab(b.dataset.t); window.scrollTo(0, 0); }; });
+$('#msheet').addEventListener('click', function(e){
+  var it = e.target.closest('.mi');
+  if (!it) { if (e.target === this) openSheet(false); return; }
+  openSheet(false);
+  if (it.dataset.act === 'logout') { if (dirty() || confirm('לצאת מהניהול?')) $('#btnLogout').click(); return; }
+  goTab(it.dataset.t); window.scrollTo(0, 0);
+});
+// swipe the sheet down to close it
+(function(){ var y0 = null, sh = $('#msheet .sh');
+  sh.addEventListener('touchstart', function(e){ y0 = sh.scrollTop <= 0 ? e.touches[0].clientY : null; }, { passive:true });
+  sh.addEventListener('touchmove', function(e){ if (y0 == null) return; var dy = e.touches[0].clientY - y0; if (dy > 0) sh.style.transform = 'translateY(' + dy + 'px)'; }, { passive:true });
+  sh.addEventListener('touchend', function(e){ if (y0 == null) return; var dy = (e.changedTouches[0].clientY - y0); sh.style.transform = ''; if (dy > 80) openSheet(false); y0 = null; });
+})();
+// tables read as cards on a phone: every cell gets its column name as a label
+function cardify(root){
+  Array.prototype.forEach.call((root || document).querySelectorAll('.tbl-wrap table'), function(t){
+    var heads = Array.prototype.map.call(t.querySelectorAll('thead th'), function(th){ return th.textContent.replace(/[▲▼]/g, '').trim(); });
+    t.classList.add('mcards');
+    var r1 = t.querySelector('tbody tr:not(.cat-h)');
+    if (r1 && r1.children.length === 3 && r1.children[1].querySelector('input[type=number]') && r1.children[2].querySelector('input[type=number]')) t.classList.add('mc-grid2');
+    Array.prototype.forEach.call(t.querySelectorAll('input[type=number]'), function(i){ if (!i.hasAttribute('inputmode')) i.setAttribute('inputmode', 'decimal'); });
+    Array.prototype.forEach.call(t.querySelectorAll('tbody tr'), function(tr){
+      Array.prototype.forEach.call(tr.children, function(td, i){ if (!td.hasAttribute('data-label') && heads[i] && i > 0 && td.colSpan < 2) td.setAttribute('data-label', heads[i]); });
+    });
+  });
+}
+new MutationObserver(function(){ cardify($('#pane')); }).observe($('#pane'), { childList:true, subtree:true });
 function bindNum(sel, getObj, key, allowNull){
   Array.prototype.forEach.call(document.querySelectorAll(sel), function(inp){
     inp.oninput = function(){ var o = getObj(inp), k = key(inp); var v = inp.value.trim(); if (v === '') { if (allowNull) o[k] = null; else delete o[k]; } else o[k] = Number(v); markDirty(); };
@@ -324,10 +1292,10 @@ function rOverview(){
   var priced = Object.keys(cfg.agent.prices).filter(function(k){ var p = cfg.agent.prices[k]; return p && (p.list != null || p.min != null); }).length;
   $('#pane').innerHTML = '<h1>שלום ' + esc(me.name) + '</h1><p class="sub">כאן שולטים בשתי האפליקציות. כל שינוי נשמר כאן כטיוטה, ונכנס לתוקף אצל כולם אחרי "פרסום לכל המשתמשים" — אצל הסוכנים בחיבור הבא לרשת.</p>' +
     '<div class="grid2">' +
-      '<div class="stat"><b>' + act + ' / ' + ag.length + '</b><span>סוכנים פעילים בפיילוט</span></div>' +
+      '<div class="stat"><b>' + act + ' / ' + ag.length + '</b><span>סוכנים עם גישה</span></div>' +
       '<div class="stat"><b>' + (cfg.access.enabled ? 'פעילה' : 'כבויה') + '</b><span>נעילת אפליקציית הסוכנים</span></div>' +
       '<div class="stat"><b>' + priced + '</b><span>פריטים עם מחיר מחירון / מינימום</span></div>' +
-      '<div class="stat"><b>' + (cfg.updatedAt ? new Date(cfg.updatedAt).toLocaleDateString('he-IL') : '—') + '</b><span>פרסום אחרון' + (cfg.updatedBy ? ' · ' + esc(cfg.updatedBy) : '') + '</span></div>' +
+      '<div class="stat"><b>' + (cfg.updatedAt ? new Date(cfg.updatedAt).toLocaleDateString('he-IL') : '—') + '</b><span>פורסם לאחרונה' + (cfg.updatedBy ? ' · ' + esc(cfg.updatedBy) : '') + '</span></div>' +
     '</div>' +
     '<div class="card" style="margin-top:16px"><h2>קישורים</h2><div class="row">' +
       '<a class="btn" href="' + APP_URL + '" target="_blank" rel="noopener">אפליקציית הסוכנים</a>' +
@@ -338,13 +1306,13 @@ function rOverview(){
 
 function rUsers(){
   var us = cfg.access.users || [];
-  $('#pane').innerHTML = '<h1>משתמשים והרשאות</h1><p class="sub">לכל נסיין קוד הקצאה אישי. חסימה נכנסת לתוקף בחיבור הבא שלו לרשת (או אחרי ' + (cfg.access.offlineDays || 7) + ' ימים בלי חיבור).</p>' +
+  $('#pane').innerHTML = '<h1>סוכנים והרשאות</h1><p class="sub">לכל נסיין קוד הקצאה אישי. חסימה נכנסת לתוקף בחיבור הבא שלו לרשת (או אחרי ' + (cfg.access.offlineDays || 7) + ' ימים בלי חיבור).</p>' +
     '<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">משתמשים</h2><button class="btn primary" id="btnAdd">+ הוספת סוכן</button></div>' +
     '<div class="tbl-wrap"><table><thead><tr><th>שם</th><th>תפקיד</th><th>נייד לאימות</th><th>סטטוס</th><th>נוצר</th><th></th></tr></thead><tbody>' +
     us.map(function(u, i){
       return '<tr data-i="' + i + '"><td><input type="text" class="u-name" value="' + esc(u.name) + '" aria-label="שם"></td>' +
-        '<td><span class="role">' + (u.role === 'manager' ? 'מנהל מוצר' : 'סוכן') + '</span></td>' +
-        '<td>' + (u.phoneHash ? '<span class="st on mono" title="הכניסה דורשת גם את מספר הנייד">✓ ' + esc(u.phoneMask || 'מוגדר') + '</span>' : '<span class="st off">חסר — קוד בלבד</span>') +
+        '<td><span class="role">' + (u.role === 'manager' ? 'מנהל מוצר' : u.role === 'viewer' ? 'צפייה בניהול' : 'סוכן') + '</span></td>' +
+        '<td>' + (u.phoneHash ? '<span class="st on mono" title="הכניסה דורשת גם את מספר הנייד">✓ ' + esc(u.phoneMask || 'מוגדר') + '</span>' : '<span class="st off" style="white-space:nowrap">ללא נייד</span>') +
           '<input type="tel" class="u-phone mono" placeholder="' + (u.phoneHash ? 'החלפת נייד…' : 'הוספת נייד…') + '" aria-label="מספר נייד לאימות" style="max-width:150px;margin-top:4px"></td>' +
         '<td><span class="st ' + (u.status === 'active' ? 'on">פעיל' : 'off">חסום') + '</span>' + (!u.hash ? '<br><span class="st off" title="למשתמש אין קוד — לחצו החלפת קוד">אין קוד</span>' : '') + (pendingNote(u) ? '<br><span class="st pend">' + pendingNote(u) + '</span>' : '') + '</td>' +
         '<td style="font-size:12.5px;color:var(--muted)">' + (u.created ? new Date(u.created).toLocaleDateString('he-IL') : '') + '</td>' +
@@ -394,8 +1362,8 @@ function pendingNote(u){
 }
 function activeManagers(){ return (cfg.access.users || []).filter(function(u){ return u.role === 'manager' && u.status === 'active'; }).length; }
 function addUser(){
-  modal('<h2>הוספת משתמש</h2><div class="grid2" style="margin-top:8px"><label class="f">שם מלא<input id="nuName" type="text"></label><label class="f">מספר נייד (לאימות דו-שלבי ולשליחת הקוד)<input id="nuPhone" class="mono" type="tel" placeholder="05X-XXXXXXX"><small>מומלץ — בלי נייד הכניסה תהיה עם קוד בלבד</small></label>' +
-    '<label class="f">תפקיד<select id="nuRole"><option value="agent">סוכן (פיילוט)</option><option value="manager">מנהל מוצר</option></select></label></div>' +
+  modal('<h2>הוספת משתמש</h2><div class="grid2" style="margin-top:8px"><label class="f">שם מלא<input id="nuName" type="text"></label><label class="f">נייד (מומלץ)<input id="nuPhone" class="mono" type="tel" inputmode="tel" dir="ltr" autocomplete="off" placeholder="05X-XXXXXXX"><small>בלי נייד — כניסה עם קוד בלבד</small></label>' +
+    '<label class="f">תפקיד<select id="nuRole"><option value="agent">סוכן (פיילוט)</option><option value="manager">מנהל מוצר</option><option value="viewer">צפייה בניהול — מדדים בלבד, בלי עריכה</option></select></label></div>' +
     '<div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn primary" id="nuGo">יצירת קוד</button></div>', function(bd){
     bd.querySelector('#nuGo').onclick = function(){
       var name = bd.querySelector('#nuName').value.trim(); if (!name) { bd.querySelector('#nuName').focus(); return; }
@@ -457,6 +1425,7 @@ function issueCode(u, isNew){
         return hash(code, u.id, cfg.access.salt).then(function(h){
           u.hash = h; markDirty(); if (tab === 'users') rUsers();
           if (u.role === 'manager') deriveKey(code, u.id, cfg.access.salt).then(function(dk){ PENDING_KEYS.push(dk); if (me && u.id === me.id) PENDING_SELF = dk; });
+          else if (u.role === 'viewer') deriveKey(code, u.id, cfg.access.salt).then(function(dk){ PENDING_VIEW.push(dk); });
           // changing my own code: keep this admin session signed in
           if (me && u.id === me.id) { me.hash = h; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {} }
           bd.remove(); showCode(u, code, isNew);
@@ -474,10 +1443,11 @@ function showCode(u, code, isNew){
     '<p class="sub" style="margin:4px 0 0">הקוד מוצג רק עכשיו (הוא לא נשמר בשום מקום בגלוי). העבירו אותו למשתמש, ואז לחצו "פרסום לכל המשתמשים" כדי שייכנס לתוקף.</p>' +
     '<div class="code-big" id="cb" dir="ltr">' + esc(shown) + '</div>' +
     '<div class="row" style="justify-content:center"><button class="btn" id="cpy">העתקת הקוד</button>' +
-    '<a class="btn navy" target="_blank" rel="noopener" href="https://wa.me/' + (phone || '') + '?text=' + encodeURIComponent(text) + '">שליחה בוואטסאפ</a></div>' +
+    '<button class="btn navy" id="cbWa">שליחה בוואטסאפ</button></div>' +
     '<div class="note warn" style="margin-top:12px">הקוד ייכנס לתוקף רק אחרי פרסום. עד אז הקוד הקודם ממשיך לעבוד.</div>' +
     '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" data-x>אפרסם אחר כך</button><button class="btn primary" id="pubNow">פרסום עכשיו</button></div>', function(bd){
     bd.querySelector('#pubNow').onclick = function(){ bd.remove(); $('#btnPublish').click(); };
+    bd.querySelector('#cbWa').onclick = function(){ openWA(text, phone); };
     bd.querySelector('#cpy').onclick = function(){ (navigator.clipboard ? navigator.clipboard.writeText(shown) : Promise.reject()).then(function(){ toast('הקוד הועתק'); }).catch(function(){ toast('סמנו והעתיקו ידנית'); }); };
   });
 }
@@ -614,7 +1584,7 @@ function verNum(v){ var m = String(v || '').match(/(\d{2,4})/); return m ? +m[1]
 function nis(v){ return '₪' + Math.round(v || 0).toLocaleString('he-IL'); }
 function agoHe(t){ if (!t) return 'אף פעם'; var d = Math.floor((Date.now() - new Date(t).getTime()) / 864e5); return d <= 0 ? 'היום' : d === 1 ? 'אתמול' : 'לפני ' + d + ' ימים'; }
 function pilotStats(r){
-  var users = (cfg.access.users || []).filter(function(u){ return plMgr || u.role !== 'manager'; });
+  var users = (cfg.access.users || []).filter(function(u){ return plMgr || u.role === 'agent'; });
   var byId = {}; users.forEach(function(u){ byId[u.id] = { u:u, last:null, first:null, days:{}, proj:0, quotes:{}, sketch:0, plan:0, planAi:0, recs:0, fire:0, fails:0, pending:0, ver:'', verT:'' }; });
   var now = new Date(), start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (plRange ? plRange - 1 : 36500)).getTime();
   var series = {}, kinds = {}, latest = 0, rows = (r && r.logins) || [], usageSince = null, orphans = {};
@@ -709,7 +1679,7 @@ function drawPilot(S, r){
   // needs attention
   var att = [];
   var waBtn = function(a, kind){ return ' <button type="button" class="btn sm pl-wa" data-uid="' + esc(a.u.id) + '" data-kind="' + kind + '">תזכורת בוואטסאפ</button>'; };
-  L.filter(function(a){ return !a.last && a.u.status === 'active' && a.u.role !== 'manager'; }).forEach(function(a){ var days = a.u.created ? Math.floor((Date.now() - new Date(a.u.created).getTime()) / 864e5) : null;
+  L.filter(function(a){ return !a.last && a.u.status === 'active' && a.u.role === 'agent'; }).forEach(function(a){ var days = a.u.created ? Math.floor((Date.now() - new Date(a.u.created).getTime()) / 864e5) : null;
     att.push([days != null && days < 2 ? 'w' : 'b', '<b>' + esc(a.u.name) + '</b> עוד לא נכנס לאפליקציה' + (a.u.created ? ' · נוסף ' + new Date(a.u.created).toLocaleDateString('he-IL') + (days >= 2 ? ' (לפני ' + days + ' ימים)' : '') : '') + waBtn(a, 'install')]); });
   L.filter(function(a){ return a.last && a.u.status === 'active' && Date.now() - a.last > 3 * 864e5; }).sort(function(x, y){ return x.last - y.last; }).forEach(function(a){ att.push(['w', '<b>' + esc(a.u.name) + '</b> לא פעיל ' + agoHe(a.last).replace('לפני ', '') + ' — כדאי לבדוק איתו' + waBtn(a, 'back')]); });
   S.orphans.forEach(function(o){ att.push(['w', 'רישומים של <b>' + esc(o.name || o.uid) + '</b> תחת מזהה שלא קיים ברשימת המשתמשים (' + o.n + ' רשומות, אחרונה ' + agoHe(o.last) + ')' + (o.matched ? ' — שויכו לפי השם ל' + esc(o.matched) : ' — כנראה משתמש שנמחק ונוסף מחדש')]); });
@@ -717,7 +1687,7 @@ function drawPilot(S, r){
   L.filter(function(a){ return a.fails; }).forEach(function(a){ att.push(['w', '<b>' + esc(a.u.name) + '</b>' + (a.fails === 1 ? ' · ניסיון כניסה אחד נכשל בתקופה' : ' · ' + a.fails + ' ניסיונות כניסה נכשלו בתקופה')]); });
   L.filter(function(a){ return a.pending; }).forEach(function(a){ att.push(['w', '<b>' + esc(a.u.name) + '</b> ניסה להיכנס ממכשיר שלא אושר — אישור בלשונית "כניסות ומכשירים"']); });
   L.filter(function(a){ return a.ver && S.latest && verNum(a.ver) < S.latest; }).forEach(function(a){ att.push(['', '<b>' + esc(a.u.name) + '</b> עובד ב' + esc(a.ver) + ' (העדכנית: גרסה ' + S.latest + ') — לסגור ולפתוח מחדש את האפליקציה']); });
-  var neverN = L.filter(function(a){ return !a.last && a.u.status === 'active' && a.u.role !== 'manager'; }).length;
+  var neverN = L.filter(function(a){ return !a.last && a.u.status === 'active' && a.u.role === 'agent'; }).length;
   h += '<div class="card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><h2 style="margin:0">דורש תשומת לב</h2>' + (neverN ? '<button type="button" class="btn sm pl-wa" data-kind="all">הודעת תזכורת לכל מי שלא התקין (' + neverN + ')</button>' : '') + '</div><div style="height:10px"></div>' + (att.length ? '<ul class="att">' + att.map(function(x){ return '<li class="' + x[0] + '">' + x[1] + '</li>'; }).join('') + '</ul>' : '<p class="sub" style="margin:0">הכול תקין — כל הסוכנים פעילים ומעודכנים.</p>') + '</div>';
   // per agent table
   var cols = [['name','סוכן'],['last','פעילות אחרונה'],['dayN','ימי שימוש'],['proj','פרויקטים'],['qN','הצעות'],['qV','היקף ₪'],['sketch','סקיצות'],['plan','תוכניות'],['fire','אש'],['ver','גרסה']];
@@ -732,7 +1702,7 @@ function drawPilot(S, r){
         '<td style="font-size:12.5px;white-space:nowrap' + (old ? ';color:var(--warn);font-weight:700' : ';color:var(--muted)') + '">' + esc(a.ver || '—') + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
   var resp = ((r && r.responses) || []).filter(function(x){ return !plRange || new Date(x.time).getTime() >= S.start; }).length;
   h += '<div class="card" style="margin-top:14px"><h2>בדיקת הרישום</h2><ul class="att">' +
-    '<li class="' + (S.ver >= 3 ? '' : 'w') + '">' + (S.ver >= 3 ? '✓ קוד הגיליון מעודכן (גרסה ' + S.ver + ') — כניסה של משתמש שהגיליון לא מזהה נשמרת בצד ומופיעה כאן' : 'קוד הגיליון בגרסה ישנה: כניסות של משתמש שהגיליון לא מזהה נזרקות בלי סימן. כדאי לעדכן — לשונית "פרסום וגיבוי" ← העתקת הקוד ← פרסום גרסה חדשה ב-Apps Script') + '</li>' +
+    '<li class="' + (S.ver >= 4 ? '' : 'w') + '">' + (S.ver >= 4 ? '✓ קוד הגיליון מעודכן (גרסה ' + S.ver + ') — כולל היסטוריית שינויים, פניות סוכנים ושמירת נתונים' : S.ver >= 3 ? 'קוד הגיליון בגרסה 3 — כדי להפעיל היסטוריית שינויים ושחזור, פניות מהסוכנים ושמירת נתונים, עדכנו לגרסה 4 (לשונית "פרסום וגיבוי" ← העתקת הקוד ← פרסום גרסה חדשה ב-Apps Script)' : 'קוד הגיליון בגרסה ישנה: כניסות של משתמש שהגיליון לא מזהה נזרקות בלי סימן. כדאי לעדכן — לשונית "פרסום וגיבוי" ← העתקת הקוד ← פרסום גרסה חדשה ב-Apps Script') + '</li>' +
     '<li>סוכן אומר שנכנס ואין לו רישום? בקשו ממנו לפתוח באפליקציה <b>פרטי סוכן</b> ← <b>בדיקת חיבור</b> ולשלוח לכם צילום מסך: שם יופיע אם הרישום הגיע לגיליון, ואם לא — למה.</li>' +
     '<li>מהגרסה הזו האפליקציה שומרת כל רישום שלא נקלט ושולחת אותו שוב עד שהגיליון מאשר — כולל אחרי שהמכשיר חוזר לרשת.</li></ul></div>';
   h += '<div class="note" style="margin-top:14px">סקרים: ' + resp + ' תשובות בתקופה (פירוט בלשונית "סקרים ומשוב"). ' +
@@ -755,10 +1725,9 @@ function waReminder(kind, u){
       : 'היי ' + first + ', ' + me1 + ' מקבוצת G1. עוד לא ראיתי אותך ב-SiteGuard, אפליקציית התכנון והצעות המחיר לסוכנים. ההתקנה לוקחת 2 דקות: ' + link + ' — נכנסים עם קוד ההקצאה האישי שקיבלת ממני. אם הקוד אבד או משהו לא עובד, תכתוב לי ואשלח חדש. תודה!');
   modal('<h2>תזכורת בוואטסאפ' + (u ? ' · ' + esc(u.name) : '') + '</h2><p class="sub" style="margin:4px 0 10px">אפשר לערוך את ההודעה. בלחיצה על "פתיחת וואטסאפ" בוחרים את ' + (u ? 'הסוכן' : 'הסוכנים או הקבוצה') + ' ושולחים.</p>' +
     '<label class="f">ההודעה<textarea id="waTxt" rows="7" style="width:100%;padding:10px;border:1px solid #C9D2DC;border-radius:10px;font:inherit">' + esc(txt) + '</textarea></label>' +
-    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn" id="waCopy">העתקה</button><a class="btn primary" id="waGo" target="_blank" rel="noopener" href="#">פתיחת וואטסאפ</a></div>', function(bd){
+    '<div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn" data-x>ביטול</button><button class="btn" id="waCopy">העתקה</button><button class="btn primary" id="waGo">פתיחת וואטסאפ</button></div>', function(bd){
       var ta = bd.querySelector('#waTxt'), go = bd.querySelector('#waGo');
-      var upd = function(){ go.href = 'https://wa.me/?text=' + encodeURIComponent(ta.value); }; upd(); ta.oninput = upd;
-      go.addEventListener('click', function(){ setTimeout(function(){ bd.remove(); }, 300); });
+      go.onclick = function(){ openWA(ta.value, u && PHONES[u.id]); setTimeout(function(){ bd.remove(); }, 400); };
       bd.querySelector('#waCopy').onclick = function(){ var v = ta.value; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function(){ toast('ההודעה הועתקה'); }, function(){ ta.select(); try { document.execCommand('copy'); toast('ההודעה הועתקה'); } catch(e) {} }); };
     });
 }
@@ -1037,10 +2006,11 @@ function bindSheet(){
   };
 }
 
-var APPS_SCRIPT = "/**\n * G1 SiteGuard — הגדרות האפליקציות (מחירים, משתמשים, סקרים) + קליטת נתונים (סקרים, יומן כניסות, הזמנות) בגיליון Google.\n * הדבקה: Extensions → Apps Script → מחקו את התוכן הקיים → הדביקו את כל הקובץ → שמירה.\n * פרסום: Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone → Deploy.\n * את כתובת ה-Web app מדביקים בעמוד הניהול.\n */\nvar ADMIN_KEY = '%%ADMIN_KEY%%';          // מפתח הניהול — נגזר מקוד מנהל המוצר; כל מכשיר שנכנס עם הקוד מקבל אותו אוטומטית\nvar CONFIG_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/config.json';\n\nvar SCRIPT_VER = 3;\nfunction doPost(e) {\n  var lock = LockService.getScriptLock(), locked = false;\n  try {\n    var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');\n    // settings need the lock; a log row is written even when the sheet is busy (appendRow is atomic)\n    try { lock.waitLock(d.type === 'config' ? 25000 : 8000); locked = true; } catch (le) { if (d.type === 'config' || d.type === 'setAi') return out_({ ok: false, error: 'busy' }); }\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var now = new Date();\n    if (d.type === 'config') {\n      if (!validKey_(d.key)) return out_({ ok: false, error: 'unauthorized' });\n      addKeys_(d.addKeys);\n      var c = d.config;\n      if (!c || typeof c !== 'object' || !c.access || !c.consumer) return out_({ ok: false, error: 'bad config' });\n      var json = JSON.stringify(c);\n      saveConfig_(ss, json);\n      var hist = sheet_(ss, 'ConfigHistory', ['time', 'by', 'json']);\n      hist.appendRow([now, safe_(String(d.by || ''))].concat(chunks_(json).map(function (x) { return 'J:' + x; })));\n      if (hist.getLastRow() > 201) hist.deleteRows(2, hist.getLastRow() - 201);   // keep the last 200 versions\n      CacheService.getScriptCache().remove('cfg'); CacheService.getScriptCache().remove('users');\n      return out_({ ok: true, savedAt: now.toISOString() });\n    }\n    if (d.type === 'setAi') {\n      if (!validKey_(d.key)) return out_({ ok: false, error: 'unauthorized' });\n      var pr = PropertiesService.getScriptProperties();\n      if (typeof d.aiKey === 'string') { if (d.aiKey) pr.setProperty('ANTHROPIC_API_KEY', d.aiKey.trim()); else pr.deleteProperty('ANTHROPIC_API_KEY'); }\n      if (d.model) pr.setProperty('AI_MODEL', String(d.model).trim());\n      if (d.dailyCap) pr.setProperty('AI_DAILY_CAP', String(parseInt(d.dailyCap, 10) || 40));\n      return out_({ ok: true, ai: !!pr.getProperty('ANTHROPIC_API_KEY') });\n    }\n    if (d.type === 'analyzePlan') {\n      if (locked) lock.releaseLock();          // long call — don't hold the sheet lock\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      return out_(analyzePlan_(d));\n    }\n    if (d.type === 'login') {\n      if (!knownUser_(d.uid) && !knownUser_(d.uid, true)) {\n        // not in the published user list: kept aside (not counted), so the admin page can show who tried\n        append_(ss, 'Rejected', ['time', 'event', 'uid', 'name', 'deviceId', 'device', 'appVersion'],\n          [now, d.event || '', d.uid || '', d.name || '', d.deviceId || '', d.deviceLabel || '', d.appVersion || '']);\n        var rj = ss.getSheetByName('Rejected'); if (rj && rj.getLastRow() > 1001) rj.deleteRows(2, rj.getLastRow() - 1001);\n        return out_({ ok: false, error: 'unknown user' });\n      }\n      append_(ss, 'Logins', ['time', 'event', 'uid', 'name', 'deviceId', 'device', 'appVersion'],\n        [now, d.event || '', d.uid || '', d.name || '', d.deviceId || '', d.deviceLabel || '', d.appVersion || '']);\n    } else if (d.type === 'survey') {\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      append_(ss, 'Responses', ['time', 'surveyId', 'uid', 'name', 'deviceId', 'answers'],\n        [now, d.surveyId || '', d.uid || '', d.name || '', d.deviceId || '', JSON.stringify(d.answers || {})]);\n      // a readable sheet per survey: one column per question\n      var ids = Object.keys(d.answers || {});\n      var sh = sheet_(ss, 'S_' + String(d.surveyId || 'survey').slice(0, 40), ['time', 'name', 'uid'].concat(ids));\n      var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n      ids.forEach(function (q) { if (head.indexOf(q) < 0) { head.push(q); sh.getRange(1, head.length).setValue(q); } });\n      var row = head.map(function (h) { return h === 'time' ? now : h === 'name' ? (d.name || '') : h === 'uid' ? (d.uid || '') : (d.answers && d.answers[h] != null ? d.answers[h] : ''); });\n      sh.appendRow(row.map(safe_));\n    } else {\n      // orders / consultant requests from the home planner\n      append_(ss, 'Leads', ['time', 'type', 'ref', 'name', 'phone', 'email', 'city', 'message', 'data'],\n        [now, d.lead_type || d.type || '', d.ref || '', d.name || '', d.phone || '', d.email || '', d.city || '', d.message || '', d.data || '']);\n    }\n    return out_({ ok: true });\n  } catch (err) {\n    return out_({ ok: false, error: String(err) });\n  } finally {\n    try { if (locked) lock.releaseLock(); } catch (e2) {}\n  }\n}\n\nfunction doGet(e) {\n  var p = (e && e.parameter) || {};\n  if (p.action === 'ping') return out_({ ok: true, app: 'g1-siteguard', ver: SCRIPT_VER });\n  if (p.action === 'aiStatus') { var pp = PropertiesService.getScriptProperties(); return out_({ ok: true, ai: !!pp.getProperty('ANTHROPIC_API_KEY'), model: pp.getProperty('AI_MODEL') || AI_DEFAULT_MODEL }); }\n  if (p.action === 'config') { var cj = getConfigJson_(); return out_({ ok: true, config: cj ? JSON.parse(cj) : null }); }\n  if (!validKey_(p.key)) return out_({ ok: false, error: 'unauthorized' });\n  if (p.action === 'verify') return out_({ ok: true });\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  return out_({ ok: true, ver: SCRIPT_VER, logins: rows_(ss, 'Logins', 8000), rejected: rows_(ss, 'Rejected', 500), responses: rows_(ss, 'Responses', 5000), leads: rows_(ss, 'Leads', 1000) });\n}\n\n// ---- reading a client's floor plan with Claude (vision). The API key lives only in Script Properties.\nvar AI_DEFAULT_MODEL = 'claude-sonnet-4-6';\nvar PLAN_PROMPT = [\n  'You are an expert reader of architectural floor plans (Israeli residential and small-business plans, Hebrew labels).',\n  'Analyze the attached plan image and return ONLY one JSON object, no prose, with this shape:',\n  '{\"document_type\":\"floor_plan|site_plan|elevation|section|not_a_plan\",\"overall_confidence\":0-1,\"warnings\":[\"...\"],',\n  ' \"rooms\":[{\"name\":\"exact visible label or a short Hebrew type such as סלון/מטבח/חדר שינה/שירותים/ממ״ד/מרפסת\",\"bbox\":[x0,y0,x1,y1],\"confidence\":0-1}],',\n  ' \"openings\":[{\"kind\":\"door|window|sliding_door\",\"center\":[x,y],\"width_m\":number|null,\"exterior\":true|false,\"main_entrance\":true|false,\"confidence\":0-1}],',\n  ' \"dimensions\":[{\"text\":\"as printed\",\"value_m\":number|null,\"start\":[x,y],\"end\":[x,y],\"confidence\":0-1}],',\n  ' \"outline\":[x0,y0,x1,y1]}',\n  'Rules: coordinates are normalized to the image, 0..1, origin top-left. Each room is the axis-aligned bounding box of its interior (inside the walls), not furniture.',\n  'Never invent rooms or openings — omit what is unclear and add a warning. Keep Hebrew text exactly as printed.',\n  'Dimensions: Israeli plans print centimeters WITHOUT a unit — a plain integer such as 350 or 1100 means 3.50 m / 11.00 m; a decimal such as 3.50 is meters. Set value_m accordingly; start/end are the two ends of the dimension line. List the longest clear dimension lines first (up to 8).',\n  'If the sheet holds several drawings (several floors, sections, elevations, a site plan, a title block), read ONLY the largest floor plan and add a warning. If the drawing is rotated in the image, still give coordinates in the image as shown.',\n  'Not rooms: furniture, stairs inside a room, shafts, closets drawn as furniture. Balconies, yards and parking ARE rooms (name them מרפסת / חצר / חניה).',\n  'List openings on walls only (door swings are doors, not walls). Mark main_entrance only for the apartment/house main door. Use low confidence for anything inferred. Keep the JSON compact.'\n].join('\\n');\nfunction analyzePlan_(d) {\n  var pr = PropertiesService.getScriptProperties(), key = pr.getProperty('ANTHROPIC_API_KEY');\n  if (!key) return { ok: false, error: 'ai-not-configured' };\n  if (!d.image || String(d.image).length > 8000000 || !/^[A-Za-z0-9+\\/=]+$/.test(String(d.image).slice(0, 200))) return { ok: false, error: 'bad-image' };\n  var mime = /^image\\/(jpeg|png|webp)$/.test(String(d.mime || '')) ? d.mime : 'image/jpeg';\n  var cache = CacheService.getScriptCache(), day = 'ai_' + new Date().toISOString().slice(0, 10);\n  var used = parseInt(cache.get(day) || '0', 10), cap = parseInt(pr.getProperty('AI_DAILY_CAP') || '40', 10);\n  if (used >= cap) return { ok: false, error: 'daily-cap' };\n  cache.put(day, String(used + 1), 21600);\n  var body = { model: pr.getProperty('AI_MODEL') || AI_DEFAULT_MODEL, max_tokens: 8000, messages: [{ role: 'user', content: [\n    { type: 'image', source: { type: 'base64', media_type: mime, data: d.image } },\n    { type: 'text', text: PLAN_PROMPT }\n  ] }] };\n  function refund() { try { cache.put(day, String(Math.max(0, parseInt(cache.get(day) || '1', 10) - 1)), 21600); } catch (e) {} }\n  var res;\n  try {\n    res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', { method: 'post', contentType: 'application/json',\n      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' }, payload: JSON.stringify(body), muteHttpExceptions: true });\n  } catch (e) { refund(); return { ok: false, error: 'timeout' }; }\n  var code = res.getResponseCode(), txt = res.getContentText();\n  if (code !== 200) { refund(); return { ok: false, error: 'ai-http-' + code, detail: txt.slice(0, 300) }; }\n  var j; try { j = JSON.parse(txt); } catch (e) { return { ok: false, error: 'ai-bad-json' }; }\n  if (j.stop_reason === 'max_tokens') return { ok: false, error: 'ai-truncated' };\n  var t = ((j.content || []).filter(function (b) { return b.type === 'text'; })[0] || {}).text || '';\n  var a = t.indexOf('{'), b = t.lastIndexOf('}');\n  if (a < 0 || b <= a) return { ok: false, error: 'ai-no-json' };\n  try { return { ok: true, plan: JSON.parse(t.slice(a, b + 1)), model: body.model }; } catch (e) { return { ok: false, error: 'ai-bad-json' }; }\n}\n// management keys: the one written in this code + keys of manager codes issued later (kept in Script Properties)\nfunction validKey_(k) {\n  if (!k) return false;\n  if (k === ADMIN_KEY) return true;\n  var ks = JSON.parse(PropertiesService.getScriptProperties().getProperty('keys') || '[]');\n  return ks.indexOf(k) >= 0;\n}\nfunction addKeys_(arr) {\n  if (!arr || !arr.length) return;\n  var p = PropertiesService.getScriptProperties(), ks = JSON.parse(p.getProperty('keys') || '[]');\n  arr.forEach(function (k) { if (/^[a-f0-9]{64}$/.test(String(k)) && k !== ADMIN_KEY && ks.indexOf(k) < 0) ks.push(k); });\n  p.setProperty('keys', JSON.stringify(ks.slice(-30)));\n}\nfunction knownUser_(uid, fresh) {\n  if (!uid) return false;\n  var cache = CacheService.getScriptCache(), key = 'users';\n  if (fresh) { cache.remove(key); cache.remove('cfg'); }\n  var list = cache.get(key);\n  if (!list) {\n    try {\n      var cj = getConfigJson_();\n      var cfg = JSON.parse(cj || UrlFetchApp.fetch(CONFIG_URL + '?t=' + Date.now(), { muteHttpExceptions: true }).getContentText());\n      list = JSON.stringify(((cfg.access && cfg.access.users) || []).map(function (u) { return u.id; }));\n      cache.put(key, list, 300);\n    } catch (e) { return true; }   // config unreachable: don't lose data\n  }\n  return JSON.parse(list).indexOf(uid) >= 0;\n}\n// settings JSON kept in a hidden sheet, split into cells (a cell holds up to 50,000 characters)\nfunction chunks_(s) { var a = []; for (var i = 0; i < s.length; i += 40000) a.push(s.slice(i, i + 40000)); return a.length ? a : ['']; }\nfunction saveConfig_(ss, json) {\n  var sh = ss.getSheetByName('Config');\n  if (!sh) { sh = ss.insertSheet('Config'); try { sh.hideSheet(); } catch (e) {} }\n  sh.clearContents();\n  var parts = chunks_(json);\n  sh.getRange(1, 1, parts.length, 1).setNumberFormat('@').setValues(parts.map(function (x) { return ['J:' + x]; }));\n  try { CacheService.getScriptCache().put('cfg', json, 120); } catch (e) {}\n}\nfunction getConfigJson_() {\n  var cache = CacheService.getScriptCache(), hit = cache.get('cfg');\n  if (hit) return hit;\n  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Config');\n  if (!sh || sh.getLastRow() < 1) return '';\n  var json = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(function (r) { var v = String(r[0]); return v.indexOf('J:') === 0 ? v.slice(2) : v; }).join('');\n  try { cache.put('cfg', json, 120); } catch (e) {}\n  return json;\n}\nfunction sheet_(ss, name, header) {\n  var sh = ss.getSheetByName(name);\n  if (!sh) { sh = ss.insertSheet(name); sh.appendRow(header); sh.setFrozenRows(1); sh.setRightToLeft(true); }\n  return sh;\n}\n// text that starts with = + - @ would run as a formula in the sheet: store it as plain text\nfunction safe_(v) { return (typeof v === 'string' && /^[=+\\-@\\t\\r]/.test(v)) ? \"'\" + v : v; }\nfunction append_(ss, name, header, row) { sheet_(ss, name, header).appendRow(row.map(safe_)); }\nfunction rows_(ss, name, max) {\n  var sh = ss.getSheetByName(name); if (!sh || sh.getLastRow() < 2) return [];\n  var n = sh.getLastRow() - 1, start = Math.max(2, sh.getLastRow() - max + 1);\n  var vals = sh.getRange(start, 1, sh.getLastRow() - start + 1, sh.getLastColumn()).getValues();\n  var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n  return vals.map(function (r) { var o = {}; head.forEach(function (h, i) { o[h] = r[i] instanceof Date ? r[i].toISOString() : r[i]; }); return o; });\n}\nfunction out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }\n";
+var APPS_SCRIPT = "/**\n * G1 SiteGuard — הגדרות האפליקציות (מחירים, משתמשים, סקרים) + קליטת נתונים (סקרים, יומן כניסות, הזמנות) בגיליון Google.\n * הדבקה: Extensions → Apps Script → מחקו את התוכן הקיים → הדביקו את כל הקובץ → שמירה.\n * פרסום: Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone → Deploy.\n * את כתובת ה-Web app מדביקים בעמוד הניהול.\n */\nvar ADMIN_KEY = '%%ADMIN_KEY%%';          // מפתח הניהול — נגזר מקוד מנהל המוצר; כל מכשיר שנכנס עם הקוד מקבל אותו אוטומטית\nvar CONFIG_URL = 'https://yhj842dhyb-design.github.io/g1-siteguard/config.json';\n\nvar SCRIPT_VER = 4;\nfunction doPost(e) {\n  var lock = LockService.getScriptLock(), locked = false;\n  try {\n    var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');\n    // settings need the lock; a log row is written even when the sheet is busy (appendRow is atomic)\n    try { lock.waitLock(d.type === 'config' ? 25000 : 8000); locked = true; } catch (le) { if (d.type === 'config' || d.type === 'setAi') return out_({ ok: false, error: 'busy' }); }\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var now = new Date();\n    if (d.type === 'config') {\n      if (!validKey_(d.key)) return out_({ ok: false, error: 'unauthorized' });\n      addKeys_(d.addKeys); addKeys_(d.addViewKeys, 'vkeys');\n      var c = d.config;\n      if (!c || typeof c !== 'object' || !c.access || !c.consumer) return out_({ ok: false, error: 'bad config' });\n      var json = JSON.stringify(c);\n      saveConfig_(ss, json);\n      var hist = sheet_(ss, 'ConfigHistory', ['time', 'by', 'json']);\n      hist.appendRow([now, safe_(String(d.by || ''))].concat(d.summary ? ['S:' + String(d.summary).slice(0, 1500)] : []).concat(chunks_(json).map(function (x) { return 'J:' + x; })));\n      if (hist.getLastRow() > 201) hist.deleteRows(2, hist.getLastRow() - 201);   // keep the last 200 versions\n      CacheService.getScriptCache().remove('cfg'); CacheService.getScriptCache().remove('users');\n      return out_({ ok: true, savedAt: now.toISOString() });\n    }\n    if (d.type === 'setAi') {\n      if (!validKey_(d.key)) return out_({ ok: false, error: 'unauthorized' });\n      var pr = PropertiesService.getScriptProperties();\n      if (typeof d.aiKey === 'string') { if (d.aiKey) pr.setProperty('ANTHROPIC_API_KEY', d.aiKey.trim()); else pr.deleteProperty('ANTHROPIC_API_KEY'); }\n      if (d.model) pr.setProperty('AI_MODEL', String(d.model).trim());\n      if (d.dailyCap) pr.setProperty('AI_DAILY_CAP', String(parseInt(d.dailyCap, 10) || 40));\n      return out_({ ok: true, ai: !!pr.getProperty('ANTHROPIC_API_KEY') });\n    }\n    if (d.type === 'analyzePlan') {\n      if (locked) lock.releaseLock();          // long call — don't hold the sheet lock\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      return out_(analyzePlan_(d));\n    }\n    if (d.type === 'login') {\n      if (!knownUser_(d.uid) && !knownUser_(d.uid, true)) {\n        // not in the published user list: kept aside (not counted), so the admin page can show who tried\n        append_(ss, 'Rejected', ['time', 'event', 'uid', 'name', 'deviceId', 'device', 'appVersion'],\n          [now, d.event || '', d.uid || '', d.name || '', d.deviceId || '', d.deviceLabel || '', d.appVersion || '']);\n        var rj = ss.getSheetByName('Rejected'); if (rj && rj.getLastRow() > 1001) rj.deleteRows(2, rj.getLastRow() - 1001);\n        return out_({ ok: false, error: 'unknown user' });\n      }\n      append_(ss, 'Logins', ['time', 'event', 'uid', 'name', 'deviceId', 'device', 'appVersion'],\n        [now, d.event || '', d.uid || '', d.name || '', d.deviceId || '', d.deviceLabel || '', d.appVersion || '']);\n    } else if (d.type === 'feedback') {\n      // an agent's report / idea from the app: kept with a status the manager updates\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      var fid = String(d.id || ('f' + now.getTime())).slice(0, 40);\n      var fsh = sheet_(ss, 'Feedback', ['time', 'id', 'uid', 'name', 'cat', 'text', 'context', 'appVersion', 'device', 'status', 'note']);\n      if (fsh.getLastRow() > 1 && fsh.getRange(2, 2, fsh.getLastRow() - 1, 1).createTextFinder(fid).matchEntireCell(true).findNext()) return out_({ ok: true, dup: true });\n      fsh.appendRow([now, fid, d.uid || '', d.name || '', d.cat || '', String(d.text || '').slice(0, 3000), String(d.context || '').slice(0, 500), d.appVersion || '', d.deviceLabel || '', 'new', ''].map(safe_));\n    } else if (d.type === 'fbStatus') {\n      if (!validKey_(d.key)) return out_({ ok: false, error: 'unauthorized' });\n      var fs2 = ss.getSheetByName('Feedback'); if (!fs2 || fs2.getLastRow() < 2) return out_({ ok: false, error: 'not found' });\n      var hit = fs2.getRange(2, 2, fs2.getLastRow() - 1, 1).createTextFinder(String(d.id || '')).matchEntireCell(true).findNext();\n      if (!hit) return out_({ ok: false, error: 'not found' });\n      fs2.getRange(hit.getRow(), 10, 1, 2).setValues([[String(d.status || 'new'), safe_(String(d.note || '').slice(0, 500))]]);\n    } else if (d.type === 'survey') {\n      if (!knownUser_(d.uid)) return out_({ ok: false, error: 'unknown user' });\n      append_(ss, 'Responses', ['time', 'surveyId', 'uid', 'name', 'deviceId', 'answers'],\n        [now, d.surveyId || '', d.uid || '', d.name || '', d.deviceId || '', JSON.stringify(d.answers || {})]);\n      // a readable sheet per survey: one column per question\n      var ids = Object.keys(d.answers || {});\n      var sh = sheet_(ss, 'S_' + String(d.surveyId || 'survey').slice(0, 40), ['time', 'name', 'uid'].concat(ids));\n      var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n      ids.forEach(function (q) { if (head.indexOf(q) < 0) { head.push(q); sh.getRange(1, head.length).setValue(q); } });\n      var row = head.map(function (h) { return h === 'time' ? now : h === 'name' ? (d.name || '') : h === 'uid' ? (d.uid || '') : (d.answers && d.answers[h] != null ? d.answers[h] : ''); });\n      sh.appendRow(row.map(safe_));\n    } else {\n      // orders / consultant requests from the home planner\n      append_(ss, 'Leads', ['time', 'type', 'ref', 'name', 'phone', 'email', 'city', 'message', 'data'],\n        [now, d.lead_type || d.type || '', d.ref || '', d.name || '', d.phone || '', d.email || '', d.city || '', d.message || '', d.data || '']);\n    }\n    if (locked) { try { purge_(ss); } catch (pe) {} }\n    return out_({ ok: true });\n  } catch (err) {\n    return out_({ ok: false, error: String(err) });\n  } finally {\n    try { if (locked) lock.releaseLock(); } catch (e2) {}\n  }\n}\n\nfunction doGet(e) {\n  var p = (e && e.parameter) || {};\n  if (p.action === 'ping') return out_({ ok: true, app: 'g1-siteguard', ver: SCRIPT_VER });\n  if (p.action === 'aiStatus') { var pp = PropertiesService.getScriptProperties(); return out_({ ok: true, ai: !!pp.getProperty('ANTHROPIC_API_KEY'), model: pp.getProperty('AI_MODEL') || AI_DEFAULT_MODEL }); }\n  if (p.action === 'config') { var cj = getConfigJson_(); return out_({ ok: true, config: cj ? JSON.parse(cj) : null }); }\n  var mgr = validKey_(p.key);\n  if (!mgr && !validKey_(p.key, 'vkeys')) return out_({ ok: false, error: 'unauthorized' });\n  var role = mgr ? 'manager' : 'viewer';\n  if (p.action === 'verify') return out_({ ok: true, role: role });\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  if (p.action === 'history') return out_({ ok: true, history: history_(ss) });\n  if (p.action === 'version') { var cj2 = version_(ss, parseInt(p.row, 10)); return out_(cj2 ? { ok: true, config: JSON.parse(cj2) } : { ok: false, error: 'not found' }); }\n  return out_({ ok: true, ver: SCRIPT_VER, role: role, logins: rows_(ss, 'Logins', 8000), rejected: rows_(ss, 'Rejected', 500), responses: rows_(ss, 'Responses', 5000),\n    leads: mgr ? rows_(ss, 'Leads', 1000) : [], feedback: rows_(ss, 'Feedback', 1000), purgedOn: PropertiesService.getScriptProperties().getProperty('purgedOn') || '' });\n}\n\n// ---- reading a client's floor plan with Claude (vision). The API key lives only in Script Properties.\nvar AI_DEFAULT_MODEL = 'claude-sonnet-4-6';\nvar PLAN_PROMPT = [\n  'You are an expert reader of architectural floor plans (Israeli residential and small-business plans, Hebrew labels).',\n  'Analyze the attached plan image and return ONLY one JSON object, no prose, with this shape:',\n  '{\"document_type\":\"floor_plan|site_plan|elevation|section|not_a_plan\",\"overall_confidence\":0-1,\"warnings\":[\"...\"],',\n  ' \"rooms\":[{\"name\":\"exact visible label or a short Hebrew type such as סלון/מטבח/חדר שינה/שירותים/ממ״ד/מרפסת\",\"bbox\":[x0,y0,x1,y1],\"confidence\":0-1}],',\n  ' \"openings\":[{\"kind\":\"door|window|sliding_door\",\"center\":[x,y],\"width_m\":number|null,\"exterior\":true|false,\"main_entrance\":true|false,\"confidence\":0-1}],',\n  ' \"dimensions\":[{\"text\":\"as printed\",\"value_m\":number|null,\"start\":[x,y],\"end\":[x,y],\"confidence\":0-1}],',\n  ' \"outline\":[x0,y0,x1,y1]}',\n  'Rules: coordinates are normalized to the image, 0..1, origin top-left. Each room is the axis-aligned bounding box of its interior (inside the walls), not furniture.',\n  'Never invent rooms or openings — omit what is unclear and add a warning. Keep Hebrew text exactly as printed.',\n  'Dimensions: Israeli plans print centimeters WITHOUT a unit — a plain integer such as 350 or 1100 means 3.50 m / 11.00 m; a decimal such as 3.50 is meters. Set value_m accordingly; start/end are the two ends of the dimension line. List the longest clear dimension lines first (up to 8).',\n  'If the sheet holds several drawings (several floors, sections, elevations, a site plan, a title block), read ONLY the largest floor plan and add a warning. If the drawing is rotated in the image, still give coordinates in the image as shown.',\n  'Not rooms: furniture, stairs inside a room, shafts, closets drawn as furniture. Balconies, yards and parking ARE rooms (name them מרפסת / חצר / חניה).',\n  'List openings on walls only (door swings are doors, not walls). Mark main_entrance only for the apartment/house main door. Use low confidence for anything inferred. Keep the JSON compact.'\n].join('\\n');\nfunction analyzePlan_(d) {\n  var pr = PropertiesService.getScriptProperties(), key = pr.getProperty('ANTHROPIC_API_KEY');\n  if (!key) return { ok: false, error: 'ai-not-configured' };\n  if (!d.image || String(d.image).length > 8000000 || !/^[A-Za-z0-9+\\/=]+$/.test(String(d.image).slice(0, 200))) return { ok: false, error: 'bad-image' };\n  var mime = /^image\\/(jpeg|png|webp)$/.test(String(d.mime || '')) ? d.mime : 'image/jpeg';\n  var cache = CacheService.getScriptCache(), day = 'ai_' + new Date().toISOString().slice(0, 10);\n  var used = parseInt(cache.get(day) || '0', 10), cap = parseInt(pr.getProperty('AI_DAILY_CAP') || '40', 10);\n  if (used >= cap) return { ok: false, error: 'daily-cap' };\n  cache.put(day, String(used + 1), 21600);\n  var body = { model: pr.getProperty('AI_MODEL') || AI_DEFAULT_MODEL, max_tokens: 8000, messages: [{ role: 'user', content: [\n    { type: 'image', source: { type: 'base64', media_type: mime, data: d.image } },\n    { type: 'text', text: PLAN_PROMPT }\n  ] }] };\n  function refund() { try { cache.put(day, String(Math.max(0, parseInt(cache.get(day) || '1', 10) - 1)), 21600); } catch (e) {} }\n  var res;\n  try {\n    res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', { method: 'post', contentType: 'application/json',\n      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' }, payload: JSON.stringify(body), muteHttpExceptions: true });\n  } catch (e) { refund(); return { ok: false, error: 'timeout' }; }\n  var code = res.getResponseCode(), txt = res.getContentText();\n  if (code !== 200) { refund(); return { ok: false, error: 'ai-http-' + code, detail: txt.slice(0, 300) }; }\n  var j; try { j = JSON.parse(txt); } catch (e) { return { ok: false, error: 'ai-bad-json' }; }\n  if (j.stop_reason === 'max_tokens') return { ok: false, error: 'ai-truncated' };\n  var t = ((j.content || []).filter(function (b) { return b.type === 'text'; })[0] || {}).text || '';\n  var a = t.indexOf('{'), b = t.lastIndexOf('}');\n  if (a < 0 || b <= a) return { ok: false, error: 'ai-no-json' };\n  try { return { ok: true, plan: JSON.parse(t.slice(a, b + 1)), model: body.model }; } catch (e) { return { ok: false, error: 'ai-bad-json' }; }\n}\n// management keys: the one written in this code + keys of manager codes issued later (kept in Script Properties)\n// 'vkeys' = view-only admins (metrics, history) — they can't publish\nfunction validKey_(k, prop) {\n  if (!k) return false;\n  if (!prop && k === ADMIN_KEY) return true;\n  var ks = JSON.parse(PropertiesService.getScriptProperties().getProperty(prop || 'keys') || '[]');\n  return ks.indexOf(k) >= 0;\n}\nfunction addKeys_(arr, prop) {\n  if (!arr || !arr.length) return;\n  prop = prop || 'keys';\n  var p = PropertiesService.getScriptProperties(), ks = JSON.parse(p.getProperty(prop) || '[]');\n  arr.forEach(function (k) { if (/^[a-f0-9]{64}$/.test(String(k)) && k !== ADMIN_KEY && ks.indexOf(k) < 0) ks.push(k); });\n  p.setProperty(prop, JSON.stringify(ks.slice(-30)));\n}\n// change history: who published what (the last 80), and one full version for restoring\nfunction history_(ss) {\n  var sh = ss.getSheetByName('ConfigHistory'); if (!sh || sh.getLastRow() < 2) return [];\n  var last = sh.getLastRow(), start = Math.max(2, last - 79);\n  return sh.getRange(start, 1, last - start + 1, 3).getValues().map(function (r, i) {\n    var s3 = String(r[2] || '');\n    return { row: start + i, time: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), by: String(r[1] || ''), summary: s3.indexOf('S:') === 0 ? s3.slice(2) : '' };\n  }).reverse();\n}\nfunction version_(ss, row) {\n  var sh = ss.getSheetByName('ConfigHistory'); if (!sh || !row || row < 2 || row > sh.getLastRow()) return '';\n  return sh.getRange(row, 3, 1, Math.max(1, sh.getLastColumn() - 2)).getValues()[0].map(String).filter(function (v) { return v.indexOf('J:') === 0; }).map(function (v) { return v.slice(2); }).join('');\n}\n// data retention (set in the admin page): once a day, rows older than the chosen period are removed\nfunction purge_(ss) {\n  var pr = PropertiesService.getScriptProperties(), today = new Date().toISOString().slice(0, 10);\n  if (pr.getProperty('purgedOn') === today) return;\n  pr.setProperty('purgedOn', today);\n  var cj = getConfigJson_(); if (!cj) return;\n  var r = JSON.parse(cj).retention || {};\n  [['Logins', r.logsDays], ['Rejected', r.logsDays], ['Feedback', r.feedbackDays], ['Leads', r.leadsDays]].forEach(function (x) {\n    var days = parseInt(x[1], 10); if (!days || days < 30) return;\n    var sh = ss.getSheetByName(x[0]); if (!sh || sh.getLastRow() < 2) return;\n    var cut = Date.now() - days * 864e5, t = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues(), k = 0;\n    while (k < t.length && t[k][0] instanceof Date && t[k][0].getTime() < cut) k++;\n    if (k) sh.deleteRows(2, k);\n  });\n}\nfunction knownUser_(uid, fresh) {\n  if (!uid) return false;\n  var cache = CacheService.getScriptCache(), key = 'users';\n  if (fresh) { cache.remove(key); cache.remove('cfg'); }\n  var list = cache.get(key);\n  if (!list) {\n    try {\n      var cj = getConfigJson_();\n      var cfg = JSON.parse(cj || UrlFetchApp.fetch(CONFIG_URL + '?t=' + Date.now(), { muteHttpExceptions: true }).getContentText());\n      list = JSON.stringify(((cfg.access && cfg.access.users) || []).map(function (u) { return u.id; }));\n      cache.put(key, list, 300);\n    } catch (e) { return true; }   // config unreachable: don't lose data\n  }\n  return JSON.parse(list).indexOf(uid) >= 0;\n}\n// settings JSON kept in a hidden sheet, split into cells (a cell holds up to 50,000 characters)\nfunction chunks_(s) { var a = []; for (var i = 0; i < s.length; i += 40000) a.push(s.slice(i, i + 40000)); return a.length ? a : ['']; }\nfunction saveConfig_(ss, json) {\n  var sh = ss.getSheetByName('Config');\n  if (!sh) { sh = ss.insertSheet('Config'); try { sh.hideSheet(); } catch (e) {} }\n  sh.clearContents();\n  var parts = chunks_(json);\n  sh.getRange(1, 1, parts.length, 1).setNumberFormat('@').setValues(parts.map(function (x) { return ['J:' + x]; }));\n  try { CacheService.getScriptCache().put('cfg', json, 120); } catch (e) {}\n}\nfunction getConfigJson_() {\n  var cache = CacheService.getScriptCache(), hit = cache.get('cfg');\n  if (hit) return hit;\n  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Config');\n  if (!sh || sh.getLastRow() < 1) return '';\n  var json = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(function (r) { var v = String(r[0]); return v.indexOf('J:') === 0 ? v.slice(2) : v; }).join('');\n  try { cache.put('cfg', json, 120); } catch (e) {}\n  return json;\n}\nfunction sheet_(ss, name, header) {\n  var sh = ss.getSheetByName(name);\n  if (!sh) { sh = ss.insertSheet(name); sh.appendRow(header); sh.setFrozenRows(1); sh.setRightToLeft(true); }\n  return sh;\n}\n// text that starts with = + - @ would run as a formula in the sheet: store it as plain text\nfunction safe_(v) { return (typeof v === 'string' && /^[=+\\-@\\t\\r]/.test(v)) ? \"'\" + v : v; }\nfunction append_(ss, name, header, row) { sheet_(ss, name, header).appendRow(row.map(safe_)); }\nfunction rows_(ss, name, max) {\n  var sh = ss.getSheetByName(name); if (!sh || sh.getLastRow() < 2) return [];\n  var n = sh.getLastRow() - 1, start = Math.max(2, sh.getLastRow() - max + 1);\n  var vals = sh.getRange(start, 1, sh.getLastRow() - start + 1, sh.getLastColumn()).getValues();\n  var head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];\n  return vals.map(function (r) { var o = {}; head.forEach(function (h, i) { o[h] = r[i] instanceof Date ? r[i].toISOString() : r[i]; }); return o; });\n}\nfunction out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }\n";
 /* ---------- publish ---------- */
 $('#btnDiscard').onclick = function(){ if (!confirm('לבטל את כל השינויים שלא פורסמו?')) return; cfg = clone(saved); render(); };
 $('#btnPublish').onclick = function(){
+  if (RO()) { toast('במצב צפייה אי אפשר לפרסם'); return; }
   var ep = adminEp(cfg), k = sheetKey();
   if (!ep || !k) { tab = 'publish'; document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x.dataset.t === 'publish')); }); render(); toast(!ep ? 'קודם מחברים את עמוד הניהול לגיליון Google' : 'חסר מפתח הניהול של הגיליון בדפדפן הזה'); return; }
   if (activeManagers() < 1) { toast('חייב להישאר לפחות מנהל מוצר פעיל אחד'); return; }
@@ -1050,11 +2020,12 @@ $('#btnPublish').onclick = function(){
   cfg.backend.endpoint = ep;
   cfg.updatedAt = new Date().toISOString(); cfg.updatedBy = me.name;
   var addKeys = PENDING_KEYS.slice(); if (me && me.dk && addKeys.indexOf(me.dk) < 0) addKeys.push(me.dk);
-  withKey(function(key){ return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ type:'config', key:key, by:me.name, config:cfg, addKeys:addKeys }) }).then(function(r){ return r.json(); }); })
-    .then(function(j){ if (j && j.ok) { PENDING_KEYS = []; if (PENDING_SELF) { me.dk = PENDING_SELF; PENDING_SELF = ''; GOOD_KEY = ''; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {} } } return j; })
+  var addViewKeys = PENDING_VIEW.slice(), summary = cfgDiff(saved, cfg).map(function(x){ return x.t; }).join(' · ') || (SRC !== 'sheet' ? 'פרסום ראשון לגיליון' : 'פרסום חוזר');
+  withKey(function(key){ return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ type:'config', key:key, by:me.name, config:cfg, addKeys:addKeys, addViewKeys:addViewKeys, summary:summary }) }).then(function(r){ return r.json(); }); })
+    .then(function(j){ if (j && j.ok) { PENDING_KEYS = []; PENDING_VIEW = []; if (PENDING_SELF) { me.dk = PENDING_SELF; PENDING_SELF = ''; GOOD_KEY = ''; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {} } } return j; })
     .then(function(j){ if (!j || !j.ok) { var e = new Error(j && j.error || 'שגיאה'); e.code = j && j.error; throw e; }
-      SRC = 'sheet'; PUB_FAIL = ''; saved = clone(cfg); markDirty(); toast('פורסם! המשתמשים יקבלו את העדכון בפתיחה הבאה (או תוך 20 דקות)'); render(); })
-    .catch(function(e){ PUB_FAIL = e.code === 'unauthorized' ? 'הפרסום נכשל — קוד הגיליון צריך עדכון חד-פעמי (פרסום וגיבוי)' : 'הפרסום נכשל — השינויים לא נשמרו. נסו שוב'; if (e.code === 'unauthorized') { goTab('publish'); } toast(e.code === 'unauthorized' ? 'קוד הגיליון צריך עדכון חד-פעמי — ראו "פרסום וגיבוי"' : e.code === 'bad config' ? 'ההגדרות לא תקינות — לא פורסם' : ('הפרסום נכשל: ' + e.message + '. בדקו את החיבור לגיליון')); })
+      SRC = 'sheet'; PUB_FAIL = ''; saved = clone(cfg); markDirty(); toast(PUB_NOTE || 'פורסם! המשתמשים יקבלו את העדכון בפתיחה הבאה (או תוך 20 דקות)'); PUB_NOTE = ''; try { afterPublish(); } catch(e) {} render(); })
+    .catch(function(e){ PUB_NOTE = ''; PUB_FAIL = e.code === 'unauthorized' ? 'הפרסום נכשל — קוד הגיליון צריך עדכון חד-פעמי (פרסום וגיבוי)' : 'הפרסום נכשל — השינויים לא נשמרו. נסו שוב'; if (e.code === 'unauthorized') { goTab('publish'); } toast(e.code === 'unauthorized' ? 'קוד הגיליון צריך עדכון חד-פעמי — ראו "פרסום וגיבוי"' : e.code === 'bad config' ? 'ההגדרות לא תקינות — לא פורסם' : ('הפרסום נכשל: ' + e.message + '. בדקו את החיבור לגיליון')); })
     .then(function(){ b.textContent = 'פרסום לכל המשתמשים'; markDirty(); });
 };
 })();
