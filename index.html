@@ -1332,7 +1332,10 @@
     border-color:var(--accent-2); background:var(--panel-3);
     box-shadow:0 0 0 2px rgba(47,143,130,0.35);
   }
-  .canvas-hint-wrap{ position:sticky; top:10px; height:0; z-index:15; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; }
+  .canvas-hint-wrap{ position:sticky; top:10px; height:0; z-index:15; display:flex; justify-content:center; align-items:flex-start; pointer-events:none; gap:8px; }
+  .recs-clear-chip{ pointer-events:auto; border:0; background:var(--accent-3); color:#fff; font:700 13px var(--font-body); padding:9px 16px; border-radius:999px; box-shadow:0 6px 18px rgba(24,35,53,0.28); cursor:pointer; min-height:38px; white-space:nowrap; }
+  .recs-clear-chip[hidden]{ display:none; }
+  body.consumer .recs-clear-chip, body.consumer #btnRecsClear{ display:none !important; }
   .canvas-hint{
     pointer-events:auto; width:fit-content; max-width:92%;
     background:var(--ink-on-dark); color:#fff; font-size:12.5px; font-weight:600;
@@ -2929,7 +2932,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 141</div>
+              <div class="app-version" id="appVersion">גרסה 142</div>
             </div>
           </div>
         </div>
@@ -2943,6 +2946,7 @@
             <span class="pm-seg pm-hint" id="hintPlaceMode" role="group" aria-label="אופן הצבה" hidden><button type="button" data-pm="snap" title="האביזר נקלט למיקום המקצועי בחדר, לפי המגבלות. אחד בכל בחירה">מיקום מורשה</button><button type="button" data-pm="quick" title="כל הקשה על השרטוט מוסיפה עוד אחד, עם קליטה למיקום המקצועי">הצבה מהירה</button><button type="button" data-pm="single" title="אביזר אחד, בדיוק בנקודה שהקשתם, בלי קליטה">הצבה בודדת</button></span>
             <button type="button" id="canvasHintCancel" aria-label="ביטול הוספה">✕</button>
           </div>
+          <button type="button" class="recs-clear-chip" id="recsClearChip" hidden>✕ נקה המלצות</button>
         </div>
         <!-- Transient note after a preset room is placed ("✓ מרפסת נוספה בצמוד לסלון") —
              zero-height sticky wrapper so it floats over the plan without shifting it. -->
@@ -3130,6 +3134,7 @@
             <button class="btn btn-accent3 btn-sm" id="btnRecsRefresh" style="flex:1">🔄 חשב מחדש</button>
             <button class="btn btn-primary btn-sm" id="btnRecsAcceptAll" style="flex:1">✓ הוסף הכל לשרטוט</button>
           </div>
+          <button class="btn btn-ghost btn-sm" id="btnRecsClear" style="width:100%;margin:-4px 0 12px">✕ נקה המלצות מהמפה — חזרה לתכנון חופשי</button>
           <div id="recsList"></div>
           <div id="recsGeneralSection"></div>
           <div class="section-title">השפעה משוערת על הכבילה</div>
@@ -8521,6 +8526,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   var potentialScore = null;
   function refreshRecommendations(){
+    var rcc = document.getElementById('recsClearChip'); if (rcc) rcc.hidden = !recsVisible || CONSUMER;
     if (!recsVisible){
       var layer = document.getElementById('recsLayer');
       if (layer) layer.innerHTML = '';
@@ -10554,6 +10560,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     refreshRecommendations();
   });
   document.getElementById('btnRecsAcceptAll').addEventListener('click', acceptAllRecommendations);
+  // "נקה המלצות": hides the suggestions (ghost devices, coverage, popups) so the agent can plan freely;
+  // devices already added stay. "המלצות מיגון" brings them back.
+  function clearRecommendations(){
+    recsVisible = false; btnRecommendations.classList.remove('active');
+    try { recPopQueue.length = 0; } catch(e) {}
+    ['recPop', 'firePop'].forEach(function(id){ var e = document.getElementById(id); if (e) e.remove(); });
+    refreshRecommendations();
+    if (isMobileLayout()) { try { closeMobilePanels(); } catch(e) {} }
+    try { switchTab('guide'); } catch(e) {}
+    try { showCanvasToast('ההמלצות הוסתרו מהמפה — אפשר להחזיר אותן בלחיצה על "המלצות מיגון"'); } catch(e) {}
+  }
+  document.getElementById('btnRecsClear').addEventListener('click', clearRecommendations);
+  document.getElementById('recsClearChip').addEventListener('click', clearRecommendations);
 
   /* ============================= palette: room presets — architectural placement =============================
      A preset room is never just dropped at a fixed corner (where it used to land on top of
