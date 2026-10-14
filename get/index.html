@@ -86,7 +86,7 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
       <h1>G1 <span>SiteGuard</span></h1>
       <div class="sub">כלי תכנון ומכירה ליועצי מיגון · קבוצת G1</div>
     </div>
-    <div class="ver" id="ver">גרסה 138</div>
+    <div class="ver" id="ver">גרסה 141</div>
   </header>
 
   <p class="tag">מהסקר בשטח – להצעה חתומה. באותו ביקור.</p>
@@ -155,7 +155,7 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
       <div class="done" id="done">✓ האפליקציה הותקנה. פותחים אותה מהאייקון של G1 SiteGuard.</div>
 
       <div class="share">
-        <a class="btn ghost" id="openApp" href="../?v=138">פתיחה בדפדפן בלי התקנה</a>
+        <a class="btn ghost" id="openApp" href="../?v=141">פתיחה בדפדפן בלי התקנה</a>
         <button class="btn ghost" id="shareBtn" type="button">שליחת הקישור לסוכן</button>
       </div>
     </section>
@@ -173,6 +173,24 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
   var isAndroid = /android/i.test(ua);
   var isMobile = isIOS || isAndroid || /mobile/i.test(ua);
   var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  /* who opened the install page: the personal invite link carries ?i=<user id>; it is kept on this
+     browser (same storage as the app) so the app's first open is matched to the invite too */
+  var REF = (/[?&]i=(u_[A-Za-z0-9]{4,24})/.exec(location.search) || [])[1] || '';
+  try { if (REF) localStorage.setItem('g1sg_ref', JSON.stringify(REF)); else REF = JSON.parse(localStorage.getItem('g1sg_ref') || '""') || ''; } catch(e) {}
+  var track = (function(){
+    var ep = null, q = [];
+    function devId(){ try { var d = JSON.parse(localStorage.getItem('g1sg_device') || 'null'); if (!d) { var a = new Uint8Array(8); crypto.getRandomValues(a); d = 'd_' + Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); localStorage.setItem('g1sg_device', JSON.stringify(d)); } return d; } catch(e) { return ''; } }
+    function label(){ var u = navigator.userAgent || ''; var os = /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'iPad' : /Android/.test(u) ? 'Android' : /Windows/.test(u) ? 'Windows' : /Mac/.test(u) ? 'Mac' : 'מכשיר';
+      var br = /Edg\//.test(u) ? 'Edge' : /SamsungBrowser/.test(u) ? 'Samsung' : /CriOS|Chrome\//.test(u) ? 'Chrome' : /FxiOS|Firefox/.test(u) ? 'Firefox' : /FBAN|FBAV|Instagram|WhatsApp/.test(u) ? 'דפדפן פנימי' : /Safari/.test(u) ? 'Safari' : ''; return os + (br ? ' · ' + br : ''); }
+    function send(stage){ var body = JSON.stringify({ type:'open', page:'get', stage:stage, deviceId:devId(), deviceLabel:label(), ref:REF, ts:new Date().toISOString() });
+      try { fetch(ep, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:body, keepalive:true }).catch(function(){}); } catch(e) {} }
+    var ready = fetch('../config.json?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(c){
+      var e = c && c.backend && c.backend.endpoint; if (!/^https:\/\/script\.google\.com\/macros\//.test(String(e || ''))) return;
+      return fetch(e + '?action=ping&t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){ if (j && +j.ver >= 5) { ep = e; q.forEach(send); q = []; } });
+    }).catch(function(){});
+    return function(stage){ if (ep) send(stage); else q.push(stage); };
+  })();
+  track('viewed');
   if (standalone) { location.replace('../'); return; }
 
   // video: lighter file on phones, a big play button, and automatic fallback to the other file
@@ -246,9 +264,11 @@ footer{margin-top:28px;color:var(--dim);font-size:12.5px;text-align:center}
       if (p) p.scrollIntoView({ behavior:'smooth', block:'center' });
     }
   }
-  document.getElementById('andInstall').addEventListener('click', install);
-  document.getElementById('deskInstall').addEventListener('click', install);
-  window.addEventListener('appinstalled', function(){ document.getElementById('done').classList.add('on'); });
+  document.getElementById('andInstall').addEventListener('click', function(){ track('install-click'); install(); });
+  document.getElementById('deskInstall').addEventListener('click', function(){ track('install-click'); install(); });
+  window.addEventListener('appinstalled', function(){ document.getElementById('done').classList.add('on'); track('installed'); });
+  document.getElementById('openApp').addEventListener('click', function(){ track('open-browser'); });
+  document.getElementById('iosCopy').addEventListener('click', function(){ track('ios-copy'); });
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js', { updateViaCache:'none' }).catch(function(){});
 })();

@@ -121,6 +121,16 @@
   .brand small{ display:block; font-family:var(--font-body); font-weight:600; color:var(--ink-dim); font-size:11px; margin-top:-2px;}
   .brand .brand-word{ display:block; height:21px; width:auto; margin:1px 0 2px; }
   .q-division img{ height:19px; width:auto; vertical-align:-5px; margin-inline-start:6px; }
+  /* partner brands (e.g. מוקד אמון 99): their own logo in the top bar, the quote and the signing page */
+  .brand .mark.wide{ width:auto; height:40px; max-width:170px; } .brand .mark.wide img{ width:auto; height:100%; max-width:170px; }
+  #qBrand .brand .mark.wide{ height:72px; }
+  .brand-partner .topbar .brand small{ color:var(--brand-dark,#0077a8); font-weight:700; }
+  .brand .brand-txt{ display:block; font-family:var(--font-display); font-weight:800; font-size:15px; color:var(--brand-dark,#0077a8); }
+  .brand .brand-txt.big{ font-size:19px; color:var(--brand,#00AAE7); }
+  .q-co{ font-size:11.5px; color:#3a4456; margin-top:8px; line-height:1.6; }
+  .q-co b{ color:#101113; }
+  .sg-brand .sg-wide{ height:72px; width:auto; max-width:200px; }
+  .sg-co{ font-size:12px; color:#3a4456; margin:-4px 0 10px; line-height:1.6; }
   .proj-fields{ display:flex; gap:8px; flex:1 1 auto; min-width:0; }
   .proj-fields input{
     background:var(--panel-2); border:1px solid var(--line); color:var(--ink-on-dark);
@@ -238,7 +248,7 @@
   .pal-item.pal-locked{ opacity:.4; cursor:not-allowed; }
   .pal-item.pal-single-done{ opacity:.5; }
   .pal-item.pal-single-done::after{ content:'✓ הוצב'; font-size:9.5px; font-weight:700; color:var(--accent-2-text); margin-inline-start:auto; }
-  .pal-item.armed.repeat{ box-shadow:0 0 0 2px rgba(0,170,231,.55); }
+  .pal-item.armed.repeat{ box-shadow:0 0 0 2px rgba(var(--brand-rgb,0,170,231),.55); }
   .pal-item.pal-locked:hover{ border-color:var(--line); background:var(--panel-2); }
 
   .room-presets{ display:flex; flex-direction:column; gap:7px; }
@@ -516,12 +526,12 @@
   /* Quick-place flash: right after a detector/camera is (re)positioned by a quick-place button,
      its coverage and mount point light up for ~2.6 s, then ease back to the normal pattern. */
   @keyframes fovFlash{
-    0%,55%{ fill:rgba(0,170,231,.38); stroke:#00AAE7; stroke-width:3; stroke-opacity:1; stroke-dasharray:none; }
+    0%,55%{ fill:rgba(var(--brand-rgb,0,170,231),.38); stroke:var(--brand,#00AAE7); stroke-width:3; stroke-opacity:1; stroke-dasharray:none; }
     100%{ fill-opacity:1; }
   }
   .fov-cone.flash{ animation:fovFlash 2.6s ease-out both; }
   @keyframes devFlash{ 0%{ r:15; stroke-opacity:1; stroke-width:4; } 50%{ r:30; stroke-opacity:.6; stroke-width:3; } 100%{ r:42; stroke-opacity:0; stroke-width:1; } }
-  .dev-flash-ring{ fill:none; stroke:#00AAE7; pointer-events:none; animation:devFlash 1.1s ease-out 3 both; }
+  .dev-flash-ring{ fill:none; stroke:var(--brand,#00AAE7); pointer-events:none; animation:devFlash 1.1s ease-out 3 both; }
   @media (prefers-reduced-motion: reduce){ .fov-cone.flash{ animation-duration:.01s; } .dev-flash-ring{ animation:none; display:none; } }
   .fov-cone.intercom{ fill:url(#pCovIntercom); stroke:#5c4ba3; }
   .fov-cone.smart{ fill:url(#pCovSmart); stroke:#2c7a41; }
@@ -854,15 +864,15 @@
   /* The client-facing quote is the one document that leaves the building, so — unlike the
      rest of the app, which keeps its own working-canvas palette because that palette also
      color-codes device categories on the plan — its letterhead and a few accent numbers use
-     G1's actual brand colors (cyan #00AAE7 on near-black), not the app's internal accent set. */
-  .q-division{ display:block; color:#00AAE7 !important; font-weight:700 !important; letter-spacing:.02em; margin-top:1px; }
+     G1's actual brand colors (cyan var(--brand,#00AAE7) on near-black), not the app's internal accent set. */
+  .q-division{ display:block; color:var(--brand,#00AAE7) !important; font-weight:700 !important; letter-spacing:.02em; margin-top:1px; }
   .mon-qty{ font-size:11.5px; color:var(--ink-dim); margin:5px 28px 0 0; }
   .mon-line-total{ font-size:11px; color:var(--ink-dim); margin-top:3px; }
   .modal.client-view .mon-line-total{ display:none; }
-  .qbrand-row{ padding-bottom:12px; margin-bottom:16px; border-bottom:2px solid #00AAE7; }
-  #modalBackdrop .section-title{ color:#101113; border-bottom:2px solid #00AAE7; padding-bottom:4px; display:inline-block; }
-  #modalBackdrop .total-line .amt{ color:#00AAE7; }
-  #modalBackdrop #btnConfirmSend{ background:#00AAE7; border-color:#00AAE7; color:#ffffff; }
+  .qbrand-row{ padding-bottom:12px; margin-bottom:16px; border-bottom:2px solid var(--brand,#00AAE7); }
+  #modalBackdrop .section-title{ color:#101113; border-bottom:2px solid var(--brand,#00AAE7); padding-bottom:4px; display:inline-block; }
+  #modalBackdrop .total-line .amt{ color:var(--brand,#00AAE7); }
+  #modalBackdrop #btnConfirmSend{ background:var(--brand,#00AAE7); border-color:var(--brand,#00AAE7); color:#ffffff; }
   /* customer contact inputs (agent) + printed details (client view / PDF) */
   .q-contact{ display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:8px 10px; margin-top:12px; max-width:640px; }
   .q-field{ display:flex; flex-direction:column; gap:3px; font-size:11px; color:var(--ink-dim); font-weight:600; }
@@ -904,20 +914,20 @@
     border-radius:10px; border:1px solid var(--paper-line); background:#f4f2ea; color:var(--ink-on-paper);
     font:600 14px var(--font-body); text-decoration:none; cursor:pointer; text-align:center;
   }
-  .share-btn:focus-visible{ outline:2px solid #00AAE7; outline-offset:2px; }
+  .share-btn:focus-visible{ outline:2px solid var(--brand,#00AAE7); outline-offset:2px; }
   .share-btn[disabled], .share-btn.disabled{ opacity:.45; pointer-events:none; }
   .share-btn .step{ display:inline-flex; width:20px; height:20px; border-radius:50%; align-items:center; justify-content:center; font-size:11px; background:rgba(0,0,0,.12); }
   .share-btn.wa{ background:#25D366; border-color:#1fb457; color:#06280f; }
   .share-btn.wa-2{ background:#e9fbf0; border-color:#9fe3b8; color:#0d5a2a; }
   .share-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; }
-  .share-btn.primary{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .share-btn.primary{ background:var(--brand,#00AAE7); border-color:var(--brand,#00AAE7); color:#fff; }
   .share-btn.done{ box-shadow:inset 0 0 0 2px rgba(0,0,0,.18); }
   .share-btn.done::after{ content:'✓'; font-weight:800; }
   .share-note{ font-size:11.5px; color:#1f5c4c; background:#eaf3ef; border:1px solid #bcdccf; border-radius:8px; padding:7px 10px; line-height:1.5; }
   .share-note.warn{ color:#7a4a0c; background:#fff5e2; border-color:#f1d49b; }
   .sk-who{ display:flex; gap:6px; }
   .sk-who button{ flex:1 1 0; border:1px solid var(--paper-line); background:#fff; border-radius:10px; padding:9px 8px; font:700 13px var(--font-body); color:var(--ink-on-paper); cursor:pointer; }
-  .sk-who button.on{ background:#00AAE7; border-color:#00AAE7; color:#fff; }
+  .sk-who button.on{ background:var(--brand,#00AAE7); border-color:var(--brand,#00AAE7); color:#fff; }
   .sk-fields{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .sk-fields label{ display:flex; flex-direction:column; gap:3px; font-size:11.5px; font-weight:600; color:var(--ink-dim); }
   .sk-fields input{ border:1px solid var(--paper-line); border-radius:9px; padding:9px 10px; font-size:15px; font-family:inherit; background:#fff; color:var(--ink-on-paper); min-width:0; }
@@ -930,17 +940,17 @@
   body.sign-mode{ background:#eef3f6; overflow:auto; }
   .sign-view{ min-height:100vh; padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(24px + env(safe-area-inset-bottom,0px)); box-sizing:border-box; font-family:var(--font-body); color:#1b1f24; }
   .sg-card{ background:#fff; max-width:720px; margin:0 auto; border-radius:16px; padding:18px 18px 22px; box-shadow:0 6px 28px rgba(10,30,60,.10); }
-  .sg-brand{ display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom:2px solid #00AAE7; margin-bottom:12px; }
+  .sg-brand{ display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom:2px solid var(--brand,#00AAE7); margin-bottom:12px; }
   .sg-brand > img{ width:44px; height:auto; }
   .sg-brand .sg-word{ display:block; height:24px; width:auto; margin-bottom:2px; }
   .sg-brand .sg-g1{ height:19px; width:auto; vertical-align:-5px; margin-inline-start:6px; }
-  .sg-brand b{ display:block; font-size:16px; } .sg-brand small{ display:block; color:#00AAE7; font-weight:700; font-size:12px; }
+  .sg-brand b{ display:block; font-size:16px; } .sg-brand small{ display:block; color:var(--brand,#00AAE7); font-weight:700; font-size:12px; }
   .sg-title{ font-size:19px; margin:4px 0 2px; } .sg-sub{ color:#5a6270; margin:0 0 12px; font-size:13px; }
-  .sg-card h3, .sign-doc h3{ font-size:14px; margin:16px 0 6px; color:#0b1220; border-bottom:2px solid #00AAE7; display:inline-block; padding-bottom:2px; }
+  .sg-card h3, .sign-doc h3{ font-size:14px; margin:16px 0 6px; color:#0b1220; border-bottom:2px solid var(--brand,#00AAE7); display:inline-block; padding-bottom:2px; }
   .sg-t{ width:100%; border-collapse:collapse; font-size:13px; }
   .sg-t td, .sg-t th{ border-bottom:1px solid #e3e8ee; padding:6px 4px; text-align:right; }
   .sg-t th{ color:#5a6270; font-weight:600; font-size:12px; } .sg-t .n{ text-align:left; white-space:nowrap; font-family:var(--font-mono); }
-  .sg-tot{ margin-top:8px; } .sg-t tr.big td{ font-weight:700; font-size:15px; color:#0077a8; border-bottom:2px solid #00AAE7; }
+  .sg-tot{ margin-top:8px; } .sg-t tr.big td{ font-weight:700; font-size:15px; color:var(--brand-dark,#0077a8); border-bottom:2px solid var(--brand,#00AAE7); }
   .sg-terms{ font-size:13px; margin:8px 0; } .sg-notes{ list-style:none; padding:0; margin:0; font-size:12.5px; } .sg-notes li{ margin:0 0 4px; }
   .sg-agent{ font-size:12.5px; color:#5a6270; margin-top:12px; }
   .sg-form{ margin-top:16px; border-top:1px dashed #cfd8e0; padding-top:6px; display:flex; flex-direction:column; gap:10px; }
@@ -948,13 +958,13 @@
   .sg-form input:not([type="checkbox"]){ border:1px solid #cfd8e0; border-radius:10px; padding:11px 12px; font-size:16px; font-family:inherit; }
   .sg-form label.sg-check{ flex-direction:row; align-items:flex-start; gap:8px; font-weight:500; line-height:1.5; }
   .sg-form label.sg-check input{ width:20px; height:20px; margin-top:2px; flex:0 0 auto; }
-  .sg-pad-wrap{ border:1.5px solid #00AAE7; border-radius:12px; padding:8px; }
+  .sg-pad-wrap{ border:1.5px solid var(--brand,#00AAE7); border-radius:12px; padding:8px; }
   .sg-pad-head{ display:flex; justify-content:space-between; align-items:center; font-size:13px; margin-bottom:4px; }
   .sg-pad-head button{ border:1px solid #cfd8e0; background:#f4f7f9; border-radius:8px; padding:4px 10px; font-family:inherit; cursor:pointer; }
   #sgPad{ width:100%; height:180px; background:#fbfdfe; border-radius:8px; touch-action:none; display:block; }
   .sg-pad-hint{ font-size:11px; color:#8a94a0; text-align:center; margin-top:3px; }
   .sg-err{ color:#b4231a; font-weight:600; font-size:13px; }
-  .sg-primary{ min-height:52px; border:0; border-radius:12px; background:#00AAE7; color:#fff; font:700 16px var(--font-body); cursor:pointer; }
+  .sg-primary{ min-height:52px; border:0; border-radius:12px; background:var(--brand,#00AAE7); color:#fff; font:700 16px var(--font-body); cursor:pointer; }
   .sg-primary:disabled{ opacity:.6; }
   .sg-small{ font-size:11px; color:#8a94a0; margin:2px 0 0; }
   .sg-actions{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
@@ -965,7 +975,7 @@
   .sg-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; } .sg-btn.done::after{ content:'✓'; }
   .sg-btn .step{ display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center; background:rgba(0,0,0,.12); font-size:12px; }
   .sign-doc{ position:relative; margin:16px auto 0; width:820px; background:#fff; padding:28px 30px; font-family:var(--font-body); color:#1b1f24; box-sizing:border-box; }
-  .sign-doc .sg-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; }
+  .sign-doc .sg-approval{ margin-top:18px; border:1.5px solid var(--brand,#00AAE7); border-radius:10px; padding:12px 14px; }
   .sg-sigbox{ display:flex; align-items:flex-end; gap:14px; margin-top:14px; }
   .sg-sigbox > span{ font-weight:700; font-size:13px; padding-bottom:6px; }
   .sg-sigbox .sg-sigline{ width:300px; max-width:60%; border-bottom:1.5px solid #5a6270; padding:0 8px 2px; text-align:center; line-height:0; }
@@ -973,7 +983,7 @@
   .sign-doc .sg-approval .sg-small{ margin-top:14px; padding-top:8px; border-top:1px dashed #cfd8e0; line-height:1.6; }
   .sign-doc .sg-approval .sg-t td:first-child{ width:120px; color:#5a6270; font-weight:600; }
   .sg-ltr{ direction:ltr; unicode-bidi:embed; display:inline-block; }
-  .q-approval{ margin-top:18px; border:1.5px solid #00AAE7; border-radius:10px; padding:12px 14px; background:rgba(0,170,231,.04); }
+  .q-approval{ margin-top:18px; border:1.5px solid var(--brand,#00AAE7); border-radius:10px; padding:12px 14px; background:rgba(var(--brand-rgb,0,170,231),.04); }
   .q-approval-title{ font-weight:700; color:#0b1220; margin-bottom:4px; font-size:13px; }
   .q-item-name{ font-weight:600; }
   .zone-table{ font-size:10.5px; } .zone-table th, .zone-table td{ padding:3px 4px; vertical-align:top; }
@@ -985,12 +995,12 @@
   .zl-note{ font-size:10px; color:var(--ink-dim); margin:4px 0 0; line-height:1.5; }
   .plan-table{ margin:6px 0 8px; font-size:11.5px; } .plan-table td{ vertical-align:top; }
   .zone-list{ display:flex; flex-wrap:wrap; gap:4px 6px; margin:4px 0 8px; font-size:10.5px; }
-  .zone-list span{ border:1px solid rgba(0,170,231,.35); border-radius:6px; padding:1px 6px; background:rgba(0,170,231,.06); white-space:nowrap; }
-  .zone-list b{ color:#0077a8; margin-inline-end:3px; }
+  .zone-list span{ border:1px solid rgba(var(--brand-rgb,0,170,231),.35); border-radius:6px; padding:1px 6px; background:rgba(var(--brand-rgb,0,170,231),.06); white-space:nowrap; }
+  .zone-list b{ color:var(--brand-dark,#0077a8); margin-inline-end:3px; }
   .plan-concl{ margin:6px 0 0; padding-inline-start:18px; font-size:11.5px; line-height:1.6; } .plan-concl li{ margin-bottom:3px; }
   .q-item-desc, .sg-desc{ display:block; font-size:11px; line-height:1.5; color:var(--ink-dim); font-weight:400; margin-top:2px; max-width:520px; }
   .sg-desc{ color:#5a6270; }
-  .q-approval-terms, .sg-terms-note{ font-size:11.5px; font-weight:700; color:#0b1220; background:rgba(0,170,231,.08); border-inline-start:3px solid #00AAE7; padding:8px 10px 9px; margin:0 0 12px; line-height:1.75; border-radius:4px; }
+  .q-approval-terms, .sg-terms-note{ font-size:11.5px; font-weight:700; color:#0b1220; background:rgba(var(--brand-rgb,0,170,231),.08); border-inline-start:3px solid var(--brand,#00AAE7); padding:8px 10px 9px; margin:0 0 12px; line-height:1.75; border-radius:4px; }
   .q-approval-decl{ font-size:11.5px; color:var(--ink-dim); margin:0 0 10px; }
   .q-approval-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; font-size:12px; }
   .q-approval-grid .f{ display:flex; gap:6px; align-items:flex-end; }
@@ -1034,9 +1044,9 @@
   .q-number-badge{
     display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em;
     padding:4px 10px; border-radius:20px; margin:6px 0 2px;
-    background:rgba(0,170,231,.12); color:#00AAE7; border:1px solid rgba(0,170,231,.35);
+    background:rgba(var(--brand-rgb,0,170,231),.12); color:var(--brand,#00AAE7); border:1px solid rgba(var(--brand-rgb,0,170,231),.35);
   }
-  .q-number-badge.assigned{ background:#00AAE7; color:#ffffff; border-color:#00AAE7; }
+  .q-number-badge.assigned{ background:var(--brand,#00AAE7); color:#ffffff; border-color:var(--brand,#00AAE7); }
   .quote-lib-tools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 6px; }
   .quote-lib-tools label.btn{ cursor:pointer; }
   .quote-lib-note{ font-size:12px; color:var(--accent-2-text); font-weight:600; }
@@ -2472,6 +2482,42 @@
   .g1-lock-go:disabled{ opacity:.6; cursor:wait; }
   .g1-lock-card small{ color:#5B6B7E; font-size:12px; }
   body.g1-locked{ overflow:hidden; }
+  /* ---------- 3D visualization (הדמיית תלת-ממד) ---------- */
+  .v3d{ position:fixed; inset:0; z-index:15000; display:flex; flex-direction:column; background:#0f1b2b; color:#fff; font-family:var(--font-body); }
+  .v3d[hidden]{ display:none; }
+  body.v3d-on{ overflow:hidden; overscroll-behavior:none; }
+  .v3d-top{ display:flex; align-items:center; gap:10px; padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px; background:rgba(9,17,29,.92); }
+  .v3d-title{ flex:1; min-width:0; } .v3d-title b{ display:block; font-size:17px; } .v3d-title small{ display:block; color:#9fb1c6; font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .v3d-floors{ display:flex; gap:4px; } .v3d-floors button{ border:1px solid rgba(255,255,255,.2); background:transparent; color:#cfe0f2; border-radius:99px; padding:6px 11px; font:700 13px var(--font-body); cursor:pointer; min-height:36px; }
+  .v3d-floors button[aria-pressed=true]{ background:#fff; color:#0f1b2b; }
+  .v3d-x{ width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font-size:18px; cursor:pointer; flex:none; }
+  .v3d-stage{ position:relative; flex:1; min-height:0; overflow:hidden; }
+  .v3d-cv{ position:absolute; inset:0; width:100% !important; height:100% !important; touch-action:none; display:block; }
+  .v3d-load{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:12px; color:#cfe0f2; font-weight:700; text-align:center; padding:20px; z-index:2; background:#0f1b2b; }
+  .v3d-load[hidden]{ display:none; }
+  .v3d-spin{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:#4cc9f0; animation:v3dspin 1s linear infinite; }
+  @keyframes v3dspin{ to{ transform:rotate(360deg); } }
+  .v3d-tip{ position:absolute; z-index:3; width:210px; background:#fff; color:#14202e; border-radius:12px; padding:9px 12px; box-shadow:0 10px 30px rgba(0,0,0,.35); font-size:13px; pointer-events:none; }
+  .v3d-tip b{ display:block; font-size:14px; } .v3d-tip span{ display:block; color:#4a5568; margin-top:2px; }
+  .v3d-legend{ position:absolute; z-index:2; top:10px; right:10px; display:flex; flex-direction:column; gap:4px; background:rgba(9,17,29,.72); border-radius:12px; padding:8px 10px; font-size:12px; font-weight:600; pointer-events:none; max-width:46%; }
+  .v3d-legend span{ display:flex; align-items:center; gap:6px; } .v3d-legend i{ width:16px; height:4px; border-radius:2px; flex:none; }
+  .v3d-legend i.cov{ height:10px; background:rgba(76,201,240,.35); border:1px solid #4cc9f0; } .v3d-legend i.ring{ width:10px; height:10px; border-radius:50%; border:2px solid #4cc9f0; }
+  .v3d-note{ position:absolute; z-index:2; bottom:8px; left:10px; font-size:11.5px; color:rgba(255,255,255,.7); background:rgba(9,17,29,.55); border-radius:99px; padding:3px 10px; pointer-events:none; }
+  .v3d-bar{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px)); background:rgba(9,17,29,.95); }
+  .v3d-bar button{ border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:#dbe7f3; border-radius:99px; padding:7px 12px; font:700 13px var(--font-body); cursor:pointer; min-height:38px; }
+  .v3d-bar button[aria-pressed=true]{ background:#4cc9f0; border-color:#4cc9f0; color:#05202c; }
+  .v3d-bar .sp{ flex:1; } .v3d-bar .v3d-act{ background:#fff; color:#0f1b2b; border-color:#fff; } .v3d-bar .v3d-act.pri{ background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; border:0; }
+  .v3d.rec .v3d-bar button{ opacity:.35; pointer-events:none; }
+  .v3d.rec .v3d-bar::after{ content:'מקליט סרטון… ' attr(data-p); position:absolute; left:50%; transform:translateX(-50%); bottom:calc(64px + env(safe-area-inset-bottom,0px)); background:#e5484d; color:#fff; border-radius:99px; padding:6px 14px; font-weight:800; font-size:13px; }
+  .v3d-share{ position:absolute; inset:0; z-index:5; background:rgba(5,12,22,.6); display:grid; place-items:end center; }
+  .v3d-share[hidden]{ display:none; }
+  .v3d-share .in{ width:min(520px,100%); background:#fff; color:#14202e; border-radius:22px 22px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px)); }
+  .v3d-share b{ font-size:18px; } .v3d-share p{ margin:6px 0 14px; color:#4a5568; font-size:14px; }
+  .v3d-share .row{ display:flex; gap:8px; flex-wrap:wrap; } .v3d-share button{ flex:1 1 140px; min-height:48px; border-radius:14px; border:1px solid #d5dce4; background:#fff; font:800 15px var(--font-body); cursor:pointer; color:#14202e; }
+  .v3d-share button.pri{ background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; border:0; }
+  @media (max-width:760px){ .v3d-bar{ gap:5px; } .v3d-bar button{ padding:6px 10px; font-size:12.5px; } .v3d-bar .sp{ flex-basis:100%; height:0; } .v3d-bar .v3d-act{ flex:1; } .v3d-legend{ font-size:11px; } }
+  body.consumer #btn3D, body.consumer #mm3D, body.consumer #btnSketch3D{ display:none !important; }
+
   .g1-bio-face{ width:76px; height:76px; margin:0 auto 6px; border-radius:22px; display:grid; place-items:center; color:#0A63C2; background:#EAF5FC; }
   .g1-bio-alt{ border:0; background:none; color:#0A7FBF; font:700 14px 'Heebo',sans-serif; padding:8px; cursor:pointer; min-height:40px; }
   .g1-bio-code{ display:flex; flex-direction:column; gap:8px; }
@@ -2540,6 +2586,7 @@
     <h4>עוד</h4>
     <div class="mm-grid">
       <button type="button" data-mm="importPlan" id="mmImportPlan" class="mm-import">📐 ייבוא תוכנית מהלקוח <span class="beta-tag">בהרצה</span></button>
+      <button type="button" data-mm="3d" id="mm3D">🧊 הדמיית תלת-ממד ללקוח</button>
       <button type="button" data-mm="inspector">📋 מאפיינים והכוונה</button>
       <button type="button" data-mm="project">✎ פרטי הפרויקט</button>
       <button type="button" data-mm="library">🗂️ הצעות שמורות</button>
@@ -2841,6 +2888,7 @@
           <span class="tb-flow-arrow" aria-hidden="true">←</span>
           <div class="tb-step" data-step="3">
             <span class="tb-step-num" aria-hidden="true">3</span>
+            <button class="btn btn-ghost btn-sm" id="btn3D" title="הדמיית תלת-ממד של הנכס המוגן — כל האביזרים ומסלולי הכבילה, עם סרטון ללקוח">🧊<span class="tb-lbl"> הדמיית תלת-ממד</span></button>
             <button class="btn btn-sm tb-step-main" id="btnSketch" title="תצוגת סקיצה מקצועית במסך מלא — למסירה ללקוח או לקבלן/מתקין, כולל מקרא אביזרים וסיכום כבילה">📐 סקיצה<span class="tb-lbl-sm"> להדפסה</span></button>
           </div>
         </div>
@@ -2881,7 +2929,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 138</div>
+              <div class="app-version" id="appVersion">גרסה 141</div>
             </div>
           </div>
         </div>
@@ -3363,6 +3411,7 @@
         <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" hidden style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
         <button class="btn btn-primary btn-sm" id="btnSketchEmail">📤 שליחה — מייל / וואטסאפ</button>
         <button class="btn btn-ghost btn-sm" id="btnSketchPrint">💾 שמירה כ-PDF</button>
+        <button class="btn btn-ghost btn-sm" id="btnSketch3D">🧊 תלת-ממד</button>
         <button class="modal-close" id="sketchClose" aria-label="סגור">✕ סגור</button>
       </div>
     </div>
@@ -8191,7 +8240,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return { rooms:made.length, warn:warn, msg:'זוהו ' + made.length + ' חדרים ו-' + nOp + ' פתחים' + (notes.length ? ' · ' + notes.join(' · ') : '') + ' — בדקו כל חדר מול הרקע (ביטול מחזיר את השרטוט הקודם)' };
   }
   loadUnderlay();
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); }, bio:function(){ return { ok:bioOk, start:BIO_START_ACT, req:bioRequired(), st:g1AccessState(), cfg:bioCfg() }; } };   // local tests only
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); }, signLinks:function(){ return buildSignLinks(); }, brand:function(){ return curBrand(); }, msgText:function(){ return { lines:quoteMessageLines('wa'), subj:quoteSubject(), file:quotePdfFilename(state.quoteNumber) }; }, bio:function(){ return { ok:bioOk, start:BIO_START_ACT, req:bioRequired(), st:g1AccessState(), cfg:bioCfg() }; } };   // local tests only
 
   var KIND_LABEL_HE = { house:'בית פרטי', apartment:'דירה', store:'עסק / חנות', clinic:'קליניקה / משרד' };
   // The recommendations panel scopes itself to whatever floor is currently being viewed: a
@@ -11021,6 +11070,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   Array.prototype.forEach.call(document.querySelectorAll('#mMoreSheet [data-mm]'), function(b){
     b.addEventListener('click', function(){
       var k = b.dataset.mm;
+      if (k === '3d') { try { closeMobilePanels(); } catch(e) {} var mms = document.getElementById('mMoreSheet'); if (mms) mms.hidden = true; open3D(); return; }
       closeMobilePanels();
       if (k === 'project') { document.getElementById('mTitle').click(); return; }
       var t = document.getElementById(M_MORE[k]); if (t) t.click();
@@ -12766,7 +12816,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function quoteTermsHtml(dateStr){
     var L = 'אבגדהוזחטי', n = 0;
     return ['validity', 'cabling', 'ownership', 'extra', 'errors'].map(function(k){
-      var t = String(QUOTE_TXT[k] || '').trim(); if (!t) return '';
+      var t = brT(String(QUOTE_TXT[k] || '').trim()); if (!t) return '';
       return '<li><b>' + L.charAt(n++) + '.</b> ' + escapeHtml(t.replace('{date}', dateStr)) + '</li>';
     }).join('');
   }
@@ -13247,9 +13297,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function openQuoteModal(){
     var score = runGuidance();
     var r = runBom();
+    brandApply();
     document.getElementById('qBrand').innerHTML = document.querySelector('.topbar .brand').outerHTML;
-    var qbSmall = document.querySelector('#qBrand .brand small');
-    if (qbSmall && !document.querySelector('#qBrand .q-division')) {
+    var qbSmall = document.querySelector('#qBrand .brand small'), qbB = curBrand();
+    if (qbB.id !== 'g1') { if (qbSmall) qbSmall.remove(); var co = brCoLine(qbB); if (co) document.getElementById('qBrand').insertAdjacentHTML('beforeend', '<div class="q-co">' + co + '</div>'); }
+    else if (qbSmall && !document.querySelector('#qBrand .q-division')) {
       var divEl = document.createElement('small'); divEl.className = 'q-division'; divEl.innerHTML = 'מבית<img src="' + G1_MARK + '" alt="G1 ONE">';
       qbSmall.parentNode.appendChild(divEl);
     }
@@ -13501,11 +13553,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // are illegal in file names are removed; the ASCII "G1-Quote-<n>" prefix keeps it findable).
   function quotePdfFilename(number){
     var cust = (document.getElementById('fCustomer').value || '').replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 50);
-    return 'G1-Quote-' + (number || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf';
+    return brT('G1-Quote-') + (number || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf';
   }
   function ensurePdfName(name){
     var n = String(name || '').replace(/[\\\/:*?"<>|\u0000-\u001f]+/g, '-').replace(/\s+/g, ' ').trim();
-    if (!/\.pdf$/i.test(n)) n = (n || 'G1-' + fileStamp()) + '.pdf';
+    if (!/\.pdf$/i.test(n)) n = (n || brName('prefix') + '-' + fileStamp()) + '.pdf';
     return n;
   }
   function safeFileSlug(s){
@@ -13646,7 +13698,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
     var address = document.getElementById('fAddress').value || '';
     var lines = ['שלום ' + customer + ',', ''];
-    lines.push((wa ? 'מצורפת ' : 'מצורפת (בקובץ PDF) ') + 'הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ממיגון G1 למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
+    lines.push((wa ? 'מצורפת ' : 'מצורפת (בקובץ PDF) ') + 'הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ' + brName('from') + ' למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
     lines.push('');
     // the signing link right at the top, alone on its line (a long message can be shortened by
     // the app it travels through — the link must never be the part that gets cut)
@@ -13668,7 +13720,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (agentInfo.phone) lines.push(agentInfo.phone);
     return lines;
   }
-  function quoteSubject(){ return 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1 עבור ' + (document.getElementById('fCustomer').value || 'הלקוח'); }
+  function quoteSubject(){ return 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ' + brName('from') + ' עבור ' + (document.getElementById('fCustomer').value || 'הלקוח'); }
 
   /* ============================= professional quote e-mail =============================
      The e-mail body is built as real formatted HTML (bold title, a styled table with the
@@ -13693,7 +13745,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       notes: [
         'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה.',
         'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
-        'הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.',
+        brT('הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.'),
         'ט.ל.ח.'
       ],
       sig: [agentInfo.name || '', 'יועץ מיגון סניף ' + (agentInfo.branch || '—'), agentInfo.phone || ''].filter(Boolean)
@@ -13703,7 +13755,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var q = quoteEmailData(), e = escapeHtml;
     var font = "font-family:Arial,'Segoe UI',Helvetica,sans-serif;";
     var h = '<div dir="rtl" style="' + font + 'font-size:14px;line-height:1.6;color:#1b1f24;text-align:right">';
-    h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">הצעת מחיר מס׳ ' + e(String(q.number)) + ' ממיגון G1 עבור ' + e(q.customer) + '</p>';
+    h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">הצעת מחיר מס׳ ' + e(String(q.number)) + ' ' + e(brName('from')) + ' עבור ' + e(q.customer) + '</p>';
     h += '<p style="margin:0 0 10px">שלום ' + e(q.customer) + ',</p>';
     h += '<p style="margin:0 0 14px">מצורפת בקובץ PDF הצעת מחיר <b>מס׳ ' + e(String(q.number)) + '</b> למערכת מיגון' + (q.address ? ' בכתובת: ' + e(q.address) : '') + '.</p>';
     if (currentSignLinks) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
@@ -13726,7 +13778,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function quoteEmailText(){
     var q = quoteEmailData(), L = [];
-    L.push('הצעת מחיר מס׳ ' + q.number + ' ממיגון G1 עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
+    L.push('הצעת מחיר מס׳ ' + q.number + ' ' + brName('from') + ' עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
     L.push('מצורפת בקובץ PDF הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
     if (currentSignLinks) L.push('✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו על הקישור:', currentSignLinks.mail, '');
     q.rows.forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
@@ -13974,6 +14026,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       v:2, ch:ch, n:state.quoteNumber, d: now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' }),
       c:[document.getElementById('fCustomer').value.trim(), document.getElementById('fAddress').value.trim(), c.phone || '', c.email || '', c.idType || '', c.idNum || ''],
       ag:[agentInfo.name || '', agentInfo.phone || '', agentInfo.branch || '', agentInfo.email || ''],
+      br:curBrandId() !== 'g1' ? curBrandId() : undefined,
       it:items, tt:num(txt('qTotal')), t:tot
     };
     if (cables.length) o.cb = cables;
@@ -13993,7 +14046,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var svc = function(k){ var d = MONITOR_SERVICES.filter(function(x){ return x.key === k; })[0]; return d && d.label; };
     var c = o.c || [], ag = o.ag || [];
     return {
-      v:2, ch:o.ch, n:o.n, d:o.d,
+      v:2, ch:o.ch, n:o.n, d:o.d, br:o.br || '',
       c:{ n:c[0] || '', a:c[1] || '', p:c[2] || '', e:c[3] || '', it:c[4] || '', id:c[5] || '' },
       ag:{ n:ag[0] || '', p:ag[1] || '', b:ag[2] || '', e:ag[3] || '' },
       nt:o.nt || 0,
@@ -14043,12 +14096,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var QUOTE_TERMS_TEXT = function(d){ return [
     'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה (הופקה בתאריך ' + d + ').',
     'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
-    'הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.',
+    brT('הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.'),
     'ט.ל.ח.' ]; };
   function signQuoteHtml(q, opts){
     var e = escapeHtml, o = opts || {};
     var logo = (document.querySelector('.topbar .brand .mark img') || {}).src || '', word = (document.querySelector('.topbar .brand .brand-word') || {}).src || '';
+    var sb = curBrand();
+    if (sb.id !== 'g1') { var hb = '<div class="sg-brand">' + (sb.logo ? brLogoHtml(sb, 'sg-wide') : '<b>' + e(sb.name) + '</b>') + '</div>' + (brCoLine(sb) ? '<p class="sg-co">' + brCoLine(sb) + '</p>' : '');
+      return signQuoteBody(q, o, hb); }
     var h = '<div class="sg-brand">' + (logo ? '<img src="' + logo + '" alt="">' : '') + '<div>' + (word ? '<img class="sg-word" src="' + word + '" alt="G1 SiteGuard">' : '<b>G1 SiteGuard</b>') + '<small>מבית<img class="sg-g1" src="' + G1_MARK + '" alt="G1 ONE"></small></div></div>';
+    return signQuoteBody(q, o, h);
+  }
+  function signQuoteBody(q, o, h){
+    var e = escapeHtml;
     h += '<h1 class="sg-title">' + (o.signed ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + e(String(q.n)) + '</h1>';
     h += '<p class="sg-sub">' + e(q.c.n || '') + (q.c.a ? ' · ' + e(q.c.a) : '') + ' · הופקה ' + e(q.d) + '</p>';
     if (!q.it.length && q.nt) h += '<h3>התקנה חד-פעמית — אביזרים</h3><p class="sg-terms">' + q.nt + ' סוגי אביזרים — הפירוט המלא (אביזרים, כמויות וכבילה) בקובץ ה-PDF של הצעת המחיר שצורף להודעה.</p>';
@@ -14070,6 +14130,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var q;
     var cut = false;
     try { q = await unpackSignPayload(packed); } catch(e) { q = null; cut = !!(e && e.cut); try { console.error('sign link', e); } catch(_) {} }
+    if (q && q.br && BRANDS[q.br]) { SIGN_BRAND = q.br; try { await Promise.race([g1cFetchConfig(), new Promise(function(r){ setTimeout(r, 3500); })]); } catch(e) {} try { brandApply(); } catch(e) {} }
     packed = (packed && packed.t) || String(packed || '');
     document.body.classList.add('sign-mode');
     var view = document.createElement('div'); view.id = 'signView'; view.className = 'sign-view'; view.setAttribute('dir', 'rtl');
@@ -14092,7 +14153,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<label>' + escapeHtml(idLabel) + ' / ח.פ<input id="sgId" inputmode="numeric" value="' + escapeHtml(q.c.id || '') + '"></label>' +
         '<label>טלפון<input id="sgPhone" type="tel" value="' + escapeHtml(q.c.p || '') + '"></label>' +
         '<label>אימייל<input id="sgEmail" type="email" value="' + escapeHtml(q.c.e || '') + '"></label>' +
-        '<p class="sg-terms-note">חתימה על הזמנת ציוד/התקנה זו בהתאם לתקנון החברה שמופיע באתר חברת G1, הסכם חיבור מוקד ישלח בנפרד.</p>' +
+        '<p class="sg-terms-note">' + escapeHtml(brT('חתימה על הזמנת ציוד/התקנה זו בהתאם לתקנון החברה שמופיע באתר חברת G1, הסכם חיבור מוקד ישלח בנפרד.')) + '</p>' +
         '<label class="sg-check"><input type="checkbox" id="sgAgree"> קראתי ואני מאשר/ת את הצעת המחיר מס׳ ' + escapeHtml(String(q.n)) + ' ואת ההערות והתנאים המפורטים בה.</label>' +
         '<div class="sg-pad-wrap"><div class="sg-pad-head"><b>חתימה</b><button type="button" id="sgClear">ניקוי</button></div><canvas id="sgPad"></canvas><div class="sg-pad-hint">חתמו כאן עם האצבע או העכבר</div></div>' +
         '<div class="sg-err" id="sgErr" hidden></div>' +
@@ -14134,12 +14195,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var canvas = await renderElementToCanvas(doc);
         var meta = JSON.stringify({ type:'g1signed', number:q.n, signer:signer, signedAt:signedAt.toISOString(), code:code, quoteHash:qHash });
         var lay = pdfLayoutOf(doc, canvas, 'tr, p, li, h3, .sg-brand, .sg-title, .sg-sub, .sg-agent, .sg-terms, .sg-approval, .sg-sigbox');
-        blob = canvasToPdfBlob(canvas, meta, { breaks:lay.breaks, keep:lay.keep, bg:[255, 255, 255], footer:'קבוצת G1 · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
+        blob = canvasToPdfBlob(canvas, meta, { breaks:lay.breaks, keep:lay.keep, bg:[255, 255, 255], footer:brName('group') + ' · הצעת מחיר מס׳ ' + q.n + ' · נחתם ע״י ' + signer.name + ' ' + when });
       } catch(e) { blob = null; try { console.error('sign pdf', e); } catch(_) {} }
       doc.parentNode.removeChild(doc);
       btn.disabled = false; btn.textContent = '✍️ אישור וחתימה';
       if (!blob) { err.textContent = 'הפקת המסמך נכשלה — נסו שוב.'; err.hidden = false; return; }
-      var name2 = 'G1-Quote-' + q.n + ' - חתום - ' + signer.name.replace(/[\\\/:*?"<>|]+/g, ' ') + '.pdf';
+      var name2 = brT('G1-Quote-') + q.n + ' - חתום - ' + signer.name.replace(/[\\\/:*?"<>|]+/g, ' ') + '.pdf';
       renderSignReturn(view, q, { blob:blob, file:pdfFileFrom(blob, name2), name:name2 }, signer, when);
     };
   }
@@ -14317,7 +14378,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // instant fallback: opens Outlook right away (short plain text, no attachment) — kept short
       // because Windows silently drops a mailto: link that's too long
       var shortLines = ['שלום ' + (document.getElementById('fCustomer').value || '') + ',', '',
-        'מצורפת הצעת מחיר מס׳ ' + state.quoteNumber + ' ממיגון G1.', 'סה״כ התקנה (כולל מע״מ): ' + document.getElementById('qTotal').textContent, '',
+        'מצורפת הצעת מחיר מס׳ ' + state.quoteNumber + ' ' + brName('from') + '.', 'סה״כ התקנה (כולל מע״מ): ' + document.getElementById('qTotal').textContent, '',
         'בברכה,', agentInfo.name || '', agentInfo.phone || ''];
       var quick = linkBtn('', '⚡ פתיחה מיידית באאוטלוק (טקסט קצר, בלי קובץ — לגרור את ה-PDF)', buildMailto(info.emailOk ? info.contact.email : '', quoteSubject(), shortLines));
       quick.style.marginTop = '6px';
@@ -14374,7 +14435,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     setClientView(true);
     updateCustomerDetails();
     var name = quotePdfFilename(state.quoteNumber);
-    var footer = 'קבוצת G1 · הצעת מחיר מס׳ ' + state.quoteNumber + ' · ' + (document.getElementById('fCustomer').value || '') +
+    var footer = brName('group') + ' · הצעת מחיר מס׳ ' + state.quoteNumber + ' · ' + (document.getElementById('fCustomer').value || '') +
       (agentInfo.name ? ' · ' + agentInfo.name : '') + (agentInfo.phone ? ' ' + agentInfo.phone : '');
     var blob = await buildPanelPdfBlob('#modalBackdrop .modal', JSON.stringify(rec), { footer: footer });
     if (!blob) return null;
@@ -14686,7 +14747,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   async function buildSketchPdfBlob(){
     if (typeof html2canvas === 'undefined' || !window.jspdf) return null;
     var floors = sketchFloorsToExport(), back = sketchActiveFloor, secs = [];
-    var base = 'קבוצת G1 · סקיצת מיגון · ' + (document.getElementById('fCustomer').value || '');
+    var base = brName('group') + ' · סקיצת מיגון · ' + (document.getElementById('fCustomer').value || '');
     try {
       pdfExportMode(true);
       for (var k = 0; k < floors.length; k++){
@@ -14730,7 +14791,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var skShare = { who:'customer', phone:null, email:null, pdf:null };
   function sketchPdfFilename(){
     var cust = (document.getElementById('fCustomer').value || '').trim();
-    return ensurePdfName('G1-Sketch-' + (state.quoteNumber || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf');
+    return ensurePdfName(brT('G1-Sketch-') + (state.quoteNumber || fileStamp()) + (cust ? ' - ' + cust : '') + '.pdf');
   }
   function sketchSummary(){
     var devs = state.devices;
@@ -14761,7 +14822,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function sketchSubject(){
     var customer = document.getElementById('fCustomer').value.trim() || 'הלקוח';
-    return 'סקיצת מיגון G1 — ' + customer + (usesMultiFloor() ? ' — כל הקומות' : '');
+    return brName('sketch') + ' — ' + customer + (usesMultiFloor() ? ' — כל הקומות' : '');
   }
   function sketchEmailHtml(){
     var e = escapeHtml, font = "font-family:Arial,'Segoe UI',Helvetica,sans-serif;";
@@ -16152,12 +16213,76 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function g1cRead(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e) { return null; } }
   function g1cWrite(k, v){ try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
   G1C.cfg = g1cRead('g1sg_config');
+
+  /* ---------- brands: G1 (default, unchanged) and partner companies such as מוקד אמון 99 ----------
+     The manager assigns each agent to a company in the admin (access.users[].brand). An agent of a partner
+     company works in its own look: logo in the top bar, the company's colors, and the company's name and
+     details on the quote, the PDF, the messages to the customer and the customer's signing page. The admin
+     can edit the details and colors (cfg.brands.<id>); the built-in values below are the defaults. */
+  var BRANDS = {
+    g1:{ id:'g1', name:'G1', from:'ממיגון G1', company:'חברת G1', group:'קבוצת G1', prefix:'G1', sketch:'סקיצת מיגון G1' },
+    emun:{ id:'emun', name:'מוקד אמון 99', from:'ממוקד אמון 99', company:'מוקד אמון 99', group:'מוקד אמון 99', prefix:'Emun99', sketch:'סקיצת מיגון — מוקד אמון 99',
+      legal:'מוקד אמון (1995) בקרה וסיור בע"מ', address:'משכית 32, הרצליה פיתוח', phone:'09-9556146', phone2:'077-9556146', fax:'09-9585870', web:'www.emun99.co.il', email:'', regNo:'',
+      tagline:'תכנון מיגון והצעות מחיר', primary:'#ED191F', dark:'#384553', logo:'data:image/png;base64,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' }
+  };
+  var SIGN_BRAND = '';
+  function curBrandId(){
+    if (CONSUMER) return 'g1';
+    if (SIGN_BRAND) return BRANDS[SIGN_BRAND] ? SIGN_BRAND : 'g1';
+    var u = g1Auth && g1FindUser(g1Auth.uid), id = u ? (u.brand || 'g1') : ((g1Auth && g1Auth.brand) || 'g1');
+    return BRANDS[id] ? id : 'g1';
+  }
+  function curBrand(){
+    var id = curBrandId(), b = {}, base = BRANDS[id], o = id !== 'g1' && G1C.cfg && G1C.cfg.brands && G1C.cfg.brands[id];
+    Object.keys(base).forEach(function(k){ b[k] = base[k]; });
+    if (o) Object.keys(o).forEach(function(k){ if (o[k] != null && o[k] !== '' && k !== 'id') b[k] = o[k]; });
+    if (b.name && id !== 'g1') { b.from = 'מ' + b.name; b.company = b.name; b.group = b.name; b.sketch = 'סקיצת מיגון — ' + b.name; }
+    return b;
+  }
+  function brName(k){ var b = curBrand(); return b[k] != null ? b[k] : BRANDS.g1[k]; }
+  // the G1 wording in texts that leave the app, in the agent's company
+  function brT(t){
+    t = String(t == null ? '' : t); var id = curBrandId(); if (id === 'g1') return t;
+    var b = curBrand();
+    return t.replace(/ממיגון G1/g, b.from).replace(/סקיצת מיגון G1/g, b.sketch).replace(/חברת G1/g, b.company).replace(/קבוצת G1/g, b.group).replace(/G1-(Quote|Sketch)-/g, b.prefix + '-$1-');
+  }
+  function brHex(h){ var m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); if (!m) return null; var n = parseInt(m[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+  function brCoLine(b){
+    if (!b.legal && !b.address) return '';
+    var parts = [b.legal ? '<b>' + escapeHtml(b.legal) + '</b>' : '', b.regNo ? 'ח.פ ' + escapeHtml(b.regNo) : '', b.address ? escapeHtml(b.address) : '',
+      b.phone ? 'טל׳ ' + escapeHtml(b.phone) : '', b.fax ? 'פקס ' + escapeHtml(b.fax) : '', b.email ? escapeHtml(b.email) : '', b.web ? escapeHtml(b.web) : ''];
+    return parts.filter(Boolean).join(' · ');
+  }
+  function brLogoHtml(b, cls){ return b.logo ? '<img src="' + b.logo + '" alt="' + escapeHtml(b.name) + '"' + (cls ? ' class="' + cls + '"' : '') + '>' : ''; }
+  var BR_ORIG = null;
+  function brandApply(){
+    var id = curBrandId(), b = curBrand(), key = id + '|' + JSON.stringify(b);
+    if (brandApply.key === key) return; brandApply.key = key;
+    var root = document.documentElement, bar = document.querySelector('.topbar .brand');
+    if (bar && BR_ORIG == null) BR_ORIG = { bar:bar.innerHTML, title:document.title, terms:(document.querySelector('.q-approval-terms') || {}).textContent || '' };
+    document.body.classList.toggle('brand-partner', id !== 'g1');
+    Object.keys(BRANDS).forEach(function(k){ document.body.classList.toggle('brand-' + k, k === id); });
+    if (id === 'g1') {
+      ['--brand', '--brand-rgb', '--brand-dark'].forEach(function(v){ root.style.removeProperty(v); });
+      if (bar && BR_ORIG) bar.innerHTML = BR_ORIG.bar;
+      if (BR_ORIG) document.title = BR_ORIG.title;
+    } else {
+      var rgb = brHex(b.primary);
+      if (rgb) { root.style.setProperty('--brand', b.primary); root.style.setProperty('--brand-rgb', rgb.join(',')); }
+      if (brHex(b.dark)) root.style.setProperty('--brand-dark', b.dark);
+      if (bar) bar.innerHTML = b.logo ? '<span class="mark wide">' + brLogoHtml(b) + '</span><div><small>' + escapeHtml(b.tagline || 'תכנון מיגון והצעות מחיר') + '</small></div>'
+        : '<div><span class="brand-txt big">' + escapeHtml(b.name) + '</span><small>' + escapeHtml(b.tagline || 'תכנון מיגון והצעות מחיר') + '</small></div>';
+      document.title = b.name + ' · תכנון מיגון';
+    }
+    var tm = document.querySelector('.q-approval-terms'); if (tm && BR_ORIG) tm.textContent = brT(BR_ORIG.terms);
+    if (g1Auth && !SIGN_BRAND && g1Auth.brand !== id) { g1Auth.brand = id; g1cWrite('g1sg_auth', g1Auth); }
+  }
   function g1cOnConfig(fn){ G1C.listeners.push(fn); if (G1C.cfg) { try { fn(G1C.cfg, false); } catch(e) {} } }
   // Settings come from the manager's Google Sheet (published from the admin page). The GitHub
   // config.json is only the bootstrap: it tells the app where the sheet lives (backend.endpoint).
-  function g1cJSON(url){
+  function g1cJSON(url, ms){
     var ctl = ('AbortController' in window) ? new AbortController() : null;
-    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 9000);
+    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, ms || 9000);
     return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(), { cache:'no-store', signal: ctl ? ctl.signal : undefined })
       .then(function(r){ clearTimeout(timer); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }, function(e){ clearTimeout(timer); throw e; });
   }
@@ -16167,7 +16292,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return g1cJSON(G1_CONFIG_URL).then(function(c){ return c && typeof c === 'object' ? c : null; }, function(){ return null; }).then(function(base){
       var ep = (base && base.backend && base.backend.endpoint) || (cached && cached.backend && cached.backend.endpoint) || '';
       if (!g1cIsEp(ep)) return base;
-      return g1cJSON(ep + '?action=config').then(function(j){
+      return g1cJSON(ep + '?action=config', 20000).then(function(j){
         if (j && j.ok && j.config && j.config.access) { var c = j.config; c.backend = c.backend || {}; if (!g1cIsEp(c.backend.endpoint)) c.backend.endpoint = ep; c._src = 'sheet'; return c; }
         return base;                                   // sheet connected but not published yet
       }, function(){
@@ -16237,9 +16362,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return 'ok';
   }
   function g1MarkVerified(){
-    if (!g1Auth || !G1C.fresh) return;
+    if (!g1Auth) return;
     var u = g1FindUser(g1Auth.uid); if (!u) return;
-    g1Auth.verifiedAt = Date.now(); g1Auth.name = u.name; g1Auth.role = u.role; g1cWrite('g1sg_auth', g1Auth);
+    if (G1C.fresh) { g1Auth.verifiedAt = Date.now(); g1Auth.name = u.name; g1Auth.role = u.role; g1cWrite('g1sg_auth', g1Auth); }
+    try { g1Presence('in'); } catch(e) {}
     // at most one "seen" entry per device per day in the admin's access log
     var day = new Date().toISOString().slice(0, 10);
     var pend = (g1cRead('g1sg_outbox') || []).some(function(x){ return x.event === 'seen' && String(x.ts || '').slice(0, 10) === day; });
@@ -16249,6 +16375,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function g1NormPhone(p){ var d = String(p || '').replace(/\D/g, ''); return d.slice(-9); }
   function g1PhoneHash(phone, uid, salt){ return g1cHash(g1NormPhone(phone), uid, (salt || '') + ':phone'); }
   /* ---------- outbound data (Google Sheet endpoint set in the admin page): logins + survey answers ---------- */
+  /* presence (sheet code v5): every device that opens the app reports, at most every 3 hours (or when its
+     stage changes), how far it got — opened / code screen / wrong code / signed in — whether it runs as an
+     installed app, and how many log entries are still waiting on it. Never the code itself, nothing about customers. */
+  function g1PingOn(){ return !CONSUMER && !!(G1C.cfg && G1C.cfg.backend && +G1C.cfg.backend.scriptVer >= 5 && g1Endpoint()); }
+  function g1Standalone(){ try { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; } catch(e) { return false; } }
+  function g1Presence(stage, force){
+    if (!g1PingOn()) return;
+    var st = g1cRead('g1sg_ping') || {}, now = Date.now(), uid = (g1Auth && g1Auth.uid) || '';
+    if (!force && st.stage === stage && st.uid === uid && now - (st.at || 0) < 3 * 3600e3) return;
+    if (g1Presence.busy) return; g1Presence.busy = true;
+    var ls = g1cRead('g1sg_logstat') || {}, ob = g1cRead('g1sg_outbox') || [];
+    var p = { type:'open', deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || ''),
+      uid:uid, name:(g1Auth && g1Auth.name) || '', installed:g1Standalone() ? 1 : 0, stage:stage, codeFails:st.fails || 0, outbox:ob.length,
+      lastErr:(ls.err && (!ls.okAt || ls.errAt > ls.okAt)) ? String(ls.err).slice(0, 80) : '', cfg:G1C.fresh ? 'fresh' : (G1C.cfg && G1C.cfg._src === 'sheet' ? 'saved' : 'boot'),
+      ref:g1cRead('g1sg_ref') || '', ts:new Date().toISOString() };
+    g1Send(p).then(function(){ var s2 = g1cRead('g1sg_ping') || {}; s2.at = now; s2.stage = stage; s2.uid = uid; g1cWrite('g1sg_ping', s2); }, function(){}).then(function(){ g1Presence.busy = false; });
+  }
   function g1Endpoint(){ var b = G1C.cfg && G1C.cfg.backend; return (b && b.endpoint) || ''; }
   // Resolves with the sheet's answer: { ok:true } = written. A sheet that answered { ok:false } (busy,
   // unknown user, script error) or a network failure rejects, so the entry stays in the outbox and is
@@ -16321,7 +16464,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (CONSUMER) return [];
     var list = (G1C.cfg && G1C.cfg.messages) || [], uid = g1Auth && g1Auth.uid, now = Date.now();
     return list.filter(function(m){ return m && m.id && !m.draft && (!m.from || Date.parse(m.from) <= now) &&
-      (!m.to || m.to === 'all' || (Array.isArray(m.to) && uid && m.to.indexOf(uid) > -1)); });
+      (!m.to || m.to === 'all' || (typeof m.to === 'string' && m.to.indexOf('brand:') === 0 && m.to.slice(6) === curBrandId()) || (Array.isArray(m.to) && uid && m.to.indexOf(uid) > -1)); });
   }
   function msgActive(m){ return !m.until || Date.parse(m.until) >= Date.now(); }
   function msgDone(m, st){ var x = (st || msgState())[msgKey(m)]; return !!(x && (m.ack ? x.ack : (x.read || x.ack))); }
@@ -16489,6 +16632,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     try { updatePaletteAvailability(); } catch(e) {}
     msgBadge();
     var afb = document.getElementById('agentFbBtn'); if (afb) afb.hidden = !fbOn();
+    try { brandApply(); } catch(e) {}
     bioCheck('cfg');
     if (location.hash.indexOf('#msg=') === 0) { var mid = decodeURIComponent(location.hash.slice(5)); try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {} if (g1Auth && g1Auth.uid) setTimeout(function(){ openMsgInbox(mid); }, 600); }
     else setTimeout(msgMaybePopup, 1800);
@@ -16626,6 +16770,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<small>אין לכם קוד? פנו למנהל המוצר.</small></div>';
     ov.hidden = false;
     document.body.classList.add('g1-locked');
+    try { g1Presence('lock' + (reason && reason !== 'locked' ? ':' + reason : '')); } catch(e) {}
     var inp = ov.querySelector('#g1LockCode'), ph = ov.querySelector('#g1LockPhone'), err = ov.querySelector('#g1LockErr'), go = ov.querySelector('#g1LockGo');
     setTimeout(function(){ try { inp.focus(); } catch(e) {} }, 50);
     function submit(){
@@ -16640,7 +16785,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         return Promise.all(users.map(function(u){ return g1cHash(code, u.id, G1C.cfg.access.salt).then(function(h){ return h === u.hash ? u : null; }); }));
       }).then(function(found){
         var u = found.filter(Boolean)[0];
-        if (!u) { err.textContent = 'הקוד או מספר הנייד לא תואמים. בדקו ונסו שוב.'; return null; }
+        if (!u) { err.textContent = 'הקוד או מספר הנייד לא תואמים. בדקו ונסו שוב.'; try { var pf = g1cRead('g1sg_ping') || {}; pf.fails = (pf.fails || 0) + 1; g1cWrite('g1sg_ping', pf); g1Presence('code-fail', true); } catch(e) {} return null; }
         matched = u;
         if (!u.phoneHash) return '';
         if (!ph || g1NormPhone(phone).length < 9) { err.textContent = 'למשתמש שלך נדרש גם מספר הנייד. הזינו אותו ולחצו שוב.'; matched = null; if (ph) ph.focus(); return null; }
@@ -16652,11 +16797,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (!g1DeviceOk(u)) { err.textContent = 'הפרטים נכונים, אבל המכשיר הזה עוד לא אושר. מנהל המוצר קיבל בקשה לאשר אותו.'; g1Log('login', { event:'device-pending', uid:u.id, name:u.name }); return; }
         g1Auth = { uid:u.id, hash:u.hash, phoneHash:u.phoneHash || '', name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
         g1cWrite('g1sg_seen', new Date().toISOString().slice(0, 10));
-        g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush(); setTimeout(function(){ try { g1RemoteApply(); } catch(e) {} }, 400);
+        g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush();
+        try { var pf2 = g1cRead('g1sg_ping') || {}; pf2.fails = 0; g1cWrite('g1sg_ping', pf2); setTimeout(function(){ g1Presence('in', true); }, 1500); } catch(e) {} setTimeout(function(){ try { g1RemoteApply(); } catch(e) {} }, 400);
         // first sign-in on this device: the agent's quote signature comes from the access record
-        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && phone) agentInfo.phone = phone; if (!agentInfo.branch) agentInfo.branch = 'קבוצת G1'; saveAgentInfo(agentInfo); } catch(e) {}
+        try { if (!agentInfo.name) agentInfo.name = u.name; if (!agentInfo.phone && phone) agentInfo.phone = phone; if (!agentInfo.branch) agentInfo.branch = brName('group'); saveAgentInfo(agentInfo); } catch(e) {}
         ov.hidden = true; document.body.classList.remove('g1-locked');
         bioOk = true; bioTouch();   // just typed the code: no face check on top of it
+        try { brandApply(); } catch(e) {}
         g1ApplyRole();
         try { showCanvasToast('שלום ' + (u.name || '') + ' — הכניסה אושרה'); } catch(e) {}
         if (after) after();
@@ -16702,7 +16849,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (st === 'blocked' || st === 'changed' || st === 'removed' || st === 'device' || st === 'offline-expired' || (st === 'locked' && !npOpen)) g1RequireAccess(null);
       else if (st === 'ok') { g1MarkVerified(); g1ApplyRole(); g1Flush(); g1SurveyCheck(); }
     }
-    g1cOnConfig(function(cfg, fresh){ if (fresh || G1C.loaded) recheck(); });
+    g1cOnConfig(function(cfg, fresh){ if (fresh || G1C.loaded) { recheck(); if (!g1Auth) { try { g1Presence('start'); } catch(e) {} } } });
     g1ApplyRole();
     g1cFetchConfig();
     setInterval(function(){ if (navigator.onLine !== false) g1cFetchConfig(); }, 20 * 60 * 1000);
@@ -16949,7 +17096,598 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   g1cOnConfig(function(cfg){ try { g1ApplyTexts(cfg); } catch(e) {} });
 
-  if (CONSUMER) initG1Consumer(); else { initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
+  /* =====================================================================================
+     הדמיית תלת-ממד — a 3D "dollhouse" of the protected property, built from the plan.
+     Rooms → floors and walls (shared edges become one interior wall; openings cut doors and
+     windows), devices at their real x,y with typical mounting heights, coverage as floor
+     footprints (the same line-of-sight polygons as the 2D plan), and cable routes that run
+     along the tops of the walls to the right anchor (same anchor rules as the plan/quote).
+     three.js r160 (classic build) is loaded only when the view opens; one renderer is kept
+     for the whole session (Safari limits WebGL contexts). Cable routes are illustrative —
+     the quote's cable meters stay the only priced figure.
+     ===================================================================================== */
+  var V3D = { r:null, scene:null, cam:null, root:null, open:false, floor:0, raf:0, last:0, t0:0, auto:true, intro:null, rec:null,
+    opts:{ cables:true, cover:true, furn:true, low:true, labels:false, night:false },
+    sph:{ r:20, th:0.6, ph:0.92 }, tgt:null, fit:20, ptrs:{}, quad:'', walls:[], devs:[], flows:[], frames:0, ftime:0, dpr:2 };
+  var V3D_H = 2.7, V3D_CAB = 2.76;
+  function v3dCol(c){ c = String(c || ''); if (/^var\(/.test(c)) { var v = getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1).split(',')[0].trim()).trim(); return v || '#4cc9f0'; } return c || '#4cc9f0'; }
+  var CABLE_COL = { alarm:'#F2B134', cat6:'#2D9CDB', intercom:'#9B51E0', speaker:'#27AE60', network:'#F2994A', fire:'#E5484D', power:'#7F8C8D' };
+  function loadThree(){
+    if (window.THREE) return Promise.resolve(window.THREE);
+    if (loadThree.p) return loadThree.p;
+    var bases = [];
+    if (/^https?:/.test(location.protocol)) bases.push(new URL('lib/three-r160.min.js', location.href).href);
+    bases.push('https://yhj842dhyb-design.github.io/g1-siteguard/lib/three-r160.min.js', 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js');
+    bases = bases.filter(function(u, i){ return bases.indexOf(u) === i; });
+    loadThree.p = (function tryI(i){
+      if (i >= bases.length) return Promise.reject(new Error('three'));
+      return new Promise(function(res, rej){
+        var sc = document.createElement('script'); sc.src = bases[i]; sc.async = true;
+        sc.onload = function(){ window.THREE ? res(window.THREE) : rej(new Error('three')); };
+        sc.onerror = function(){ sc.remove(); rej(new Error('three')); };
+        document.head.appendChild(sc);
+      }).catch(function(){ return tryI(i + 1); });
+    })(0);
+    loadThree.p.catch(function(){ loadThree.p = null; });
+    return loadThree.p;
+  }
+  function v3dPreload(){ if (CONSUMER || window.THREE) return; var go = function(){ loadThree().catch(function(){}); }; if (window.requestIdleCallback) requestIdleCallback(go, { timeout:4000 }); else setTimeout(go, 2500); }
+
+  /* ---------- pure model (no three.js): walls, openings, cable graph ---------- */
+  function v3dFloors(){ var s = {}; state.rooms.forEach(function(r){ s[r.floor || 0] = 1; }); state.devices.forEach(function(d){ s[devFloor(d)] = 1; }); var a = Object.keys(s).map(Number).sort(function(a, b){ return a - b; }); return a.length ? a : [0]; }
+  function v3dModel(f){
+    var off = f * FLOOR_Y_STRIDE, on = function(o){ return (o.floor || 0) === f; };
+    var rooms = state.rooms.filter(on).map(function(r){ var x1 = r.x, y1 = r.y - off; return { r:r, x1:x1, y1:y1, x2:x1 + m2p(r.w), y2:y1 + m2p(r.h), yard:r.type === 'yard', kind:roomKind(r) }; });
+    var bb = { x1:1e9, y1:1e9, x2:-1e9, y2:-1e9 };
+    rooms.forEach(function(q){ bb.x1 = Math.min(bb.x1, q.x1); bb.y1 = Math.min(bb.y1, q.y1); bb.x2 = Math.max(bb.x2, q.x2); bb.y2 = Math.max(bb.y2, q.y2); });
+    state.fences.filter(on).forEach(function(fe){ [[fe.x1, fe.y1 - off], [fe.x2, fe.y2 - off]].forEach(function(p){ bb.x1 = Math.min(bb.x1, p[0]); bb.y1 = Math.min(bb.y1, p[1]); bb.x2 = Math.max(bb.x2, p[0]); bb.y2 = Math.max(bb.y2, p[1]); }); });
+    if (bb.x1 > bb.x2) bb = { x1:0, y1:0, x2:400, y2:300 };
+    // 1) edges of walled rooms, grouped by line (3 px tolerance), split into interior / exterior runs
+    var edges = [];
+    rooms.forEach(function(q){ if (q.yard) return;
+      edges.push({ o:'h', c:q.y1, a:q.x1, b:q.x2, n:-1 }, { o:'h', c:q.y2, a:q.x1, b:q.x2, n:1 }, { o:'v', c:q.x1, a:q.y1, b:q.y2, n:-1 }, { o:'v', c:q.x2, a:q.y1, b:q.y2, n:1 }); });
+    edges.sort(function(p, q){ return p.o < q.o ? -1 : p.o > q.o ? 1 : p.c - q.c; });
+    var groups = [];
+    edges.forEach(function(e){ var g = groups[groups.length - 1]; if (g && g.o === e.o && Math.abs(e.c - g.c) <= 3) { g.list.push(e); g.c = (g.c * (g.list.length - 1) + e.c) / g.list.length; } else groups.push({ o:e.o, c:e.c, list:[e] }); });
+    var runs = [];
+    groups.forEach(function(g){
+      var xs = []; g.list.forEach(function(e){ xs.push(e.a, e.b); }); xs.sort(function(a, b){ return a - b; });
+      var cur = null;
+      for (var i = 0; i < xs.length - 1; i++) {
+        var a = xs[i], b = xs[i + 1]; if (b - a < 1.5) continue;
+        var mid = (a + b) / 2, cov = g.list.filter(function(e){ return e.a <= mid && e.b >= mid; }); if (!cov.length) { cur = null; continue; }
+        var ext = cov.length === 1, n = ext ? cov[0].n : 0;
+        if (cur && cur.ext === ext && cur.n === n && Math.abs(cur.b - a) < 1.5) cur.b = b;
+        else { cur = { o:g.o, c:g.c, a:a, b:b, ext:ext, n:n, ops:[] }; runs.push(cur); }
+      }
+    });
+    // 2) openings onto their wall run
+    state.openings.filter(on).forEach(function(o){
+      var def = OPENING_DEFS[o.type]; if (!def) return;
+      var ox = o.x, oy = o.y - off, best = null, bd = 15;
+      runs.forEach(function(rn){ var d = rn.o === 'h' ? (ox >= rn.a - 3 && ox <= rn.b + 3 ? Math.abs(oy - rn.c) : 1e9) : (oy >= rn.a - 3 && oy <= rn.b + 3 ? Math.abs(ox - rn.c) : 1e9); if (d < bd) { bd = d; best = rn; } });
+      if (best) best.ops.push({ pos:best.o === 'h' ? ox : oy, w:m2p(def.w || 0.9), kind:def.kind, ext:!!def.exterior, type:o.type, o:o });
+    });
+    // 3) wall pieces (solid / lintel / sill / glass / door leaf), heights in meters
+    var pieces = [];
+    runs.forEach(function(rn){
+      var t = rn.ext ? 0.2 : 0.12, ext = m2p(t / 2), a = rn.a - ext, b = rn.b + ext, cur = a;
+      var push = function(s, e, y0, y1, mat){ if (e - s > 0.5 && y1 > y0) pieces.push({ o:rn.o, c:rn.c, s:s, e:e, y0:y0, y1:y1, t:mat === 'glass' ? 0.03 : mat === 'door' ? 0.05 : t, ext:rn.ext, n:rn.n, mat:mat }); };
+      rn.ops.sort(function(p, q){ return p.pos - q.pos; }).forEach(function(op){
+        var s = Math.max(a, op.pos - op.w / 2), e = Math.min(b, op.pos + op.w / 2);
+        if (s > cur) push(cur, s, 0, V3D_H, 'wall');
+        if (op.kind === 'window') { push(s, e, 0, 0.9, 'wall'); push(s, e, 2.1, V3D_H, 'wall'); push(s, e, 0.9, 2.1, 'glass'); }
+        else { push(s, e, 2.1, V3D_H, 'wall'); if (op.ext) push(s, e, 0, 2.1, 'door'); }
+        cur = Math.max(cur, e);
+      });
+      if (b > cur) push(cur, b, 0, V3D_H, 'wall');
+    });
+    // 4) cable graph: wall-run endpoints + crossings, edges along the runs
+    var nodes = [], adj = {};
+    var nodeAt = function(x, y){ for (var i = 0; i < nodes.length; i++) if (Math.abs(nodes[i].x - x) <= 4 && Math.abs(nodes[i].y - y) <= 4) return i; nodes.push({ x:x, y:y }); adj[nodes.length - 1] = []; return nodes.length - 1; };
+    var H = runs.filter(function(r){ return r.o === 'h'; }), V = runs.filter(function(r){ return r.o === 'v'; });
+    runs.forEach(function(rn){ rn.cuts = [rn.a, rn.b]; });
+    H.forEach(function(h){ V.forEach(function(v){ if (v.c >= h.a - 4 && v.c <= h.b + 4 && h.c >= v.a - 4 && h.c <= v.b + 4) { h.cuts.push(v.c); v.cuts.push(h.c); } }); });
+    runs.forEach(function(rn){
+      var cs = rn.cuts.map(function(c){ return Math.max(rn.a, Math.min(rn.b, c)); }).sort(function(a, b){ return a - b; }).filter(function(c, i, arr){ return i === 0 || c - arr[i - 1] > 2; });
+      rn.nodes = cs.map(function(c){ return { c:c, id:rn.o === 'h' ? nodeAt(c, rn.c) : nodeAt(rn.c, c) }; });
+      for (var i = 0; i < rn.nodes.length - 1; i++) { var p = rn.nodes[i], q = rn.nodes[i + 1], len = q.c - p.c; if (p.id !== q.id) { adj[p.id].push([q.id, len]); adj[q.id].push([p.id, len]); } }
+    });
+    var walls = wallSegsForRooms(state.rooms.filter(function(r){ return on(r) && r.type !== 'yard'; }));
+    return { f:f, off:off, rooms:rooms, bb:bb, cx:(bb.x1 + bb.x2) / 2, cy:(bb.y1 + bb.y2) / 2, runs:runs, pieces:pieces, nodes:nodes, adj:adj, sight:walls };
+  }
+  // nearest point on any wall run (local px)
+  function v3dSnap(M, x, y){
+    var best = null;
+    M.runs.forEach(function(rn){
+      var px = rn.o === 'h' ? Math.max(rn.a, Math.min(rn.b, x)) : rn.c, py = rn.o === 'h' ? rn.c : Math.max(rn.a, Math.min(rn.b, y));
+      var d = Math.hypot(px - x, py - y); if (!best || d < best.d) best = { d:d, x:px, y:py, rn:rn, along:rn.o === 'h' ? px : py };
+    });
+    return best;
+  }
+  // shortest route along the walls between two plan points (Dijkstra on the wall graph)
+  function v3dRoute(M, a, b){
+    var sa = v3dSnap(M, a.x, a.y), sb = v3dSnap(M, b.x, b.y);
+    if (!sa || !sb) return [[a.x, a.y], [b.x, b.y]];
+    var N = M.nodes.length, S = N, T = N + 1, adj = {};
+    Object.keys(M.adj).forEach(function(k){ adj[k] = M.adj[k].slice(); }); adj[S] = []; adj[T] = [];
+    var link = function(id, sn){ var ns = sn.rn.nodes, i = 0; while (i < ns.length - 2 && ns[i + 1].c < sn.along) i++; var p = ns[i], q = ns[Math.min(i + 1, ns.length - 1)];
+      [p, q].forEach(function(nd){ var L = Math.abs(nd.c - sn.along); adj[id].push([nd.id, L]); adj[nd.id].push([id, L]); }); return [p.id, q.id]; };
+    var ka = link(S, sa), kb = link(T, sb);
+    if (sa.rn === sb.rn && ka[0] === kb[0] && ka[1] === kb[1]) { var L = Math.abs(sa.along - sb.along); adj[S].push([T, L]); adj[T].push([S, L]); }
+    var pos = function(i){ return i === S ? [sa.x, sa.y] : i === T ? [sb.x, sb.y] : [M.nodes[i].x, M.nodes[i].y]; };
+    var dist = {}, prev = {}, done = {}; dist[S] = 0;
+    for (;;) {
+      var u = null, ud = Infinity; Object.keys(dist).forEach(function(k){ if (!done[k] && dist[k] < ud) { ud = dist[k]; u = k; } });
+      if (u == null || +u === T) break; done[u] = 1;
+      adj[u].forEach(function(e){ var nd = ud + e[1] + 0.01; if (dist[e[0]] == null || nd < dist[e[0]]) { dist[e[0]] = nd; prev[e[0]] = +u; } });
+    }
+    if (dist[T] == null) return [[a.x, a.y], [sa.x, sa.y], [sb.x, sb.y], [b.x, b.y]];
+    var path = [], c = T; while (c != null) { path.unshift(pos(c)); c = c === S ? null : prev[c]; }
+    return path;
+  }
+
+  /* ---------- device mounting ---------- */
+  var V3D_MOUNT = {
+    ceil:{ pir_ceiling:2.66, pir_ceiling_ind:2.66, smoke:2.66, fire_smoke:2.66, fire_heat:2.66, fire_multi:2.66, fire_standalone:2.66, ap_in:2.66, speaker_in:2.66, cam_in:2.62, cam_in_analytics:2.62 },
+    wall:{ pir:2.2, pir_pet:2.2, pir_am:2.3, curtain_in:2.2, curtain_out:2.1, glassbreak:2.2, keypad:1.5, hub:1.6, siren_in:2.35, siren_out:2.8, cam_out:2.6, cam_out_analytics:2.6, cam_lpr:2.4, intercom_ext:1.45, intercom_pal:1.45, intercom_int:1.5,
+      fire_panel:1.5, fire_call_point:1.4, fire_sounder:2.35, fire_sounder_strobe:2.35, fire_strobe_out:2.6, fire_beam:2.5, fire_io_module:2.2, fire_repeater:1.5, fire_duct:2.4, smart_switch:1.1, smart_lock:1.05, smart_water_heater:1.9,
+      speaker_out:2.4, ap_out:2.6, net_point:0.35, spider_ctrl:1.6, spider_ctrl_2relay:1.6, smart_cam:1.9, contact:2.05, smart_shutter:2.2 },
+    low:{ nvr:1.0, switch:1.0, amplifier:1.0, ups:0.15, comm_cabinet:0, flood:0.02, safe_sensor:0.9, fence_sensor:1.0 }
+  };
+  function v3dMount(M, d){
+    var def = DEVICE_DEFS[d.type] || {}, x = d.x, y = d.y - M.off, t = d.type, h, mode;
+    if (V3D_MOUNT.ceil[t] != null) { h = V3D_MOUNT.ceil[t]; mode = 'ceil'; }
+    else if (V3D_MOUNT.low[t] != null) { h = V3D_MOUNT.low[t]; mode = 'low'; }
+    else { h = V3D_MOUNT.wall[t] != null ? V3D_MOUNT.wall[t] : 2.0; mode = 'wall'; }
+    var aim = (d.rot || 0) * Math.PI / 180, dir = [Math.sin(aim), -Math.cos(aim)], px = x, py = y, onWall = false;
+    if (mode !== 'ceil') {
+      // a contact sits on the frame of the nearest door/window
+      if (t === 'contact' || t === 'smart_shutter') { var bo = null, bd = 30; state.openings.forEach(function(o){ if ((o.floor || 0) !== M.f) return; var dd = Math.hypot(o.x - x, o.y - M.off - y); if (dd < bd) { bd = dd; bo = o; } }); if (bo) { x = bo.x; y = bo.y - M.off; h = OPENING_DEFS[bo.type] && OPENING_DEFS[bo.type].kind === 'window' ? 2.15 : 2.15; } }
+      var sn = v3dSnap(M, x, y);
+      if (sn && sn.d <= 16) {
+        var t2 = m2p((sn.rn.ext ? 0.2 : 0.12) / 2 + 0.035), side;
+        if (sn.rn.o === 'h') { side = y === sn.y ? (sn.rn.ext ? -sn.rn.n : (dir[1] >= 0 ? 1 : -1)) : (y > sn.y ? 1 : -1); px = x; py = sn.y + side * t2; if (!def.rotatable) dir = [0, side]; }
+        else { side = x === sn.x ? (sn.rn.ext ? -sn.rn.n : (dir[0] >= 0 ? 1 : -1)) : (x > sn.x ? 1 : -1); px = sn.x + side * t2; py = y; if (!def.rotatable) dir = [side, 0]; }
+        onWall = true;
+      }
+    }
+    return { x:px, y:py, h:h, mode:mode, dir:dir, onWall:onWall };
+  }
+
+  /* ---------- scene building ---------- */
+  function v3dW(M, px, py){ return [(px - M.cx) / PPM, (py - M.cy) / PPM]; }
+  var V3D_FLOOR_COL = { living:'#CDAA80', bedroom:'#C9A27A', hall:'#D9CDBB', office:'#C9A27A', kitchen:'#D9CDBA', bath:'#D7DCE1', wc:'#D7DCE1', safe:'#CFC9C0', storage:'#CFC9C0', balcony:'#B88C62', parking:'#C9C3B8', pool:'#6EC1E4', clinic:'#DADFE3', lab:'#DADFE3', checkout:'#D9D2C6', sales:'#E2DCD0', reception:'#D9CDBB', yard:'#9FBF88', generic:'#E3DDD3' };
+  function v3dMat(o){ var m = new THREE.MeshLambertMaterial(o); return m; }
+  function v3dBox(parent, mat, cx, y0, cz, sx, sy, sz, cast){ var g = V3D.geo.box, m = new THREE.Mesh(g, mat); m.scale.set(sx, sy, sz); m.position.set(cx, y0 + sy / 2, cz); if (cast) { m.castShadow = true; } m.receiveShadow = true; parent.add(m); return m; }
+  function v3dTextTex(text, opts){
+    opts = opts || {}; var c = document.createElement('canvas'), x = c.getContext('2d'), fs = opts.fs || 44, pad = opts.pad || 16;
+    x.font = '700 ' + fs + 'px Heebo, Rubik, Arial, sans-serif'; var w = Math.ceil(x.measureText(text).width) + pad * 2 + (opts.dot ? fs * 0.7 : 0), hh = fs + pad * 1.4;
+    c.width = Math.min(1024, w); c.height = Math.ceil(hh);
+    x.font = '700 ' + fs + 'px Heebo, Rubik, Arial, sans-serif'; x.direction = 'rtl'; x.textAlign = 'right'; x.textBaseline = 'middle';
+    if (opts.bg) { x.fillStyle = opts.bg; var r = c.height / 2; x.beginPath(); x.moveTo(r, 0); x.lineTo(c.width - r, 0); x.arc(c.width - r, r, r, -Math.PI / 2, Math.PI / 2); x.lineTo(r, c.height); x.arc(r, r, r, Math.PI / 2, Math.PI * 1.5); x.fill(); }
+    if (opts.dot) { x.fillStyle = opts.dot; x.beginPath(); x.arc(pad + fs * 0.3, c.height / 2, fs * 0.22, 0, Math.PI * 2); x.fill(); }
+    x.fillStyle = opts.color || '#1d2430'; x.fillText(text, c.width - pad, c.height / 2 + 2);
+    var tex = new THREE.CanvasTexture(c); tex.anisotropy = 4; return { tex:tex, w:c.width, h:c.height };
+  }
+  function v3dGlowTex(){
+    if (V3D.glowTex) return V3D.glowTex; var c = document.createElement('canvas'); c.width = c.height = 64; var x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.25, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+    V3D.glowTex = new THREE.CanvasTexture(c); return V3D.glowTex;
+  }
+  function v3dFlowTex(col){
+    var c = document.createElement('canvas'); c.width = 64; c.height = 8; var x = c.getContext('2d');
+    x.fillStyle = col; x.fillRect(0, 0, 64, 8); x.fillStyle = 'rgba(255,255,255,.75)'; x.fillRect(0, 0, 18, 8);
+    var t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.RepeatWrapping; return t;
+  }
+  function v3dBuild(){
+    var T = THREE, M = v3dModel(V3D.floor), s = V3D.scene;
+    if (V3D.root) { s.remove(V3D.root); v3dDispose(V3D.root); }
+    var root = V3D.root = new T.Group(); s.add(root); V3D.M = M; V3D.flows = []; V3D.devs = [];
+    V3D.geo = { box:new T.BoxGeometry(1, 1, 1), cyl:new T.CylinderGeometry(1, 1, 1, 18), sph:new T.SphereGeometry(1, 16, 12), hemi:new T.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), cone:new T.ConeGeometry(1, 1, 7) };
+    var G = { env:new T.Group(), walls:new T.Group(), furn:new T.Group(), cover:new T.Group(), cables:new T.Group(), devs:new T.Group(), pins:new T.Group(), labels:new T.Group(), rooms:new T.Group() };
+    Object.keys(G).forEach(function(k){ root.add(G[k]); }); V3D.G = G;
+    var wM = (M.bb.x2 - M.bb.x1) / PPM, hM = (M.bb.y2 - M.bb.y1) / PPM;
+    // ground
+    var ground = new T.Mesh(new T.PlaneGeometry(wM + 40, hM + 40), v3dMat({ color:V3D.floor === 0 || !usesMultiFloor() ? '#A9C79A' : '#8E9AA8' }));
+    ground.rotation.x = -Math.PI / 2; ground.position.y = -0.06; ground.receiveShadow = true; G.env.add(ground);
+    // floors (yards first, below)
+    M.rooms.slice().sort(function(a, b){ return (b.yard ? 1 : 0) - (a.yard ? 1 : 0); }).forEach(function(q){
+      var c = v3dW(M, (q.x1 + q.x2) / 2, (q.y1 + q.y2) / 2), w = (q.x2 - q.x1) / PPM, d = (q.y2 - q.y1) / PPM;
+      var col = V3D_FLOOR_COL[q.kind] || (q.yard ? '#9FBF88' : '#E3DDD3'), slab = v3dBox(G.rooms, v3dMat({ color:col }), c[0], q.yard ? -0.05 : -0.04, c[1], w, q.yard ? 0.03 : 0.05);
+      slab.castShadow = false;
+      if (q.kind === 'pool') slab.material = new T.MeshLambertMaterial({ color:'#5DB7E0', emissive:'#1b5f80', emissiveIntensity:0.15 });
+      // room name on the floor
+      if (q.r.label && w > 1.2 && d > 1.0) { var tt = v3dTextTex(q.r.label, { fs:40, color:q.yard ? 'rgba(30,60,30,.55)' : 'rgba(40,40,50,.45)' }); var pw = Math.min(w * 0.8, tt.w / tt.h * 0.42), ph = pw * tt.h / tt.w;
+        var pl = new T.Mesh(new T.PlaneGeometry(pw, ph), new T.MeshBasicMaterial({ map:tt.tex, transparent:true, depthWrite:false })); pl.rotation.x = -Math.PI / 2; pl.position.set(c[0], 0.015, c[1]); pl.renderOrder = 2; G.rooms.add(pl); }
+      if (q.yard && (q.kind === 'yard' || q.kind === 'generic') && w * d > 16) v3dTree(G.env, c[0] + w * 0.3, c[1] - d * 0.25);
+    });
+    // walls: three instanced meshes (wall / glass / door) so lowering toward the camera is one matrix update
+    var mats = { wall:v3dMat({ color:'#EEE9E1' }), ext:v3dMat({ color:'#E4DED4' }), glass:new T.MeshLambertMaterial({ color:'#9fd0ec', transparent:true, opacity:0.38, depthWrite:false }), door:v3dMat({ color:'#7a5a40' }) };
+    V3D.walls = M.pieces.map(function(p){ var a = v3dW(M, p.o === 'h' ? (p.s + p.e) / 2 : p.c, p.o === 'h' ? p.c : (p.s + p.e) / 2); return { p:p, cx:a[0], cz:a[1], len:(p.e - p.s) / PPM }; });
+    V3D.wallMesh = {};
+    ['wall', 'ext', 'glass', 'door'].forEach(function(k){
+      var list = V3D.walls.filter(function(w){ return (w.p.mat === 'wall' ? (w.p.ext ? 'ext' : 'wall') : w.p.mat) === k; }); if (!list.length) return;
+      var im = new T.InstancedMesh(V3D.geo.box, mats[k], list.length); im.castShadow = k !== 'glass'; im.receiveShadow = true; im.userData.list = list; G.walls.add(im); V3D.wallMesh[k] = im;
+    });
+    V3D.quad = ''; v3dWallsUpdate(true);
+    // fences
+    state.fences.filter(function(fe){ return (fe.floor || 0) === V3D.floor; }).forEach(function(fe){
+      var a = v3dW(M, fe.x1, fe.y1 - M.off), b = v3dW(M, fe.x2, fe.y2 - M.off), len = Math.hypot(b[0] - a[0], b[1] - a[1]); if (len < 0.1) return;
+      var gate = fe.type === 'gate', m = v3dBox(G.env, v3dMat({ color:gate ? '#6c7886' : '#EFEBE4' }), (a[0] + b[0]) / 2, 0, (a[1] + b[1]) / 2, len, gate ? 1.3 : 1.35, gate ? 0.05 : 0.1, true);
+      m.rotation.y = -Math.atan2(b[1] - a[1], b[0] - a[0]); if (gate) { m.material.transparent = true; m.material.opacity = 0.85; }
+    });
+    v3dFurniture(M, G.furn);
+    v3dDevices(M, G);
+    v3dCables(M, G.cables);
+    v3dApplyOpts();
+    var r = Math.max(wM, hM); V3D.fit = Math.max(8, r * 1.35 + 4); V3D.tgt = new T.Vector3(0, 0.6, 0);
+    V3D.legendTypes = Object.keys(V3D.cableTypes || {});
+    v3dLegend();
+    if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+  }
+  function v3dWallsUpdate(force){
+    var cp = V3D.cam ? V3D.cam.position : null, tg = V3D.tgt || { x:0, z:0 };
+    var dx = cp ? cp.x - tg.x : 1, dz = cp ? cp.z - tg.z : 1, L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
+    var low = function(w){ if (!V3D.opts.low || !w.p.ext) return false; var nx = w.p.o === 'v' ? w.p.n : 0, nz = w.p.o === 'h' ? w.p.n : 0; return nx * dx + nz * dz > 0.3; };
+    var sig = V3D.opts.low + '|' + (dx > 0.3 ? 'E' : dx < -0.3 ? 'W' : '') + (dz > 0.3 ? 'S' : dz < -0.3 ? 'N' : '');
+    if (!force && sig === V3D.quad) return; V3D.quad = sig;
+    var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+    Object.keys(V3D.wallMesh).forEach(function(k){
+      var im = V3D.wallMesh[k];
+      im.userData.list.forEach(function(w, i){
+        var cap = low(w) ? 1.0 : V3D_H, y0 = w.p.y0, y1 = Math.min(w.p.y1, cap), h = y1 - y0;
+        if (w.p.mat === 'glass' && cap < V3D_H) h = 0;
+        if (h <= 0.01) { sc.set(0.0001, 0.0001, 0.0001); ps.set(0, -10, 0); }
+        else { sc.set(w.p.o === 'h' ? w.len : w.p.t, h, w.p.o === 'h' ? w.p.t : w.len); ps.set(w.cx, y0 + h / 2, w.cz); }
+        m4.compose(ps, q, sc); im.setMatrixAt(i, m4);
+      });
+      im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere();
+    });
+    if (V3D.r && V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+  }
+  function v3dTree(parent, x, z){
+    var trunk = new THREE.Mesh(V3D.geo.cyl, v3dMat({ color:'#8a6a4a' })); trunk.scale.set(0.1, 0.9, 0.1); trunk.position.set(x, 0.45, z); trunk.castShadow = true; parent.add(trunk);
+    var top = new THREE.Mesh(V3D.geo.sph, v3dMat({ color:'#6f9c6a' })); top.scale.set(0.75, 1.0, 0.75); top.position.set(x, 1.6, z); top.castShadow = true; parent.add(top);
+  }
+  // furniture only where the room is clearly identified, against a wall with no door/window, rooms big enough
+  function v3dFurniture(M, G){
+    var mat = function(c){ return v3dMat({ color:c }); }, W = { wood:mat('#a07a55'), soft:mat('#d9d4cc'), sofa:mat('#7d8fa3'), dark:mat('#4a4f57'), white:mat('#f4f4f2'), counter:mat('#c9b79c'), top:mat('#6b6f75'), green:mat('#7fa377'), car:mat('#3d6fa8'), glass:mat('#cfe3ef') };
+    M.rooms.forEach(function(q){
+      var w = (q.x2 - q.x1) / PPM, d = (q.y2 - q.y1) / PPM, area = w * d, k = q.kind;
+      if (k === 'parking' && q.yard && area > 9) { var c0 = v3dW(M, (q.x1 + q.x2) / 2, (q.y1 + q.y2) / 2), along = w >= d; var L = 4.2, B = 1.8;
+        var body = v3dBox(G, W.car, c0[0], 0.18, c0[1], along ? L : B, 0.62, along ? B : L, true); var cab = v3dBox(G, W.glass, c0[0], 0.8, c0[1], along ? 2.2 : 1.6, 0.48, along ? 1.6 : 2.2, true); return; }
+      if (q.yard || area < (k === 'wc' || k === 'bath' ? 2.2 : 5)) return;
+      var atts = computeOpeningAttachments(q.r), busy = {}; atts.forEach(function(a){ busy[a.wall] = 1; });
+      var sides = [['top', w], ['bottom', w], ['left', d], ['right', d]].filter(function(s){ return !busy[s[0]]; }).sort(function(a, b){ return b[1] - a[1]; });
+      if (!sides.length) return;
+      var x1 = (q.x1 - M.cx) / PPM, z1 = (q.y1 - M.cy) / PPM, x2 = (q.x2 - M.cx) / PPM, z2 = (q.y2 - M.cy) / PPM;
+      var put = function(side, mt, along, depth, h, y0, off, shift){
+        off = off || 0; shift = shift || 0; var cx, cz, sx, sz;
+        if (side === 'top' || side === 'bottom') { cx = (x1 + x2) / 2 + shift; cz = side === 'top' ? z1 + 0.08 + off + depth / 2 : z2 - 0.08 - off - depth / 2; sx = along; sz = depth; }
+        else { cz = (z1 + z2) / 2 + shift; cx = side === 'left' ? x1 + 0.08 + off + depth / 2 : x2 - 0.08 - off - depth / 2; sx = depth; sz = along; }
+        return v3dBox(G, mt, cx, y0 || 0, cz, sx, h, sz, true);
+      };
+      var s0 = sides[0][0], len = sides[0][1], opp = { top:'bottom', bottom:'top', left:'right', right:'left' }[s0], oppFree = sides.some(function(s){ return s[0] === opp; });
+      var span = (s0 === 'top' || s0 === 'bottom') ? d : w;
+      if (k === 'bedroom') { var dbl = Math.min(w, d) >= 2.9, bw = dbl ? 1.6 : 0.9; if (len < bw + 0.3 || span < 2.4) return;
+        put(s0, W.wood, bw + 0.06, 2.05, 0.3); put(s0, W.soft, bw, 1.95, 0.22, 0.3, 0.05); put(s0, W.wood, bw + 0.06, 0.08, 1.0);
+        if (len > bw + 1.2) { put(s0, W.wood, 0.45, 0.4, 0.5, 0, 0, (bw / 2 + 0.35)); put(s0, W.wood, 0.45, 0.4, 0.5, 0, 0, -(bw / 2 + 0.35)); } }
+      else if (k === 'living') { if (len < 2.6 || span < 3) return;
+        put(s0, W.sofa, 2.2, 0.9, 0.42); put(s0, W.sofa, 2.2, 0.22, 0.85); put(s0, W.wood, 1.0, 0.6, 0.4, 0, 1.4);
+        if (oppFree) { put(opp, W.dark, 1.6, 0.4, 0.5); put(opp, W.dark, 1.2, 0.05, 0.7, 0.75, 0.15); } }
+      else if (k === 'kitchen') { var cl = Math.min(len - 0.3, 3.6); if (cl < 1.2) return; put(s0, W.counter, cl, 0.62, 0.86); put(s0, W.top, cl, 0.64, 0.04, 0.86); if (area > 14 && span > 3.6) put(s0, W.counter, 1.6, 0.9, 0.9, 0, 1.6); }
+      else if (k === 'bath') { if (len >= 1.8 && span >= 1.6) put(s0, W.white, 1.7, 0.75, 0.55); else put(s0, W.white, 0.9, 0.9, 0.05); if (sides[1]) { put(sides[1][0], W.white, 0.6, 0.45, 0.85); } }
+      else if (k === 'wc') { put(s0, W.white, 0.4, 0.65, 0.42); }
+      else if (k === 'office' || k === 'clinic') { if (len < 1.6) return; put(s0, W.wood, 1.4, 0.7, 0.75); put(s0, W.dark, 0.5, 0.5, 0.48, 0, 0.85); }
+      else if (k === 'storage') { if (len < 1.2) return; put(s0, W.wood, Math.min(len - 0.2, 2.4), 0.4, 1.8); }
+      else if (k === 'checkout' || k === 'reception') { if (len < 2) return; put(s0, W.counter, Math.min(len - 0.4, 2.2), 0.6, 1.05, 0, 0.9); }
+      else if (k === 'sales') { if (len < 2) return; put(s0, W.wood, Math.min(len - 0.4, 3.5), 0.45, 1.6); if (oppFree) put(opp, W.wood, Math.min(len - 0.4, 3.5), 0.45, 1.6); }
+    });
+  }
+  function v3dDevMesh(type, def, mt){
+    var T = THREE, g = new T.Group(), Gm = V3D.geo, add = function(geo, m, sx, sy, sz, x, y, z){ var o = new T.Mesh(geo, m); o.scale.set(sx, sy, sz); o.position.set(x || 0, y || 0, z || 0); o.castShadow = true; g.add(o); return o; };
+    var white = mt.white, dark = mt.dark, col = mt.col(v3dCol(def.color));
+    if (/^pir(_pet|_am)?$|^curtain/.test(type)) { add(Gm.box, white, 0.07, 0.11, 0.05, 0, 0, 0.025); add(Gm.sph, dark, 0.022, 0.022, 0.012, 0, -0.01, 0.05); }
+    else if (/^pir_ceiling|smoke|fire_heat|fire_multi|fire_standalone/.test(type)) { add(Gm.cyl, white, 0.06, 0.035, 0.06, 0, -0.018, 0); }
+    else if (type === 'ap_in' || type === 'speaker_in') { add(Gm.cyl, white, 0.1, 0.025, 0.1, 0, -0.012, 0); }
+    else if (/^cam_in/.test(type)) { add(Gm.hemi, white, 0.07, 0.04, 0.07, 0, -0.005, 0).rotation.x = Math.PI; add(Gm.sph, dark, 0.035, 0.035, 0.035, 0, -0.035, 0); }
+    else if (/^cam_(out|lpr)|smart_cam/.test(type)) { add(Gm.box, white, 0.07, 0.07, 0.06, 0, 0, 0.03); var b = add(Gm.cyl, white, 0.04, 0.17, 0.04, 0, -0.03, 0.12); b.rotation.x = Math.PI / 2 + 0.3; add(Gm.cyl, dark, 0.032, 0.01, 0.032, 0, -0.06, 0.205).rotation.x = Math.PI / 2 + 0.3; }
+    else if (type === 'siren_out') { add(Gm.box, mt.col('#d8473b'), 0.22, 0.28, 0.08, 0, 0, 0.04); add(Gm.box, white, 0.16, 0.06, 0.02, 0, 0.06, 0.085); }
+    else if (type === 'siren_in' || /sounder|strobe/.test(type)) { add(Gm.cyl, /fire/.test(type) ? mt.col('#d23b2a') : white, 0.06, 0.05, 0.06, 0, 0, 0.03).rotation.x = Math.PI / 2; }
+    else if (type === 'keypad' || type === 'intercom_int') { add(Gm.box, white, 0.14, 0.11, 0.025, 0, 0, 0.012); add(Gm.box, dark, 0.09, 0.05, 0.004, 0, 0.015, 0.026); }
+    else if (/intercom_(ext|pal)/.test(type)) { add(Gm.box, dark, 0.1, 0.18, 0.03, 0, 0, 0.015); add(Gm.sph, mt.col('#7fd0ff'), 0.012, 0.012, 0.012, 0, 0.05, 0.032); }
+    else if (type === 'hub') { add(Gm.box, mt.col('#c8ccd2'), 0.3, 0.36, 0.09, 0, 0, 0.045); add(Gm.box, dark, 0.06, 0.02, 0.005, 0.08, 0.13, 0.092); }
+    else if (type === 'comm_cabinet') { add(Gm.box, mt.col('#3b4048'), 0.6, 1.2, 0.6, 0, 0.6, 0); add(Gm.box, mt.col('#5a8fbf'), 0.5, 0.02, 0.005, 0, 0.9, 0.302); }
+    else if (/^(nvr|switch|amplifier|ups)$/.test(type)) { add(Gm.box, dark, 0.38, type === 'ups' ? 0.3 : 0.06, 0.28, 0, type === 'ups' ? 0.15 : 0.03, 0); add(Gm.box, mt.col('#5ad16b'), 0.03, 0.008, 0.004, 0.14, type === 'ups' ? 0.25 : 0.04, 0.141); }
+    else if (type === 'contact') { add(Gm.box, white, 0.03, 0.08, 0.02, -0.03, 0, 0.01); add(Gm.box, white, 0.02, 0.06, 0.015, 0.02, 0, 0.008); }
+    else if (type === 'fire_panel') { add(Gm.box, mt.col('#cf3a2c'), 0.36, 0.3, 0.1, 0, 0, 0.05); add(Gm.box, dark, 0.14, 0.05, 0.005, 0, 0.06, 0.102); }
+    else if (type === 'fire_call_point') { add(Gm.box, mt.col('#d23b2a'), 0.09, 0.09, 0.05, 0, 0, 0.025); }
+    else if (type === 'glassbreak') { add(Gm.cyl, white, 0.045, 0.025, 0.045, 0, 0, 0.012).rotation.x = Math.PI / 2; }
+    else if (type === 'speaker_out') { add(Gm.box, white, 0.16, 0.24, 0.14, 0, 0, 0.07); }
+    else if (type === 'flood') { add(Gm.cyl, white, 0.04, 0.02, 0.04, 0, 0.01, 0); }
+    else { add(Gm.box, white, 0.08, 0.08, 0.04, 0, 0, 0.02); }
+    var led = add(Gm.sph, mt.led(v3dCol(def.color)), 0.009, 0.009, 0.009, 0.025, 0.04, 0.05); led.castShadow = false; g.userData.led = led;
+    return g;
+  }
+  function v3dDevices(M, G){
+    var T = THREE, cache = {}, mt = { white:v3dMat({ color:'#f5f6f7' }), dark:v3dMat({ color:'#2a2f36' }), col:function(c){ return cache[c] || (cache[c] = v3dMat({ color:c })); },
+      led:function(c){ var k = 'led' + c; return cache[k] || (cache[k] = new T.MeshBasicMaterial({ color:c })); } };
+    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && !DEVICE_DEFS[d.type].derived; });
+    devs.forEach(function(d){
+      var def = DEVICE_DEFS[d.type], mnt = v3dMount(M, d), w = v3dW(M, mnt.x, mnt.y), g = v3dDevMesh(d.type, def, mt);
+      g.position.set(w[0], mnt.h, w[1]);
+      if (mnt.mode !== 'ceil') g.rotation.y = Math.atan2(mnt.dir[0], mnt.dir[1]);
+      g.userData.d = d; g.userData.def = def; g.userData.mnt = mnt; G.devs.add(g); V3D.devs.push(g);
+      var pin = new T.Sprite(new T.SpriteMaterial({ map:v3dPinTex(v3dCol(def.color)), depthTest:false, transparent:true, sizeAttenuation:false })); pin.userData.ar = 1; pin.userData.px = 15; v3dLabelScale(pin); pin.position.set(w[0], mnt.h + 0.12, w[1]); pin.renderOrder = 9; G.pins.add(pin);
+      var gl = new T.Sprite(new T.SpriteMaterial({ map:v3dGlowTex(), color:v3dCol(def.color), transparent:true, depthWrite:false, blending:T.AdditiveBlending })); gl.scale.set(0.7, 0.7, 1); gl.position.set(w[0], mnt.h, w[1]); gl.visible = false; G.devs.add(gl); g.userData.glow = gl;
+      // coverage footprint (alarm + cameras), clipped by walls like the 2D plan
+      var fov = def.fov || (def.radius ? 360 : 0), range = def.range || def.radius;
+      if (fov && range && (def.cat === 'alarm' || def.cat === 'camera') && d.type !== 'cam_lpr') {
+        var pts = sightPolygon(d.x, d.y, d.rot, fov, m2p(range), M.sight);
+        if (pts && pts.length > 2) {
+          var sh = new T.Shape(); pts.forEach(function(p, i){ var a = v3dW(M, p[0], p[1] - M.off); if (i) sh.lineTo(a[0], -a[1]); else sh.moveTo(a[0], -a[1]); });
+          var c = v3dCol(def.color), base = /out|lpr/.test(d.type) ? 0.08 : 0.15, fm = new T.Mesh(new T.ShapeGeometry(sh), new T.MeshBasicMaterial({ color:c, transparent:true, opacity:base, depthWrite:false, side:T.DoubleSide })); fm.userData.base = base;
+          fm.rotation.x = -Math.PI / 2; fm.position.y = 0.02 + (G.cover.children.length % 6) * 0.002; fm.renderOrder = 3; G.cover.add(fm);
+          var lp = pts.map(function(p){ var a = v3dW(M, p[0], p[1] - M.off); return new T.Vector3(a[0], 0.03, a[1]); });
+          var ol = new T.LineLoop(new T.BufferGeometry().setFromPoints(lp), new T.LineBasicMaterial({ color:c, transparent:true, opacity:base * 3 })); ol.userData.base = base * 3; G.cover.add(ol);
+          if (fov < 360) { var o = new T.Vector3(w[0], mnt.h, w[1]); [lp[0], lp[lp.length - 1]].forEach(function(e){ G.cover.add(new T.Line(new T.BufferGeometry().setFromPoints([o, e]), new T.LineBasicMaterial({ color:c, transparent:true, opacity:0.35 }))); }); }
+        }
+      }
+      // label (sprite, constant size on screen)
+      var tt = v3dTextTex(def.label.length > 22 ? def.label.slice(0, 21) + '…' : def.label, { fs:34, bg:'rgba(255,255,255,.92)', dot:v3dCol(def.color) });
+      var sp = new T.Sprite(new T.SpriteMaterial({ map:tt.tex, depthTest:false, transparent:true, sizeAttenuation:false })); sp.userData.ar = tt.w / tt.h; v3dLabelScale(sp); sp.position.set(w[0], mnt.h + 0.28, w[1]); sp.renderOrder = 10; G.labels.add(sp);
+      // wireless alarm devices: a pulsing ring instead of a cable
+      if (state.alarmWireless && def.cable === 'alarm') { var ring = new T.Mesh(new T.RingGeometry(0.12, 0.15, 32), new T.MeshBasicMaterial({ color:v3dCol(def.color), transparent:true, opacity:0.6, side:T.DoubleSide, depthWrite:false }));
+        ring.position.set(w[0], mnt.h, w[1]); ring.lookAt(w[0], mnt.h + 1, w[1]); ring.userData.pulse = true; G.cables.add(ring); }
+    });
+  }
+  function v3dCables(M, G){
+    var T = THREE, anchors = getAnchors(state.devices), types = {};
+    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && DEVICE_DEFS[d.type].cable; });
+    var order = ['alarm', 'cat6', 'intercom', 'speaker', 'network', 'fire', 'power'];
+    devs.forEach(function(d){
+      var def = DEVICE_DEFS[d.type]; if (state.alarmWireless && def.cable === 'alarm') return;
+      var tgt = anchors[cableAnchorKey(def.cable)]; if (!tgt || tgt === d) return;
+      var lift = order.indexOf(def.cable) * 0.035, CH = V3D_CAB + lift, md = v3dMount(M, d), mt = devFloor(tgt) === V3D.floor ? v3dMount(M, tgt) : null;
+      var tl = { x:tgt.x, y:tgt.y - devFloor(tgt) * FLOOR_Y_STRIDE };
+      var route = v3dRoute(M, { x:md.x, y:md.y }, mt ? { x:mt.x, y:mt.y } : tl);
+      var pts = [], v = function(px, py, h){ var a = v3dW(M, px, py); pts.push(new T.Vector3(a[0], h, a[1])); };
+      v(md.x, md.y, md.h); v(md.x, md.y, CH);
+      route.forEach(function(p){ v(p[0], p[1], CH); });
+      if (mt) { v(mt.x, mt.y, CH); v(mt.x, mt.y, mt.h + 0.05); }
+      else { var last = route[route.length - 1]; v(last[0], last[1], CH + (devFloor(tgt) > V3D.floor ? 0.9 : -CH)); }
+      var clean = []; pts.forEach(function(p){ var q = clean[clean.length - 1]; if (!q || q.distanceTo(p) > 0.02) clean.push(p); }); if (clean.length < 2) return;
+      var path = new T.CurvePath(), L = 0; for (var i = 0; i < clean.length - 1; i++) { path.add(new T.LineCurve3(clean[i], clean[i + 1])); L += clean[i].distanceTo(clean[i + 1]); }
+      var tex = v3dFlowTex(CABLE_COL[def.cable] || '#999'); tex.repeat.set(Math.max(1, L * 2.2), 1);
+      var tube = new T.Mesh(new T.TubeGeometry(path, Math.max(16, Math.ceil(L * 10)), 0.028, 6, false), new T.MeshBasicMaterial({ map:tex }));
+      G.add(tube); V3D.flows.push(tex); types[def.cable] = 1;
+    });
+    V3D.cableTypes = types;
+  }
+  function v3dDispose(o){
+    o.traverse(function(n){ if (n.geometry && !V3D_SHARED_GEO(n.geometry)) n.geometry.dispose(); if (n.material) [].concat(n.material).forEach(function(m){ if (m.map && m.map !== V3D.glowTex && !(V3D.pinTex && Object.keys(V3D.pinTex).some(function(k){ return V3D.pinTex[k] === m.map; }))) m.map.dispose(); m.dispose(); }); });
+    if (V3D.geo) Object.keys(V3D.geo).forEach(function(k){ V3D.geo[k].dispose(); });
+  }
+  function V3D_SHARED_GEO(g){ return V3D.geo && Object.keys(V3D.geo).some(function(k){ return V3D.geo[k] === g; }); }
+  function v3dApplyOpts(){
+    var G = V3D.G, o = V3D.opts; if (!G) return;
+    G.cables.visible = o.cables; G.cover.visible = o.cover; G.furn.visible = o.furn; G.labels.visible = o.labels;
+    var s = V3D.scene, night = o.night;
+    s.background = new THREE.Color(night ? '#0c1424' : '#dfe9f3'); s.fog = new THREE.Fog(night ? '#0c1424' : '#dfe9f3', V3D.fit * 2.2, V3D.fit * 4.5);
+    V3D.hemi.intensity = night ? 0.5 : 2.1; V3D.hemi.color.set(night ? '#5d77b3' : '#ffffff');
+    V3D.sun.intensity = night ? 0.35 : 2.3; V3D.sun.color.set(night ? '#a9bfff' : '#fff5e6');
+    G.cover.children.forEach(function(m){ if (m.material && m.userData.base != null) m.material.opacity = Math.min(0.9, m.userData.base * (night ? 1.6 : 1)); });
+    V3D.devs.forEach(function(g){ var l = g.userData.led; if (l) l.scale.setScalar(night ? 0.016 : 0.009); if (g.userData.glow) g.userData.glow.visible = night; });
+    v3dWallsUpdate(true);
+    Array.prototype.forEach.call(document.querySelectorAll('#v3d [data-o]'), function(b){ if (b.dataset.o !== 'tour') b.setAttribute('aria-pressed', String(!!o[b.dataset.o])); });
+  }
+  function v3dLegend(){
+    var el = document.getElementById('v3dLegend'); if (!el) return;
+    var ks = Object.keys(V3D.cableTypes || {});
+    el.innerHTML = (ks.length ? ks.map(function(k){ return '<span><i style="background:' + (CABLE_COL[k] || '#999') + '"></i>' + escapeHtml(cableLabel(k)) + '</span>'; }).join('') : '') +
+      (state.alarmWireless ? '<span><i class="ring"></i>אלחוטי</span>' : '') + '<span><i class="cov"></i>אזור כיסוי</span>';
+  }
+
+  /* ---------- view: camera, controls, loop ---------- */
+  function v3dCamUpdate(){
+    var s = V3D.sph, t = V3D.tgt, c = V3D.cam;
+    c.position.set(t.x + s.r * Math.sin(s.ph) * Math.sin(s.th), t.y + s.r * Math.cos(s.ph), t.z + s.r * Math.sin(s.ph) * Math.cos(s.th));
+    c.lookAt(t); v3dWallsUpdate(false);
+  }
+  function v3dEase(x){ return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function v3dTour(){ V3D.auto = true; V3D.intro = { t0:performance.now(), dur:2600, from:{ r:V3D.fit * 1.7, th:V3D.sph.th - 1.4, ph:0.32 }, to:{ r:V3D.fit, th:V3D.sph.th, ph:0.95 } }; }
+  function v3dLoop(now){
+    if (!V3D.open) return; V3D.raf = requestAnimationFrame(v3dLoop);
+    var dt = Math.min(0.05, (now - (V3D.last || now)) / 1000); V3D.last = now;
+    if (V3D.rec) v3dRecStep(now);
+    else if (V3D.intro) { var k = Math.min(1, (now - V3D.intro.t0) / V3D.intro.dur), e = v3dEase(k), a = V3D.intro.from, b = V3D.intro.to; V3D.sph.r = a.r + (b.r - a.r) * e; V3D.sph.th = a.th + (b.th - a.th) * e; V3D.sph.ph = a.ph + (b.ph - a.ph) * e; if (k >= 1) V3D.intro = null; }
+    else if (V3D.auto) V3D.sph.th += dt * 0.12;
+    v3dCamUpdate();
+    V3D.flows.forEach(function(t){ t.offset.x -= dt * 0.9; });
+    var pul = 0.6 + 0.4 * Math.sin(now / 300);
+    if (V3D.G) V3D.G.cables.children.forEach(function(m){ if (m.userData.pulse) { m.scale.setScalar(1 + 0.6 * (1 - pul)); m.material.opacity = 0.25 + 0.5 * pul; } });
+    V3D.r.render(V3D.scene, V3D.cam);
+    if (V3D.recCtx) v3dRecFrame();
+    // adaptive resolution on slow phones
+    if (!V3D.rec && V3D.frames < 90) { V3D.frames++; V3D.ftime += dt; if (V3D.frames === 90 && V3D.ftime / 90 > 0.03 && V3D.dpr > 1) { V3D.dpr = Math.max(1, V3D.dpr - 0.75); V3D.r.setPixelRatio(V3D.dpr); V3D.frames = 0; V3D.ftime = 0; } }
+  }
+  function v3dLabelScale(sp){ var st = document.getElementById('v3dStage'), h = (st && st.clientHeight) || 700, k = (sp.userData.px || 21) / h * 2 * Math.tan(19 * Math.PI / 180); sp.scale.set(k * sp.userData.ar, k, 1); }
+  function v3dPinTex(col){ V3D.pinTex = V3D.pinTex || {}; if (V3D.pinTex[col]) return V3D.pinTex[col]; var c = document.createElement('canvas'); c.width = c.height = 48; var x = c.getContext('2d');
+    x.fillStyle = 'rgba(0,0,0,.25)'; x.beginPath(); x.arc(24, 26, 19, 0, Math.PI * 2); x.fill(); x.fillStyle = '#fff'; x.beginPath(); x.arc(24, 24, 19, 0, Math.PI * 2); x.fill(); x.fillStyle = col; x.beginPath(); x.arc(24, 24, 13, 0, Math.PI * 2); x.fill();
+    return (V3D.pinTex[col] = new THREE.CanvasTexture(c)); }
+  function v3dResize(){
+    if (!V3D.r || V3D.rec) return; var st = document.getElementById('v3dStage'), w = st.clientWidth, h = st.clientHeight; if (!w || !h) return;
+    if (V3D.sz === w + 'x' + h) return; V3D.sz = w + 'x' + h; V3D.r.setSize(w, h); V3D.cam.aspect = w / h; V3D.cam.updateProjectionMatrix(); if (V3D.G) { V3D.G.labels.children.forEach(v3dLabelScale); V3D.G.pins.children.forEach(v3dLabelScale); }
+  }
+  function v3dControls(cv){
+    var P = V3D.ptrs, start = null, pinch = null;
+    var stopAuto = function(){ V3D.auto = false; V3D.intro = null; };
+    cv.addEventListener('pointerdown', function(e){ cv.setPointerCapture(e.pointerId); P[e.pointerId] = { x:e.clientX, y:e.clientY, b:e.button, sh:e.shiftKey }; start = { x:e.clientX, y:e.clientY, t:performance.now(), moved:false }; pinch = null; stopAuto(); });
+    cv.addEventListener('pointermove', function(e){
+      var p = P[e.pointerId]; if (!p) return; var ids = Object.keys(P);
+      if (ids.length === 1) {
+        var dx = e.clientX - p.x, dy = e.clientY - p.y;
+        if (p.b === 2 || p.sh) v3dPan(dx, dy); else { V3D.sph.th -= dx * 0.008; V3D.sph.ph = Math.max(0.18, Math.min(1.42, V3D.sph.ph - dy * 0.006)); }
+        if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) start.moved = true;
+      } else if (ids.length === 2) {
+        p.x2 = e.clientX; p.y2 = e.clientY;
+        var a = P[ids[0]], b = P[ids[1]], ax = a.x2 != null ? a.x2 : a.x, ay = a.y2 != null ? a.y2 : a.y, bx = b.x2 != null ? b.x2 : b.x, by = b.y2 != null ? b.y2 : b.y;
+        var dist = Math.hypot(ax - bx, ay - by), mx = (ax + bx) / 2, my = (ay + by) / 2;
+        if (pinch) { V3D.sph.r = Math.max(3, Math.min(V3D.fit * 3, V3D.sph.r * pinch.d / Math.max(10, dist))); v3dPan(mx - pinch.mx, my - pinch.my); }
+        pinch = { d:dist, mx:mx, my:my }; if (start) start.moved = true;
+        return;
+      }
+      p.x = e.clientX; p.y = e.clientY;
+    });
+    var up = function(e){ var was = P[e.pointerId]; delete P[e.pointerId]; if (!Object.keys(P).length) pinch = null;
+      if (was && start && !start.moved && performance.now() - start.t < 350) v3dPick(e); };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('wheel', function(e){ e.preventDefault(); stopAuto(); V3D.sph.r = Math.max(3, Math.min(V3D.fit * 3, V3D.sph.r * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive:false });
+    cv.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    ['gesturestart', 'gesturechange'].forEach(function(n){ cv.addEventListener(n, function(e){ e.preventDefault(); }); });
+  }
+  function v3dPan(dx, dy){
+    var c = V3D.cam, k = V3D.sph.r * 0.0016, right = new THREE.Vector3().setFromMatrixColumn(c.matrix, 0), fwd = new THREE.Vector3(-Math.sin(V3D.sph.th), 0, -Math.cos(V3D.sph.th));
+    right.y = 0; right.normalize(); V3D.tgt.addScaledVector(right, -dx * k).addScaledVector(fwd, dy * k);
+    var lim = V3D.fit * 0.6; V3D.tgt.x = Math.max(-lim, Math.min(lim, V3D.tgt.x)); V3D.tgt.z = Math.max(-lim, Math.min(lim, V3D.tgt.z));
+  }
+  function v3dPick(e){
+    var tip = document.getElementById('v3dTip'), cv = V3D.r.domElement, rc = cv.getBoundingClientRect();
+    var m = new THREE.Vector2(((e.clientX - rc.left) / rc.width) * 2 - 1, -((e.clientY - rc.top) / rc.height) * 2 + 1), ray = new THREE.Raycaster(); ray.setFromCamera(m, V3D.cam);
+    var hit = ray.intersectObjects(V3D.devs, true)[0], g = hit && hit.object; while (g && !g.userData.d) g = g.parent;
+    if (!g) { tip.hidden = true; return; }
+    var d = g.userData.d, def = g.userData.def, mnt = g.userData.mnt;
+    tip.innerHTML = '<b>' + escapeHtml(def.label) + '</b><span>' + escapeHtml(d.placement || '') + (d.placement ? ' · ' : '') + 'גובה התקנה כ-' + mnt.h.toFixed(1) + ' מ׳' + (def.range ? ' · טווח ' + def.range + ' מ׳' : '') + '</span>';
+    tip.style.left = Math.min(rc.width - 220, Math.max(8, e.clientX - rc.left - 100)) + 'px'; tip.style.top = Math.max(8, e.clientY - rc.top - 70) + 'px'; tip.hidden = false;
+    clearTimeout(v3dPick.t); v3dPick.t = setTimeout(function(){ tip.hidden = true; }, 4000);
+  }
+  function v3dEnsureUi(){
+    if (document.getElementById('v3d')) return;
+    var ov = document.createElement('div'); ov.id = 'v3d'; ov.className = 'v3d'; ov.hidden = true; ov.setAttribute('dir', 'rtl'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'הדמיית תלת-ממד'); ov.setAttribute('data-html2canvas-ignore', 'true');
+    ov.innerHTML = '<div class="v3d-top"><div class="v3d-title"><b>הדמיית תלת-ממד</b><small id="v3dSub"></small></div><div class="v3d-floors" id="v3dFloors"></div><button type="button" class="v3d-x" id="v3dClose" aria-label="סגירה">✕</button></div>' +
+      '<div class="v3d-stage" id="v3dStage"><div class="v3d-load" id="v3dLoad"><span class="v3d-spin"></span>בונה את ההדמיה…</div><div class="v3d-tip" id="v3dTip" hidden></div><div class="v3d-legend" id="v3dLegend"></div><div class="v3d-note">מסלולי הכבילה להמחשה בלבד</div></div>' +
+      '<div class="v3d-bar" id="v3dBar"><button type="button" data-o="tour">▶ סיור</button><button type="button" data-o="night">🌙 לילה</button><button type="button" data-o="cables">כבילה</button><button type="button" data-o="cover">כיסוי</button><button type="button" data-o="low">קירות נמוכים</button><button type="button" data-o="furn">ריהוט</button><button type="button" data-o="labels">שמות</button>' +
+        '<span class="sp"></span><button type="button" class="v3d-act" data-a="shot">📷 תמונה</button><button type="button" class="v3d-act pri" data-a="video">🎬 סרטון ללקוח</button></div>' +
+      '<div class="v3d-share" id="v3dShare" hidden><div class="in"><b id="v3dShT">הסרטון מוכן</b><p id="v3dShP"></p><div class="row"><button type="button" class="pri" id="v3dShGo">שליחה / שיתוף</button><button type="button" id="v3dShDl">שמירה במכשיר</button><button type="button" id="v3dShX">סגירה</button></div></div></div>';
+    document.body.appendChild(ov);
+    document.getElementById('v3dClose').onclick = v3dClose;
+    ov.addEventListener('keydown', function(e){ if (e.key === 'Escape') v3dClose(); });
+    document.getElementById('v3dBar').addEventListener('click', function(e){
+      var b = e.target.closest('button'); if (!b || V3D.rec) return;
+      if (b.dataset.o === 'tour') { v3dTour(); return; }
+      if (b.dataset.o) { V3D.opts[b.dataset.o] = !V3D.opts[b.dataset.o]; v3dApplyOpts(); return; }
+      if (b.dataset.a === 'shot') v3dShot(); else if (b.dataset.a === 'video') v3dRecord();
+    });
+    document.getElementById('v3dShX').onclick = function(){ document.getElementById('v3dShare').hidden = true; };
+    window.addEventListener('resize', function(){ if (V3D.open) v3dResize(); });
+  }
+  function v3dFloorTabs(){
+    var fl = v3dFloors(), el = document.getElementById('v3dFloors');
+    el.innerHTML = fl.length > 1 ? fl.map(function(f){ return '<button type="button" data-f="' + f + '" aria-pressed="' + (f === V3D.floor) + '">' + escapeHtml(floorLabelFor(f)) + '</button>'; }).join('') : '';
+    Array.prototype.forEach.call(el.querySelectorAll('button'), function(b){ b.onclick = function(){ if (V3D.rec) return; V3D.floor = +b.dataset.f; v3dFloorTabs(); v3dBuild(); v3dTour(); }; });
+  }
+  function open3D(){
+    if (CONSUMER) return;
+    if (!state.rooms.some(function(r){ return r.type !== 'yard'; })) { try { showCanvasToast('קודם משרטטים את החדרים — ההדמיה נבנית מהשרטוט', true); } catch(e) {} return; }
+    v3dEnsureUi();
+    var ov = document.getElementById('v3d'), load = document.getElementById('v3dLoad');
+    ov.hidden = false; document.body.classList.add('v3d-on'); load.hidden = false; load.innerHTML = '<span class="v3d-spin"></span>' + (window.THREE ? 'בונה את ההדמיה…' : 'טוען את מנוע התלת-ממד…');
+    document.getElementById('v3dSub').textContent = [document.getElementById('fCustomer').value, document.getElementById('fAddress').value].filter(Boolean).join(' · ');
+    var fl = v3dFloors(); V3D.floor = fl.indexOf(state.activeFloor || 0) > -1 ? (state.activeFloor || 0) : fl[0];
+    loadThree().then(function(T){
+      if (!V3D.r) {
+        var cv = document.createElement('canvas'); cv.className = 'v3d-cv';
+        try { V3D.r = new T.WebGLRenderer({ canvas:cv, antialias:true, powerPreference:'high-performance' }); } catch(e) { V3D.r = null; }
+        if (!V3D.r) { load.innerHTML = 'המכשיר הזה לא תומך בתלת-ממד (WebGL). אפשר להשתמש בסקיצה להדפסה.'; return; }
+        V3D.dpr = Math.min(window.devicePixelRatio || 1, 2); V3D.r.setPixelRatio(V3D.dpr);
+        V3D.r.shadowMap.enabled = true; V3D.r.shadowMap.type = T.PCFSoftShadowMap; V3D.r.shadowMap.autoUpdate = false;
+        if ('outputColorSpace' in V3D.r) V3D.r.outputColorSpace = T.SRGBColorSpace;
+        V3D.scene = new T.Scene(); V3D.cam = new T.PerspectiveCamera(38, 1, 0.1, 400);
+        V3D.hemi = new T.HemisphereLight('#ffffff', '#7d8c6f', 0.95); V3D.scene.add(V3D.hemi);
+        V3D.sun = new T.DirectionalLight('#fff5e6', 1.15); V3D.sun.position.set(-12, 22, 9); V3D.sun.castShadow = true; V3D.sun.shadow.mapSize.set(1024, 1024);
+        V3D.scene.add(V3D.sun); V3D.scene.add(V3D.sun.target);
+        v3dControls(cv);
+        cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); cancelAnimationFrame(V3D.raf); });
+        cv.addEventListener('webglcontextrestored', function(){ if (V3D.open) { v3dBuild(); V3D.raf = requestAnimationFrame(v3dLoop); } });
+      }
+      document.getElementById('v3dStage').insertBefore(V3D.r.domElement, document.getElementById('v3dStage').firstChild);
+      V3D.sz = ''; v3dResize(); v3dFloorTabs(); v3dBuild();
+      var sc = V3D.fit; V3D.sun.shadow.camera.left = -sc; V3D.sun.shadow.camera.right = sc; V3D.sun.shadow.camera.top = sc; V3D.sun.shadow.camera.bottom = -sc; V3D.sun.shadow.camera.far = 80; V3D.sun.shadow.camera.updateProjectionMatrix();
+      var asp = V3D.cam.aspect || 1; if (asp < 1) V3D.fit = V3D.fit / Math.pow(Math.max(0.45, asp), 0.85);
+      V3D.sph = { r:V3D.fit, th:0.62, ph:0.95 }; V3D.open = true; V3D.last = 0; V3D.frames = 0; V3D.ftime = 0;
+      load.hidden = true; v3dTour(); V3D.raf = requestAnimationFrame(v3dLoop);
+      try { g1Track('3d', { k:state.kind, n:state.devices.length }); } catch(e) {}
+    }).catch(function(){ load.innerHTML = 'לא ניתן לטעון את מנוע התלת-ממד — נדרש חיבור לאינטרנט בפתיחה הראשונה. נסו שוב בעוד רגע.'; });
+  }
+  function v3dClose(){
+    if (V3D.rec) return;
+    V3D.open = false; cancelAnimationFrame(V3D.raf);
+    var ov = document.getElementById('v3d'); if (ov) ov.hidden = true; document.body.classList.remove('v3d-on');
+    if (V3D.root) { V3D.scene.remove(V3D.root); v3dDispose(V3D.root); V3D.root = null; V3D.G = null; V3D.devs = []; V3D.flows = []; }
+  }
+
+  /* ---------- for the customer: picture and short video ---------- */
+  function v3dMark(ctx, W, H){
+    var b = curBrand(), s = Math.max(1, W / 720);
+    ctx.save(); ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    var bar = 64 * s; ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(0, 0, W, bar);
+    if (b.id !== 'g1' && V3D.logoImg && V3D.logoImg.complete) { var lh = bar * 0.8, lw = lh * V3D.logoImg.width / V3D.logoImg.height; ctx.drawImage(V3D.logoImg, W - lw - 14 * s, bar * 0.1, lw, lh); }
+    ctx.fillStyle = '#1d2430'; ctx.font = '800 ' + Math.round(24 * s) + 'px Heebo, Rubik, Arial, sans-serif';
+    var title = 'הדמיית המיגון' + (document.getElementById('fCustomer').value ? ' · ' + document.getElementById('fCustomer').value : '');
+    ctx.fillText(b.id === 'g1' ? title : title, W - (b.id !== 'g1' && V3D.logoImg ? bar * 1.1 + 20 * s : 18 * s), bar / 2);
+    ctx.textAlign = 'left'; ctx.font = '700 ' + Math.round(17 * s) + 'px Heebo, Rubik, Arial, sans-serif'; ctx.fillStyle = '#4a5568';
+    ctx.fillText(b.id === 'g1' ? 'G1 SiteGuard' : b.name, 16 * s, bar / 2);
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, H - 34 * s, W, 34 * s); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = '600 ' + Math.round(15 * s) + 'px Heebo, Rubik, Arial, sans-serif';
+    ctx.fillText('הדמיה להמחשה בלבד · מיקומי האביזרים ומסלולי הכבילה סופיים לפי ההתקנה בשטח', W / 2, H - 17 * s);
+    ctx.restore();
+  }
+  function v3dLogo(){ var b = curBrand(); if (b.id !== 'g1' && b.logo && !V3D.logoImg) { V3D.logoImg = new Image(); V3D.logoImg.src = b.logo; } }
+  function v3dShot(){
+    v3dLogo(); var cv = V3D.r.domElement, W = Math.min(2048, cv.width), H = Math.round(W * cv.height / cv.width);
+    V3D.r.render(V3D.scene, V3D.cam);
+    var c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'); x.drawImage(cv, 0, 0, W, H); v3dMark(x, W, H);
+    c.toBlob(function(blob){ if (!blob) return; v3dOffer(blob, 'הדמיה-' + (state.quoteNumber || fileStamp()) + '.png', 'image/png', 'התמונה מוכנה', 'אפשר לשלוח ללקוח בוואטסאפ או לשמור במכשיר.'); }, 'image/png');
+  }
+  function v3dRecord(){
+    if (!window.MediaRecorder || !V3D.r.domElement.captureStream && !HTMLCanvasElement.prototype.captureStream) { try { showCanvasToast('המכשיר לא תומך בהקלטת סרטון — אפשר לשלוח תמונה', true); } catch(e) {} return; }
+    v3dLogo();
+    var types = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'], mime = types.filter(function(t){ try { return MediaRecorder.isTypeSupported(t); } catch(e) { return false; } })[0] || '';
+    var st = document.getElementById('v3dStage'), portrait = st.clientHeight > st.clientWidth, W = portrait ? 720 : 1280, H = portrait ? 1280 : 720;
+    V3D.r.setPixelRatio(1); V3D.r.setSize(W, H, false); V3D.cam.aspect = W / H; V3D.cam.updateProjectionMatrix();
+    var comp = document.createElement('canvas'); comp.width = W; comp.height = H; V3D.recCtx = comp.getContext('2d'); V3D.recW = W; V3D.recH = H;
+    var stream = comp.captureStream(30), chunks = [], rec;
+    try { rec = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond:2500000 } : { videoBitsPerSecond:2500000 }); } catch(e) { v3dRecEnd(); try { showCanvasToast('לא ניתן להקליט במכשיר הזה', true); } catch(x) {} return; }
+    rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function(){ var type = (rec.mimeType || mime || 'video/webm').split(';')[0], blob = new Blob(chunks, { type:type }); v3dRecEnd();
+      var mp4 = /mp4/.test(type); v3dOffer(blob, 'הדמיה-' + (state.quoteNumber || fileStamp()) + (mp4 ? '.mp4' : '.webm'), type, 'הסרטון מוכן', mp4 ? 'סרטון של כ-12 שניות — אפשר לשלוח ללקוח בוואטסאפ.' : 'המכשיר יצר קובץ WEBM — באייפון של הלקוח הוא עלול לא להיפתח. מומלץ לשלוח גם תמונה.'); };
+    document.getElementById('v3d').classList.add('rec');
+    V3D.rec = { t0:performance.now(), dur:12000, r0:V3D.fit * 0.95, th0:V3D.sph.th, rec:rec };
+    V3D.intro = null; V3D.auto = false; rec.start(500);
+  }
+  function v3dRecStep(now){
+    var R = V3D.rec, k = Math.min(1, (now - R.t0) / R.dur), e = v3dEase(k);
+    V3D.sph.th = R.th0 + e * Math.PI * 2; V3D.sph.r = R.r0 * (1.25 - 0.3 * Math.sin(k * Math.PI)); V3D.sph.ph = 0.78 + 0.22 * Math.sin(k * Math.PI);
+    var bar = document.querySelector('#v3d .v3d-bar'); if (bar) bar.setAttribute('data-p', Math.round(k * 100) + '%');
+    if (k >= 1 && R.rec.state === 'recording') { R.rec.stop(); }
+  }
+  function v3dRecFrame(){ var x = V3D.recCtx; x.drawImage(V3D.r.domElement, 0, 0, V3D.recW, V3D.recH); v3dMark(x, V3D.recW, V3D.recH); }
+  function v3dRecEnd(){ V3D.rec = null; V3D.recCtx = null; document.getElementById('v3d').classList.remove('rec'); V3D.r.setPixelRatio(V3D.dpr); V3D.sz = ''; v3dResize(); }
+  function v3dOffer(blob, name, type, title, text){
+    var box = document.getElementById('v3dShare'), file = new File([blob], name, { type:type });
+    document.getElementById('v3dShT').textContent = title; document.getElementById('v3dShP').textContent = text;
+    var go = document.getElementById('v3dShGo'); go.hidden = !canShareFile(file);
+    go.onclick = function(){ shareFile(file, { title:'הדמיית מיגון', text:'הדמיית תלת-ממד של מערכת המיגון שתוכננה עבורכם' }).catch(function(){}); };
+    document.getElementById('v3dShDl').onclick = function(){ deliverBlob(blob, name).catch(function(){}); };
+    box.hidden = false;
+    try { g1Track('3d-' + (/video/.test(type) ? 'video' : 'shot'), {}); } catch(e) {}
+  }
+
+  document.getElementById('btn3D').onclick = function(){ open3D(); };
+  document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
+  ['btnSend', 'btnSketch'].forEach(function(id){ var b = document.getElementById(id); if (b) b.addEventListener('click', v3dPreload); });
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, open:open3D, close:v3dClose, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
+  if (CONSUMER) initG1Consumer(); else { try { brandApply(); } catch(e) {} initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
 
   if (CONSUMER) initConsumerMode();
