@@ -920,6 +920,9 @@
   .share-btn:focus-visible{ outline:2px solid var(--brand,#00AAE7); outline-offset:2px; }
   .share-btn[disabled], .share-btn.disabled{ opacity:.45; pointer-events:none; }
   .share-btn .step{ display:inline-flex; width:20px; height:20px; border-radius:50%; align-items:center; justify-content:center; font-size:11px; background:rgba(0,0,0,.12); }
+  .share-btn.big{ min-height:54px; font-size:16px; } .share-card.share-main p{ margin:0; font-size:12.5px; color:var(--ink-dim); line-height:1.5; }
+  .share-mini{ display:flex; flex-wrap:wrap; gap:6px; } .share-btn.mini{ min-height:34px; font-size:12.5px; font-weight:600; background:transparent; border-style:dashed; flex:1 1 auto; }
+  .share-more summary{ cursor:pointer; font-weight:700; font-size:13px; color:var(--ink-dim); } .share-more[open] summary{ margin-bottom:8px; }
   .share-btn.wa{ background:#25D366; border-color:#1fb457; color:#06280f; }
   .share-btn.wa-2{ background:#e9fbf0; border-color:#9fe3b8; color:#0d5a2a; }
   .share-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; }
@@ -976,10 +979,13 @@
   .sg-ret{ margin-top:14px; } .sg-ret h3{ font-size:14px; margin:0 0 6px; color:#0b1220; }
   .sg-ret .sg-actions{ margin-top:4px; }
   .sg-btn.mail{ background:#0a64c2; border-color:#0a64c2; color:#fff; } .sg-btn.done::after{ content:'✓'; }
+  .q-locked{ background:#f1f3f6 !important; color:#3a4456; cursor:not-allowed; } .g1-lock-note{ margin:0 0 8px; padding:7px 10px; border-radius:8px; background:#eef5ff; color:#1f3d66; font-size:12.5px; font-weight:700; }
+  body.pdf-export .g1-lock-note, .modal.client-view .g1-lock-note{ display:none; }
   .q-rate-chip{ margin-inline-start:6px; border:1px dashed var(--accent-2,#0A7FBF); background:transparent; color:var(--accent-2,#0A7FBF); border-radius:99px; padding:2px 8px; font:700 11.5px var(--font-body); cursor:pointer; }
   body.pdf-export .q-rate-chip{ display:none !important; }
   .hk-seg{ display:flex; gap:6px; } .hk-seg .btn{ flex:1; justify-content:center; } .hk-note{ font-size:11.5px; color:var(--ink-dim); margin:6px 0 8px; line-height:1.5; }
   .sg-btn.need{ outline:3px solid #f59e0b; outline-offset:2px; animation:sgNeed 1.1s ease-in-out infinite; } @keyframes sgNeed{ 50%{ outline-color:transparent; } }
+  .sg-topbar{ display:flex; justify-content:flex-start; margin:-4px 0 6px; } .sg-dl{ border:1px solid #cfd8e0; background:#f4f7f9; color:#1b1f24; border-radius:99px; padding:7px 14px; font:700 13.5px var(--font-body); cursor:pointer; }
   .sg-opt{ color:#8a94a0; font-weight:500; }
   .sg-warn{ margin:8px 0 0; padding:8px 10px; border-radius:8px; background:#fff4e0; color:#7a4a00; font-weight:700; font-size:13px; line-height:1.5; }
   .sg-btn .step{ display:inline-flex; width:22px; height:22px; border-radius:50%; align-items:center; justify-content:center; background:rgba(0,0,0,.12); font-size:12px; }
@@ -1612,6 +1618,9 @@
     .sk-scroll{ height:auto; display:block; }
     .sketch-plan-wrap.zoomed .sk-scroll{ max-height:72vh; }
     .sketch-plan-wrap svg{ height:auto; display:block; }
+    .sketch-plan-wrap img.sk-3d{ width:100%; max-height:none; }
+    .sk-viewbar{ padding:8px 12px; gap:8px; }
+    .sk-topics{ flex-wrap:nowrap; overflow-x:auto; max-width:100%; scrollbar-width:none; }
     .sketch-side{ flex:0 0 auto; max-height:44vh; border-inline-start:0; border-top:1px solid var(--paper-line); }
     .sketch-head{ flex-wrap:wrap; row-gap:8px; padding:12px 16px; }
     .sketch-meta{ order:10; flex:1 1 100%; }
@@ -2507,6 +2516,44 @@
   .v3d-floors button[aria-pressed=true]{ background:#fff; color:#0f1b2b; }
   .v3d-x{ width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font-size:18px; cursor:pointer; flex:none; }
   .v3d-stage{ position:relative; flex:1; min-height:0; overflow:hidden; }
+  .v3d-topics{ display:flex; align-items:center; gap:6px; padding:6px 12px 8px; background:rgba(9,17,29,.92); overflow-x:auto; scrollbar-width:none; flex:0 0 auto; }
+  .v3d-topics::-webkit-scrollbar{ display:none; }
+  .v3d-topics:empty{ display:none; }
+  .v3d-topics > b{ color:#9fb3c8; font-size:12px; font-weight:700; flex:none; }
+  .tp-chip{ display:inline-flex; align-items:center; gap:6px; flex:none; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.06); color:#e6eef7; border-radius:99px; padding:5px 11px; min-height:32px; font:700 12.5px var(--font-body); cursor:pointer; }
+  .tp-chip i{ width:9px; height:9px; border-radius:50%; flex:none; }
+  .tp-chip[aria-pressed=false]{ opacity:.45; text-decoration:line-through; background:transparent; }
+  .tp-chip[aria-pressed=false] i{ background:transparent !important; box-shadow:inset 0 0 0 1.5px currentColor; }
+  .tp-chip:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+  .v3d.rec .v3d-topics{ opacity:.35; pointer-events:none; }
+  .sk-viewbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:8px 22px; background:var(--paper); border-bottom:1px solid var(--paper-line); }
+  .sk-seg{ display:inline-flex; border:1px solid var(--paper-line); border-radius:10px; overflow:hidden; background:#fff; flex:none; }
+  .sk-seg button{ all:unset; box-sizing:border-box; cursor:pointer; padding:6px 12px; font:700 12.5px var(--font-body); color:#5d574a; min-height:32px; display:inline-flex; align-items:center; }
+  .sk-seg button[aria-pressed=true]{ background:var(--accent); color:#fff; }
+  .sk-topics{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .sk-topics .tp-chip{ background:#fff; color:#2b3340; border-color:var(--paper-line); min-height:30px; padding:4px 10px; font-size:12px; }
+  .sk-topics .tp-chip[aria-pressed=false]{ background:transparent; }
+  .sk-topics .sk-opt{ border-style:dashed; }
+  .sk-topics .sk-sep{ width:1px; height:20px; background:var(--paper-line); margin:0 2px; }
+  .sketch-plan-wrap img.sk-3d{ display:block; max-width:100%; max-height:100%; width:auto; height:auto; margin:auto; border-radius:12px; box-shadow:0 6px 22px rgba(20,32,46,.16); }
+  .sketch-plan-wrap.zoomed img.sk-3d{ max-width:none; max-height:none; }
+  .sk-3d-box{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height:260px; width:100%; color:#5d574a; font-weight:700; font-size:13px; }
+  .sk-3d-box .v3d-spin{ border-color:rgba(0,0,0,.12); border-top-color:var(--accent); }
+  .sk-3d-note{ position:absolute; bottom:8px; right:12px; z-index:2; font-size:11.5px; color:#6b6455; background:rgba(255,255,255,.9); border:1px solid var(--paper-line); border-radius:99px; padding:3px 10px; }
+  .sk-3d-key{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:11.5px; }
+  .sk-3d-key span{ display:inline-flex; align-items:center; gap:5px; }
+  .sk-3d-key i{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .sk-3d-key .zb{ width:14px; height:14px; border-radius:50%; background:#c0392b; color:#fff; font:700 9px Arial, sans-serif; display:inline-flex; align-items:center; justify-content:center; font-style:normal; }
+  body.pdf-export .sk-viewbar, body.pdf-export .sk-3d-note{ display:none !important; }
+  @media (min-width:761px) and (max-width:1100px) and (orientation:portrait){
+    body:not(.pdf-export) .sketch-body{ flex-direction:column; overflow:auto; }
+    body:not(.pdf-export) .sketch-plan-wrap{ flex:0 0 auto; display:block; }
+    body:not(.pdf-export) .sk-scroll{ height:auto; display:block; }
+    body:not(.pdf-export) .sketch-plan-wrap svg{ height:auto; display:block; }
+    body:not(.pdf-export) .sketch-plan-wrap img.sk-3d{ width:100%; max-height:none; }
+    body:not(.pdf-export) .sketch-side{ flex:0 0 auto; border-inline-start:0; border-top:1px solid var(--paper-line); overflow:visible; }
+  }
+  body.pdf-export .sketch-plan-wrap img.sk-3d{ width:100%; height:auto; max-height:1050px; object-fit:contain; box-shadow:none; }
   .v3d-cv{ position:absolute; inset:0; width:100% !important; height:100% !important; touch-action:none; display:block; }
   .v3d-load{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:12px; color:#cfe0f2; font-weight:700; text-align:center; padding:20px; z-index:2; background:#0f1b2b; }
   .v3d-load[hidden]{ display:none; }
@@ -2962,7 +3009,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 145</div>
+              <div class="app-version" id="appVersion">גרסה 146</div>
             </div>
           </div>
         </div>
@@ -3364,6 +3411,7 @@
       </div>
 
       <div class="rate-row" id="qGprsOnceRow" hidden><span>תשלום חד-פעמי — משדר GPRS</span><span class="num" id="qGprsOnceAmt">₪0</span></div>
+      <div class="rate-row" id="qAnOnceRow" hidden><span>תשלום חד-פעמי — חיבור ערוצי אנליטיקה</span><span class="num" id="qAnOnceAmt">₪0</span></div>
       <div class="rate-row" style="margin-top:6px"><span>סה״כ ציוד והתקנה (לפני מע״מ)</span><span class="num" id="qSubtotal">₪0</span></div>
       <div class="rate-row" id="qDiscountAmountRow" hidden><span>הנחה</span><span class="num" id="qDiscountAmt">-₪0</span></div>
       <div class="rate-row"><span>מע״מ (<span id="qVatPctLabel">18</span>%)</span><span><span class="agent-inline"><input type="number" id="qVatRate" value="18" min="0" max="100" style="width:56px;text-align:center"> — </span><span class="num" id="qVatAmt">₪0</span></span></div>
@@ -3446,7 +3494,7 @@
         <input type="email" id="skCustomerEmail" placeholder="אימייל הלקוח" hidden style="width:180px;background:#fff;border:1px solid var(--paper-line);color:var(--ink-on-paper);border-radius:var(--radius-s);padding:7px 10px;font-size:12px;font-family:var(--font-body)">
         <button class="btn btn-primary btn-sm" id="btnSketchEmail">📤 שליחה — מייל / וואטסאפ</button>
         <button class="btn btn-ghost btn-sm" id="btnSketchPrint">💾 שמירה כ-PDF</button>
-        <button class="btn btn-ghost btn-sm" id="btnSketch3D">🧊 תלת-ממד</button>
+        <button class="btn btn-ghost btn-sm" id="btnSketch3D">🎬 הדמיה חיה</button>
         <button class="modal-close" id="sketchClose" aria-label="סגור">✕ סגור</button>
       </div>
     </div>
@@ -3454,6 +3502,10 @@
          sketch page, and the agent pages between them here rather than one cramped combined
          drawing — see buildSketchFloorTabs()/buildSketch(). -->
     <div class="sketch-floor-tabs" id="sketchFloorTabs" hidden></div>
+    <div class="sk-viewbar" id="skViewbar" data-html2canvas-ignore="true">
+      <div class="sk-seg" role="group" aria-label="סוג הסקיצה"><button type="button" data-v="3d" aria-pressed="true">🧊 תלת-ממד</button><button type="button" data-v="2d" aria-pressed="false">📐 שרטוט 2D</button></div>
+      <div class="sk-topics" id="skTopics"></div>
+    </div>
     <div class="send-ok" id="sketchSendOk" style="margin:0 22px"></div>
     <div class="sketch-body">
       <div class="sketch-plan-wrap" id="sketchPlanWrap"></div>
@@ -8307,7 +8359,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return { rooms:made.length, warn:warn, msg:'זוהו ' + made.length + ' חדרים ו-' + nOp + ' פתחים' + (notes.length ? ' · ' + notes.join(' · ') : '') + ' — בדקו כל חדר מול הרקע (ביטול מחזיר את השרטוט הקודם)' };
   }
   loadUnderlay();
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); }, signLinks:function(){ return buildSignLinks(); }, brand:function(){ return curBrand(); }, sb:function(b){ SIGN_BRAND = b || ''; try { brandApply(); } catch(e) {} }, msgText:function(){ return { lines:quoteMessageLines('wa'), subj:quoteSubject(), file:quotePdfFilename(state.quoteNumber) }; }, bio:function(){ return { ok:bioOk, start:BIO_START_ACT, req:bioRequired(), st:g1AccessState(), cfg:bioCfg() }; } };   // local tests only
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__sg = { st:function(){ return state; }, ul:function(){ return underlays; }, render:function(){ render(); }, add:function(d){ return addDevice(d); }, audit:function(){ return fireAudit(); }, place:function(t, p){ return placeAtPoint(t, p); }, signLinks:function(){ return buildSignLinks(); }, brand:function(){ return curBrand(); }, sb:function(b){ SIGN_BRAND = b || ''; try { brandApply(); } catch(e) {} }, auth:function(a){ g1Auth = a; }, msgText:function(){ return { lines:quoteMessageLines('wa'), subj:quoteSubject(), file:quotePdfFilename(state.quoteNumber) }; }, bio:function(){ return { ok:bioOk, start:BIO_START_ACT, req:bioRequired(), st:g1AccessState(), cfg:bioCfg() }; } };   // local tests only
 
   var KIND_LABEL_HE = { house:'בית פרטי', apartment:'דירה', store:'עסק / חנות', clinic:'קליניקה / משרד' };
   // The recommendations panel scopes itself to whatever floor is currently being viewed: a
@@ -8839,6 +8891,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      adding, moving, rotating, resizing, deleting, recommendations, renames — can be stepped back,
      one at a time (up to 60 steps), and stepped forward again ("קדימה") until something new is done.
      Switching the viewed floor is not an action. A new project starts a fresh history. */
+  var __downT = null;
+  document.addEventListener('pointerdown', function(e){ __downT = e.target; }, true);
+  document.addEventListener('click', function(e){
+    var t = e.target; if (!t || !t.classList) return;
+    if ((t.classList.contains('modal-backdrop') || t.classList.contains('msg-ov')) && (__downT !== t || t.id === 'modalBackdrop')) e.stopImmediatePropagation();
+  }, true);
   var undoStack = [], redoStack = [], histLast = null, histKey = null, histObj = null;
   function snapshotState(){ try { return JSON.stringify(state); } catch(e) { return null; } }
   function planKey(s){ return s ? s.replace(/"activeFloor":\d+,?/, '') : s; }
@@ -12749,7 +12807,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { key:'gprs',      label:'משדר GPRS' },
     { key:'central',   label:'מוקד צופה' },
     { key:'smart',     label:'שירות סמארט' },
-    { key:'analytics', label:'ערוצי אנליטיקה' }
+    { key:'analytics', label:'ערוצי אנליטיקה' },
+    { key:'pa',        label:'מוקד כריזה' }
   ];
   function fmtIls(n){ return '₪' + Math.round(n||0).toLocaleString('he-IL'); }
   function recalcQuoteInstall(){
@@ -12771,6 +12830,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qGprsOnceAmt').textContent = fmtIls(gOnce);
     gprsOnceLast = gOnce;
     subtotal += gOnce;
+    var aOnce = anOnceAmount();
+    document.getElementById('qAnOnceRow').hidden = !(aOnce > 0);
+    document.getElementById('qAnOnceAmt').textContent = fmtIls(aOnce);
+    subtotal += aOnce;
 
     // Discount is applied to the equipment+installation subtotal, before VAT (VAT is then
     // calculated on the discounted amount) — standard practice for a quote like this. The
@@ -12816,8 +12879,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var cb = document.querySelector('#qMonitorTable tr[data-mon="gprs"] .qMonCheck'), el = document.querySelector('#qMonitorTable .qGprsOnce');
     return (cb && cb.checked && el) ? (parseFloat(el.value) || 0) : 0;
   }
+  function anOnceAmount(){
+    var cb = document.querySelector('#qMonitorTable tr[data-mon="analytics"] .qMonCheck'), el = document.querySelector('#qMonitorTable .qAnOnce');
+    return (cb && cb.checked && el) ? (parseFloat(el.value) || 0) : 0;
+  }
+  function onceAmount(){ return gprsOnceAmount() + anOnceAmount(); }
   var gprsOnceLast = null;
-  function recalcGprsOnceOnly(){ var v = gprsOnceAmount(); if (v !== gprsOnceLast) { gprsOnceLast = v; recalcQuoteInstall(); } }
+  function recalcGprsOnceOnly(){ var v = gprsOnceAmount() * 1e6 + anOnceAmount(); if (v !== gprsOnceLast) { gprsOnceLast = v; recalcQuoteInstall(); } }
   function recalcQuoteMonitor(){
     var subtotal = 0, anyMon = false;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
@@ -12837,8 +12905,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         tr.querySelector('.mon-line-total').textContent = line ? '= ' + fmtIls(line) : '';
         tr.querySelector('.qMonQtyText').textContent = '× ' + qty + ' ערוצים';
       }
-      if (tr.dataset.mon === 'gprs') {
-        var onceRow = document.querySelector('#qMonitorTable tr[data-mon="gprs-once"]');
+      if (tr.dataset.mon === 'gprs' || tr.dataset.mon === 'analytics') {
+        var onceRow = document.querySelector('#qMonitorTable tr[data-mon="' + tr.dataset.mon + '-once"]');
         if (onceRow) onceRow.hidden = !cb.checked;
       }
       if (cb.checked) { subtotal += line; anyMon = true; }
@@ -12882,6 +12950,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     var gOnceEl = document.querySelector('#qMonitorTable .qGprsOnce');
     captured.gprsOnce = gOnceEl ? gOnceEl.value : null;
+    var aOnceEl = document.querySelector('#qMonitorTable .qAnOnce');
+    captured.anOnce = aOnceEl ? aOnceEl.value : null;
     captured.discountOn = document.getElementById('qDiscountToggle').checked;
     captured.discountType = document.getElementById('qDiscountType').value;
     captured.discountValue = document.getElementById('qDiscountValue').value;
@@ -12913,6 +12983,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     var gOnceIn = document.querySelector('#qMonitorTable .qGprsOnce');
     if (gOnceIn && captured.gprsOnce != null) gOnceIn.value = captured.gprsOnce;
+    var aOnceIn = document.querySelector('#qMonitorTable .qAnOnce');
+    if (aOnceIn && captured.anOnce != null) aOnceIn.value = captured.anOnce;
     document.getElementById('qDiscountToggle').checked = captured.discountOn;
     document.getElementById('qDiscountInputRow').hidden = !captured.discountOn;
     if (captured.discountType) document.getElementById('qDiscountType').value = captured.discountType;
@@ -13009,7 +13081,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       recalcQuoteInstall();
     };
     document.getElementById('qDiscountType').onchange = recalcQuoteInstall;
-    document.getElementById('qDiscountValue').oninput = recalcQuoteInstall;
+    document.getElementById('qDiscountValue').oninput = function(){ g1ClampDiscount(); recalcQuoteInstall(); };
 
     var qPaymentTerms = document.getElementById('qPaymentTerms');
     qPaymentTerms.value = '';
@@ -13029,11 +13101,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // GPRS: a one-time payment field opens right under it (added to the installation total)
       if (s.key === 'gprs') row += '<tr class="mon-once price-line" data-mon="gprs-once" hidden><td style="padding-inline-start:28px">תשלום חד-פעמי — משדר GPRS <span style="color:var(--ink-dim);font-size:11px">(מתווסף לסה״כ ההתקנה)</span></td>' +
         '<td class="num"><input type="number" class="qGprsOnce num" min="0" placeholder="0" style="width:80px;text-align:center"></td></tr>';
+      if (isAn) row += '<tr class="mon-once price-line" data-mon="analytics-once" hidden><td style="padding-inline-start:28px">תשלום חד-פעמי — חיבור ערוצי אנליטיקה <span style="color:var(--ink-dim);font-size:11px">(מתווסף לסה״כ ההתקנה)</span></td>' +
+        '<td class="num"><input type="number" class="qAnOnce num" min="0" placeholder="0" style="width:80px;text-align:center"></td></tr>';
       return row;
     }).join('');
     if (state.devices.some(function(d){ return d.type === 'hub_smart'; })) { var smc = document.querySelector('#qMonitorTable tr[data-mon="smart"] .qMonCheck'); if (smc) smc.checked = true; }
     var gprsOnceEl = document.querySelector('#qMonitorTable .qGprsOnce');
     if (gprsOnceEl) gprsOnceEl.addEventListener('input', function(){ recalcQuoteInstall(); });
+    var anOnceEl = document.querySelector('#qMonitorTable .qAnOnce');
+    if (anOnceEl) anOnceEl.addEventListener('input', function(){ recalcQuoteInstall(); });
     var qtyEl = document.querySelector('#qMonitorTable .qMonQty');
     if (qtyEl) qtyEl.addEventListener('input', recalcQuoteMonitor);
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
@@ -13834,26 +13910,37 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   /* ============================= quote message text ============================= */
   // The same summary for e-mail and WhatsApp (WhatsApp gets *bold* on the key figures).
-  function quoteMessageLines(channel){
+  // the quote's lines as the customer sees them: equipment with quantities, services, totals
+  function quoteItemsForMessage(){
+    var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){ return [String(tr.cells[1].textContent || '').trim(), qRowName(tr)]; }).filter(function(r){ return r[1]; });
+    var cu = qCustomSync(); if (cu && !cu.empty && cu.name) items.push([String(cu.qty || 1), cu.name]);
+    var mon = [];
+    document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){ var cb = tr.querySelector('.qMonCheck'); if (!cb || !cb.checked) return; var lb = tr.querySelector('.qMonLabel'), q = tr.querySelector('.qMonQty'); mon.push((lb ? lb.textContent.trim() : '') + (q ? ' × ' + (parseInt(q.value, 10) || 1) + ' ערוצים' : '')); });
+    return { items:items, mon:mon };
+  }
+  function quoteMessageLines(channel, compact){
     var wa = channel === 'wa', b = function(t){ return wa ? '*' + t + '*' : t; };
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
     var address = document.getElementById('fAddress').value || '';
     var lines = ['שלום ' + customer + ',', ''];
-    lines.push((wa ? 'מצורפת ' : 'מצורפת (בקובץ PDF) ') + 'הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ' + brName('from') + ' למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
+    lines.push('הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ' + brName('from') + ' למערכת מיגון' + (address ? ' בכתובת: ' + address : '') + '.');
     lines.push('');
     // the signing link right at the top, alone on its line (a long message can be shortened by
     // the app it travels through — the link must never be the part that gets cut)
-    if (currentSignLinks) { lines.push('✍️ ' + b('לאישור ההצעה וחתימה דיגיטלית — לחצו על הקישור:')); lines.push(wa ? currentSignLinks.wa : currentSignLinks.mail); lines.push(''); }
+    if (currentSignLinks) { lines.push('✍️ ' + b('לצפייה בהצעה המלאה, להורדת PDF ולאישור בחתימה דיגיטלית:')); lines.push(wa ? currentSignLinks.wa : currentSignLinks.mail); lines.push(''); }
+    var Q = quoteItemsForMessage();
+    if (Q.items.length) { lines.push(b('פירוט ההצעה:')); (compact ? Q.items.slice(0, 12) : Q.items).forEach(function(r){ lines.push('• ' + r[0] + ' × ' + r[1]); }); if (compact && Q.items.length > 12) lines.push('• ועוד ' + (Q.items.length - 12) + ' סוגי אביזרים — בפירוט המלא בקישור'); lines.push(''); }
+    if (!document.getElementById('qGprsOnceRow').hidden) lines.push('תשלום חד-פעמי — משדר GPRS: ' + document.getElementById('qGprsOnceAmt').textContent);
+    if (!document.getElementById('qAnOnceRow').hidden) lines.push('תשלום חד-פעמי — חיבור ערוצי אנליטיקה: ' + document.getElementById('qAnOnceAmt').textContent);
     // "הנחה" appears only when the discount row is actually shown (same rule as the quote/PDF)
     if (!document.getElementById('qDiscountAmountRow').hidden) lines.push('הנחה: ' + document.getElementById('qDiscountAmt').textContent);
     lines.push('סה״כ התקנה (כולל מע״מ): ' + b(document.getElementById('qTotal').textContent));
     var monTotal = document.getElementById('qMonTotal').textContent;
-    if (monTotal && monTotal !== '₪0') lines.push('תשלום הוראת קבע לשירותי המוקד המבצעי (חודשי, כולל מע״מ): ' + b(monTotal));
+    if (monTotal && monTotal !== '₪0') lines.push('תשלום הוראת קבע לשירותי המוקד המבצעי (חודשי, כולל מע״מ): ' + b(monTotal) + (Q.mon.length ? ' — ' + Q.mon.join(', ') : ''));
     lines.push('');
     var terms = document.getElementById('qPaymentTerms').value.trim();
     if (terms) { lines.push('תנאי תשלום: ' + terms); lines.push(''); }
     lines.push('ההצעה תקפה ל-7 ימים מיום הוצאתה. אומדן הכבילה משוער — כמות החיווט תימדד בסיום ההתקנה ותחושב לפיה. הציוד נשאר רכוש ' + brName('company') + ' עד לפירעון התשלום המלא. ט.ל.ח.');
-    if (wa) lines.push('קובץ ההצעה המלא (PDF) נשלח כאן בצ׳אט.');
     lines.push('');
     lines.push('בברכה,');
     if (agentInfo.name) lines.push(agentInfo.name);
@@ -13875,20 +13962,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var address = document.getElementById('fAddress').value || '';
     var rows = [];
     if (!document.getElementById('qGprsOnceRow').hidden) rows.push(['תשלום חד-פעמי — משדר GPRS (כלול בסה״כ ההתקנה)', document.getElementById('qGprsOnceAmt').textContent]);
+    if (!document.getElementById('qAnOnceRow').hidden) rows.push(['תשלום חד-פעמי — חיבור ערוצי אנליטיקה (כלול בסה״כ ההתקנה)', document.getElementById('qAnOnceAmt').textContent]);
     if (!document.getElementById('qDiscountAmountRow').hidden) rows.push(['הנחה', document.getElementById('qDiscountAmt').textContent]);
     rows.push(['סה״כ התקנה (כולל מע״מ)', document.getElementById('qTotal').textContent, true]);
     var monTotal = document.getElementById('qMonTotal').textContent;
     if (monTotal && monTotal !== '₪0') rows.push(['תשלום הוראת קבע לשירותי המוקד המבצעי (חודשי, כולל מע״מ)', monTotal, true]);
     var terms = document.getElementById('qPaymentTerms').value.trim();
     if (terms) rows.push(['הסדר / תנאי תשלום', terms]);
+    var Q = quoteItemsForMessage();
     return {
-      customer: customer, address: address, number: state.quoteNumber, rows: rows,
-      notes: [
-        'הצעת המחיר תקפה ל-7 ימים מיום הוצאתה.',
-        'אומדן הכבילה הינו משוער; כמות החיווט למערכות תימדד בסיום ההתקנה ותחושב לפיה.',
-        brT('הציוד והאביזרים בהצעה זו הינם רכושה של חברת G1, וזאת עד לפירעון התשלום המלא בגינם.'),
-        'ט.ל.ח.'
-      ],
+      customer: customer, address: address, number: state.quoteNumber, rows: rows, items: Q.items, mon: Q.mon,
+      notes: QUOTE_TERMS_TEXT(new Date().toLocaleDateString('he-IL')),
       sig: [agentInfo.name || '', 'יועץ מיגון סניף ' + (agentInfo.branch || '—'), agentInfo.phone || ''].filter(Boolean)
     };
   }
@@ -13899,7 +13983,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     h += '<p style="margin:0 0 14px;font-size:17px;font-weight:bold;color:#0b1220">הצעת מחיר מס׳ ' + e(String(q.number)) + ' ' + e(brName('from')) + ' עבור ' + e(q.customer) + '</p>';
     h += '<p style="margin:0 0 10px">שלום ' + e(q.customer) + ',</p>';
     h += '<p style="margin:0 0 14px">מצורפת בקובץ PDF הצעת מחיר <b>מס׳ ' + e(String(q.number)) + '</b> למערכת מיגון' + (q.address ? ' בכתובת: ' + e(q.address) : '') + '.</p>';
-    if (currentSignLinks) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
+    if (false) h += '<p style="margin:0 0 16px"><a href="' + e(currentSignLinks.mail) + '" style="display:inline-block;background:#00AAE7;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 20px;border-radius:8px">✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו כאן</a></p>';
+    // the approval link: a simple button plus the address itself (Outlook drops styled/very long links)
+    if (currentSignLinks) h += '<p style="margin:0 0 6px"><a href="' + e(currentSignLinks.mail) + '" style="color:#ffffff;background:' + e(v3dCol('var(--brand)')) + ';text-decoration:none;font-weight:bold;padding:10px 18px;border-radius:8px">✍️ לצפייה בהצעה ולאישור בחתימה דיגיטלית</a></p>' +
+      '<p style="margin:0 0 16px;font-size:12px;color:#5a6270">אם הכפתור לא נפתח, לחצו כאן או העתיקו לדפדפן: <a href="' + e(currentSignLinks.mail) + '">' + e(currentSignLinks.mail) + '</a></p>';
+    if (q.items && q.items.length) {
+      h += '<table dir="rtl" cellpadding="0" cellspacing="0" style="border-collapse:collapse;min-width:360px;max-width:560px;margin:0 0 14px;' + font + 'font-size:13.5px"><tr><th style="background:#f0f4f7;text-align:right;padding:7px 12px;border:1px solid #d6e3ea">אביזר</th><th style="background:#f0f4f7;padding:7px 12px;border:1px solid #d6e3ea">כמות</th></tr>';
+      q.items.forEach(function(r){ h += '<tr><td style="border:1px solid #d6e3ea;padding:6px 12px">' + e(r[1]) + '</td><td style="border:1px solid #d6e3ea;padding:6px 12px;text-align:center">' + e(r[0]) + '</td></tr>'; });
+      h += '</table>';
+    }
     h += '<table dir="rtl" cellpadding="0" cellspacing="0" style="border-collapse:collapse;min-width:360px;max-width:560px;margin:0 0 16px;' + font + 'font-size:14px">';
     h += '<tr><th colspan="2" style="background:#00AAE7;color:#ffffff;text-align:right;padding:9px 12px;font-size:14px">סיכום ההצעה</th></tr>';
     q.rows.forEach(function(r, i){
@@ -13910,7 +14002,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     h += '</table>';
     h += '<p style="margin:0 0 6px;font-weight:bold;color:#0b1220">הערות ותנאים:</p>';
     q.notes.forEach(function(n, i){
-      h += '<p style="margin:0 0 4px;font-weight:bold">' + 'אבגד'.charAt(i) + '. ' + e(n) + '</p>';
+      h += '<p style="margin:0 0 4px;font-weight:bold">' + 'אבגדהוזחטי'.charAt(i) + '. ' + e(n) + '</p>';
     });
     h += '<p style="margin:18px 0 2px">בברכה,</p>';
     q.sig.forEach(function(s, i){ h += '<p style="margin:0;' + (i === 0 ? 'font-weight:bold;' : 'color:#4a5563;') + '">' + e(s) + '</p>'; });
@@ -13920,11 +14012,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function quoteEmailText(){
     var q = quoteEmailData(), L = [];
     L.push('הצעת מחיר מס׳ ' + q.number + ' ' + brName('from') + ' עבור ' + q.customer, '', 'שלום ' + q.customer + ',', '');
-    L.push('מצורפת בקובץ PDF הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
-    if (currentSignLinks) L.push('✍️ לאישור ההצעה וחתימה דיגיטלית — לחצו על הקישור:', currentSignLinks.mail, '');
+    L.push('הצעת מחיר מס׳ ' + q.number + ' למערכת מיגון' + (q.address ? ' בכתובת: ' + q.address : '') + '.', '');
+    if (currentSignLinks) L.push('✍️ לצפייה בהצעה המלאה, להורדת PDF ולאישור בחתימה דיגיטלית:', currentSignLinks.mail, '');
+    if (q.items && q.items.length) { L.push('פירוט ההצעה:'); q.items.forEach(function(r){ L.push('• ' + r[0] + ' × ' + r[1]); }); L.push(''); }
     q.rows.forEach(function(r){ L.push(r[0] + ': ' + r[1]); });
+    if (q.mon && q.mon.length) L.push('שירותי מוקד: ' + q.mon.join(', '));
     L.push('', 'הערות ותנאים:');
-    q.notes.forEach(function(n, i){ L.push('אבגד'.charAt(i) + '. ' + n); });
+    q.notes.forEach(function(n, i){ L.push('אבגדהוזחטי'.charAt(i) + '. ' + n); });
     L.push('', 'בברכה,');
     q.sig.forEach(function(s){ L.push(s); });
     return L.join('\n');
@@ -14110,6 +14204,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function extractSignToken(){
     var href = location.href, m;
     try { href = decodeURIComponent(href); } catch(e) {}
+    if ((m = href.match(/[?&]q=([0-9a-z]{8,20})/i))) return { v:3, id:m[1].toLowerCase(), mail:/[?&]c=m\b/.test(href) };
     if ((m = href.match(/[?&#]s=([0-9a-z]+)/i))) return { v:2, t:m[1].toLowerCase() };
     if ((m = href.match(/#sign=([A-Za-z0-9_\-]+)/))) return { v:1, t:m[1] };
     return null;
@@ -14135,7 +14230,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // Agent side: the customer-facing content of the open quote (what the client view shows),
   // packed compactly — "@code" stands for a device / cable / service name both sides know.
-  var SIGN_TOTAL_CODES = { g:'תשלום חד-פעמי — משדר GPRS', s:'סה״כ ציוד והתקנה (לפני מע״מ)', x:'הנחה' };
+  var SIGN_TOTAL_CODES = { g:'תשלום חד-פעמי — משדר GPRS', a:'תשלום חד-פעמי — חיבור ערוצי אנליטיקה', s:'סה״כ ציוד והתקנה (לפני מע״מ)', x:'הנחה' };
   function buildSignPayload(ch){
     var c = getCustomerContact(), txt = function(id){ var e = document.getElementById(id); return e ? e.textContent.trim() : ''; };
     var num = function(t){ return String(t).replace(/[^\d.\-]/g, ''); };
@@ -14159,6 +14254,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
     var tot = [];
     if (!document.getElementById('qGprsOnceRow').hidden) tot.push(['g', num(txt('qGprsOnceAmt'))]);
+    if (!document.getElementById('qAnOnceRow').hidden) tot.push(['a', num(txt('qAnOnceAmt'))]);
     tot.push(['s', num(txt('qSubtotal'))]);
     if (!document.getElementById('qDiscountAmountRow').hidden) tot.push(['x', txt('qDiscountAmt')]);
     tot.push(['v', num(txt('qVatAmt')), txt('qVatPctLabel')]);
@@ -14208,7 +14304,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // and some mail/chat apps cut long links. When the full quote doesn't fit in SIGN_LINK_MAX, the
   // details that are anyway in the attached PDF are left out step by step (cables, item list, …) —
   // the signing page then points to the PDF for the breakdown; totals and terms always stay.
-  var SIGN_LINK_MAX = 520, SIGN_LINK_MAX_MAIL = 1600;   // WhatsApp keeps ~1,000 characters of a caption and the link sits at its top
+  var SIGN_LINK_MAX = 520, SIGN_LINK_MAX_MAIL = 520;   // long links die in Outlook (Safe Links wraps them past ~2,000 characters)   // WhatsApp keeps ~1,000 characters of a caption and the link sits at its top
   async function packSignShort(o){
     var t = await packSignPayload(o), max = o.ch === 'mail' ? SIGN_LINK_MAX_MAIL : SIGN_LINK_MAX;
     var steps = [
@@ -14224,8 +14320,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     for (var i = 0; i < steps.length && t.length > max; i++){ steps[i](o); t = await packSignPayload(o); }
     return t;
   }
+  // the whole quote is kept on the company sheet under a random id; the link carries only the id (short,
+  // never cut by Outlook / Safe Links / WhatsApp). Old sheet script or offline → the self-contained link.
+  function g1ScriptVer(){ var b = G1C.cfg && G1C.cfg.backend; return (b && +b.scriptVer) || 0; }
+  async function storeSignPayload(o){
+    try {
+      var ep = g1Endpoint(); if (!ep || g1ScriptVer() < 6 || !g1Auth || !g1Auth.uid) return null;
+      var t = await packSignPayload(o); if (t.length > 6500) return null;
+      var a = new Uint8Array(9); crypto.getRandomValues(a); var id = Array.prototype.map.call(a, function(x){ return (x % 36).toString(36); }).join('') + Date.now().toString(36).slice(-3);
+      var j = await g1cJSON(ep + '?action=putq&uid=' + encodeURIComponent(g1Auth.uid) + '&id=' + id + '&n=' + encodeURIComponent(String(state.quoteNumber || '')) + '&d=' + t, 15000);
+      return j && j.ok ? id : null;
+    } catch(e) { return null; }
+  }
   async function buildSignLinks(){
     var out = {};
+    var ap0 = parsePhone(agentInfo.phone || ''), pre0 = '?n=' + encodeURIComponent(String(state.quoteNumber || '')) + (ap0 && ap0.valid ? '&p=' + ap0.intl : '');
+    var sid = await storeSignPayload(buildSignPayload('wa'));
+    if (sid) { out.wa = signBaseUrl() + pre0 + '&q=' + sid; out.mail = out.wa + '&c=m'; out.id = sid; return out; }
     // quote number and the agent's phone go first, in the clear: even a link cut short on the way
     // still tells the customer's page which quote it is and whom to ask for a new link
     var ap = parsePhone(agentInfo.phone || ''), pre = '?n=' + encodeURIComponent(String(state.quoteNumber || '')) + (ap && ap.valid ? '&p=' + ap.intl : '');
@@ -14285,7 +14396,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       logo: await sgLoadImg(isG1 ? (document.querySelector('.topbar .brand .mark img') || {}).src : b.logo),
       word: isG1 ? await sgLoadImg((document.querySelector('.topbar .brand .brand-word') || {}).src) : null,
       g1: isG1 ? await sgLoadImg(G1_MARK) : null,
-      sig: await sgLoadImg(sg.sigImg)
+      sig: sg ? await sgLoadImg(sg.sigImg) : null
     };
     var W = 820, PX = 30, XR = W - PX, XL = PX, S = 2;
     var F = function(sz, wt, fam){ return (wt || 400) + ' ' + sz + 'px ' + (fam || FF); };
@@ -14358,7 +14469,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         para(co, { lh:19, mt:-2, mb:8 });
       }
       // ---- title
-      para([{ t:'אישור וחתימה — הצעת מחיר מס׳ ' + String(q.n == null ? '' : q.n), f:F(20, 800), c:INK }], { lh:28, mt:2 });
+      para([{ t:(sg ? 'אישור וחתימה — ' : '') + 'הצעת מחיר מס׳ ' + String(q.n == null ? '' : q.n), f:F(20, 800), c:INK }], { lh:28, mt:2 });
       para([{ t:[q.c.n || '', q.c.a || '', 'הופקה ' + (q.d || '')].filter(Boolean).join(' · '), f:F(13, 400), c:DIM }], { lh:20, mb:6 });
       // ---- equipment
       h3('התקנה חד-פעמית — אביזרים');
@@ -14374,6 +14485,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var ag = [{ t:'יועץ/ת המיגון: ', f:F(12.5, 400), c:DIM }, { t:q.ag.n || '', f:F(12.5, 700), c:INK }];
       if (q.ag.b) ag.push({ t:' · סניף ' + q.ag.b, f:F(12.5, 400), c:DIM }); if (q.ag.p) ag.push({ t:' · ' + q.ag.p, f:F(12.5, 400), c:DIM });
       para(ag, { lh:20, mt:10 });
+      if (!sg) { y += 24; return { h:y, breaks:breaks, keep:keep }; }
       // ---- approval box
       y += 18; var boxTop = y, IX = 16, bxr = XR - IX, bxl = XL + IX;
       y += 4; h3('אישור הלקוח', bxr, bxl);
@@ -14419,10 +14531,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var blob = await (await fetch(o.data)).blob(); return { blob:blob, name:o.name, signer:o.signer, when:o.when };
     } catch(e) { return null; }
   }
+  async function fetchStoredSign(id){
+    try {
+      var base = await g1cJSON(G1_CONFIG_URL, 10000), ep = base && base.backend && base.backend.endpoint;
+      if (!g1cIsEp(ep)) return null; SIGN_EP = ep;
+      var j = await g1cJSON(ep + '?action=getq&id=' + encodeURIComponent(id), 20000);
+      return j && j.ok && j.d ? String(j.d) : null;
+    } catch(e) { return null; }
+  }
+  var SIGN_EP = '', SIGN_ID = '';
   async function startSignMode(packed){
     var q;
-    var cut = false;
-    try { q = await unpackSignPayload(packed); } catch(e) { q = null; cut = !!(e && e.cut); try { console.error('sign link', e); } catch(_) {} }
+    var cut = false, netFail = false, viaMail = false;
+    if (packed && packed.v === 3) { SIGN_ID = packed.id; viaMail = !!packed.mail; var got = await fetchStoredSign(packed.id); if (got) packed = { v:2, t:got }; else { netFail = true; packed = { v:2, t:'' }; } }
+    try { q = netFail ? null : await unpackSignPayload(packed); if (q && viaMail) q.ch = 'mail'; } catch(e) { q = null; cut = !!(e && e.cut); try { console.error('sign link', e); } catch(_) {} }
     if (q && q.br && BRANDS[q.br]) { SIGN_BRAND = q.br; try { await Promise.race([g1cFetchConfig(), new Promise(function(r){ setTimeout(r, 3500); })]); } catch(e) {} try { brandApply(); } catch(e) {} }
     packed = (packed && packed.t) || String(packed || '');
     document.body.classList.add('sign-mode');
@@ -14432,6 +14554,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var qn = (location.search.match(/[?&]n=([^&#]+)/) || [])[1], agp = (location.search.match(/[?&]p=(\d{8,15})/) || [])[1];
       try { qn = qn ? decodeURIComponent(qn) : ''; } catch(e) { qn = ''; }
       var askTxt = 'שלום, הקישור לאישור הצעת המחיר' + (qn ? ' מס׳ ' + qn : '') + ' לא נפתח אצלי במלואו — אפשר לשלוח אותו שוב?';
+      if (netFail) { view.innerHTML = '<div class="sg-card"><h1 class="sg-title">לא הצלחנו לטעון את ההצעה' + (qn ? ' מס׳ ' + escapeHtml(qn) : '') + '</h1><p>ייתכן שהחיבור לאינטרנט חלש. נסו שוב בעוד רגע.</p><div class="sg-actions"><button type="button" class="sg-btn wa" onclick="location.reload()">🔄 טעינה מחדש</button>' +
+        (agp ? '<a class="sg-btn" href="https://wa.me/' + agp + '?text=' + encodeURIComponent('שלום, הקישור להצעת המחיר' + (qn ? ' מס׳ ' + qn : '') + ' לא נפתח אצלי — אפשר לשלוח שוב?') + '" target="_blank" rel="noopener">💬 פנייה ליועץ בוואטסאפ</a>' : '') + '</div></div>'; return; }
       view.innerHTML = '<div class="sg-card"><h1 class="sg-title">' + (cut ? 'הקישור הגיע חתוך' : 'לא הצלחנו לפתוח את ההצעה') + (qn ? ' — הצעה מס׳ ' + escapeHtml(qn) : '') + '</h1><p>' +
         (cut ? 'נראה שתוכנת ההודעות קיצרה את הקישור בדרך.' : 'הקישור אינו שלם.') + ' בקשו מיועץ המיגון קישור חדש — בלחיצה אחת:</p>' +
         (agp ? '<div class="sg-actions"><a class="sg-btn wa" href="https://wa.me/' + agp + '?text=' + encodeURIComponent(askTxt) + '" target="_blank" rel="noopener">💬 בקשת קישור חדש מהיועץ בוואטסאפ</a></div>' : '') +
@@ -14448,7 +14572,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       document.getElementById('sgPrevAgain').onclick = function(){ startSignMode.again = true; view.remove(); startSignMode(packed); };
       return;
     }
-    view.innerHTML = '<div class="sg-card">' + signQuoteHtml(q) +
+    view.innerHTML = '<div class="sg-card"><div class="sg-topbar"><button type="button" class="sg-dl" id="sgQuotePdf">📄 הורדת ההצעה (PDF)</button></div>' + signQuoteHtml(q) +
       '<div class="sg-form"><h3>פרטי הלקוח המאשר</h3>' +
         '<label>שם מלא<input id="sgName" value="' + escapeHtml(q.c.n || '') + '" autocomplete="name"></label>' +
         '<label>' + escapeHtml(idLabel) + ' / ח.פ<input id="sgId" inputmode="numeric" value="' + escapeHtml(q.c.id || '') + '"></label>' +
@@ -14461,6 +14585,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<button type="button" class="sg-primary" id="sgApprove">✍️ אישור וחתימה</button>' +
         '<p class="sg-small">מזהה הצעה: ' + qHash + '. החתימה נשמרת רק במסמך שתשלחו ליועץ — אינה נשלחת לשום שרת.</p>' +
       '</div></div>';
+    document.getElementById('sgQuotePdf').onclick = async function(){
+      var b = this, t0 = b.textContent; b.disabled = true; b.textContent = '⏳ מכינים את הקובץ…';
+      try {
+        var P0 = await paintSignedDoc(q, null), bl = canvasToPdfBlob(P0.canvas, null, { breaks:P0.breaks, keep:P0.keep, bg:[255, 255, 255], footer:brName('group') + ' · הצעת מחיר מס׳ ' + q.n });
+        var nm = brT('G1-Quote-') + q.n + '.pdf', f = pdfFileFrom(bl, nm);
+        if (canShareFile(f) && isTouchDevice()) { var r0 = await shareFile(f, { title:'הצעת מחיר מס׳ ' + q.n }); if (r0 !== 'shared' && r0 !== 'cancelled') await deliverPdfBlob(bl, nm); } else await deliverPdfBlob(bl, nm);
+      } catch(e) { try { console.error('quote pdf', e); } catch(_) {} }
+      b.disabled = false; b.textContent = t0;
+    };
     // signature pad
     var pad = document.getElementById('sgPad'), ctx = pad.getContext('2d'), drawing = false, strokes = 0, last = null;
     function sizePad(){ var r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; pad.width = Math.round(r.width * dpr); pad.height = Math.round(r.height * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0b1f4d'; strokes = 0; }
@@ -14507,6 +14640,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!blob) { err.textContent = 'הפקת המסמך נכשלה — נסו שוב.'; err.hidden = false; return; }
       var name2 = brT('G1-Quote-') + q.n + ' - חתום - ' + signer.name.replace(/[\\\/:*?"<>|]+/g, ' ') + '.pdf';
       sgCacheSigned(qHash, blob, name2, signer, when);
+      if (SIGN_EP && SIGN_ID) { try { fetch(SIGN_EP + '?action=signedq&id=' + encodeURIComponent(SIGN_ID) + '&code=' + code + '&n=' + encodeURIComponent(String(q.n || '')), { mode:'no-cors', cache:'no-store' }).catch(function(){}); } catch(e) {} }
       renderSignReturn(view, q, { blob:blob, file:pdfFileFrom(blob, name2), name:name2 }, signer, when);
     };
   }
@@ -14593,7 +14727,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     catch(e){ return (e && e.name === 'AbortError') ? 'cancelled' : 'error'; }
   }
   var shareSheetBackdrop = document.getElementById('shareSheetBackdrop');
-  function closeShareSheet(){ shareSheetBackdrop.hidden = true; }
+  function closeShareSheet(){ shareSheetBackdrop.hidden = true; try { if (!document.getElementById('modalBackdrop').hidden && clientViewOn) setClientView(false); } catch(e) {} }
   document.getElementById('shareSheetClose').onclick = closeShareSheet;
   shareSheetBackdrop.addEventListener('click', function(ev){ if (ev.target === shareSheetBackdrop) closeShareSheet(); });
   function openShareSheet(title, sub){
@@ -14622,115 +14756,71 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var info = updateCustomerDetails();
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
     document.getElementById('shareSheetTitle').textContent = '✓ הצעה מס׳ ' + pdf.number + ' מוכנה לשליחה';
-    document.getElementById('shareSheetSub').textContent = pdf.name + ' · ' + customer + ' · נוסח ללקוח (ריכוז כללי)';
+    document.getElementById('shareSheetSub').textContent = customer + ' · ההודעה כוללת את פירוט ההצעה וקישור לצפייה, להורדת PDF ולחתימה';
     var body = document.getElementById('shareSheetBody');
     body.innerHTML = '';
-    if (opts.autoSaved) shareNote(body, '✓ קובץ ה-PDF נשמר (' + pdf.name + ')' + (mobile ? '' : ' בתיקיית ההורדות'));
-
-    var waText = quoteMessageLines('wa').join('\n');
-    var mailLines = quoteMessageLines('mail');
-
-    // --- WhatsApp ---
-    var wa = el2('div', 'share-card');
-    wa.appendChild(el2('h4', '', '💬 וואטסאפ ללקוח' + (info.phone && info.phone.mobile ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.phone.display) + '</span>' : '')));
-    if (info.phone && info.phone.mobile){
-      var steps = el2('div', 'share-steps');
-      if (mobile){
-        // phone: ONE message to the customer — the quote PDF itself, with the summary and the
-        // signing link as its text (no website preview card in place of the document)
-        steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח', 'https://wa.me/' + info.phone.intl));
-        steps.appendChild(actBtn('wa-2', '<span class="step">2</span> שליחת הצעת המחיר (PDF) + קישור לחתימה', async function(b){
-          var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done');
-        }));
-        wa.appendChild(steps);
-        wa.appendChild(el2('p', '', 'שלב 1 פותח את הצ׳אט של הלקוח (גם אם אינו שמור באנשי הקשר) — חזרו לכאן. בשלב 2 בחרו WhatsApp: הצ׳אט של הלקוח יופיע ראשון, וקובץ ה-PDF יישלח יחד עם סיכום ההצעה וקישור החתימה.'));
-        var waAlt = linkBtn('', 'הקישור לחתימה לא הופיע בצ׳אט? שליחת ההודעה עם הקישור', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText));
-        waAlt.style.marginTop = '6px'; wa.appendChild(waAlt);
-      } else {
-        steps.appendChild(linkBtn('wa', '<span class="step">1</span> פתיחת הצ׳אט עם הלקוח + הודעה מוכנה', 'https://wa.me/' + info.phone.intl + '?text=' + encodeURIComponent(waText)));
-        steps.appendChild(actBtn('wa-2', '<span class="step">2</span> הורדת ה-PDF לצירוף בצ׳אט', async function(b){
-          await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done');
-        }));
-        wa.appendChild(steps);
-        wa.appendChild(el2('p', '', 'נפתח ב-WhatsApp Web / WhatsApp למחשב. לפני השליחה אפשר לסגור את תצוגת האתר (✕ מעל ההודעה). בשלב 2 הקובץ נשמר בהורדות — גררו אותו לחלון הצ׳אט.'));
-      }
-    } else {
-      shareNote(wa, info.contact.phone ? 'המספר שהוזן אינו נייד תקין — תקנו אותו בפרטי הלקוח כדי לשלוח ישירות לצ׳אט שלו.' : 'הזינו את הטלפון הנייד של הלקוח (בראש ההצעה) כדי לשלוח ישירות לצ׳אט שלו.', true);
-      if (mobile) wa.appendChild(actBtn('wa-2', 'שיתוף ה-PDF בוואטסאפ (בחירת איש קשר)', async function(b){ var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done'); }));
-    }
-    body.appendChild(wa);
-
-    // --- E-mail ---
-    var mail = el2('div', 'share-card');
-    mail.appendChild(el2('h4', '', '📧 מייל ללקוח' + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
-    if (mobile){
-      mail.appendChild(actBtn('mail', 'שליחה במייל — ה-PDF מצורף', async function(b){
-        var r = await shareFile(pdf.file, { title: quoteSubject(), text: quoteEmailText() });
-        if (r === 'shared') b.classList.add('done');
-      }));
-      mail.appendChild(el2('p', '', 'בחרו Outlook או Mail — הקובץ, הנושא ונוסח ההודעה כבר בפנים. ' + (info.emailOk ? 'הוסיפו את כתובת הלקוח כנמען (אפשר להעתיק למטה).' : 'הזינו את כתובת הלקוח כנמען.')));
-      if (info.emailOk){
-        var cr = el2('div', 'share-copy-row');
-        cr.appendChild(actBtn('', '📋 העתקת כתובת המייל', function(b){ copyToClipboard(info.contact.email, function(ok){ if (ok) b.classList.add('done'); }); }));
-        cr.appendChild(linkBtn('', '✉️ טיוטה עם הנמען (בלי קובץ)', buildMailto(info.contact.email, quoteSubject(), mailLines)));
-        mail.appendChild(cr);
-      }
-    } else {
-      mail.appendChild(actBtn('mail', 'פתיחת טיוטה מעוצבת באאוטלוק — ה-PDF מצורף', async function(b){
-        try {
-          var eml = await buildQuoteEml(info.emailOk ? info.contact.email : '', quoteSubject(), quoteEmailHtml(), quoteEmailText(), pdf.blob, pdf.name);
-          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml');
-          b.classList.add('done');
-          emlNote.hidden = false;
-        } catch(e){ emlNote.hidden = false; emlNote.textContent = 'לא הצלחנו להכין את הטיוטה — השתמשו ב"העתקת נוסח המייל" והדביקו במייל חדש.'; }
-      }));
-      var emlNote = el2('div', 'share-note'); emlNote.hidden = true;
-      emlNote.innerHTML = '✓ קובץ הטיוטה (‎.eml) נשמר בהורדות — <b>לחצו עליו בחלונית ההורדות של הדפדפן</b> והוא ייפתח באאוטלוק כטיוטה מוכנה: נמען, נושא, נוסח מעוצב והקובץ מצורף. נשאר רק ללחוץ "שלח".<br>' +
-        '<b>כדי שזה ייפתח מעצמו בפעם הבאה:</b> בחלונית ההורדות של Chrome/Edge לחצו על ⋯ ליד הקובץ ← "פתח תמיד קבצים מסוג זה".';
-      mail.appendChild(emlNote);
-      // instant fallback: opens Outlook right away (short plain text, no attachment) — kept short
-      // because Windows silently drops a mailto: link that's too long
-      var shortLines = ['שלום ' + (document.getElementById('fCustomer').value || '') + ',', '',
-        'מצורפת הצעת מחיר מס׳ ' + state.quoteNumber + ' ' + brName('from') + '.', 'סה״כ התקנה (כולל מע״מ): ' + document.getElementById('qTotal').textContent, '',
-        'בברכה,', agentInfo.name || '', agentInfo.phone || ''];
-      var quick = linkBtn('', '⚡ פתיחה מיידית באאוטלוק (טקסט קצר, בלי קובץ — לגרור את ה-PDF)', buildMailto(info.emailOk ? info.contact.email : '', quoteSubject(), shortLines));
-      quick.style.marginTop = '6px';
-      mail.appendChild(quick);
-      var dcr = el2('div', 'share-copy-row');
-      dcr.appendChild(actBtn('', '📋 העתקת נוסח המייל (מעוצב)', function(b){ copyRichEmail(function(ok){ if (ok) b.classList.add('done'); }); }));
-      mail.appendChild(dcr);
-    }
-    body.appendChild(mail);
-
-    // --- Customer digital signature ---
     if (!currentSignLinks) {
       var sgw = el2('div', 'share-card share-warn');
       sgw.appendChild(el2('h4', '', '⚠️ קישור החתימה לא נוצר'));
-      sgw.appendChild(el2('p', '', 'ההודעה ללקוח תצא בלי קישור לחתימה דיגיטלית. נסו שוב — זה לוקח שנייה.'));
+      sgw.appendChild(el2('p', '', 'ההודעה תצא בלי קישור לחתימה דיגיטלית. נסו שוב — זה לוקח שנייה.'));
       sgw.appendChild(actBtn('', '🔄 יצירת קישור החתימה', async function(b){ b.disabled = true; try { currentSignLinks = await buildSignLinks(); } catch(e) { currentSignLinks = null; } b.disabled = false; if (currentSignLinks) renderQuoteShareSheet(pdf, opts); else b.textContent = 'לא הצליח — בדקו חיבור ונסו שוב'; }));
       body.appendChild(sgw);
     }
-    if (currentSignLinks) {
-      var sg = el2('div', 'share-card');
-      sg.appendChild(el2('h4', '', '✍️ חתימה דיגיטלית של הלקוח'));
-      sg.appendChild(el2('p', '', 'קישור לחתימה כבר כלול בהודעת הוואטסאפ ובמייל. הלקוח פותח אותו, מאשר את פרטיו, חותם באצבע — והמסמך החתום חוזר אליך באותה דרך (וואטסאפ או מייל). קבלת המסמך החתום ושמירתו ב"הצעות שמורות ← שחזור מקובץ PDF" מסמנת את ההצעה כחתומה.'));
-      var sr = el2('div', 'share-copy-row');
-      sr.appendChild(actBtn('', '📋 העתקת קישור החתימה', function(b){ copyToClipboard(currentSignLinks.wa, function(ok){ if (ok) b.classList.add('done'); }); }));
-      sr.appendChild(linkBtn('', '👁 תצוגת הלקוח', currentSignLinks.wa));
-      sg.appendChild(sr);
-      body.appendChild(sg);
-    }
+    // the WhatsApp message (with the whole quote in it) — shortened only if a phone/browser would refuse the length
+    var waText = quoteMessageLines('wa').join('\n'); if (encodeURIComponent(waText).length > 7000) waText = quoteMessageLines('wa', true).join('\n');
+    var hasPhone = !!(info.phone && info.phone.mobile);
+    var waHref = 'https://wa.me/' + (hasPhone ? info.phone.intl : '') + '?text=' + encodeURIComponent(waText);
 
-    // --- Save / other ---
-    var other = el2('div', 'share-card');
-    other.appendChild(el2('h4', '', '💾 שמירה ושיתוף אחר'));
-    other.appendChild(saveOrShareButton(pdf, mobile));
-    var copyRow = el2('div', 'share-copy-row');
-    copyRow.appendChild(actBtn('', '📋 העתקת נוסח ההודעה', function(b){
-      copyRichEmail(function(ok){ if (ok) b.classList.add('done'); });
-    }));
-    other.appendChild(copyRow);
-    if (opts.saveFirst) body.insertBefore(other, body.firstChild); else body.appendChild(other);
+    // --- WhatsApp: one tap opens the customer's chat with the full message ready — only "send" is left
+    var wa = el2('div', 'share-card share-main');
+    wa.appendChild(el2('h4', '', '💬 וואטסאפ' + (hasPhone ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.phone.display) + '</span>' : '')));
+    wa.appendChild(linkBtn('wa big', 'שליחה בוואטסאפ ל' + escapeHtml(customer), waHref));
+    wa.appendChild(el2('p', '', hasPhone ? 'נפתח הצ׳אט של הלקוח עם הודעה מוכנה: פירוט ההצעה, הסכומים והקישור לחתימה. נשאר רק ללחוץ "שלח".' : 'אין מספר נייד ללקוח — WhatsApp יבקש לבחור איש קשר. (אפשר להוסיף נייד בפרטי הלקוח בראש ההצעה.)'));
+    var waMore = el2('div', 'share-mini');
+    if (mobile) waMore.appendChild(actBtn('mini', '📎 לשלוח גם את קובץ ה-PDF', async function(b){ var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done'); }));
+    else waMore.appendChild(actBtn('mini', '⬇ הורדת ה-PDF (לגרירה לצ׳אט)', async function(b){ await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }));
+    wa.appendChild(waMore);
+    body.appendChild(wa);
+
+    // --- e-mail: one tap — recipient, subject and the full body are filled in
+    var mail = el2('div', 'share-card share-main');
+    mail.appendChild(el2('h4', '', '📧 מייל' + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
+    var to = info.emailOk ? info.contact.email : '';
+    if (mobile) {
+      mail.appendChild(linkBtn('mail big', 'שליחה במייל ל' + escapeHtml(customer), buildMailto(to, quoteSubject(), quoteEmailText().split('\n'))));
+      mail.appendChild(el2('p', '', 'נפתחת אפליקציית המייל עם ' + (to ? 'הנמען, ' : '') + 'הנושא והנוסח המלא — כולל פירוט ההצעה והקישור לחתימה ולהורדת PDF.' + (to ? '' : ' הזינו את כתובת הלקוח.')));
+      var mm = el2('div', 'share-mini');
+      mm.appendChild(actBtn('mini', '📎 במקום זה: מייל עם קובץ ה-PDF מצורף', async function(b){ var r = await shareFile(pdf.file, { title: quoteSubject(), text: quoteEmailText() }); if (r === 'shared') b.classList.add('done'); }));
+      mail.appendChild(mm);
+    } else {
+      var emlNote = el2('div', 'share-note'); emlNote.hidden = true;
+      mail.appendChild(actBtn('mail big', 'פתיחת המייל באאוטלוק — מוכן לשליחה, עם ה-PDF', async function(b){
+        try {
+          var eml = await buildQuoteEml(to, quoteSubject(), quoteEmailHtml(), quoteEmailText(), pdf.blob, pdf.name);
+          await deliverBlob(eml, pdf.name.replace(/\.pdf$/i, '') + '.eml');
+          b.classList.add('done'); emlNote.hidden = false;
+        } catch(e){ emlNote.hidden = false; emlNote.textContent = 'לא הצלחנו להכין את הטיוטה — השתמשו ב"העתקת נוסח המייל" למטה.'; }
+      }));
+      emlNote.innerHTML = '✓ הקובץ נשמר בהורדות — <b>לחצו עליו</b> והוא ייפתח באאוטלוק עם הנמען, הנושא, הנוסח וה-PDF. (כדי שייפתח לבד בפעם הבאה: ⋯ ליד הקובץ ← "פתח תמיד קבצים מסוג זה".)';
+      mail.appendChild(emlNote);
+      var shortLines = ['שלום ' + customer + ',', '', 'הצעת מחיר מס׳ ' + state.quoteNumber + ' ' + brName('from') + '.', 'סה״כ התקנה (כולל מע״מ): ' + document.getElementById('qTotal').textContent, ''].concat(currentSignLinks ? ['לצפייה ולחתימה:', currentSignLinks.mail, ''] : []).concat(['בברכה,', agentInfo.name || '', agentInfo.phone || '']);
+      var mm2 = el2('div', 'share-mini');
+      mm2.appendChild(linkBtn('mini', '⚡ מייל מהיר (טקסט קצר, בלי קובץ)', buildMailto(to, quoteSubject(), shortLines)));
+      mm2.appendChild(actBtn('mini', '📋 העתקת נוסח המייל', function(b){ copyRichEmail(function(ok){ if (ok) b.classList.add('done'); }); }));
+      mail.appendChild(mm2);
+    }
+    body.appendChild(mail);
+
+    // --- more: the signing link alone, the customer's view, saving the PDF
+    var more = el2('details', 'share-card share-more');
+    more.appendChild(el2('summary', '', 'אפשרויות נוספות'));
+    var mr = el2('div', 'share-copy-row');
+    if (currentSignLinks) { mr.appendChild(actBtn('', '📋 העתקת קישור החתימה', function(b){ copyToClipboard(currentSignLinks.wa, function(ok){ if (ok) b.classList.add('done'); }); })); mr.appendChild(linkBtn('', '👁 תצוגת הלקוח', currentSignLinks.wa)); }
+    mr.appendChild(actBtn('', '📋 העתקת נוסח ההודעה', function(b){ copyToClipboard(waText.replace(/\*/g, ''), function(ok){ if (ok) b.classList.add('done'); }); }));
+    more.appendChild(mr);
+    more.appendChild(saveOrShareButton(pdf, mobile));
+    if (opts.saveFirst) { more.open = true; body.insertBefore(more, body.firstChild); } else body.appendChild(more);
+    if (opts.autoSaved) shareNote(body, '✓ קובץ ה-PDF נשמר גם בהורדות (' + pdf.name + ')');
   }
   // Generic version for any other PDF (the sketch): just "save / share" on a phone.
   function renderFileShareSheet(pdf, title){
@@ -14850,6 +14940,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // BOM/cabling/cost stay the single whole-house totals on every page (computeBom() etc.
   // already aggregate every floor regardless of which one is on screen).
   var sketchActiveFloor = 0;
+  /* 3D sketch: the sheet shows a still rendered by the 3D engine (same look as the video) — cleaner
+     than the 2D plan when there are many devices. Topic chips choose what the sketch shows (in both
+     modes); the legend, zone list and cable table follow the chips. 2D stays one tap away and is
+     the automatic fallback when the device has no WebGL or the 3D engine can't load. */
+  var skMode = (function(){ try { return localStorage.getItem('g1sg_skmode') || '3d'; } catch(e) { return '3d'; } })();
+  var skHide = {}, skOpts = { cover:true, cables:true }, sk3dFailed = false, sk3dTok = 0, sketch3dPromise = null;
+  var SK_CABLE_CAT = { alarm:'alarm', cat6:'camera', intercom:'intercom', speaker:'music', network:'network', fire:'fire' };
+  function sk3dOn(){ return skMode === '3d' && !sk3dFailed && !CONSUMER && !!window.WebGLRenderingContext; }
+  function skHiddenType(t){ var d = DEVICE_DEFS[t]; return !!(d && skHide[d.cat]); }
+  function skViewbarUi(){
+    var on = sk3dOn();
+    Array.prototype.forEach.call(document.querySelectorAll('#skViewbar .sk-seg button'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.v === '3d') === on)); });
+    var tp = (typeof v3dTopicsPresent === 'function') ? v3dTopicsPresent() : [];
+    var h = tp.length > 1 ? tp.map(function(t){ return '<button type="button" class="tp-chip" data-cat="' + t[0] + '" aria-pressed="' + !skHide[t[0]] + '"><i style="background:' + t[2] + '"></i>' + t[1] + '</button>'; }).join('') : '';
+    if (on) h += (h ? '<span class="sk-sep"></span>' : '') + '<button type="button" class="tp-chip sk-opt" data-o="cover" aria-pressed="' + skOpts.cover + '">כיסוי</button><button type="button" class="tp-chip sk-opt" data-o="cables" aria-pressed="' + skOpts.cables + '">כבילה</button>';
+    document.getElementById('skTopics').innerHTML = h;
+  }
+  document.getElementById('skViewbar').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.v) { skMode = b.dataset.v; if (skMode === '3d') sk3dFailed = false; try { localStorage.setItem('g1sg_skmode', skMode); } catch(x) {} }
+    else if (b.dataset.cat) skHide[b.dataset.cat] = !skHide[b.dataset.cat];
+    else if (b.dataset.o) skOpts[b.dataset.o] = !skOpts[b.dataset.o];
+    else return;
+    buildSketch();
+  });
   function buildSketchFloorTabs(){
     var wrap = document.getElementById('sketchFloorTabs');
     if (!wrap) return;
@@ -14895,8 +15010,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     Array.prototype.forEach.call(clone.querySelectorAll('#underlayLayer image'), function(im){ im.setAttribute('opacity', Math.max(0.7, +im.getAttribute('opacity') || 0)); im.removeAttribute('class'); });
     var recsClone = clone.querySelector('#recsLayer');
     if (recsClone) recsClone.parentNode.removeChild(recsClone);
+    if (Object.keys(skHide).some(function(k){ return skHide[k]; })) {
+      state.devices.forEach(function(d){ if (!skHiddenType(d.type)) return; var n = clone.querySelector('#devicesLayer [data-id="' + d.id + '"]'); if (n) n.parentNode.removeChild(n); });
+      Array.prototype.forEach.call(clone.querySelectorAll('#cablesLayer .cable-line'), function(n){ var k = Object.keys(SK_CABLE_CAT).filter(function(c){ return n.classList.contains(c); })[0]; if (k && skHide[SK_CABLE_CAT[k]]) n.parentNode.removeChild(n); });
+    }
     // zone number badge next to every wired/wireless detector (matches "רשימת אזורי אזעקה")
-    var zplan = computeSystemPlan().alarm;
+    var zplan = skHide.alarm ? null : computeSystemPlan().alarm;
     if (zplan) zplan.zones.forEach(function(z){
       var g = clone.querySelector('#devicesLayer [data-id="' + z.dev.id + '"]') || clone.querySelector('[data-id="' + z.dev.id + '"]');
       if (!g) return;
@@ -14950,15 +15069,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var skScale = clone.querySelector('#scaleBar');
     if (skScale) { skScale.setAttribute('transform', 'translate(' + (box.x+box.w-170) + ',' + (box.y+box.h-20) + ')'); skScale.removeAttribute('id'); }
     var wrap = document.getElementById('sketchPlanWrap');
-    wrap.innerHTML = '';
+    wrap.innerHTML = ''; wrap.classList.remove('zoomed');
     var skScroll = document.createElement('div'); skScroll.className = 'sk-scroll';
-    skScroll.appendChild(clone); wrap.appendChild(skScroll);
     clone.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    var zoomEl = clone, use3d = sk3dOn(), tok = ++sk3dTok;
+    skViewbarUi();
+    if (use3d) {
+      var fig = document.createElement('div'); fig.className = 'sk-3d-box'; fig.innerHTML = '<span class="v3d-spin"></span><span>בונה סקיצת תלת-ממד…</span>';
+      skScroll.appendChild(fig); wrap.appendChild(skScroll);
+      var to2d = function(msg){ if (tok !== sk3dTok) return; if (fig.parentNode) fig.parentNode.replaceChild(clone, fig); zoomEl = clone; skViewbarUi();
+        if (msg) { var nt = document.createElement('div'); nt.className = 'sk-3d-note'; nt.setAttribute('data-html2canvas-ignore', 'true'); nt.textContent = msg; wrap.appendChild(nt); } };
+      sketch3dPromise = v3dStill({ floor:usesMultiFloor() ? sketchActiveFloor : (state.activeFloor || 0), hide:skHide, cover:skOpts.cover, cables:skOpts.cables }).then(function(url){
+        if (tok !== sk3dTok) return;
+        if (!url || url === 'busy') return to2d(url === 'busy' ? 'ההדמיה החיה פתוחה — מוצג שרטוט 2D' : '');
+        var img = new Image(); img.className = 'sk-3d'; img.alt = 'סקיצת תלת-ממד של המערכת'; img.src = url;
+        return (img.decode ? img.decode() : Promise.resolve()).catch(function(){}).then(function(){ if (tok !== sk3dTok || !fig.parentNode) return; fig.parentNode.replaceChild(img, fig); zoomEl = img; });
+      }).catch(function(err){
+        if (err && err.message === 'gl') { sk3dFailed = true; to2d('המכשיר לא תומך בתלת-ממד — מוצג שרטוט 2D'); }
+        else to2d('תלת-ממד לא זמין כרגע (נדרש אינטרנט בפעם הראשונה) — מוצג שרטוט 2D');
+      });
+    } else { skScroll.appendChild(clone); wrap.appendChild(skScroll); sketch3dPromise = null; }
     var zb = document.createElement('div'); zb.className = 'sk-zoom'; zb.setAttribute('data-html2canvas-ignore', 'true');
     zb.innerHTML = '<button type="button" aria-label="הגדלה">+</button><button type="button" aria-label="הקטנה">−</button>';
     wrap.appendChild(zb);
     var skZoom = 1;
-    function applySkZoom(){ wrap.classList.toggle('zoomed', skZoom > 1); clone.style.width = (skZoom * 100) + '%'; clone.style.height = skZoom > 1 ? 'auto' : ''; }
+    function applySkZoom(){ wrap.classList.toggle('zoomed', skZoom > 1); zoomEl.style.width = (skZoom * 100) + '%'; zoomEl.style.height = skZoom > 1 ? 'auto' : ''; }
     zb.children[0].onclick = function(){ skZoom = Math.min(4, skZoom * 1.5); applySkZoom(); };
     zb.children[1].onclick = function(){ skZoom = Math.max(1, skZoom / 1.5); applySkZoom(); };
 
@@ -14974,7 +15109,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var bom = r.bom;
 
     var legendHtml = LEGEND_SECTIONS.map(function(sec){
-      var relevantTypes = sec.types.filter(function(t){ return usedTypes[t]; });
+      var relevantTypes = sec.types.filter(function(t){ return usedTypes[t] && !skHiddenType(t); });
       if (!relevantTypes.length) return '';
       var rows = relevantTypes.map(function(t){
         var isOpening = !!OPENING_DEFS[t];
@@ -14995,6 +15130,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }).join('');
       return '<div class="sk-legend-section"><h5>' + sec.title + '</h5>' + rows + '</div>';
     }).join('');
+    if (use3d) {   // colour key of the pins in the 3D picture (+ the red zone numbers)
+      var fl3 = usesMultiFloor() ? sketchActiveFloor : (state.activeFloor || 0), kc = {};
+      state.devices.forEach(function(d){ var df = DEVICE_DEFS[d.type]; if (df && !df.derived && devFloor(d) === fl3 && !skHiddenType(d.type)) kc[v3dCatOf(d.type)] = 1; });
+      var keyH = Object.keys(V3D_CAT_NAME).filter(function(k){ return kc[k]; }).map(function(k){ return '<span><i style="background:' + V3D_CAT[k].c + '"></i>' + V3D_CAT_NAME[k] + '</span>'; }).join('');
+      if (zplan && zplan.zones.length) keyH += '<span><i class="zb">1</i>מספר אזור אזעקה</span>';
+      if (keyH) legendHtml = '<div class="sk-legend-section"><h5>סימון באיור התלת-ממד</h5><div class="sk-3d-key">' + keyH + '</div></div>' + legendHtml;
+    }
     document.getElementById('sketchLegend').innerHTML = legendHtml || '<p style="font-size:11px;color:var(--ink-dim)">טרם הוצבו אביזרים בשרטוט</p>';
 
     var cableRows = [
@@ -15007,7 +15149,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ];
     var cableHtml = '';
     cableRows.forEach(function(row){
-      if (!row[1]) return;
+      if (!row[1] || (SK_CABLE_CAT[row[0]] && skHide[SK_CABLE_CAT[row[0]]])) return;
       var meters = bom.cableTotals[row[0]] || 0;
       if (meters <= 0) return;
       cableHtml += '<tr><td>' + row[1] + '</td><td class="num">' + meters + ' מ׳</td></tr>';
@@ -15019,7 +15161,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     var infraSec = document.getElementById('sketchInfraSection'), infraInner = infraSummaryHtml();
     if (infraSec){ infraSec.hidden = !infraInner; document.getElementById('sketchInfraInfo').innerHTML = infraInner; }
-    var zoneSec = document.getElementById('sketchZoneSection'), zoneInner = zoneListHtml(usesMultiFloor() ? sketchActiveFloor : null);
+    var zoneSec = document.getElementById('sketchZoneSection'), zoneInner = skHide.alarm ? '' : zoneListHtml(usesMultiFloor() ? sketchActiveFloor : null);
     if (zoneSec){ zoneSec.hidden = !zoneInner; document.getElementById('sketchZoneInfo').innerHTML = zoneInner; }
     var planSec = document.getElementById('sketchPlanSection'), planInner2 = systemPlanHtml({ noZones:true });
     if (planSec){ planSec.hidden = !planInner2; document.getElementById('sketchPlanInfo').innerHTML = planInner2; }
@@ -15074,6 +15216,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         sketchActiveFloor = floors[k];
         document.body.classList.toggle('sk-floor-part', k < floors.length - 1);
         buildSketch();
+        if (sketch3dPromise) await sketch3dPromise;
         await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
         var panel = document.querySelector('#sketchBackdrop .sketch-sheet');
         var canvas = await renderElementToCanvas(panel);
@@ -17179,17 +17322,50 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   /* ---------- agent app: list & minimum prices in the quote ---------- */
   function g1AgentPrice(kind, key){ var a = G1C.cfg && G1C.cfg.agent; var t = a && (kind === 'cable' ? a.cablePrices : a.prices); return (t && t[key]) || null; }
+  // a beginner agent can be given a fixed price list (admin → "מחירון קבוע"): every price comes from the
+  // list and is read-only; only the discount (up to the allowed maximum) is the agent's to set
+  function g1PriceLocked(){ if (CONSUMER || !g1Auth) return false; var u = g1FindUser(g1Auth.uid); return !!(u && u.lockPrices); }
   function g1ApplyQuotePrices(){
+    var lock = g1PriceLocked(), A = (G1C.cfg && G1C.cfg.agent) || {}, MP = A.monPrices || {}, missing = 0;
     var rows = document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"], #qCableTable tbody tr[data-row="cable"]');
     Array.prototype.forEach.call(rows, function(tr){
       var isCable = tr.dataset.row === 'cable', p = g1AgentPrice(isCable ? 'cable' : 'equip', isCable ? tr.dataset.ctype : tr.dataset.type);
-      var inp = tr.querySelector('.q-price'); if (!inp || !p) return;
-      if (p.list != null && p.list !== '' && !inp.value) inp.value = p.list;
-      if (p.min != null && p.min !== '') { inp.dataset.min = p.min; inp.min = p.min; inp.removeAttribute('title'); }
+      var inp = tr.querySelector('.q-price'); if (!inp) return;
+      var has = p && p.list != null && p.list !== '';
+      if (has && (lock || !inp.value)) inp.value = p.list;
+      if (lock) { inp.readOnly = true; inp.classList.add('q-locked'); if (!has) { inp.value = inp.value || ''; inp.title = 'אין מחיר במחירון — פנו למנהל'; missing++; } }
+      else { inp.readOnly = false; inp.classList.remove('q-locked'); }
+      if (p && p.min != null && p.min !== '') { inp.dataset.min = p.min; inp.min = p.min; inp.removeAttribute('title'); }
       if (!inp.dataset.g1Bound) { inp.dataset.g1Bound = '1'; inp.addEventListener('input', g1CheckQuoteMins); }
     });
-    try { recalcQuoteInstall(); } catch(e) {}
+    // monthly services and one-time fees from the list
+    document.querySelectorAll('#qMonitorTable tbody tr[data-mon]').forEach(function(tr){
+      var k = tr.dataset.mon, inp = tr.querySelector('.qMonPrice, .qGprsOnce, .qAnOnce'); if (!inp) return;
+      var key = k === 'gprs-once' ? 'gprsOnce' : k === 'analytics-once' ? 'anOnce' : k, v = MP[key];
+      if (v != null && v !== '' && (lock || !inp.value)) inp.value = v;
+      inp.readOnly = lock && v != null && v !== ''; inp.classList.toggle('q-locked', inp.readOnly);
+    });
+    var inst = document.getElementById('qInstallCost'), chip = document.getElementById('qInstallRate');
+    if (A.install != null && A.install !== '') { if (lock || !inst.value) inst.value = A.install; if (chip) chip.hidden = true; }
+    inst.readOnly = lock && A.install != null && A.install !== ''; inst.classList.toggle('q-locked', inst.readOnly);
+    var cr = typeof qCustomRow === 'function' && qCustomRow(); if (cr) cr.hidden = lock;
+    var note = document.getElementById('g1LockNote');
+    if (lock) {
+      if (!note) { note = document.createElement('div'); note.id = 'g1LockNote'; note.className = 'g1-lock-note'; var host = document.getElementById('qEquipTable'); if (host && host.parentNode) host.parentNode.insertBefore(note, host); }
+      var md = parseFloat(A.maxDiscountPct);
+      note.textContent = '🔒 מחירון קבוע — המחירים נקבעו ע״י ההנהלה' + (isNaN(md) ? '; אפשר לתת הנחה' : '; אפשר לתת הנחה עד ' + md + '%') + (missing ? ' · ' + missing + ' פריטים בלי מחיר במחירון — פנו למנהל' : '');
+    } else if (note) note.remove();
+    try { recalcQuoteInstall(); recalcQuoteMonitor(); } catch(e) {}
     g1CheckQuoteMins();
+  }
+  // a locked agent's discount is kept within the allowed maximum as it is typed
+  function g1ClampDiscount(){
+    if (!g1PriceLocked()) return;
+    var md = parseFloat(((G1C.cfg && G1C.cfg.agent) || {}).maxDiscountPct); if (isNaN(md)) return;
+    var dv = document.getElementById('qDiscountValue'), type = document.getElementById('qDiscountType').value, v = parseFloat(dv.value) || 0;
+    var sub = 0; document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price').forEach(function(inp){ var tr = inp.closest('tr'); sub += (parseFloat(inp.value) || 0) * (parseFloat(tr.dataset.qty || tr.dataset.meters) || 0); });
+    var base = sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + onceAmount(), max = type === 'amount' ? Math.floor(base * md / 100) : md;
+    if (v > max) { dv.value = max; try { showCanvasToast('ההנחה המקסימלית היא ' + md + '%', true); } catch(e) {} recalcQuoteInstall(); }
   }
   // returns a list of problems (empty = OK) and marks the offending inputs
   function g1CheckQuoteMins(){
@@ -17209,7 +17385,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var sub = 0;
       Array.prototype.forEach.call(document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price'), function(inp){ var tr = inp.closest('tr'); sub += (parseFloat(inp.value) || 0) * (parseFloat(tr.dataset.qty || tr.dataset.meters) || 0); });
       var type = document.getElementById('qDiscountType').value, val = parseFloat(document.getElementById('qDiscountValue').value) || 0;
-      var base = sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + gprsOnceAmount();   // the same base recalcQuoteInstall discounts
+      var base = sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + onceAmount();   // the same base recalcQuoteInstall discounts
       var disc = type === 'amount' ? val : base * val / 100, pct = base ? disc / base * 100 : 0;
       if (!isNaN(maxDisc) && pct > maxDisc + 0.01) problems.push('הנחה מעל המותר (עד ' + maxDisc + '%)');
       if (minTotal && sub - disc < minTotal - 0.5) problems.push('ההנחה מורידה את הציוד מתחת לסכום המינימום (₪' + Math.round(minTotal).toLocaleString('he-IL') + ')');
@@ -17244,6 +17420,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function initG1AgentPrices(){
     var baseBuild = buildQuote;
     buildQuote = function(){ var r = baseBuild.apply(this, arguments); try { g1ApplyQuotePrices(); } catch(e) {} return r; };
+    var baseRestore = restoreQuoteInputs;
+    restoreQuoteInputs = function(){ var r = baseRestore.apply(this, arguments); try { if (g1PriceLocked()) g1ApplyQuotePrices(); } catch(e) {} return r; };
     var baseRecalc = recalcQuoteInstall;
     recalcQuoteInstall = function(){ var r = baseRecalc.apply(this, arguments); try { g1CheckQuoteMins(); } catch(e) {} return r; };
     var baseSend = sendQuoteFlow;
@@ -17432,6 +17610,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     opts:{ cables:true, cover:true, furn:true, low:true, labels:false, night:false },
     sph:{ r:20, th:0.6, ph:0.92 }, tgt:null, fit:20, fitR:10, ptrs:{}, quad:'', walls:[], devs:[], cov:[], flows:[], frames:0, ftime:0, dpr:2, tex:{}, geoCache:{} };
   var V3D_H = 2.7, V3D_CAB = 2.74, V3D_DS = 1.6;
+  V3D.hide = {};
+  // what the agent can switch on/off (by the device's catalogue topic) — in the 3D view and in the sketch
+  var V3D_TOPICS = [['alarm', 'אזעקה', '#2F80ED'], ['camera', 'מצלמות', '#00A37A'], ['intercom', 'אינטרקום', '#9B51E0'], ['network', 'רשת ותקשורת', '#6B7785'], ['music', 'מוזיקה', '#16A085'], ['smart', 'SMART', '#27AE60'], ['fire', 'גילוי אש', '#EB5757']];
+  var V3D_CAT_NAME = { motion:'גלאי תנועה', camera:'מצלמות', siren:'סירנות', panel:'רכזת ולוח מקשים', contact:'גלאי מגע', glass:'שבר זכוכית', fire:'עשן / אש', intercom:'אינטרקום', net:'תקשורת', smart:'בית חכם', audio:'שמע' };
+  function v3dHidden(t){ var d = DEVICE_DEFS[t]; return !!(d && V3D.hide[d.cat]); }
+  function v3dTopicsPresent(){ var s = {}; state.devices.forEach(function(d){ var df = DEVICE_DEFS[d.type]; if (df && !df.derived) s[df.cat] = 1; }); return V3D_TOPICS.filter(function(t){ return s[t[0]]; }); }
   function v3dCol(c){ c = String(c || ''); if (/^var\(/.test(c)) { var v = getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1).split(',')[0].trim()).trim(); return v || '#4cc9f0'; } return c || '#4cc9f0'; }
   var CABLE_COL = { alarm:'#F2B134', cat6:'#2D9CDB', intercom:'#9B51E0', speaker:'#27AE60', network:'#F2994A', fire:'#E5484D', power:'#7F8C8D' };
   function loadThree(){
@@ -18018,7 +18202,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function v3dDevices(M, G){
     var T = THREE; V3D.devs = []; V3D.cov = [];
-    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && !DEVICE_DEFS[d.type].derived; });
+    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && !DEVICE_DEFS[d.type].derived && !v3dHidden(d.type); });
     devs.forEach(function(d){
       var def = DEVICE_DEFS[d.type], mnt = v3dMount(M, d), w = v3dW(M, mnt.x, mnt.y), g = v3dDevMesh(d.type);
       g.position.set(w[0], mnt.h, w[1]); if (mnt.mode !== 'ceil') g.rotation.y = Math.atan2(mnt.dir[0], mnt.dir[1]);
@@ -18041,7 +18225,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     'uniform float uHot[64]; uniform float uSel; varying float vD; varying float vA; varying vec3 vCol; varying float vK; varying float vHot; varying float vSel; varying float vIdx;\n' +
     'void main(){ vD = aD; vA = aA; vCol = aCol; vK = aK; vIdx = aIdx; int i = int(min(aIdx, 63.0) + 0.5); vHot = uHot[i]; vSel = abs(aIdx - uSel) < 0.5 ? 1.0 : 0.0;\n' +
     ' gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
-  var V3D_COV_FS = 'uniform float uTime; uniform float uFade; uniform float uNight; uniform float uBase; uniform float uVol;\n' +
+  var V3D_COV_FS = 'uniform float uTime; uniform float uFade; uniform float uNight; uniform float uBase; uniform float uVol; uniform float uRing;\n' +
     'varying float vD; varying float vA; varying vec3 vCol; varying float vK; varying float vHot; varying float vSel; varying float vIdx;\n' +
     'void main(){\n float d = clamp(vD, 0.0, 1.0); float a;\n' +
     ' if (uVol > 0.5) { a = 0.075 * (1.0 - 0.75 * d); if (vSel > 0.5) a *= 3.2; if (vHot > 0.0) a *= 3.0; }\n' +
@@ -18049,13 +18233,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     '  if (vK > 1.5 && vK < 2.5) a *= 0.6;\n' +
     '  if (vK > 0.5 && vK < 1.5) { float lobes = 0.5 + 0.5 * cos(vA * 20.0); float zones = 0.5 + 0.5 * cos(d * 28.0); a *= 0.42 + 0.58 * smoothstep(0.2, 0.8, lobes) * (0.65 + 0.35 * zones); }\n' +
     '  float sp = vHot > 0.0 ? 1.4 : 0.32; float ph = fract(uTime * sp + vIdx * 0.173); float ring = smoothstep(0.06, 0.0, abs(d - ph)) * (1.0 - d * 0.8);\n' +
-    '  a += ring * (vHot > 0.0 ? 0.55 : 0.2); a += smoothstep(0.94, 1.0, d) * 0.22;\n' +
+    '  a += ring * (vHot > 0.0 ? 0.55 : 0.2) * uRing; a += smoothstep(0.94, 1.0, d) * 0.22;\n' +
     '  if (vSel > 0.5) a *= 1.9; }\n' +
     ' vec3 col = vCol; if (vHot > 0.75) col = mix(col, vec3(1.0, 0.06, 0.04), 0.9); if (vHot > 0.0) a *= 1.8;\n' +
     ' a *= uFade * (uNight > 0.5 ? (vK > 1.5 && vK < 2.5 ? 0.55 : 1.2) : 1.0);\n' +
     ' gl_FragColor = vec4(col, clamp(a, 0.0, 0.85));\n #include <colorspace_fragment>\n}';
   function v3dCovMat(vol){
-    var T = THREE, u = { uHot:{ value:new Array(64).fill(0) }, uSel:{ value:-1 }, uTime:{ value:0 }, uFade:{ value:1 }, uNight:{ value:0 }, uBase:{ value:0.2 }, uVol:{ value:vol ? 1 : 0 } };
+    var T = THREE, u = { uHot:{ value:new Array(64).fill(0) }, uSel:{ value:-1 }, uTime:{ value:0 }, uFade:{ value:1 }, uNight:{ value:0 }, uBase:{ value:0.2 }, uVol:{ value:vol ? 1 : 0 }, uRing:{ value:V3D.still ? 0 : 1 } };
     return new T.ShaderMaterial({ uniforms:u, vertexShader:V3D_COV_VS, fragmentShader:V3D_COV_FS, transparent:true, depthWrite:false, side:T.DoubleSide, toneMapped:false, blending:vol ? T.AdditiveBlending : T.NormalBlending });
   }
   function v3dCoverage(M, G){
@@ -18065,6 +18249,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     V3D.cov.forEach(function(cv, n){
       var g = cv.g, idx = g.userData.idx, col = tmp.set(cv.col).clone(), R = m2p(cv.range), y = 0.03 + (n % 8) * 0.0015;
       var o = cv.full ? [cv.d.x, cv.d.y - M.off] : cv.pts[0], ring = cv.full ? cv.pts.concat([cv.pts[0]]) : cv.pts.slice(1);
+      if (V3D.still) { var pad = m2p(0.4), bx1 = M.bb.x1 - pad, by1 = M.bb.y1 - pad, bx2 = M.bb.x2 + pad, by2 = M.bb.y2 + pad;
+        ring = ring.map(function(p){ var dx = p[0] - o[0], dy = p[1] - o[1], t = 1;
+          if (dx > 1e-6) t = Math.min(t, (bx2 - o[0]) / dx); else if (dx < -1e-6) t = Math.min(t, (bx1 - o[0]) / dx);
+          if (dy > 1e-6) t = Math.min(t, (by2 - o[1]) / dy); else if (dy < -1e-6) t = Math.min(t, (by1 - o[1]) / dy);
+          t = Math.max(0, t); return [o[0] + dx * t, o[1] + dy * t]; }); }
       var ang = function(p){ if (cv.full) return 0; var a = Math.atan2(p[0] - o[0], -(p[1] - o[1])) - cv.aim; return Math.atan2(Math.sin(a), Math.cos(a)); };
       var ow = v3dW(M, o[0], o[1]), k = cv.full ? 3 : cv.pir ? 1 : cv.cam ? 2 : 0;
       var lensW = g.localToWorld((g.userData.lens || new T.Vector3(0, 0, 0.05)).clone());
@@ -18087,7 +18276,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dCovSet(k, v){ [V3D.covMat, V3D.volMat].forEach(function(m){ if (m) m.uniforms[k].value = v; }); }
   function v3dCables(M, G){
     var T = THREE, anchors = getAnchors(state.devices), types = {};
-    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && DEVICE_DEFS[d.type].cable; });
+    var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && DEVICE_DEFS[d.type].cable && !v3dHidden(d.type); });
     var order = ['alarm', 'cat6', 'intercom', 'speaker', 'network', 'fire', 'power'];
     devs.forEach(function(d){
       var def = DEVICE_DEFS[d.type]; if (state.alarmWireless && def.cable === 'alarm') return;
@@ -18127,15 +18316,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     x.restore();
   }
   function v3dOvSize(){
-    var ov = document.getElementById('v3dOv'), st = document.getElementById('v3dStage'); if (!ov || !st) return;
-    var w = V3D.rec ? V3D.recW : st.clientWidth, h = V3D.rec ? V3D.recH : st.clientHeight, k = V3D.rec ? 1 : Math.min(2, window.devicePixelRatio || 1);
+    var S = V3D.still, ov = S ? S.cv : document.getElementById('v3dOv'), st = document.getElementById('v3dStage'); if (!ov || (!st && !S)) return;
+    var w = S ? S.W : V3D.rec ? V3D.recW : st.clientWidth, h = S ? S.H : V3D.rec ? V3D.recH : st.clientHeight, k = (S || V3D.rec) ? 1 : Math.min(2, window.devicePixelRatio || 1);
     if (ov.width !== Math.round(w * k) || ov.height !== Math.round(h * k)) { ov.width = Math.round(w * k); ov.height = Math.round(h * k); }
     V3D.ovK = k; V3D.ovW = w; V3D.ovH = h;
   }
   function v3dRR(x, X, Y, W, H, R){ x.beginPath(); if (x.roundRect) x.roundRect(X, Y, W, H, R); else x.rect(X, Y, W, H); }
   function v3dOverlay(now){
-    var ov = document.getElementById('v3dOv'); if (!ov || !V3D.cam) return; v3dOvSize();
-    var x = ov.getContext('2d'), W = V3D.ovW, H = V3D.ovH, k = V3D.ovK, big = V3D.rec ? Math.max(1, Math.min(W, H) / 560) : 1;
+    var ST = V3D.still, ov = ST ? ST.cv : document.getElementById('v3dOv'); if (!ov || !V3D.cam) return; v3dOvSize();
+    var x = ov.getContext('2d'), W = V3D.ovW, H = V3D.ovH, k = V3D.ovK, big = ST ? ST.big : V3D.rec ? Math.max(1, Math.min(W, H) / 560) : 1;
     x.setTransform(k, 0, 0, k, 0, 0); x.clearRect(0, 0, W, H);
     var v = new THREE.Vector3(), items = [], sim = V3D.sim, tS = sim ? sim.t : -1;
     V3D.devs.forEach(function(g, i){
@@ -18150,9 +18339,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     items.forEach(function(it){ it.pri = (PRI[v3dCatOf(it.g.userData.d.type)] || 12) - (V3D.sel === it.i ? 100 : 0) - (sim && sim.hot[it.i] ? 50 : 0); });
     items.sort(function(a, b){ return a.pri - b.pri; });
     var clusters = [];
-    items.forEach(function(it){ var c = clusters.filter(function(c){ return Math.hypot(c.x - it.x, c.y - it.y) < R * 1.9; })[0]; if (c) c.more.push(it); else { it.more = []; clusters.push(it); } });
+    items.forEach(function(it){ var c = clusters.filter(function(c){ return Math.hypot(c.x - it.x, c.y - it.y) < R * (ST ? 0.7 : 1.9); })[0]; if (c) c.more.push(it); else { it.more = []; clusters.push(it); } });
     items = clusters.sort(function(a, b){ return b.z - a.z; });
-    var pulse = 0.5 + 0.5 * Math.sin(now / 160);
+    var pulse = 0.5 + 0.5 * Math.sin(now / 160), zq = [];
     items.forEach(function(it){
       var g = it.g, col = g.userData.col, cat = v3dCatOf(g.userData.d.type), hot = sim && sim.hot[it.i], sel = V3D.sel === it.i, r = R * (sel ? 1.18 : 1) * (0.6 + 0.4 * it.pop);
       x.globalAlpha = it.pop;
@@ -18175,9 +18364,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         var bxx = it.x - r * 0.85, byy = it.y - r * 0.85, br = 7.5 * big; x.fillStyle = '#1d2430'; x.beginPath(); x.arc(bxx, byy, br, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 1.5 * big; x.stroke();
         x.fillStyle = '#fff'; x.font = '800 ' + Math.round(9.5 * big) + 'px Heebo, Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'ltr'; x.fillText('+' + it.more.length, bxx, byy + 0.5);
       }
+      var zn = ST && ST.zones[g.userData.d.id];
+      if (zn) zq.push(function(){ var zx = it.x + r * 0.95, zy = it.y - r * 0.85, zr = (zn > 9 ? 8.5 : 7.5) * big; x.fillStyle = '#c0392b'; x.beginPath(); x.arc(zx, zy, zr, 0, 7); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 1.6 * big; x.stroke();
+        x.fillStyle = '#fff'; x.font = '800 ' + Math.round(9.5 * big) + 'px Arial, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'ltr'; x.fillText(String(zn), zx, zy + 0.5); });
       x.globalAlpha = 1;
       V3D.pinHits.push({ i:it.i, x:it.x, y:it.y, more:it.more.map(function(m){ return m.i; }) });
     });
+    zq.forEach(function(f){ x.globalAlpha = 1; f(); });
     if (sim) v3dSimOverlay(x, W, H, big, now);
     if (V3D.endCard) v3dEndCard(x, W, H, big, V3D.endCard);
   }
@@ -18379,7 +18572,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dLegend(){
     var el = document.getElementById('v3dLegend'); if (!el) return;
     var cats = {}; V3D.devs.forEach(function(g){ cats[v3dCatOf(g.userData.d.type)] = 1; });
-    var NAME = { motion:'גלאי תנועה', camera:'מצלמות', siren:'סירנות', panel:'רכזת ולוח מקשים', contact:'גלאי מגע', glass:'שבר זכוכית', fire:'עשן / אש', intercom:'אינטרקום', net:'תקשורת', smart:'בית חכם', audio:'שמע' };
+    var NAME = V3D_CAT_NAME;
     var ks = Object.keys(V3D.cableTypes || {});
     el.innerHTML = '<button type="button" class="lg-h">מקרא</button><div class="lg-b">' + Object.keys(cats).filter(function(k){ return NAME[k]; }).map(function(k){ return '<span><i class="dot" style="background:' + V3D_CAT[k].c + '"></i>' + NAME[k] + '</span>'; }).join('') +
       (ks.length && V3D.opts.cables ? ks.map(function(k){ return '<span><i style="background:' + (CABLE_COL[k] || '#999') + '"></i>' + escapeHtml(cableLabel(k)) + '</span>'; }).join('') : '') +
@@ -18409,7 +18602,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     V3D.seq = { t0:performance.now(), step:function(t){ return v3dBuildStep(t, th0); } };
   }
   function v3dSimRun(){
-    if (V3D.rec) return; if (!v3dSimStart(false)) return;
+    if (V3D.rec) return;
+    if (V3D.hide.alarm) { V3D.hide.alarm = false; v3dTopicsUi(); v3dRebuildKeep(); v3dToast('האזעקה הוצגה שוב לצורך הסימולציה'); }
+    if (!v3dSimStart(false)) return;
     V3D.seq = { t0:performance.now(), last:0, step:function(t, dt, now){ return v3dSimStep(dt, now); }, done:function(){ v3dSimStop(false); V3D.auto = true; } };
   }
   function v3dLoop(now){
@@ -18477,6 +18672,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (document.getElementById('v3d')) return;
     var ov = document.createElement('div'); ov.id = 'v3d'; ov.className = 'v3d'; ov.hidden = true; ov.setAttribute('dir', 'rtl'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'הדמיית תלת-ממד'); ov.setAttribute('data-html2canvas-ignore', 'true');
     ov.innerHTML = '<div class="v3d-top"><div class="v3d-title"><b>הדמיית תלת-ממד</b><small id="v3dSub"></small></div><div class="v3d-floors" id="v3dFloors"></div><button type="button" class="v3d-x" id="v3dClose" aria-label="סגירה">✕</button></div>' +
+      '<div class="v3d-topics" id="v3dTopics" role="group" aria-label="מה להציג"></div>' +
       '<div class="v3d-stage" id="v3dStage"><canvas class="v3d-ov" id="v3dOv" aria-hidden="true"></canvas><div class="v3d-load" id="v3dLoad"><span class="v3d-spin"></span>בונה את ההדמיה…</div><div class="v3d-tip" id="v3dTip" hidden></div><div class="v3d-legend" id="v3dLegend"></div><div class="v3d-toast" id="v3dToast" hidden></div><div class="v3d-note">הדמיה להמחשה · מסלולי הכבילה משוערים</div></div>' +
       '<div class="v3d-bar" id="v3dBar"><button type="button" data-a="intro">▶ הדגמה</button><button type="button" class="v3d-sim" data-a="sim">🚨 <span class="v3d-long">סימולציית </span>פריצה</button><button type="button" data-o="night">🌙 לילה</button><button type="button" class="v3d-more" data-a="more" aria-expanded="false">⚙ תצוגה</button>' +
         '<span class="v3d-opts"><button type="button" data-o="cover">כיסוי</button><button type="button" data-o="cables">כבילה</button><button type="button" data-o="low">קירות נמוכים</button><button type="button" data-o="furn">ריהוט</button><button type="button" data-o="labels">שמות</button></span>' +
@@ -18495,6 +18691,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (a === 'intro') v3dIntro(); else if (a === 'sim') v3dSimRun(); else if (a === 'shot') v3dShot(); else if (a === 'video') v3dRecord();
     });
     document.getElementById('v3dShX').onclick = function(){ document.getElementById('v3dShare').hidden = true; };
+    document.getElementById('v3dTopics').addEventListener('click', function(e){
+      var b = e.target.closest('.tp-chip'); if (!b || V3D.rec) return;
+      V3D.hide[b.dataset.cat] = !V3D.hide[b.dataset.cat]; v3dTopicsUi(); v3dRebuildKeep();
+    });
     window.addEventListener('resize', function(){ if (V3D.open) v3dResize(); });
   }
   function v3dFloorTabs(){
@@ -18513,10 +18713,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var narrow = window.matchMedia && window.matchMedia('(max-width:760px)').matches;
     document.getElementById('v3dBar').classList.toggle('opts-off', !!narrow); document.getElementById('v3dLegend').classList.toggle('open', !narrow);
     loadThree().then(function(T){
-      if (!V3D.r) {
+      if (!V3D.r && !v3dInitRenderer(T)) { load.innerHTML = 'המכשיר הזה לא תומך בתלת-ממד (WebGL). אפשר להשתמש בסקיצה להדפסה.'; return; }
+      var stg = document.getElementById('v3dStage'); stg.insertBefore(V3D.r.domElement, stg.firstChild);
+      V3D.sz = ''; v3dResize(); v3dFloorTabs(); v3dTopicsUi(); v3dLogo();
+      V3D.sph = { r:20, th:0.62, ph:0.95 }; v3dBuild(); V3D.sph.r = V3D.fit; V3D.sph.th = v3dTh0();
+      V3D.open = true; V3D.last = 0; V3D.frames = 0; V3D.ftime = 0; V3D.sel = -1;
+      load.hidden = true; v3dIntro(); V3D.raf = requestAnimationFrame(v3dLoop);
+      try { g1Track('3d', { k:state.kind, n:state.devices.length }); } catch(e) {}
+    }).catch(function(e){ try { console.error('3d', e); } catch(x) {} load.innerHTML = 'לא ניתן לטעון את מנוע התלת-ממד — נדרש חיבור לאינטרנט בפתיחה הראשונה. נסו שוב בעוד רגע.'; });
+  }
+  function v3dInitRenderer(T){
         var cv = document.createElement('canvas'); cv.className = 'v3d-cv';
         try { V3D.r = new T.WebGLRenderer({ canvas:cv, antialias:true, powerPreference:'high-performance' }); } catch(e) { V3D.r = null; }
-        if (!V3D.r) { load.innerHTML = 'המכשיר הזה לא תומך בתלת-ממד (WebGL). אפשר להשתמש בסקיצה להדפסה.'; return; }
+        if (!V3D.r) return false;
         V3D.dpr = Math.min(window.devicePixelRatio || 1, 2); V3D.r.setPixelRatio(V3D.dpr);
         V3D.r.shadowMap.enabled = true; V3D.r.shadowMap.type = T.PCFSoftShadowMap; V3D.r.shadowMap.autoUpdate = false;
         V3D.r.outputColorSpace = T.SRGBColorSpace; V3D.r.toneMapping = T.ACESFilmicToneMapping; V3D.r.toneMappingExposure = 1;
@@ -18527,15 +18736,81 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         V3D.scene.add(V3D.sun); V3D.scene.add(V3D.sun.target);
         v3dControls(cv);
         cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); cancelAnimationFrame(V3D.raf); });
-        cv.addEventListener('webglcontextrestored', function(){ V3D.envTex = null; V3D.tex = {}; V3D.mat = null; V3D.matx = null; V3D.geoCache = {}; V3D.geo = null; if (V3D.open) { v3dBuild(); V3D.raf = requestAnimationFrame(v3dLoop); } });
+        cv.addEventListener('webglcontextrestored', function(){ V3D.envTex = null; V3D.tex = {}; V3D.mat = null; V3D.matx = null; V3D.geoCache = {}; V3D.geo = null; V3D.stillCache = {}; if (V3D.open) { v3dBuild(); V3D.raf = requestAnimationFrame(v3dLoop); } });
+        return true;
+  }
+  /* topic chips in the live view: hide/show alarm, cameras, intercom… — the scene is rebuilt
+     without them (devices, coverage, cables, wireless rings and legend all follow) */
+  function v3dTopicsUi(){
+    var el = document.getElementById('v3dTopics'); if (!el) return; var tp = v3dTopicsPresent();
+    el.innerHTML = tp.length > 1 ? '<b>הצגה:</b>' + tp.map(function(t){ return '<button type="button" class="tp-chip" data-cat="' + t[0] + '" aria-pressed="' + !V3D.hide[t[0]] + '"><i style="background:' + t[2] + '"></i>' + t[1] + '</button>'; }).join('') : '';
+  }
+  function v3dRebuildKeep(){
+    if (!V3D.open || V3D.rec) return;
+    v3dSimStop(true); if (V3D.seq) { V3D.seq = null; V3D.buildK = null; }
+    var tg = V3D.tgt ? V3D.tgt.clone() : null, sp = { r:V3D.sph.r, th:V3D.sph.th, ph:V3D.sph.ph };
+    v3dBuild(); if (tg) V3D.tgt.copy(tg); V3D.sph = sp; v3dSelect(-1); V3D.quad = ''; v3dCamUpdate(); v3dWallsUpdate(true);
+  }
+  /* a still for the sketch sheet: the same scene as the live view, from a fixed, slightly tilted
+     "architect's" angle, framed tight to the plan, with category pins and the alarm zone numbers
+     (same numbers as the zone list). Rendered off-screen with the one shared renderer; the live
+     view's state is put back afterwards. Resolves a JPEG data URL, 'busy' when the live view is
+     open, or rejects ('gl' = no WebGL on this device). Cached per floor + plan + choices. */
+  function v3dStill(o){
+    var run = function(){ return loadThree().then(function(T){
+      if (V3D.open || V3D.rec) return 'busy';
+      if (!V3D.r && !v3dInitRenderer(T)) throw new Error('gl');
+      var key = JSON.stringify([o.floor, o.hide, !!o.cover, !!o.cables, state.rooms, state.devices, state.openings, state.fences, state.alarmWireless, state.kind]);
+      V3D.stillCache = V3D.stillCache || {}; if (V3D.stillCache[key]) return V3D.stillCache[key];
+      var save = { floor:V3D.floor, hide:V3D.hide, opts:Object.assign({}, V3D.opts), sph:Object.assign({}, V3D.sph), tgt:V3D.tgt ? V3D.tgt.clone() : null, aspect:V3D.cam.aspect };
+      var url = null, W = 1600, H = 1100, zp = null;
+      try {
+        try { zp = computeSystemPlan().alarm; } catch(e) {}
+        var zones = {}; if (zp && !(o.hide || {}).alarm) zp.zones.forEach(function(z){ zones[z.dev.id] = z.zone; });
+        V3D.still = { cv:document.createElement('canvas'), W:W, H:H, big:W / 1000, zones:zones };
+        V3D.floor = o.floor || 0; V3D.hide = o.hide || {}; V3D.sel = -1; V3D.buildK = null;
+        V3D.opts = { cables:o.cables !== false, cover:o.cover !== false, furn:true, low:true, labels:false, night:false };
+        V3D.r.setPixelRatio(1); V3D.r.setSize(W, H, false); V3D.cam.aspect = W / H; V3D.cam.updateProjectionMatrix();
+        V3D.sph = { r:20, th:0.3, ph:0.74 }; v3dBuild();
+        V3D.sph = { r:V3D.fit, th:0.3, ph:0.74 }; V3D.tgt.set(0, 0.5, 0);
+        var ext = v3dFrameTight(0.9);
+        var A = Math.max(1.0, Math.min(1.75, ext.w / Math.max(0.05, ext.h) * V3D.cam.aspect)); H = Math.round(W / A);
+        V3D.still.H = H; V3D.r.setSize(W, H, false); V3D.cam.aspect = W / H; V3D.cam.updateProjectionMatrix(); v3dFrameTight(0.9);
+        v3dCovSet('uTime', 0.35); v3dCovSet('uSel', -1); v3dCovSet('uFade', 1);
+        V3D.quad = ''; v3dWallsUpdate(true); v3dApplyOpts();
+        if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+        V3D.r.render(V3D.scene, V3D.cam); v3dOverlay(performance.now());
+        var out = document.createElement('canvas'); out.width = W; out.height = H; var x = out.getContext('2d');
+        x.drawImage(V3D.r.domElement, 0, 0, W, H); x.drawImage(V3D.still.cv, 0, 0, W, H);
+        x.save(); x.direction = 'rtl'; x.textAlign = 'right'; x.textBaseline = 'middle'; x.font = '600 21px Heebo, Rubik, Arial, sans-serif';
+        var nt = 'איור תלת-ממד להמחשה · מיקום סופי לפי ההתקנה בשטח'; var tw = x.measureText(nt).width;
+        x.fillStyle = 'rgba(255,255,255,.82)'; v3dRR(x, W - tw - 44, H - 50, tw + 28, 34, 17); x.fill(); x.fillStyle = '#3d4654'; x.fillText(nt, W - 30, H - 33); x.restore();
+        url = out.toDataURL('image/jpeg', 0.9);
+        var ks = Object.keys(V3D.stillCache); if (ks.length > 10) delete V3D.stillCache[ks[0]];
+        V3D.stillCache[key] = url;
+      } finally {
+        V3D.still = null;
+        if (V3D.root) { V3D.scene.remove(V3D.root); v3dDispose(V3D.root); (V3D.flows || []).forEach(function(t){ t.dispose(); }); V3D.root = null; V3D.G = null; V3D.devs = []; V3D.flows = []; V3D.wallMesh = null; V3D.cov = []; V3D.covMat = null; V3D.volMat = null; V3D.covLine = null; }
+        V3D.floor = save.floor; V3D.hide = save.hide; V3D.opts = save.opts; V3D.sph = save.sph; V3D.tgt = save.tgt; V3D.quad = ''; V3D.sel = -1;
+        V3D.cam.aspect = save.aspect || 1; V3D.cam.updateProjectionMatrix(); V3D.r.setPixelRatio(V3D.dpr || 1); V3D.sz = '';
       }
-      var stg = document.getElementById('v3dStage'); stg.insertBefore(V3D.r.domElement, stg.firstChild);
-      V3D.sz = ''; v3dResize(); v3dFloorTabs(); v3dLogo();
-      V3D.sph = { r:20, th:0.62, ph:0.95 }; v3dBuild(); V3D.sph.r = V3D.fit; V3D.sph.th = v3dTh0();
-      V3D.open = true; V3D.last = 0; V3D.frames = 0; V3D.ftime = 0; V3D.sel = -1;
-      load.hidden = true; v3dIntro(); V3D.raf = requestAnimationFrame(v3dLoop);
-      try { g1Track('3d', { k:state.kind, n:state.devices.length }); } catch(e) {}
-    }).catch(function(e){ try { console.error('3d', e); } catch(x) {} load.innerHTML = 'לא ניתן לטעון את מנוע התלת-ממד — נדרש חיבור לאינטרנט בפתיחה הראשונה. נסו שוב בעוד רגע.'; });
+      return url;
+    }); };
+    var p = (v3dStill.q || Promise.resolve()).then(run, run); v3dStill.q = p.catch(function(){}); return p;
+  }
+  // move/zoom the camera so the plan's box (floor to wall top) fills `margin` of the frame; returns the
+  // box's extent in NDC (w, h) at the final distance
+  function v3dFrameTight(margin){
+    var M = V3D.M, c = V3D.cam, a = v3dW(M, M.bb.x1, M.bb.y1), b = v3dW(M, M.bb.x2, M.bb.y2), pts = [], ext = { w:2, h:2 };
+    [a[0], b[0]].forEach(function(px){ [a[1], b[1]].forEach(function(pz){ [0, V3D_H].forEach(function(py){ pts.push(new THREE.Vector3(px, py, pz)); }); }); });
+    for (var it = 0; it < 5; it++) {
+      v3dCamUpdate(); c.updateMatrixWorld(true);
+      var x1 = 9, x2 = -9, y1 = 9, y2 = -9; pts.forEach(function(p){ var v = p.clone().project(c); x1 = Math.min(x1, v.x); x2 = Math.max(x2, v.x); y1 = Math.min(y1, v.y); y2 = Math.max(y2, v.y); });
+      var cx = (x1 + x2) / 2, cy = (y1 + y2) / 2, tz = V3D.tgt.clone().project(c).z, sh = new THREE.Vector3(cx, cy, tz).unproject(c).sub(V3D.tgt);
+      V3D.tgt.add(sh); ext = { w:x2 - x1, h:y2 - y1 };
+      V3D.sph.r *= Math.max(ext.w / 2, ext.h / 2) / margin;
+    }
+    v3dCamUpdate(); return ext;
   }
   function v3dClose(){
     if (V3D.rec) return;
@@ -18580,7 +18855,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     rec.onstop = function(){ var type = (rec.mimeType || mime || 'video/webm').split(';')[0], blob = new Blob(chunks, { type:type }); v3dRecEnd();
       var mp4 = /mp4/.test(type); v3dOffer(blob, 'הדמיה-' + (state.quoteNumber || fileStamp()) + (mp4 ? '.mp4' : '.webm'), type, 'הסרטון מוכן', mp4 ? 'סרטון קצר של המערכת — אפשר לשלוח ללקוח בוואטסאפ.' : 'המכשיר יצר קובץ WEBM — באייפון של הלקוח הוא עלול לא להיפתח. מומלץ לשלוח גם תמונה.'); };
     document.getElementById('v3d').classList.add('rec'); V3D.rec = { rec:rec }; V3D.recT = 0;
-    var th0 = V3D.sph.th, simOk = !!(V3D.M && v3dSimPlan(V3D.M)), phase = 0, t1 = 0, orbitT = 6.5, bar = document.querySelector('#v3d .v3d-bar');
+    var th0 = V3D.sph.th, simOk = !V3D.hide.alarm && !!(V3D.M && v3dSimPlan(V3D.M)), phase = 0, t1 = 0, orbitT = 6.5, bar = document.querySelector('#v3d .v3d-bar');
     var total = 3.2 + orbitT + (simOk ? 13 : 0) + 2.2;
     V3D.seq = { rt0:0, step:function(t, dt, now){
       if (bar) bar.setAttribute('data-p', Math.min(99, Math.round(t / total * 100)) + '%');
@@ -18607,7 +18882,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.getElementById('btn3D').onclick = function(){ open3D(); };
   document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
   ['btnSend', 'btnSketch'].forEach(function(id){ var b = document.getElementById(id); if (b) b.addEventListener('click', v3dPreload); });
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, open:open3D, close:v3dClose, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
   if (CONSUMER) initG1Consumer(); else { try { brandApply(); } catch(e) {} initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
 
