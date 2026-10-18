@@ -2555,6 +2555,25 @@
   }
   body.pdf-export .sketch-plan-wrap img.sk-3d{ width:100%; height:auto; max-height:1050px; object-fit:contain; box-shadow:none; }
   .v3d-cv{ position:absolute; inset:0; width:100% !important; height:100% !important; touch-action:none; display:block; }
+  .pv-seg{ display:inline-flex; flex:none; border:1px solid var(--paper-line, #d9dee5); border-radius:10px; overflow:hidden; }
+  .pv-seg .btn{ border:0 !important; border-radius:0 !important; min-width:44px; font-weight:800; }
+  .pv-seg .btn[aria-pressed=true]{ background:var(--accent) !important; color:#fff !important; }
+  #plan3dHost{ position:absolute; left:0; right:0; top:0; height:100%; z-index:5; display:none; background:#0f1b2b; overflow:hidden; }
+  body.plan3d #plan3dHost{ display:block; }
+  body.plan3d .canvas-stage{ visibility:hidden; }
+  body.plan3d .zoom-group, body.plan3d .canvas-quick, body.plan3d #btnFullscreen, body.plan3d .recs-clear-chip{ display:none !important; }
+  .v3d.embed{ position:absolute; inset:0; z-index:1; }
+  .v3d.embed .v3d-top, .v3d.embed .v3d-tip, .v3d.embed .v3d-bar [data-a=intro], .v3d.embed .v3d-bar .v3d-act{ display:none !important; }
+  .v3d:not(.embed) .v3d-bar [data-a=full]{ display:none; }
+  .v3d.embed .v3d-bar{ padding:6px 10px; gap:5px; }
+  .v3d.embed .v3d-bar button{ padding:5px 10px; font-size:12.5px; }
+  .v3d.embed .v3d-cv{ cursor:grab; }
+  body.p3-armed .v3d.embed .v3d-cv{ cursor:crosshair; }
+  .p3-sel{ position:absolute; z-index:3; left:50%; transform:translateX(-50%); bottom:62px; display:flex; align-items:center; gap:6px; background:#fff; color:#14202e; border-radius:14px; padding:6px 8px 6px 12px; box-shadow:0 10px 30px rgba(0,0,0,.35); max-width:calc(100% - 20px); }
+  .p3-sel b{ font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  .p3-sel button{ border:1px solid #d8dee6; background:#f5f7fa; color:#14202e; border-radius:10px; min-height:34px; min-width:38px; padding:4px 9px; font:700 13px var(--font-body); cursor:pointer; flex:none; }
+  .p3-sel button.warn{ color:#c0392b; }
+  .p3-sel[hidden]{ display:none; }
   .v3d-load{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:12px; color:#cfe0f2; font-weight:700; text-align:center; padding:20px; z-index:2; background:#0f1b2b; }
   .v3d-load[hidden]{ display:none; }
   .v3d-spin{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:#4cc9f0; animation:v3dspin 1s linear infinite; }
@@ -2985,6 +3004,7 @@
           <button type="button" class="btn btn-ghost btn-sm tb-undo" id="btnUndo" disabled title="חזרה צעד אחורה (Ctrl+Z)" aria-label="חזור — צעד אחורה">↶<span class="tb-lbl"> חזור</span></button>
           <button type="button" class="btn btn-ghost btn-sm tb-undo" id="btnRedo" hidden title="קדימה — ביטול החזרה (Ctrl+Y)" aria-label="קדימה">↷</button>
           <div class="tb-spacer"></div>
+          <div class="pv-seg" id="planViewSeg" role="group" aria-label="תצוגת השרטוט"><button type="button" class="btn btn-ghost btn-sm" data-pv="2d" aria-pressed="true" title="שרטוט דו-ממדי — עריכת חדרים, פתחים וגדרות">2D</button><button type="button" class="btn btn-ghost btn-sm" data-pv="3d" aria-pressed="false" title="עבודה בתלת-ממד — הצבה והזזה של אביזרים ישירות במודל">🧊 3D</button></div>
           <div class="toolbar-group tb-view" role="group" aria-label="תצוגה">
             <div class="zoom-group">
               <button class="btn btn-ghost btn-sm" id="zoomOut" aria-label="הקטן תצוגה">－</button>
@@ -3009,7 +3029,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 146</div>
+              <div class="app-version" id="appVersion">גרסה 147</div>
             </div>
           </div>
         </div>
@@ -9423,6 +9443,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function up(){
       window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
       flushScheduledRenderLive();
+      devDragDrop(d, startX, startY);
+    }
+    trackGesture(ev, move, up);
+  }
+  function devDragDrop(d, startX, startY){
+    {
       // Dragged into a corner (or onto a building corner) → seat it there and re-aim along the
       // corner's bisector. Only for a real drag into a corner — a plain tap, or dropping it in
       // the middle of a wall/room, leaves the agent's own position and rotation alone.
@@ -9445,7 +9471,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
       render();
     }
-    trackGesture(ev, move, up);
   }
 
   function startRotateDevice(ev, d){
@@ -11094,8 +11119,43 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     canvasToastTimer = setTimeout(function(){ t.hidden = true; }, 3000);
   }
 
+  // one stair block per floor, at the SAME spot on every floor (inside a room on each floor, against
+  // a wall, clear of doors); when no spot is common to all floors, each floor gets its own
+  function stairsSpot(floors, SW, SH){
+    var wpx0 = m2p(SW), hpx0 = m2p(SH), inset = m2p(0.08), PREF = /סלון|מבוא|מסדרון|חלל מרכזי|חלל מרתף|לובי|כניסה/, best = null, f0 = floors[0];
+    var walled = function(f){ return state.rooms.filter(function(r){ return (r.floor || 0) === f && r.type !== 'yard' && !isStairsRoom(r); }); };
+    var roomAt = function(f, x, y, w, h){ var off = (f - f0) * FLOOR_Y_STRIDE; return walled(f).filter(function(r){ return x >= r.x - 0.5 && y + off >= r.y - 0.5 && x + w <= r.x + m2p(r.w) + 0.5 && y + off + h <= r.y + m2p(r.h) + 0.5; })[0] || null; };
+    var clear = function(f, x, y, w, h){ var off = (f - f0) * FLOOR_Y_STRIDE, pad = m2p(0.7); return !state.openings.some(function(o){ return (o.floor || 0) === f && OPENING_DEFS[o.type] && OPENING_DEFS[o.type].kind === 'door' && o.x > x - pad && o.x < x + w + pad && o.y > y + off - pad && o.y < y + off + h + pad; }); };
+    walled(f0).forEach(function(r){
+      var rw = m2p(r.w), rh = m2p(r.h);
+      [[wpx0, hpx0], [hpx0, wpx0]].forEach(function(dm){
+        var w = dm[0], h = dm[1]; if (w > rw - 2 * inset || h > rh - 2 * inset) return;
+        var c = [];
+        for (var k = 0; k <= 6; k++) { var xx = r.x + inset + (rw - 2 * inset - w) * k / 6, yy = r.y + inset + (rh - 2 * inset - h) * k / 6; c.push([xx, r.y + inset], [xx, r.y + rh - inset - h], [r.x + inset, yy], [r.x + rw - inset - w, yy]); }
+        c.forEach(function(p){
+          var sc = (PREF.test(r.label || '') ? 10 : 0) - r.w * r.h * 0.02, ok = true;
+          floors.forEach(function(f){ if (!ok) return; var q = roomAt(f, p[0], p[1], w, h); if (!q || !clear(f, p[0], p[1], w, h)) ok = false; else if (f !== f0 && PREF.test(q.label || '')) sc += 3; });
+          if (ok && (!best || sc > best.sc)) best = { x:p[0], y:p[1], w:w, h:h, sc:sc };
+        });
+      });
+    });
+    return best;
+  }
+  function addAutoStairs(){
+    var n = state.floorCount || 1; if (state.kind !== 'house' || n < 2) return;
+    var all = []; for (var f = 0; f < n; f++) all.push(f);
+    var add = function(f, b, f0){ addRoom(withFloor(f, { x:b.x, y:b.y - f0 * FLOOR_Y_STRIDE, w:Math.round(p2m(b.w) * 10) / 10, h:Math.round(p2m(b.h) * 10) / 10, label:'גרם מדרגות', type:'room' })); };
+    var b = stairsSpot(all, 1.1, 3.0);
+    if (b) { all.forEach(function(f){ add(f, b, 0); }); return; }
+    all.forEach(function(f){ var bb = stairsSpot([f], 1.1, 3.0); if (bb) add(f, bb, f); });
+  }
   function stairsPlacement(w, h){
     var f = state.activeFloor || 0, best = null;
+    // another floor already has stairs → the same spot here, when it fits inside a room
+    var other = state.rooms.filter(function(r){ return isStairsRoom(r) && (r.floor || 0) !== f; })[0];
+    if (other) { var oy = other.y - (other.floor || 0) * FLOOR_Y_STRIDE + f * FLOOR_Y_STRIDE, ow = m2p(other.w), oh = m2p(other.h);
+      var host = state.rooms.filter(function(r){ return (r.floor || 0) === f && r.type !== 'yard' && !isStairsRoom(r) && other.x >= r.x - 0.5 && oy >= r.y - 0.5 && other.x + ow <= r.x + m2p(r.w) + 0.5 && oy + oh <= r.y + m2p(r.h) + 0.5; })[0];
+      if (host) return { ok:true, x:other.x, y:oy, w:other.w, h:other.h, host:host }; }
     state.rooms.forEach(function(r){ if ((r.floor || 0) !== f || r.type === 'yard' || isStairsRoom(r)) return; var a = r.w * r.h; if (r.w >= w + 0.4 && r.h >= h + 0.4 && (!best || a > best.w * best.h)) best = r; });
     if (!best) return null;
     var x = best.x + m2p(0.15), y = best.y + m2p(0.15); // top-left corner: the room's own name sits top-right
@@ -11343,7 +11403,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (armedItemEl) armedItemEl.classList.remove('armed', 'repeat');
     var hadType = armedType, placedCount = armedCount;
     armedType = null; armedItemEl = null; armedCount = 0;
-    canvasHint.hidden = true;
+    canvasHint.hidden = true; document.body.classList.remove('p3-armed');
     if (hadType && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (typeof mSyncNav === 'function') mSyncNav();
@@ -11360,6 +11420,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (isMobileLayout()) closeMobilePanels();
     if (typeof mSyncNav === 'function') mSyncNav();
+    document.body.classList.toggle('p3-armed', !!(typeof P3 !== 'undefined' && P3.on));
   }
   // Default rotation for a newly-placed interior detector/camera: aim it from its drop point
   // toward the far corner of the room it landed in — the same "corner-mounted, diagonal
@@ -12420,6 +12481,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (kind === 'house' && hasBasement) {
       buildBasementFloor(aboveGroundFloorCount);
     }
+    try { addAutoStairs(); } catch(e) {}
 
     syncKindSelect();
     render();
@@ -17949,7 +18011,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
   }
   function v3dStairs(parent, cx, cz, w, d){
-    var along = w >= d, L = along ? w : d, N = Math.max(4, Math.round(L / 0.28)), sm = v3dFloorMat('stairs'), cap = v3dMats().cap, step = L / N;
+    var along = w >= d, L = along ? w : d, N = Math.max(4, Math.round(L / 0.28)), sm = v3dMatMemo('stairsMat', function(){ return v3dStd({ map:v3dFloorTex(V3D_KIND_TEX.stairs || 'wood'), roughness:0.6 }, 0.5); }), cap = v3dMats().cap, step = L / N;
     var g = new THREE.Group(); g.userData.stairs = 1; parent.add(g);
     for (var i = 0; i < N; i++) { var sh = (i + 1) * (V3D_H - 0.12) / N, off = -L / 2 + (i + 0.5) * step;
       var m = v3dBox(g, sm, cx + (along ? off : 0), 0, cz + (along ? 0 : -off), along ? step : w, sh, along ? d : step, true);
@@ -18417,6 +18479,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dSelect(i){
     V3D.sel = i; v3dCovSet('uSel', i); var tip = document.getElementById('v3dTip');
     V3D.devs.forEach(function(g, j){ if (g.userData.glow) g.userData.glow.visible = (j === i) || (V3D.opts.night && !V3D.sim); });
+    if (V3D.embed) { tip.hidden = true; p3SelBar(); return; }
     if (i < 0) { tip.hidden = true; if (V3D.tgt && V3D.tgt.length() > 0.8 && !V3D.sim) V3D.focus = { t0:performance.now(), dur:700, ft:V3D.tgt.clone(), fr:V3D.sph.r, tt:new THREE.Vector3(0, 0.5, 0), tr:V3D.fit }; return; }
     var g = V3D.devs[i], d = g.userData.d, def = g.userData.def, mnt = g.userData.mnt, room = (typeof roomOfDevice === 'function' && roomOfDevice(d)) || null;
     var guide = (typeof DEVICE_GUIDE !== 'undefined' && DEVICE_GUIDE[d.type]) || null;
@@ -18426,6 +18489,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     V3D.auto = false; V3D.focus = { t0:performance.now(), dur:700, ft:V3D.tgt.clone(), fr:V3D.sph.r, tt:new THREE.Vector3(g.position.x, Math.min(1.2, g.position.y), g.position.z), tr:Math.max(5, Math.min(V3D.sph.r, V3D.fit * 0.62)) };
   }
   function v3dPick(e){
+    if (V3D.embed && p3Tap(e)) return;
     var cv = V3D.r.domElement, rc = cv.getBoundingClientRect(), mx = e.clientX - rc.left, my = e.clientY - rc.top, best = -1, bd = 22, bh = null;
     (V3D.pinHits || []).forEach(function(h){ var dd = Math.hypot(h.x - mx, h.y - my); if (dd < bd) { bd = dd; best = h.i; bh = h; } });
     if (bh && bh.more.length && V3D.sel !== bh.i) {   // a grouped pin: zoom into the group
@@ -18613,7 +18677,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (V3D.rec) V3D.recT += dt;
     if (V3D.seq) { var tt = V3D.rec ? V3D.recT - (V3D.seq.rt0 || 0) : (now - V3D.seq.t0) / 1000; if (V3D.seq.step(tt, dt, now) === false) { var sq = V3D.seq; V3D.seq = null; if (sq.done) sq.done(); } }
     else if (V3D.focus) { var F = V3D.focus, k = v3dEase(v3dCl((now - F.t0) / F.dur)); V3D.tgt.copy(F.ft).lerp(F.tt, k); V3D.sph.r = F.fr + (F.tr - F.fr) * k; if (k >= 1) V3D.focus = null; }
-    else if (V3D.auto) V3D.sph.th += dt * 0.1;
+    else if (V3D.auto && !V3D.embed) V3D.sph.th += dt * 0.1;
     v3dCamUpdate();
     V3D.flows.forEach(function(t){ t.offset.x -= dt * 0.9; });
     if (V3D.water) V3D.water.offset.x += dt * 0.01;
@@ -18639,10 +18703,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dControls(cv){
     var P = V3D.ptrs, start = null, pinch = null;
     var stopAuto = function(){ V3D.auto = false; V3D.focus = null; if (V3D.seq && !V3D.sim && !V3D.rec) { V3D.seq.step(99, 0, performance.now()); V3D.seq = null; } };
-    cv.addEventListener('pointerdown', function(e){ cv.setPointerCapture(e.pointerId); P[e.pointerId] = { x:e.clientX, y:e.clientY, b:e.button, sh:e.shiftKey }; start = { x:e.clientX, y:e.clientY, t:performance.now(), moved:false }; pinch = null; });
+    cv.addEventListener('pointerdown', function(e){ cv.setPointerCapture(e.pointerId); P[e.pointerId] = { x:e.clientX, y:e.clientY, b:e.button, sh:e.shiftKey }; start = { x:e.clientX, y:e.clientY, t:performance.now(), moved:false }; pinch = null;
+      if (Object.keys(P).length === 1) { P3.drag = null; if (V3D.embed && !armedType && !V3D.sim && !V3D.rec && e.button === 0 && !e.shiftKey) { var hd = p3DevAt(e); if (hd && !hd.more.length) { var gd = V3D.devs[hd.i]; P3.drag = { g:gd, d:gd.userData.d, sx:gd.userData.d.x, sy:gd.userData.d.y, moved:false }; } } }
+      else if (P3.drag) p3DragCancel(); });
     cv.addEventListener('pointermove', function(e){
       var p = P[e.pointerId]; if (!p || V3D.rec) return; var ids = Object.keys(P);
       if (ids.length === 1) {
+        if (P3.drag) { if (start && !start.moved && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) { start.moved = true; stopAuto(); p3DragStart(e); } if (P3.drag && P3.drag.moved) p3DragMove(e); p.x = e.clientX; p.y = e.clientY; return; }
         var dx = e.clientX - p.x, dy = e.clientY - p.y;
         if (start && !start.moved && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 6) { start.moved = true; stopAuto(); }
         if (start && start.moved) { if (p.b === 2 || p.sh) v3dPan(dx, dy); else { V3D.sph.th -= dx * 0.008; V3D.sph.ph = Math.max(0.12, Math.min(1.42, V3D.sph.ph - dy * 0.006)); } }
@@ -18656,7 +18723,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       }
       p.x = e.clientX; p.y = e.clientY;
     });
-    var up = function(e){ var was = P[e.pointerId]; delete P[e.pointerId]; if (!Object.keys(P).length) pinch = null;
+    var up = function(e){ if (P3.drag) { if (P3.drag.moved) { delete P[e.pointerId]; pinch = null; p3DragEnd(); return; } P3.drag = null; }
+      var was = P[e.pointerId]; delete P[e.pointerId]; if (!Object.keys(P).length) pinch = null;
       if (was && start && !start.moved && performance.now() - start.t < 400 && !V3D.rec) v3dPick(e); };
     cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
     cv.addEventListener('wheel', function(e){ e.preventDefault(); if (V3D.rec) return; stopAuto(); V3D.sph.r = Math.max(2.5, Math.min(V3D.fit * 2.2, V3D.sph.r * (e.deltaY > 0 ? 1.1 : 0.9))); }, { passive:false });
@@ -18674,7 +18742,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     ov.innerHTML = '<div class="v3d-top"><div class="v3d-title"><b>הדמיית תלת-ממד</b><small id="v3dSub"></small></div><div class="v3d-floors" id="v3dFloors"></div><button type="button" class="v3d-x" id="v3dClose" aria-label="סגירה">✕</button></div>' +
       '<div class="v3d-topics" id="v3dTopics" role="group" aria-label="מה להציג"></div>' +
       '<div class="v3d-stage" id="v3dStage"><canvas class="v3d-ov" id="v3dOv" aria-hidden="true"></canvas><div class="v3d-load" id="v3dLoad"><span class="v3d-spin"></span>בונה את ההדמיה…</div><div class="v3d-tip" id="v3dTip" hidden></div><div class="v3d-legend" id="v3dLegend"></div><div class="v3d-toast" id="v3dToast" hidden></div><div class="v3d-note">הדמיה להמחשה · מסלולי הכבילה משוערים</div></div>' +
-      '<div class="v3d-bar" id="v3dBar"><button type="button" data-a="intro">▶ הדגמה</button><button type="button" class="v3d-sim" data-a="sim">🚨 <span class="v3d-long">סימולציית </span>פריצה</button><button type="button" data-o="night">🌙 לילה</button><button type="button" class="v3d-more" data-a="more" aria-expanded="false">⚙ תצוגה</button>' +
+      '<div class="v3d-bar" id="v3dBar"><button type="button" data-a="full">⛶ מסך מלא</button><button type="button" data-a="intro">▶ הדגמה</button><button type="button" class="v3d-sim" data-a="sim">🚨 <span class="v3d-long">סימולציית </span>פריצה</button><button type="button" data-o="night">🌙 לילה</button><button type="button" class="v3d-more" data-a="more" aria-expanded="false">⚙ תצוגה</button>' +
         '<span class="v3d-opts"><button type="button" data-o="cover">כיסוי</button><button type="button" data-o="cables">כבילה</button><button type="button" data-o="low">קירות נמוכים</button><button type="button" data-o="furn">ריהוט</button><button type="button" data-o="labels">שמות</button></span>' +
         '<span class="sp"></span><button type="button" class="v3d-act" data-a="shot">📷 תמונה</button><button type="button" class="v3d-act pri" data-a="video">🎬 סרטון ללקוח</button></div>' +
       '<div class="v3d-share" id="v3dShare" hidden><div class="in"><b id="v3dShT">הסרטון מוכן</b><p id="v3dShP"></p><div class="row"><button type="button" class="pri" id="v3dShGo">שליחה / שיתוף</button><button type="button" id="v3dShDl">שמירה במכשיר</button><button type="button" id="v3dShX">סגירה</button></div></div></div>';
@@ -18683,11 +18751,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('v3dLegend').addEventListener('click', function(e){ if (e.target.closest('.lg-h')) this.classList.toggle('open'); });
     if (!(window.matchMedia && window.matchMedia('(max-width:760px)').matches)) document.getElementById('v3dLegend').classList.add('open');
     document.getElementById('v3dClose').onclick = v3dClose;
-    ov.addEventListener('keydown', function(e){ if (e.key === 'Escape') v3dClose(); });
+    ov.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !V3D.embed) v3dClose(); });
     document.getElementById('v3dBar').addEventListener('click', function(e){
       var b = e.target.closest('button'); if (!b || V3D.rec) return;
       if (b.dataset.o) { if (V3D.sim && b.dataset.o === 'night') return; V3D.opts[b.dataset.o] = !V3D.opts[b.dataset.o]; v3dApplyOpts(); v3dLegend(); return; }
       var a = b.dataset.a; if (a === 'more') { var on = !document.getElementById('v3dBar').classList.toggle('opts-off'); b.setAttribute('aria-expanded', String(on)); return; }
+      if (a === 'full') { p3Embed(false); return; }
       if (a === 'intro') v3dIntro(); else if (a === 'sim') v3dSimRun(); else if (a === 'shot') v3dShot(); else if (a === 'video') v3dRecord();
     });
     document.getElementById('v3dShX').onclick = function(){ document.getElementById('v3dShare').hidden = true; };
@@ -18707,18 +18776,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!state.rooms.some(function(r){ return r.type !== 'yard'; })) { try { showCanvasToast('קודם משרטטים את החדרים — ההדמיה נבנית מהשרטוט', true); } catch(e) {} return; }
     v3dEnsureUi();
     var ov = document.getElementById('v3d'), load = document.getElementById('v3dLoad');
-    ov.hidden = false; document.body.classList.add('v3d-on'); load.hidden = false; load.innerHTML = '<span class="v3d-spin"></span>' + (window.THREE ? 'בונה את ההדמיה…' : 'טוען את מנוע התלת-ממד…');
+    ov.hidden = false; if (!V3D.embed) document.body.classList.add('v3d-on'); load.hidden = false; load.innerHTML = '<span class="v3d-spin"></span>' + (window.THREE ? 'בונה את ההדמיה…' : 'טוען את מנוע התלת-ממד…');
     document.getElementById('v3dSub').textContent = [document.getElementById('fCustomer').value, document.getElementById('fAddress').value].filter(Boolean).join(' · ');
     var fl = v3dFloors(); V3D.floor = fl.indexOf(state.activeFloor || 0) > -1 ? (state.activeFloor || 0) : fl[0];
     var narrow = window.matchMedia && window.matchMedia('(max-width:760px)').matches;
-    document.getElementById('v3dBar').classList.toggle('opts-off', !!narrow); document.getElementById('v3dLegend').classList.toggle('open', !narrow);
+    document.getElementById('v3dBar').classList.toggle('opts-off', !!narrow || !!V3D.embed); document.getElementById('v3dLegend').classList.toggle('open', !narrow && !V3D.embed);
     loadThree().then(function(T){
+      if (ov.hidden) return;
       if (!V3D.r && !v3dInitRenderer(T)) { load.innerHTML = 'המכשיר הזה לא תומך בתלת-ממד (WebGL). אפשר להשתמש בסקיצה להדפסה.'; return; }
       var stg = document.getElementById('v3dStage'); stg.insertBefore(V3D.r.domElement, stg.firstChild);
       V3D.sz = ''; v3dResize(); v3dFloorTabs(); v3dTopicsUi(); v3dLogo();
       V3D.sph = { r:20, th:0.62, ph:0.95 }; v3dBuild(); V3D.sph.r = V3D.fit; V3D.sph.th = v3dTh0();
       V3D.open = true; V3D.last = 0; V3D.frames = 0; V3D.ftime = 0; V3D.sel = -1;
-      load.hidden = true; v3dIntro(); V3D.raf = requestAnimationFrame(v3dLoop);
+      load.hidden = true; if (!V3D.embed) v3dIntro(); else if (!P3.intro) { P3.intro = true; v3dIntro(); } if (V3D.embed) { P3.sig = p3Sig(); p3Highlight(); p3Hint(); }
+      cancelAnimationFrame(V3D.raf); V3D.raf = requestAnimationFrame(v3dLoop);
       try { g1Track('3d', { k:state.kind, n:state.devices.length }); } catch(e) {}
     }).catch(function(e){ try { console.error('3d', e); } catch(x) {} load.innerHTML = 'לא ניתן לטעון את מנוע התלת-ממד — נדרש חיבור לאינטרנט בפתיחה הראשונה. נסו שוב בעוד רגע.'; });
   }
@@ -18741,6 +18812,124 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   /* topic chips in the live view: hide/show alarm, cameras, intercom… — the scene is rebuilt
      without them (devices, coverage, cables, wireless rings and legend all follow) */
+  /* ======================= 3D work mode (שרטוט העבודה בתלת-ממד) =======================
+     The 2D/3D switch in the canvas toolbar puts the same 3D scene in place of the plan. The
+     agent places devices by arming them in the list and tapping the floor (the same placement
+     rules as on the 2D plan), selects by tapping, drags a device to move it (dropped with the
+     same corner/wall seating as in 2D), rotates/deletes from the small bar. Every change goes
+     through state + render(), so undo, the quote and the 2D plan stay in step; the scene is
+     rebuilt (camera kept) whenever the plan changes. Rooms, walls and fences are edited in 2D. */
+  var P3 = { on:false, sig:'', q:0, intro:false, drag:null, hinted:false };
+  function p3Host(){ var h = document.getElementById('plan3dHost'); if (!h) { h = document.createElement('div'); h.id = 'plan3dHost'; document.querySelector('.canvas-wrap').appendChild(h); } return h; }
+  function p3Place(){ var cs = document.getElementById('canvasScroll'), h = p3Host(); if (!cs) return; h.style.top = cs.offsetTop + 'px'; h.style.height = cs.offsetHeight + 'px'; }
+  function p3Sig(){ return JSON.stringify([state.rooms, state.devices, state.openings, state.fences, state.alarmWireless, state.kind, state.activeFloor || 0]); }
+  function p3SyncSeg(){ Array.prototype.forEach.call(document.querySelectorAll('#planViewSeg [data-pv]'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.pv === '3d') === P3.on)); }); }
+  function p3Embed(on){
+    var v = document.getElementById('v3d'); if (!v) return;
+    V3D.embed = !!on; v.classList.toggle('embed', !!on); v.setAttribute('aria-modal', on ? 'false' : 'true');
+    if (on) { p3Host().appendChild(v); document.body.classList.remove('v3d-on'); v3dSelect(V3D.sel); } else { document.body.appendChild(v); document.body.classList.add('v3d-on'); var sb = document.getElementById('p3Sel'); if (sb) sb.hidden = true; }
+    V3D.sz = ''; if (V3D.r && V3D.open) { v3dResize(); v3dFloorTabs(); }
+  }
+  function setPlanView(m){
+    var want = m === '3d';
+    if (want === P3.on) { p3SyncSeg(); return; }
+    if (want) {
+      if (CONSUMER) return;
+      if (!state.rooms.some(function(r){ return r.type !== 'yard'; })) { showCanvasToast('קודם משרטטים את החדרים — התלת-ממד נבנה מהשרטוט', true); p3SyncSeg(); return; }
+      if (typeof setDrawMode === 'function') setDrawMode(false); if (typeof setFenceDrawMode === 'function') setFenceDrawMode(false);
+      P3.on = true; document.body.classList.add('plan3d'); p3Place();
+      v3dEnsureUi(); if (V3D.open) { V3D.embed = true; v3dClose0(); } p3Embed(true); open3D();
+    } else {
+      if (V3D.rec) { p3SyncSeg(); return; }
+      P3.on = false; P3.drag = null; v3dClose0();
+      var v = document.getElementById('v3d'); if (v) { v.classList.remove('embed'); document.body.appendChild(v); }
+      V3D.embed = false; document.body.classList.remove('plan3d', 'v3d-on', 'p3-armed'); var sb = document.getElementById('p3Sel'); if (sb) sb.hidden = true;
+      render();
+    }
+    try { localStorage.setItem('g1sg_planview', P3.on ? '3d' : '2d'); } catch(e) {}
+    p3SyncSeg();
+  }
+  function v3dClose0(){ var keep = P3.on; P3.on = false; try { v3dClose(); } finally { P3.on = keep; } }
+  function p3Hint(){ if (P3.hinted) return; P3.hinted = true; setTimeout(function(){ if (P3.on) v3dToast('בוחרים אביזר ברשימה ומקישים על הרצפה · גוררים אביזר כדי להזיז · חדרים וקירות עורכים ב-2D'); }, 3600); }
+  function p3Sync(){
+    document.body.classList.toggle('p3-armed', !!(P3.on && armedType));
+    if (!P3.on || !V3D.open || !V3D.embed || P3.q) return;
+    P3.q = requestAnimationFrame(function(){ P3.q = 0;
+      if (!P3.on || !V3D.open || !V3D.embed || V3D.rec || P3.drag || !V3D.M) return;
+      var sg = p3Sig();
+      if (sg !== P3.sig) {
+        P3.sig = sg;
+        if (!state.rooms.some(function(r){ return r.type !== 'yard'; })) { setPlanView('2d'); return; }
+        var af = state.activeFloor || 0, oldR = V3D.fitR || 1;
+        if (V3D.floor !== af) { V3D.floor = af; v3dSimStop(true); V3D.seq = null; V3D.buildK = null; v3dBuild(); V3D.sph.r = V3D.fit; v3dCamUpdate(); }
+        else { v3dRebuildKeep(); if (Math.abs(V3D.fitR - oldR) / oldR > 0.2) { V3D.tgt.set(0, 0.5, 0); V3D.sph.r = V3D.fit; v3dCamUpdate(); } }
+        v3dTopicsUi();
+      }
+      p3Highlight();
+    });
+  }
+  function p3Highlight(){ var id = selected && selected.kind === 'device' ? selected.id : null, i = -1; V3D.devs.forEach(function(g, j){ if (g.userData.d.id === id) i = j; }); v3dSelect(i); }
+  function p3SelBar(){
+    var host = p3Host(), el = document.getElementById('p3Sel');
+    if (!el) { el = document.createElement('div'); el.id = 'p3Sel'; el.className = 'p3-sel'; el.hidden = true; host.appendChild(el);
+      ['pointerdown', 'wheel'].forEach(function(n){ el.addEventListener(n, function(e){ e.stopPropagation(); }); });
+      el.addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b || !selected) return; var d = findById('device', selected.id); if (!d) return;
+        if (b.dataset.a === 'rl' || b.dataset.a === 'rr') { d.rot = (((d.rot || 0) + (b.dataset.a === 'rr' ? 15 : -15)) % 360 + 360) % 360; render(); }
+        else if (b.dataset.a === 'del') { removeById('device', d.id); selected = null; render(); }
+        else if (b.dataset.a === 'x') selectItem(null, null); }); }
+    var d = P3.on && V3D.embed && selected && selected.kind === 'device' ? findById('device', selected.id) : null;
+    if (!d) { el.hidden = true; return; }
+    var def = DEVICE_DEFS[d.type] || {};
+    el.innerHTML = '<b>' + escapeHtml(def.label || '') + '</b>' + (def.rotatable ? '<button type="button" data-a="rl" aria-label="סיבוב שמאלה">⟲</button><button type="button" data-a="rr" aria-label="סיבוב ימינה">⟳</button>' : '') +
+      '<button type="button" class="warn" data-a="del">מחיקה</button><button type="button" data-a="x" aria-label="ביטול הבחירה">✕</button>';
+    el.hidden = false;
+  }
+  function p3Ray(e){ var rc = V3D.r.domElement.getBoundingClientRect(), m = new THREE.Vector2((e.clientX - rc.left) / rc.width * 2 - 1, -((e.clientY - rc.top) / rc.height) * 2 + 1), ray = new THREE.Raycaster(); ray.setFromCamera(m, V3D.cam); return ray; }
+  function p3PlanPt(e){
+    var hit = new THREE.Vector3(), M = V3D.M; if (!M || !p3Ray(e).ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit)) return null;
+    var fb = floorBounds(), x = hit.x * PPM + M.cx, y = hit.z * PPM + M.cy + M.off;
+    return { x:Math.max(fb.x1 + 6, Math.min(fb.x2 - 6, x)), y:Math.max(fb.y1 + 6, Math.min(fb.y2 - 6, y)) };
+  }
+  function p3DevAt(e){
+    var rc = V3D.r.domElement.getBoundingClientRect(), mx = e.clientX - rc.left, my = e.clientY - rc.top, best = null, bd = 22;
+    (V3D.pinHits || []).forEach(function(h){ var dd = Math.hypot(h.x - mx, h.y - my); if (dd < bd) { bd = dd; best = h; } });
+    if (best) return { i:best.i, more:best.more };
+    var hit = p3Ray(e).intersectObjects(V3D.devs, true)[0], g = hit && hit.object; while (g && !g.userData.d) g = g.parent;
+    return g ? { i:g.userData.idx, more:[] } : null;
+  }
+  function p3Tap(e){
+    if (armedType) {
+      var p = p3PlanPt(e); if (!p) return true;
+      if (OPENING_DEFS[armedType]) p = snapToNearestWall(p);
+      var t = armedType, placed = placeAtPoint(t, p, { exact:exactNow(t) });
+      if (repeatNow(t)) { if (placed) { armedCount++; updateArmHint(); } } else if (placed || !DEVICE_DEFS[t]) disarmPalette();
+      return true;
+    }
+    var h = p3DevAt(e);
+    if (h && h.more.length) return false;   // a grouped pin: zoom into the group
+    if (h) { selectItem('device', V3D.devs[h.i].userData.d.id); return true; }
+    selectItem(null, null); return true;
+  }
+  function p3DragStart(e){ var dr = P3.drag; if (!dr) return; dr.moved = true; var p0 = e && p3PlanPt(e); dr.ox = p0 ? dr.sx - p0.x : 0; dr.oy = p0 ? dr.sy - p0.y : 0; if (!(selected && selected.kind === 'device' && selected.id === dr.d.id)) selectItem('device', dr.d.id); if (V3D.G) V3D.G.cover.visible = false; var sb = document.getElementById('p3Sel'); if (sb) sb.hidden = true; }
+  function p3DragMove(e){
+    var dr = P3.drag, p = p3PlanPt(e); if (!dr || !p) return;
+    var fb = floorBounds(); dr.d.x = Math.max(fb.x1 + 6, Math.min(fb.x2 - 6, p.x + (dr.ox || 0))); dr.d.y = Math.max(fb.y1 + 6, Math.min(fb.y2 - 6, p.y + (dr.oy || 0)));
+    var g = dr.g, M = V3D.M, mnt = v3dMount(M, dr.d), w = v3dW(M, mnt.x, mnt.y);
+    g.position.set(w[0], mnt.h, w[1]); if (mnt.mode !== 'ceil') g.rotation.y = Math.atan2(mnt.dir[0], mnt.dir[1]); g.userData.mnt = mnt;
+    if (g.userData.glow) g.userData.glow.position.set(w[0], mnt.h, w[1]);
+    if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+  }
+  function p3DragEnd(){ var dr = P3.drag; P3.drag = null; if (V3D.G) V3D.G.cover.visible = V3D.opts.cover; if (dr) devDragDrop(dr.d, dr.sx, dr.sy); }
+  function p3DragCancel(){ var dr = P3.drag; P3.drag = null; if (!dr) return; if (dr.moved) { dr.d.x = dr.sx; dr.d.y = dr.sy; if (V3D.G) V3D.G.cover.visible = V3D.opts.cover; v3dRebuildKeep(); } }
+  var __p3Render = render;
+  render = function(){ var r = __p3Render.apply(this, arguments); try { p3Sync(); } catch(e) {} return r; };
+  document.getElementById('planViewSeg').addEventListener('click', function(e){ var b = e.target.closest('[data-pv]'); if (b) setPlanView(b.dataset.pv); });
+  // tools that work on the 2D drawing switch back to it first
+  document.addEventListener('click', function(e){ if (!P3.on) return; var b = e.target.closest && e.target.closest('#btnDrawRoom, #btnDrawFence, #btnRecommendations, #btnImportPlan, #btnLoadSample, #btnClear'); if (b) setPlanView('2d'); }, true);
+  if (window.ResizeObserver) { var cs0 = document.getElementById('canvasScroll'); if (cs0) new ResizeObserver(function(){ if (P3.on) { p3Place(); if (V3D.open && V3D.embed) v3dResize(); } }).observe(cs0); }
+  window.addEventListener('resize', function(){ if (P3.on) p3Place(); });
+  // the agent's last choice comes back when the app reopens on a drawn plan
+  setTimeout(function(){ try { if (!CONSUMER && localStorage.getItem('g1sg_planview') === '3d' && document.getElementById('newProjectBackdrop').hidden && state.rooms.some(function(r){ return r.type !== 'yard'; })) setPlanView('3d'); } catch(e) {} }, 1800);
   function v3dTopicsUi(){
     var el = document.getElementById('v3dTopics'); if (!el) return; var tp = v3dTopicsPresent();
     el.innerHTML = tp.length > 1 ? '<b>הצגה:</b>' + tp.map(function(t){ return '<button type="button" class="tp-chip" data-cat="' + t[0] + '" aria-pressed="' + !V3D.hide[t[0]] + '"><i style="background:' + t[2] + '"></i>' + t[1] + '</button>'; }).join('') : '';
@@ -18814,6 +19003,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function v3dClose(){
     if (V3D.rec) return;
+    if (P3.on && V3D.open && !V3D.embed) { p3Embed(true); return; }
+    if (P3.on && V3D.embed) { setPlanView('2d'); return; }
     v3dSimStop(true); V3D.seq = null; V3D.open = false; cancelAnimationFrame(V3D.raf);
     var ov = document.getElementById('v3d'); if (ov) ov.hidden = true; document.body.classList.remove('v3d-on'); var tip = document.getElementById('v3dTip'); if (tip) tip.hidden = true;
     if (V3D.root) { V3D.scene.remove(V3D.root); v3dDispose(V3D.root); (V3D.flows || []).forEach(function(t){ t.dispose(); }); V3D.root = null; V3D.G = null; V3D.devs = []; V3D.flows = []; V3D.wallMesh = null; V3D.cov = []; }
@@ -18879,10 +19070,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     try { g1Track('3d-' + (/video/.test(type) ? 'video' : 'shot'), {}); } catch(e) {}
   }
 
-  document.getElementById('btn3D').onclick = function(){ open3D(); };
+  document.getElementById('btn3D').onclick = function(){ if (P3.on && V3D.open) { p3Embed(false); return; } open3D(); };
   document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
   ['btnSend', 'btnSketch'].forEach(function(id){ var b = document.getElementById(id); if (b) b.addEventListener('click', v3dPreload); });
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, P3:P3, sig:function(){ return p3Sig(); }, loop:function(t){ v3dLoop(t); cancelAnimationFrame(V3D.raf); }, view:function(m){ setPlanView(m); }, intro:function(){ v3dIntro(); }, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
   if (CONSUMER) initG1Consumer(); else { try { brandApply(); } catch(e) {} initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
 
