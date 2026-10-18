@@ -2574,6 +2574,17 @@
   .p3-sel button{ border:1px solid #d8dee6; background:#f5f7fa; color:#14202e; border-radius:10px; min-height:34px; min-width:38px; padding:4px 9px; font:700 13px var(--font-body); cursor:pointer; flex:none; }
   .p3-sel button.warn{ color:#c0392b; }
   .p3-sel[hidden]{ display:none; }
+  .tv-ov{ position:fixed; inset:0; z-index:16000; background:rgba(6,12,22,.86); display:flex; align-items:center; justify-content:center; padding:16px; }
+  .tv-ov[hidden]{ display:none; }
+  .tv-box{ width:min(1000px, 100%); background:#0f1b2b; border-radius:18px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+  .tv-hd{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px 10px 16px; color:#fff; }
+  .tv-hd b{ font-size:15px; }
+  .tv-x{ width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font-size:17px; cursor:pointer; flex:none; }
+  .tv-box video{ display:block; width:100%; max-height:calc(100vh - 140px); background:#000; }
+  .tv-open{ display:block; text-align:center; color:#9fc4e8; font-size:12.5px; padding:8px; }
+  .q-changed{ background:#FFF4E5; color:#7A4A0E; border:1px solid #F3C98B; border-radius:12px; padding:10px 14px; margin:0 0 12px; font-size:13.5px; font-weight:600; line-height:1.55; }
+  .q-changed b{ display:block; font-size:14.5px; }
+  .modal.client-view .q-changed, body.pdf-export .q-changed{ display:none !important; }
   .v3d-load{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:12px; color:#cfe0f2; font-weight:700; text-align:center; padding:20px; z-index:2; background:#0f1b2b; }
   .v3d-load[hidden]{ display:none; }
   .v3d-spin{ width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,.2); border-top-color:#4cc9f0; animation:v3dspin 1s linear infinite; }
@@ -2605,6 +2616,9 @@
   @media (max-width:760px){ .v3d-bar .v3d-more{ display:inline-flex; } .v3d-bar.opts-off .v3d-opts{ display:none; } .v3d-bar .v3d-long{ display:none; } .v3d-bar .sp{ display:none; } .v3d-bar .v3d-act{ flex:1 1 40%; } }
   .v3d-ov{ position:absolute; inset:0; z-index:1; pointer-events:none; width:100%; height:100%; }
   .v3d .v3d-tip{ left:12px; right:auto; top:auto; bottom:40px; width:min(320px, calc(100% - 24px)); padding:12px 14px; border-radius:16px; pointer-events:none; z-index:3; }
+  .v3d .v3d-tip .tp-img{ float:left; width:64px; height:64px; border-radius:12px; margin:0 0 4px 10px; background:#f4f6f9; object-fit:contain; box-shadow:inset 0 0 0 1px #e3e7ec; }
+  .v3d .v3d-tip .tp-model{ display:block; color:#0a6ea8; font-size:12px; font-weight:700; margin-top:1px; }
+  .p3-sel img{ width:34px; height:34px; border-radius:9px; object-fit:contain; background:#f4f6f9; flex:none; }
   .v3d .v3d-tip b{ display:flex; align-items:center; gap:8px; font-size:15px; } .v3d .v3d-tip b i{ width:10px; height:10px; border-radius:50%; flex:none; }
   .v3d .v3d-tip p{ margin:6px 0 0; color:#4a5568; font-size:12.5px; line-height:1.5; }
   .v3d-legend i.dot{ width:10px; height:10px; border-radius:50%; }
@@ -3029,7 +3043,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 147</div>
+              <div class="app-version" id="appVersion">גרסה 150</div>
             </div>
           </div>
         </div>
@@ -3363,6 +3377,7 @@
       <button class="modal-close" id="modalClose" aria-label="סגור">✕ סגור</button>
     </div>
     <div class="modal-body">
+      <div class="q-changed" id="qChangedNote" data-html2canvas-ignore="true" hidden></div>
       <div class="qbrand-row" id="qBrand"></div>
       <div class="quote-hero">
         <div>
@@ -11976,6 +11991,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         contact: getCustomerContact()
       },
       state: state,
+      quoteInputs: quoteDraft, quoteSentSig: quoteSentSig,
       rates: {
         waste: document.getElementById('rateWaste').value,
         alarmCable: document.getElementById('rateAlarmCable').value,
@@ -11990,6 +12006,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function applyProjectData(data){
     if (!data || !data.state || !Array.isArray(data.state.rooms)) throw new Error('invalid project file');
+    quoteDraft = data.quoteInputs || null; quoteSentSig = data.quoteSentSig || null;
     disarmPalette();
     clearUnderlays();   // the tracing plan belonged to the project that was open
     state = {
@@ -12297,6 +12314,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     };
     selected = null;
     roomEditId = null;
+    quoteDraft = null; quoteSentSig = null;
     undoStack = []; redoStack = []; histLast = null; updateUndoUi();
     resetRecommendationsView();
     setCustomerContact({});
@@ -13398,7 +13416,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       customerEmail: document.getElementById('qCustomerEmail').value || '',
       customerContact: getCustomerContact(),
       quoteInputs: captureQuoteInputs(),
-      project: serializeProject(),
+      project: (function(){ quoteDraft = captureQuoteInputs(); quoteSentSig = quoteSig(); setTimeout(quoteChangedUi, 0); return serializeProject(); })(),
       total: Math.round(+String((document.getElementById('qTotal') || {}).textContent || '').replace(/[^\d.]/g, '') || 0)
     };
     var library = loadQuoteLibrary();
@@ -13425,6 +13443,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function openQuoteFromLibrary(record){
     try {
       applyProjectData(record.project);
+      if (record.quoteInputs) quoteDraft = record.quoteInputs;
     } catch(e) {
       showProjectIOStatus('לא ניתן לפתוח את ההצעה השמורה — הנתונים פגומים', true);
       return;
@@ -13573,6 +13592,30 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   });
 
   var backdrop = document.getElementById('modalBackdrop');
+  /* A quote is rebuilt from the plan every time it opens (quantities, cable meters and items follow
+     the drawing), and what the agent typed into it — unit prices, installation, monitoring, discount,
+     payment terms — is kept and put back by row name. It travels with the project file and with the
+     saved quote, and a new project starts clean. Once a quote has gone out, a change that alters what
+     the customer would see (items, quantities or total) shows a note: the customer still has the old
+     version until it is sent again. */
+  var quoteDraft = null, quoteSentSig = null, qDraftT = 0;
+  function quoteSig(){
+    var t = [];
+    document.querySelectorAll('#qEquipTable tbody tr[data-row], #qCableTable tbody tr[data-row]').forEach(function(tr){
+      if (tr.classList.contains('is-empty') || tr.hidden) return;
+      t.push(qRowName(tr) + ':' + (tr.dataset.qty || (tr.cells[1] ? tr.cells[1].textContent.trim() : '')));
+    });
+    t.push(((document.getElementById('qTotal') || {}).textContent || '').replace(/\s+/g, ''));
+    return t.join('|');
+  }
+  function quoteChangedUi(){
+    var el = document.getElementById('qChangedNote'); if (!el) return;
+    var changed = !!(state.quoteNumber && quoteSentSig && quoteSig() !== quoteSentSig);
+    el.hidden = !changed;
+    if (changed) el.innerHTML = '<b>⚠️ ההצעה עודכנה מאז שנשלחה ללקוח</b>הכמויות והמחירים כאן מעודכנים לפי השינויים, אבל הלקוח עדיין רואה את הגרסה הקודמת. כדי שיקבל את העדכון — שולחים שוב (אותו מספר הצעה, קישור חתימה חדש).';
+  }
+  function saveQuoteDraft(){ if (!document.getElementById('qEquipTable').querySelector('tbody tr')) return; try { quoteDraft = captureQuoteInputs(); } catch(e) {} }
+  ['input', 'change'].forEach(function(n){ document.getElementById('modalBackdrop').addEventListener(n, function(){ clearTimeout(qDraftT); qDraftT = setTimeout(function(){ saveQuoteDraft(); quoteChangedUi(); }, 250); }, true); });
   function openQuoteModal(){
     var score = runGuidance();
     var r = runBom();
@@ -13587,15 +13630,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qCustomer').textContent = document.getElementById('fCustomer').value || 'לקוח';
     document.getElementById('qAddress').textContent = document.getElementById('fAddress').value || '';
     buildQuote(r.bom);
+    if (quoteDraft) restoreQuoteInputs(quoteDraft);
     if (!CONSUMER && Object.keys(r.bom.counts).some(function(t){ return /^fire_/.test(t); })) {
       var fq = fireAudit().filter(function(i){ return i.sev !== 'info'; });
-      if (fq.length) setTimeout(function(){ firePop('לפני שליחת ההצעה — גילוי אש', 'בהצעה יש מערכת גילוי אש, ובתכנון חסרים פריטים לפי כללי התקן. מומלץ להשלים לפני השליחה:', fq, { quote:true, onFix:function(){ buildQuote(runBom().bom); } }); }, 250);
+      if (fq.length) setTimeout(function(){ firePop('לפני שליחת ההצעה — גילוי אש', 'בהצעה יש מערכת גילוי אש, ובתכנון חסרים פריטים לפי כללי התקן. מומלץ להשלים לפני השליחה:', fq, { quote:true, onFix:function(){ var cq = captureQuoteInputs(); buildQuote(runBom().bom); restoreQuoteInputs(cq); quoteChangedUi(); } }); }, 250);
     }
     updateQuoteNumberBadge();
     updateCustomerDetails();
     setClientView(false);
     document.getElementById('sendOk').classList.remove('show');
     backdrop.hidden = false;
+    quoteChangedUi();
   }
   document.getElementById('btnSend').onclick = function(){
     // First time out: collect the agent's signature details before the quote can be built.
@@ -13606,8 +13651,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     openQuoteModal();
   };
-  document.getElementById('modalClose').onclick = function(){ backdrop.hidden = true; };
-  backdrop.addEventListener('click', function(ev){ if (ev.target === backdrop) backdrop.hidden = true; });
+  document.getElementById('modalClose').onclick = function(){ saveQuoteDraft(); backdrop.hidden = true; };
+  backdrop.addEventListener('click', function(ev){ if (ev.target === backdrop) { saveQuoteDraft(); backdrop.hidden = true; } });
 
   // Opens a real, pre-filled draft in the device's default mail app (Outlook, for most
   // business Windows setups) via the standard mailto: URL scheme. A browser can't attach
@@ -17016,6 +17061,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (m.from || m.at) parts.push(msgAgo(m.from || m.at));
     return parts.join(' · ');
   }
+  // the training video (from a message button) plays inside the app instead of leaving it
+  var TRAIN_RE = /\/get\/?(\?[^#]*)?#video$|\/media\/G1-SiteGuard-promo/;
+  function openTrainVideo(){
+    var ov = document.getElementById('tvOv');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'tvOv'; ov.className = 'tv-ov'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'סרטון ההדרכה');
+      document.body.appendChild(ov);
+      ov.addEventListener('click', function(e){ if (e.target === ov || e.target.closest('.tv-x')) closeTrainVideo(); });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !ov.hidden) closeTrainVideo(); }); }
+    var small = (window.innerWidth || 0) < 900 || isTouchDevice(), a = 'media/G1-SiteGuard-promo' + (small ? '-720' : '') + '.mp4?v=8', b = 'media/G1-SiteGuard-promo' + (small ? '' : '-720') + '.mp4?v=8';
+    ov.innerHTML = '<div class="tv-box"><div class="tv-hd"><b>סרטון הדרכה · G1 SiteGuard</b><button type="button" class="tv-x" aria-label="סגירה">✕</button></div>' +
+      '<video controls playsinline autoplay preload="auto" poster="media/poster.jpg?v=6"><source src="' + a + '" type="video/mp4"><source src="' + b + '" type="video/mp4"></video>' +
+      '<a class="tv-open" href="' + a + '" target="_blank" rel="noopener">לא מתנגן? פתיחה בחלון חדש</a></div>';
+    ov.hidden = false; var v = ov.querySelector('video'); var pp = v.play(); if (pp && pp.catch) pp.catch(function(){});
+    try { g1Track('train-video', {}); } catch(e) {}
+  }
+  function closeTrainVideo(){ var ov = document.getElementById('tvOv'); if (!ov) return; var v = ov.querySelector('video'); if (v) { try { v.pause(); } catch(e) {} } ov.hidden = true; ov.innerHTML = ''; }
+  document.addEventListener('click', function(e){ var a = e.target.closest && e.target.closest('a[data-cta]'); if (!a || !TRAIN_RE.test(a.getAttribute('href') || '')) return; e.preventDefault(); openTrainVideo(); }, true);
   function msgCta(m){ return m.cta && m.cta.url && /^(https?:|tel:|mailto:|https:\/\/wa\.me)/i.test(m.cta.url) ? '<a class="msg-cta" data-cta href="' + escapeHtml(m.cta.url) + '" target="_blank" rel="noopener">' + escapeHtml(m.cta.label || 'לפרטים') + '</a>' : ''; }
   function msgCardHtml(m, st, open){
     var done = msgDone(m, st), x = st[msgKey(m)] || {};
@@ -18360,6 +18422,50 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     V3D.cableTypes = types;
   }
 
+  /* ---------- product pictures: a small studio render of the device's own 3D model (white backdrop),
+     or the picture the manager set for that device in the admin (used when the image server allows it,
+     so pictures, video and screenshots stay exportable). Model names (e.g. a RISCO series) come from the
+     admin too. ---------- */
+  function v3dProd(type){ var A = (typeof G1C !== 'undefined' && G1C.cfg && G1C.cfg.agent) || {}; return (A.products || {})[type] || {}; }
+  V3D.thumbs = {};
+  function v3dThumb(type){
+    var c = V3D.thumbs[type];
+    if (!c) {
+      c = V3D.thumbs[type] = {};
+      var pr = v3dProd(type);
+      if (pr.img && /^https:\/\//.test(pr.img)) { var im = new Image(); im.crossOrigin = 'anonymous'; im.onload = function(){ var cv = v3dThumbFit(im); if (cv) { c.img = cv; c.url = null; } }; im.src = pr.img; }
+    }
+    if (!c.img && !c.cv) c.cv = v3dThumbRender(type);
+    return c.img || c.cv || null;
+  }
+  function v3dThumbUrl(type){ var c = V3D.thumbs[type], im = v3dThumb(type); if (!im) return ''; c = V3D.thumbs[type]; if (!c.url) { try { c.url = im.toDataURL('image/png'); } catch(e) { c.url = ''; } } return c.url; }
+  function v3dThumbFit(im){
+    try { var S = 160, cv = document.createElement('canvas'); cv.width = cv.height = S; var x = cv.getContext('2d'); x.fillStyle = '#f4f6f9'; x.fillRect(0, 0, S, S);
+      var k = Math.min((S - 16) / im.naturalWidth, (S - 16) / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k; x.drawImage(im, (S - w) / 2, (S - h) / 2, w, h);
+      x.getImageData(0, 0, 1, 1); return cv; } catch(e) { return null; }   // a server without CORS would taint the video — keep the render then
+  }
+  function v3dThumbRender(type){
+    if (!V3D.r || !V3D.geo || V3D.rec || !window.THREE) return null;
+    try {
+      var T = THREE, S = V3D.thumbScene;
+      if (!S) { S = V3D.thumbScene = new T.Scene(); S.background = new T.Color('#f4f6f9'); S.environment = v3dEnv();
+        S.add(new T.HemisphereLight('#ffffff', '#c9ced6', 1.5)); var dl = new T.DirectionalLight('#ffffff', 2.4); dl.position.set(-2, 3, 4); S.add(dl); V3D.thumbCam = new T.PerspectiveCamera(28, 1, 0.005, 50); }
+      var g = v3dDevMesh(type); g.rotation.y = -0.5; if (g.userData.led) g.userData.led.scale.setScalar(0.009); S.add(g); g.updateMatrixWorld(true);
+      var bb = new T.Box3().setFromObject(g), ctr = bb.getCenter(new T.Vector3()), sz = bb.getSize(new T.Vector3()), R = Math.max(sz.x, sz.y, sz.z) * 0.5 || 0.05;
+      var cam = V3D.thumbCam, dist = R / Math.tan(14 * Math.PI / 180) * 1.08; cam.position.set(ctr.x + dist * 0.28, ctr.y + dist * 0.26, ctr.z + dist * 0.92); cam.lookAt(ctr); cam.updateProjectionMatrix();
+      var size = new T.Vector2(); V3D.r.getSize(size); var pr = V3D.r.getPixelRatio(), N = 160;
+      V3D.r.setPixelRatio(1); V3D.r.setSize(N, N, false); V3D.r.render(S, cam);
+      var cv = document.createElement('canvas'); cv.width = cv.height = N; cv.getContext('2d').drawImage(V3D.r.domElement, 0, 0, N, N);
+      V3D.r.setPixelRatio(pr); V3D.r.setSize(size.x, size.y, false); S.remove(g);
+      return cv;
+    } catch(e) { return null; }
+  }
+  function v3dThumbsAll(){ if (V3D.still || V3D.rec) return; var seen = {}; V3D.devs.forEach(function(g){ var t = g.userData.d.type; if (!seen[t]) { seen[t] = 1; v3dThumb(t); } }); }
+  function v3dRoundImg(x, im, cx, cy, r, ring){
+    x.save(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.closePath(); x.fillStyle = '#f4f6f9'; x.fill(); x.clip();
+    if (im) x.drawImage(im, cx - r * 1.08, cy - r * 1.08, r * 2.16, r * 2.16); x.restore();
+    if (ring) { x.strokeStyle = ring; x.lineWidth = Math.max(2, r * 0.14); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.stroke(); }
+  }
   /* ---------- 2D overlay above the 3D view: pins, names, alert banner (it is recorded into the video too) ---------- */
   function v3dIcon(x, cat, cx, cy, s, col){
     x.save(); x.translate(cx, cy); x.strokeStyle = col; x.fillStyle = col; x.lineWidth = Math.max(1.4, s * 0.13); x.lineCap = 'round'; x.lineJoin = 'round';
@@ -18456,10 +18562,70 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         x.fillStyle = '#14202e'; x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Arial, sans-serif'; x.fillText('התראת פריצה — ' + P.alarmDev, nx + nw - 54 * big, ny + 38 * big);
         x.fillStyle = '#4a5568'; x.font = '500 ' + Math.round(12 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(P.alarmRoom + ' · הסירנה הופעלה', nx + nw - 54 * big, ny + 56 * big); x.globalAlpha = 1; }
     }
+    v3dSimLog(x, W, H, big, now, top);
     var cap = t < 0 ? 'הדגמה: פורץ מתקרב ל' + P.entryLabel : (P.alarmAt == null || t < P.alarmAt) ? (t < P.inAt ? 'הפורץ ניגש ל' + P.entryLabel : 'הפורץ בתוך הבית…') : v3dDetTxt(P);
     if (P.alarmAt == null && t > P.inAt) cap = 'אין כיסוי במסלול הזה — כדאי להוסיף גלאי';
     x.font = '700 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.textAlign = 'center'; var cw = x.measureText(cap).width + 28 * big, cy = H - (V3D.rec ? 70 : 54) * big;
     x.fillStyle = 'rgba(10,16,28,.78)'; v3dRR(x, (W - cw) / 2, cy - 17 * big, cw, 34 * big, 17 * big); x.fill(); x.fillStyle = '#fff'; x.fillText(cap, W / 2, cy);
+    x.restore();
+  }
+  // every detector/camera that picks the intruder up, in order, with its picture, room and the moment it
+  // reacted — then the siren, the owner's phone and the monitoring centre. Drawn on the overlay, so it is
+  // in the video as well. Wide screens: a column on the left; phones: the last rows above the caption.
+  function v3dSimLog(x, W, H, big, now, top){
+    var S = V3D.sim, P = S.plan, t = S.t, ev = [];
+    Object.keys(P.trig).forEach(function(k){ var tr = P.trig[k]; if (t >= tr.t && V3D.devs[+k]) ev.push({ i:+k, t:tr.t, kind:tr.kind }); });
+    if (P.alarmAt != null) {
+      if (S.sirens && S.sirens.length && t >= P.alarmAt + 0.3) ev.push({ sys:'siren', t:P.alarmAt + 0.3 });
+      if (t >= P.alarmAt + 0.6) ev.push({ sys:'push', t:P.alarmAt + 0.6 });
+      if (t >= P.alarmAt + 1.5) ev.push({ sys:'moked', t:P.alarmAt + 1.5 });
+    }
+    ev.sort(function(a, b){ return a.t - b.t; });
+    var narrow = W < 560, PW = narrow ? W - 24 : Math.min(340 * big, W * 0.36), RH = (narrow ? 44 : 54) * big, HH = 34 * big;
+    var bw = Math.min(W - 24, 520 * big), bannerL = (W - bw) / 2, alarmOn = P.alarmAt != null && t >= P.alarmAt;
+    var y0, maxRows;
+    if (narrow) { maxRows = 3; var yb = H - (V3D.rec ? 70 : 54) * big - 36 * big; y0 = yb - HH - Math.max(1, Math.min(maxRows, ev.length)) * RH; }
+    else { y0 = (alarmOn && 12 + PW > bannerL) ? top + 56 * big : top; maxRows = Math.max(3, Math.floor((H - y0 - 90 * big - HH) / RH)); }
+    var rows = ev.slice(-maxRows), n = rows.length, x0 = 12, ph = HH + Math.max(1, n) * RH + 8 * big;
+    x.save(); x.direction = 'rtl'; x.textBaseline = 'middle';
+    x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 18 * big; x.fillStyle = 'rgba(10,16,28,.84)'; v3dRR(x, x0, y0, PW, ph, 16 * big); x.fill(); x.shadowColor = 'transparent';
+    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif';
+    x.fillText('זיהויים בזמן אמת', x0 + PW - 14 * big, y0 + HH / 2 + 1);
+    var dets = ev.filter(function(e){ return !e.sys; }).length;
+    x.textAlign = 'left'; x.font = '700 ' + Math.round(12 * big) + 'px Heebo, Arial, sans-serif'; x.fillStyle = dets ? '#ff8a80' : '#9fb3c8';
+    x.fillText(dets ? dets + ' אביזרים הגיבו' : 'ממתין לתנועה…', x0 + 14 * big, y0 + HH / 2 + 1);
+    if (!n) { x.restore(); return; }
+    var verb = function(d, kind){ var ty = d.type; return kind === 'rec' ? 'מצלמה מקליטה' : /contact|shutter/.test(ty) ? 'זיהה פתיחה' : /glassbreak/.test(ty) ? 'זיהה שבירת זכוכית' : /curtain/.test(ty) ? 'זיהה חציית קו' : 'זיהה תנועה'; };
+    var tm = function(e){ var d = e.t - P.inAt; return d < -0.05 ? 'לפני הכניסה' : '+' + Math.max(0, d).toFixed(1) + ' ש׳'; };
+    rows.forEach(function(e, j){
+      var age = t - e.t, k = v3dCl(age / 0.35), ry = y0 + HH + j * RH, cx = x0 + PW - 14 * big - 17 * big, cy = ry + RH / 2, fresh = age < 1.2;
+      x.globalAlpha = k; var slide = (1 - v3dEase(k)) * 26 * big;
+      if (fresh) { x.fillStyle = 'rgba(255,59,48,' + (0.18 + 0.16 * Math.sin(now / 110)) + ')'; v3dRR(x, x0 + 6 * big, ry + 3 * big, PW - 12 * big, RH - 6 * big, 11 * big); x.fill(); }
+      if (j) { x.fillStyle = 'rgba(255,255,255,.08)'; x.fillRect(x0 + 12 * big, ry, PW - 24 * big, 1); }
+      var title, sub, ring;
+      if (e.sys) {
+        var syc = e.sys === 'siren' ? '#e5484d' : e.sys === 'push' ? '#2f80ed' : '#00a37a';
+        x.fillStyle = syc; x.beginPath(); x.arc(cx + slide, cy, 17 * big, 0, 7); x.fill();
+        if (e.sys === 'siren') v3dIcon(x, 'siren', cx + slide, cy, 20 * big, '#fff');
+        else { x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 ' + Math.round(15 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(e.sys === 'push' ? '!' : '24', cx + slide, cy + 1); }
+        title = e.sys === 'siren' ? 'הסירנה הופעלה' : e.sys === 'push' ? 'התראה נשלחה לטלפון' : 'האירוע הועבר למוקד';
+        sub = e.sys === 'siren' ? (S.sirens.length > 1 ? S.sirens.length + ' סירנות' : 'סירנה') + ' · הפורץ מורתע' : e.sys === 'push' ? 'לבעלי הנכס · ' + P.alarmRoom : 'מוקד 24/7 · מתחיל טיפול';
+      } else {
+        var g = V3D.devs[e.i], d = g.userData.d, room = (typeof roomOfDevice === 'function' && roomOfDevice(d)) || null, mdl = v3dProd(d.type).model;
+        ring = e.kind === 'rec' ? '#ffffff' : '#ff3b30';
+        v3dRoundImg(x, v3dThumb(d.type), cx + slide, cy, 17 * big, ring);
+        title = g.userData.def.label; if (title.length > 26) title = title.slice(0, 25) + '…';
+        sub = (room && room.label ? room.label + ' · ' : '') + verb(d, e.kind) + (mdl && !narrow ? ' · ' + mdl : '');
+      }
+      var tx = x0 + PW - 14 * big - 40 * big + slide, tms = e.sys ? '' : tm(e);
+      x.font = '700 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; var tw = tms ? x.measureText(tms).width + 10 * big : 0, mx = tx - (x0 + 14 * big + tw);
+      var fit = function(str){ if (x.measureText(str).width <= mx) return str; while (str.length > 4 && x.measureText(str + '…').width > mx) str = str.slice(0, -1); return str + '…'; };
+      x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '700 ' + Math.round((narrow ? 12.5 : 13.5) * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(fit(title), tx, cy - 9 * big);
+      x.fillStyle = e.sys ? '#cfe0f2' : (e.kind === 'rec' ? '#cfe0f2' : '#ffb4ad'); x.font = '500 ' + Math.round(11.5 * big) + 'px Heebo, Arial, sans-serif';
+      x.fillText(fit(sub), tx, cy + 9 * big);
+      x.textAlign = 'left'; x.fillStyle = '#9fb3c8'; x.font = '700 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; if (tms) x.fillText(tms, x0 + 14 * big, cy);
+      x.globalAlpha = 1;
+    });
     x.restore();
   }
   function v3dEndCard(x, W, H, big, a){
@@ -18483,7 +18649,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (i < 0) { tip.hidden = true; if (V3D.tgt && V3D.tgt.length() > 0.8 && !V3D.sim) V3D.focus = { t0:performance.now(), dur:700, ft:V3D.tgt.clone(), fr:V3D.sph.r, tt:new THREE.Vector3(0, 0.5, 0), tr:V3D.fit }; return; }
     var g = V3D.devs[i], d = g.userData.d, def = g.userData.def, mnt = g.userData.mnt, room = (typeof roomOfDevice === 'function' && roomOfDevice(d)) || null;
     var guide = (typeof DEVICE_GUIDE !== 'undefined' && DEVICE_GUIDE[d.type]) || null;
-    tip.innerHTML = '<b><i style="background:' + g.userData.col + '"></i>' + escapeHtml(def.label) + '</b><span>' + (room && room.label ? escapeHtml(room.label) + ' · ' : '') + 'גובה התקנה כ-' + mnt.h.toFixed(1) + ' מ׳' + (def.range ? ' · טווח ' + def.range + ' מ׳' : def.radius ? ' · רדיוס ' + def.radius + ' מ׳' : '') + '</span>' +
+    var tUrl = v3dThumbUrl(d.type), tModel = v3dProd(d.type).model;
+    tip.innerHTML = (tUrl ? '<img class="tp-img" alt="" src="' + tUrl + '">' : '') + '<b><i style="background:' + g.userData.col + '"></i>' + escapeHtml(def.label) + '</b>' + (tModel ? '<span class="tp-model">' + escapeHtml(tModel) + '</span>' : '') + '<span>' + (room && room.label ? escapeHtml(room.label) + ' · ' : '') + 'גובה התקנה כ-' + mnt.h.toFixed(1) + ' מ׳' + (def.range ? ' · טווח ' + def.range + ' מ׳' : def.radius ? ' · רדיוס ' + def.radius + ' מ׳' : '') + '</span>' +
       (guide && guide.use ? '<p>' + escapeHtml(guide.use.length > 150 ? guide.use.slice(0, 148) + '…' : guide.use) + '</p>' : '');
     tip.hidden = false;
     V3D.auto = false; V3D.focus = { t0:performance.now(), dur:700, ft:V3D.tgt.clone(), fr:V3D.sph.r, tt:new THREE.Vector3(g.position.x, Math.min(1.2, g.position.y), g.position.z), tr:Math.max(5, Math.min(V3D.sph.r, V3D.fit * 0.62)) };
@@ -18604,7 +18771,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     v3dDevices(M, G); v3dCables(M, G.cables);
     V3D.tgt = new T.Vector3(0, 0.5, 0); v3dFit();
     var sc = V3D.fitR + 3, cam = V3D.sun.shadow.camera; cam.left = -sc; cam.right = sc; cam.top = sc; cam.bottom = -sc; cam.near = 1; cam.far = 90; cam.updateProjectionMatrix();
-    v3dApplyOpts(); v3dLegend();
+    v3dApplyOpts(); v3dLegend(); v3dThumbsAll();
     if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
   }
   // camera distance that frames the whole lot on this screen (both field-of-view directions)
@@ -18807,7 +18974,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         V3D.scene.add(V3D.sun); V3D.scene.add(V3D.sun.target);
         v3dControls(cv);
         cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); cancelAnimationFrame(V3D.raf); });
-        cv.addEventListener('webglcontextrestored', function(){ V3D.envTex = null; V3D.tex = {}; V3D.mat = null; V3D.matx = null; V3D.geoCache = {}; V3D.geo = null; V3D.stillCache = {}; if (V3D.open) { v3dBuild(); V3D.raf = requestAnimationFrame(v3dLoop); } });
+        cv.addEventListener('webglcontextrestored', function(){ V3D.envTex = null; V3D.tex = {}; V3D.mat = null; V3D.matx = null; V3D.geoCache = {}; V3D.geo = null; V3D.stillCache = {}; V3D.thumbs = {}; V3D.thumbScene = null; if (V3D.open) { v3dBuild(); V3D.raf = requestAnimationFrame(v3dLoop); } });
         return true;
   }
   /* topic chips in the live view: hide/show alarm, cameras, intercom… — the scene is rebuilt
@@ -18880,7 +19047,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var d = P3.on && V3D.embed && selected && selected.kind === 'device' ? findById('device', selected.id) : null;
     if (!d) { el.hidden = true; return; }
     var def = DEVICE_DEFS[d.type] || {};
-    el.innerHTML = '<b>' + escapeHtml(def.label || '') + '</b>' + (def.rotatable ? '<button type="button" data-a="rl" aria-label="סיבוב שמאלה">⟲</button><button type="button" data-a="rr" aria-label="סיבוב ימינה">⟳</button>' : '') +
+    var sUrl = v3dThumbUrl(d.type);
+    el.innerHTML = (sUrl ? '<img alt="" src="' + sUrl + '">' : '') + '<b>' + escapeHtml(def.label || '') + '</b>' + (def.rotatable ? '<button type="button" data-a="rl" aria-label="סיבוב שמאלה">⟲</button><button type="button" data-a="rr" aria-label="סיבוב ימינה">⟳</button>' : '') +
       '<button type="button" class="warn" data-a="del">מחיקה</button><button type="button" data-a="x" aria-label="ביטול הבחירה">✕</button>';
     el.hidden = false;
   }
@@ -19035,7 +19203,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // the film: the house builds itself, a slow orbit, the intrusion demo (when the plan allows it), an end card
   function v3dRecord(){
     if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { v3dToast('המכשיר לא תומך בהקלטת סרטון — אפשר לשלוח תמונה'); return; }
-    v3dLogo(); v3dSimStop(true); v3dSelect(-1); V3D.seq = null; V3D.focus = null;
+    v3dLogo(); v3dSimStop(true); v3dSelect(-1); V3D.seq = null; V3D.focus = null; v3dThumbsAll();
     var types = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'], mime = types.filter(function(t){ try { return MediaRecorder.isTypeSupported(t); } catch(e) { return false; } })[0] || '';
     var st = document.getElementById('v3dStage'), portrait = st.clientHeight > st.clientWidth, W = portrait ? 720 : 1280, H = portrait ? 1280 : 720;
     V3D.r.setPixelRatio(1); V3D.r.setSize(W, H, false); V3D.cam.aspect = W / H; V3D.cam.updateProjectionMatrix(); v3dFit();

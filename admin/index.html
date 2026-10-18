@@ -79,6 +79,13 @@ td input[type=number]{ max-width:120px; text-align:center; font-variant-numeric:
 .code-big{ font:800 28px/1.2 ui-monospace,Consolas,monospace; letter-spacing:3px; text-align:center; padding:14px; background:#0B1F33; color:#fff; border-radius:14px; direction:ltr; margin:10px 0 }
 .toast{ position:fixed; bottom:86px; left:50%; transform:translateX(-50%); background:#0B1F33; color:#fff; padding:10px 18px; border-radius:12px; font-weight:700; z-index:60; box-shadow:0 12px 28px rgba(0,0,0,.3) }
 .mono{ font-family:ui-monospace,Consolas,monospace; direction:ltr; unicode-bidi:isolate }
+.tv-prev{ width:100%; max-height:260px; border-radius:12px; background:#0b1424; display:block }
+.tv-opts{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px }
+.tv-opts section{ border:1px solid #E1E6EC; border-radius:14px; padding:12px }
+.tv-opts h3{ margin:0 0 4px; font-size:15px }
+@media (max-width:760px){ .tv-opts{ grid-template-columns:1fr } }
+.apm-prev{ width:40px; height:40px; object-fit:contain; border-radius:8px; background:#f4f6f9; display:block }
+input.apm{ min-width:150px }
 ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
 @media (max-width:640px){ .hd .hd-t span, .hd small{ display:none } .hd .hd-word{ height:18px } .hd{ gap:8px; padding:10px 12px } .hd img:first-child{ width:34px; height:36px } .hd .who{ gap:6px } .hd .who .btn.sm{ padding:0 8px } .hd .who span.n{ display:none } h1{ font-size:22px } td,th{ padding:8px 5px } }
 /* pilot metrics */
@@ -595,7 +602,8 @@ function openWA(text, phone){
     setTimeout(function(){ document.removeEventListener('visibilitychange', onHide); if (!left && document.visibilityState === 'visible') location.href = web; }, 1600);
     return;
   }
-  var w = window.open(web, '_blank', 'noopener'); if (!w) location.href = web;
+  // (window.open with 'noopener' always returns null — that used to also send this page itself to WhatsApp)
+  var w = window.open(web, '_blank'); if (w) { try { w.opener = null; } catch(e) {} } else location.href = web;
 }
 function phoneLink(){ var k = storedKey(); return 'https://wa.me/?text=' + encodeURIComponent('עמוד הניהול של G1 SiteGuard — נכנסים עם קוד המנהל:\n' + location.origin + location.pathname + (k ? '#k=' + k : '')); }
 function goTab(t){ tab = t; render(); }
@@ -806,7 +814,7 @@ function cfgDiff(a, b){
   a = a || {}; b = b || {}; var out = [], J = JSON.stringify;
   var cnt = function(x, y){ x = x || {}; y = y || {}; var ks = {}, n = 0; Object.keys(x).concat(Object.keys(y)).forEach(function(k){ ks[k] = 1; }); Object.keys(ks).forEach(function(k){ if (J(x[k]) !== J(y[k])) n++; }); return n; };
   var pa = a.agent || {}, pb = b.agent || {};
-  var np = cnt(pa.prices, pb.prices) + cnt(pa.cablePrices, pb.cablePrices) + cnt(pa.monPrices, pb.monPrices) + (J(pa.maxDiscountPct) !== J(pb.maxDiscountPct) ? 1 : 0) + (J(pa.install) !== J(pb.install) ? 1 : 0);
+  var np = cnt(pa.prices, pb.prices) + cnt(pa.cablePrices, pb.cablePrices) + cnt(pa.monPrices, pb.monPrices) + (J(pa.maxDiscountPct) !== J(pb.maxDiscountPct) ? 1 : 0) + (J(pa.install) !== J(pb.install) ? 1 : 0) + cnt(pa.products, pb.products);
   if (np) out.push({ s:'prices', t:'מחירי סוכנים (' + np + ')' });
   var nc = cnt((a.consumer || {}).prices, (b.consumer || {}).prices); if (nc) out.push({ s:'prices', t:'מחירי לקוחות (' + nc + ')' });
   var ua = {}, ub = {}; ((a.access || {}).users || []).forEach(function(u){ ua[u.id] = u; }); ((b.access || {}).users || []).forEach(function(u){ ub[u.id] = u; });
@@ -1068,7 +1076,7 @@ function rMsgs(){
   var segs = [['live', 'פעילות'], ['sched', 'מתוזמנות'], ['draft', 'טיוטות'], ['ended', 'הסתיימו']].map(function(x){ var n = G[x[0]].length;
     return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (msgView === x[0]) + '">' + x[1] + (n ? '<i class="cnt">' + n + '</i>' : '') + '</button>'; }).join('');
   var empty = { live:'אין כרגע הודעות פעילות.<br>לחצו "הודעה חדשה" כדי לשלוח מבצע, הטבה או עדכון לסוכנים.', sched:'אין הודעות מתוזמנות.', draft:'אין טיוטות.', ended:'עוד אין הודעות שהסתיימו.' }[msgView];
-  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><h1>הודעות לסוכנים</h1><p class="sub" style="margin:0">מבצעים, הטבות ועדכונים — נכנסים לתיבת ההודעות באפליקציה (הפעמון למעלה). הודעה חשובה גם קופצת פעם אחת.</p></div><button class="btn primary" id="msgNew" data-rw>+ הודעה חדשה</button></div>' +
+  $('#pane').innerHTML = '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-bottom:12px"><div><h1>הודעות לסוכנים</h1><p class="sub" style="margin:0">מבצעים, הטבות ועדכונים — נכנסים לתיבת ההודעות באפליקציה (הפעמון למעלה). הודעה חשובה גם קופצת פעם אחת.</p></div><div class="row" style="gap:8px"><button class="btn navy" id="msgVideo">🎬 שליחת סרטון ההדרכה</button><button class="btn primary" id="msgNew" data-rw>+ הודעה חדשה</button></div></div>' +
     (adminEp(cfg) && sheetKey() ? '' : '<div class="note warn" style="margin-bottom:12px">כדי לשלוח הודעות צריך קודם לחבר את עמוד הניהול לגיליון (לשונית "פרסום וגיבוי").</div>') +
     '<div class="seg msg-seg" role="group" aria-label="סינון">' + segs + '</div>' +
     '<div class="msg-list" id="msgL">' + (G[msgView].length ? G[msgView].map(msgCardHtml).join('') : '<div class="msg-empty">' + empty + '</div>') + '</div>' +
@@ -1080,6 +1088,7 @@ function rMsgs(){
       '<li>ההודעות נשמרות בהגדרות האפליקציה — לא לכתוב בהן מידע רגיש (קודים, פרטים אישיים של לקוחות).</li></ul></details>';
   Array.prototype.forEach.call(document.querySelectorAll('.msg-seg button'), function(b){ b.onclick = function(){ msgView = b.dataset.v; rMsgs(); }; });
   $('#msgNew').onclick = function(){ msgEdit(null); };
+  $('#msgVideo').onclick = trainVideo;
   $('#msgL').addEventListener('click', function(e){
     var b = e.target.closest('[data-a]'), card = e.target.closest('.am'); if (!b || !card) return;
     var m = msgFind(card.dataset.id); if (!m) return;
@@ -1565,6 +1574,10 @@ function modal(html, init){
   if (init) init(bd); return bd;
 }
 
+// suggested model series per device (RISCO catalogue) — the manager fills them in with one click and can edit
+var RISCO_SUGGEST = { hub:'RISCO LightSYS Plus', keypad:'RISCO Panda', pir:'RISCO BWare PIR', pir_pet:'RISCO BWare PET', pir_am:'RISCO BWare DT AM', pir_ceiling:'RISCO iWISE 360',
+  curtain_in:'RISCO Curtain PIR', curtain_out:'RISCO Beyond DT / WatchOUT', contact:'RISCO Slim Door/Window', glassbreak:'RISCO Glassbreak', smoke:'RISCO Smoke & Heat', flood:'RISCO Flood',
+  siren_in:'RISCO Indoor Sounder', siren_out:'RISCO Lumin8', cam_in:'RISCO VUpoint', cam_out:'RISCO VUpoint', nvr:'RISCO VUpoint NVR' };
 var MON_LIST = [['wired','חיבור קווי (חודשי)'],['wireless','חיבור אלחוטי (חודשי)'],['gprs','משדר GPRS (חודשי)'],['gprsOnce','משדר GPRS — חד-פעמי'],['central','מוקד צופה (חודשי)'],['smart','שירות סמארט (חודשי)'],['analytics','ערוצי אנליטיקה — לערוץ (חודשי)'],['anOnce','חיבור ערוצי אנליטיקה — חד-פעמי'],['pa','מוקד כריזה (חודשי)']];
 function rAgent(){
   var P = cfg.agent.prices, C = cfg.agent.cablePrices; cfg.agent.monPrices = cfg.agent.monPrices || {}; var MP = cfg.agent.monPrices;
@@ -1581,6 +1594,13 @@ function rAgent(){
     '<div class="card" style="margin-top:14px"><h2>שירותי מוקד ותשלומים חד-פעמיים</h2><div class="tbl-wrap"><table><thead><tr><th>שירות</th><th>מחיר מחירון (₪, כולל מע״מ)</th></tr></thead><tbody>' +
       MON_LIST.map(function(m){ return '<tr><td>' + m[1] + '</td><td><input type="number" min="0" class="amon" data-k="' + m[0] + '" value="' + (MP[m[0]] != null ? MP[m[0]] : '') + '" aria-label="' + m[1] + '"></td></tr>'; }).join('') + '</tbody></table></div></div>' +
     '<div class="card" style="margin-top:14px"><h2>ציוד (ליחידה, ₪ כולל מע״מ)</h2><div class="tbl-wrap"><table><thead><tr><th>פריט</th><th>מחיר מחירון</th><th>מחיר מינימום</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>' +
+    (function(){ var PR = cfg.agent.products || {}; var list = DEV.filter(function(d){ return !/battery|^zexp|^poe|dialer|repeater|io_module/.test(d.t); });
+      return '<div class="card" style="margin-top:14px"><h2>תמונות ודגמים בהדמיית התלת-ממד</h2><p class="sub">הדגם מוצג בכרטיס האביזר ובסימולציית הפריצה. תמונה: קישור ישיר לקובץ (https) של תמונת מוצר שמותר לכם להשתמש בה — בלי קישור, מוצגת הדמיה של האביזר מהמודל עצמו.</p>' +
+        '<button type="button" class="btn navy" id="prodFill">מילוי דגמים מוצעים (RISCO) בשדות הריקים</button>' +
+        '<div class="tbl-wrap" style="margin-top:10px"><table><thead><tr><th>אביזר</th><th>דגם / סדרה</th><th>קישור לתמונה</th><th></th></tr></thead><tbody>' +
+        list.map(function(d){ var p = PR[d.t] || {}; return '<tr><td>' + esc(d.label) + '</td><td><input type="text" class="apm" data-k="' + d.t + '" data-f="model" maxlength="60" value="' + esc(p.model || '') + '" placeholder="' + esc(RISCO_SUGGEST[d.t] || '') + '" aria-label="דגם ' + esc(d.label) + '"></td>' +
+          '<td><input type="url" class="apm mono" data-k="' + d.t + '" data-f="img" value="' + esc(p.img || '') + '" placeholder="https://…" aria-label="קישור לתמונה ' + esc(d.label) + '"></td><td>' + (p.img ? '<img class="apm-prev" alt="" src="' + esc(p.img) + '">' : '') + '</td></tr>'; }).join('') +
+        '</tbody></table></div></div>'; })() +
     '<div class="card" style="margin-top:14px"><h2>כבילה (למטר)</h2><div class="tbl-wrap"><table><thead><tr><th>סוג כבל</th><th>מחיר מחירון</th><th>מחיר מינימום</th></tr></thead><tbody>' +
       CABLES.map(function(c){ var p = C[c[0]] || {}; return '<tr><td>' + c[1] + '</td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="list" value="' + (p.list != null ? p.list : '') + '"></td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="min" value="' + (p.min != null ? p.min : '') + '"></td></tr>'; }).join('') +
     '</tbody></table></div></div>';
@@ -1592,6 +1612,12 @@ function rAgent(){
     markDirty(); }; }); }
   bindP('.ap', P); bindP('.ac', C);
   Array.prototype.forEach.call(document.querySelectorAll('.amon'), function(inp){ inp.oninput = function(){ var v = inp.value.trim(); if (v === '') delete MP[inp.dataset.k]; else MP[inp.dataset.k] = Number(v); markDirty(); }; });
+  cfg.agent.products = cfg.agent.products || {}; var PRD = cfg.agent.products;
+  var setProd = function(inp){ var k = inp.dataset.k, f = inp.dataset.f, v = inp.value.trim(); if (f === 'img' && v && !/^https:\/\//.test(v)) { inp.style.borderColor = 'var(--bad)'; inp.title = 'קישור חייב להתחיל ב-https://'; return; } inp.style.borderColor = ''; inp.title = '';
+    PRD[k] = PRD[k] || {}; if (v) PRD[k][f] = v; else delete PRD[k][f]; if (!Object.keys(PRD[k]).length) delete PRD[k];
+    if (f === 'img') { var cell = inp.closest('tr').lastElementChild; cell.innerHTML = v ? '<img class="apm-prev" alt="" src="' + esc(v) + '">' : ''; } markDirty(); };
+  Array.prototype.forEach.call(document.querySelectorAll('.apm'), function(inp){ inp.oninput = function(){ setProd(inp); }; });
+  $('#prodFill').onclick = function(){ var n = 0; Array.prototype.forEach.call(document.querySelectorAll('.apm[data-f=model]'), function(inp){ var sg = RISCO_SUGGEST[inp.dataset.k]; if (sg && !inp.value.trim()) { inp.value = sg; setProd(inp); n++; } }); toast(n ? 'מולאו ' + n + ' דגמים — אפשר לערוך, ולפרסם כשמוכן' : 'כל השדות כבר מלאים'); };
   $('#instPrice').oninput = function(){ var v = this.value.trim(); if (v === '') delete cfg.agent.install; else cfg.agent.install = Math.max(0, Number(v)); markDirty(); };
   $('#maxDisc').oninput = function(){ var v = this.value.trim(); cfg.agent.maxDiscountPct = v === '' ? null : Math.max(0, Math.min(100, Number(v))); markDirty(); };
 }
@@ -1828,6 +1854,30 @@ function drawPilot(S, r){
   box.innerHTML = h;
   Array.prototype.forEach.call(box.querySelectorAll('.pl-wa'), function(b){ b.onclick = function(){ waReminder(b.dataset.kind, userById(b.dataset.uid)); }; });
   Array.prototype.forEach.call(box.querySelectorAll('th.s'), function(th){ th.onclick = function(){ var k = th.dataset.k; if (plSort === k) plDir = -plDir; else { plSort = k; plDir = k === 'name' ? 1 : -1; } drawPilot(S, r); }; });
+}
+/* the agents' training video: one tap to WhatsApp (the manager picks the agents or the group there — phone
+   numbers are kept only encrypted) or into the app's message box (the full message editor: audience, timing,
+   importance; in the app the button plays the video in place) */
+var TRAIN_URL = APP_URL + 'get/#video', TRAIN_MP4 = APP_URL + 'media/G1-SiteGuard-promo-720.mp4?v=8';
+function trainVideo(){
+  var me1 = String((me && me.name) || '').split(' ')[0] || 'מנהל המוצר';
+  var txt = 'היי, ' + me1 + ' מקבוצת G1.\nיצא סרטון הדרכה מעודכן ל-SiteGuard (פחות משתי דקות): עבודה בתלת-ממד ישירות על השרטוט, סימולציית פריצה ללקוח, שליחת הצעה בוואטסאפ או במייל בלחיצה אחת וסקיצה בתלת-ממד.\n▶ לצפייה: ' + TRAIN_URL + '\nשווה לראות לפני הביקור הבא אצל לקוח.';
+  modal('<h2>שליחת סרטון ההדרכה</h2><p class="sub" style="margin:4px 0 10px">הסרטון המעודכן לסוכנים (1:54 דק\'). בחרו איך לשלוח:</p>' +
+    '<video class="tv-prev" controls playsinline preload="none" poster="' + APP_URL + 'media/poster.jpg?v=6" src="' + TRAIN_MP4 + '"></video>' +
+    '<div class="tv-opts"><section><h3>💬 בוואטסאפ</h3><p class="sub" style="margin:0 0 6px">נפתח וואטסאפ עם ההודעה — בוחרים שם סוכנים או את קבוצת הסוכנים.</p>' +
+      '<textarea id="tvTxt" rows="6" style="width:100%;padding:10px;border:1px solid #C9D2DC;border-radius:10px;font:inherit">' + esc(txt) + '</textarea>' +
+      '<div class="row" style="margin-top:8px;justify-content:flex-end;gap:8px"><button class="btn" id="tvCopy">העתקה</button><button class="btn primary" id="tvWa">פתיחת וואטסאפ</button></div></section>' +
+    '<section><h3>🔔 לתיבת ההודעות באפליקציה</h3><p class="sub" style="margin:0 0 8px">הודעה עם כפתור "צפייה בסרטון" — הסרטון מתנגן בתוך האפליקציה. בוחרים למי, מתי ועד מתי, ורואים מי צפה.</p>' +
+      '<button class="btn navy" id="tvInbox" data-rw>הכנת הודעה עם הסרטון</button></section></div>' +
+    '<div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn" data-x>סגירה</button></div>', function(bd){
+      var md = bd.querySelector('.modal'); if (md) { md.style.width = 'min(780px, 100%)'; md.style.maxWidth = 'none'; }
+      var ta = bd.querySelector('#tvTxt');
+      bd.querySelector('#tvWa').onclick = function(){ openWA(ta.value); };
+      bd.querySelector('#tvCopy').onclick = function(){ var v = ta.value; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function(){ toast('ההודעה הועתקה'); }, function(){ ta.select(); try { document.execCommand('copy'); toast('ההודעה הועתקה'); } catch(e) {} }); };
+      bd.querySelector('#tvInbox').onclick = function(){ bd.remove(); msgEdit(null, false, { type:'product', pri:'important', pin:true, title:'סרטון הדרכה: מה חדש ב-SiteGuard',
+        body:'פחות משתי דקות על כל החידושים: עבודה בתלת-ממד ישירות על השרטוט, סימולציית פריצה עם יומן זיהויים, שליחת הצעה בוואטסאפ או במייל בלחיצה אחת, וסקיצה בתלת-ממד למתקין וללקוח.',
+        cta:{ label:'▶ צפייה בסרטון', url:TRAIN_URL } }); };
+    });
 }
 // WhatsApp reminder: the message opens in WhatsApp and the manager picks the agent there
 // (phone numbers are kept only encrypted, so the page never knows them)
