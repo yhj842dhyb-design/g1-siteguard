@@ -84,6 +84,11 @@ td input[type=number]{ max-width:120px; text-align:center; font-variant-numeric:
 .tv-opts section{ border:1px solid #E1E6EC; border-radius:14px; padding:12px }
 .tv-opts h3{ margin:0 0 4px; font-size:15px }
 @media (max-width:760px){ .tv-opts{ grid-template-columns:1fr } }
+.ms-stats{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin-top:12px; font-size:13.5px }
+.ms-tools{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px }
+.ms-tools input[type=search]{ flex:1 1 200px; min-height:40px; border:1px solid #C9D2DC; border-radius:10px; padding:6px 12px; font:inherit }
+.ms-tools .sp{ flex:1 1 0 }
+tr[hidden]{ display:none }
 .apm-prev{ width:40px; height:40px; object-fit:contain; border-radius:8px; background:#f4f6f9; display:block }
 input.apm{ min-width:150px }
 ol.steps{ margin:6px 0 0; padding-inline-start:20px; line-height:1.9 }
@@ -370,7 +375,7 @@ body.ro .pubbar, body.ro [data-rw], body.ro #btnAdd, body.ro #meCode{ display:no
     <button class="tab" role="tab" data-t="brands" aria-selected="false">חברות ומיתוג</button>
     <button class="tab" role="tab" data-t="logins" aria-selected="false">כניסות ומכשירים</button>
     <button class="tab" role="tab" data-t="surveys" aria-selected="false">סקרים ומשוב</button>
-    <button class="tab" role="tab" data-t="agent" aria-selected="false">אפליקציית סוכנים · מחירים</button>
+    <button class="tab" role="tab" data-t="agent" aria-selected="false">מחירון MSRP</button>
     <button class="tab" role="tab" data-t="consumer" aria-selected="false">אפליקציית לקוחות</button>
     <button class="tab" role="tab" data-t="texts" aria-selected="false">שמות ותיאורים</button>
     <button class="tab" role="tab" data-t="remote" aria-selected="false">שליטה מרחוק</button>
@@ -1578,28 +1583,33 @@ function modal(html, init){
 var RISCO_SUGGEST = { hub:'RISCO LightSYS Plus', keypad:'RISCO Panda', pir:'RISCO BWare PIR', pir_pet:'RISCO BWare PET', pir_am:'RISCO BWare DT AM', pir_ceiling:'RISCO iWISE 360',
   curtain_in:'RISCO Curtain PIR', curtain_out:'RISCO Beyond DT / WatchOUT', contact:'RISCO Slim Door/Window', glassbreak:'RISCO Glassbreak', smoke:'RISCO Smoke & Heat', flood:'RISCO Flood',
   siren_in:'RISCO Indoor Sounder', siren_out:'RISCO Lumin8', cam_in:'RISCO VUpoint', cam_out:'RISCO VUpoint', nvr:'RISCO VUpoint NVR' };
-var ARCH_LIST = [['generic', 'כללית (ללא יצרן)', 'שמות כלליים · עד 32 אזורים'], ['pima_hp', 'PIMA Hunter-Pro 832', 'עד 32 אזורים · ZEL508 / ZEX508 / ZEX516'], ['pima_force', 'PIMA FORCE', 'עד 144 קוויים + 64 אלחוטיים · ZEL508 / ZEX508 / ZEX516'], ['risco_lsp', 'RISCO LightSYS+', 'עד 512 אזורים (256 אלחוטיים) · מרחיבי 8 RP432EZ8']];
+var ARCH_LIST = [['generic', 'כללית (ללא יצרן)', 'שמות כלליים · עד 32 אזורים'], ['pima_force', 'PIMA FORCE', 'עד 144 קוויים + 64 אלחוטיים · ZEL508 / ZEX508 / ZEX516'], ['risco_lsp', 'RISCO LightSYS+', 'עד 512 אזורים (256 אלחוטיים) · מרחיבי 8 RP432EZ8']];
 var MON_LIST = [['wired','חיבור קווי (חודשי)'],['wireless','חיבור אלחוטי (חודשי)'],['gprs','משדר GPRS (חודשי)'],['gprsOnce','משדר GPRS — חד-פעמי'],['central','מוקד צופה (חודשי)'],['smart','שירות סמארט (חודשי)'],['analytics','ערוצי אנליטיקה — לערוץ (חודשי)'],['anOnce','חיבור ערוצי אנליטיקה — חד-פעמי'],['pa','מוקד כריזה (חודשי)']];
 function rAgent(){
   var P = cfg.agent.prices, C = cfg.agent.cablePrices; cfg.agent.monPrices = cfg.agent.monPrices || {}; var MP = cfg.agent.monPrices;
   var byCat = {}; DEV.forEach(function(d){ (byCat[d.cat] = byCat[d.cat] || []).push(d); });
   var rows = Object.keys(CAT).filter(function(c){ return byCat[c]; }).map(function(c){
     return '<tr class="cat-h"><td colspan="3">' + CAT[c] + '</td></tr>' + byCat[c].map(function(d){ var p = P[d.t] || {};
-      return '<tr><td>' + esc(d.label) + '</td><td><input type="number" min="0" class="ap" data-k="' + d.t + '" data-f="list" value="' + (p.list != null ? p.list : '') + '" aria-label="מחיר מחירון ' + esc(d.label) + '"></td>' +
+      return '<tr data-n="' + esc(d.label) + '"><td>' + esc(d.label) + '</td><td><input type="number" min="0" class="ap" data-k="' + d.t + '" data-f="list" value="' + (p.list != null ? p.list : '') + '" aria-label="מחיר מחירון ' + esc(d.label) + '"></td>' +
         '<td><input type="number" min="0" class="ap" data-k="' + d.t + '" data-f="min" value="' + (p.min != null ? p.min : '') + '" aria-label="מחיר מינימום ' + esc(d.label) + '"></td></tr>'; }).join('');
   }).join('');
-  $('#pane').innerHTML = '<h1>אפליקציית הסוכנים · מחירים</h1><p class="sub">מחיר מחירון נכנס אוטומטית להצעת המחיר. מחיר מינימום — אי אפשר לשלוח או לשמור הצעה מתחת לו, גם לא אחרי הנחה. שדה ריק = הסוכן קובע בעצמו.</p>' +
-    '<div class="card"><div class="grid2"><label class="f">הנחה מקסימלית בהצעה (%)<input type="number" id="maxDisc" min="0" max="100" value="' + (cfg.agent.maxDiscountPct != null ? cfg.agent.maxDiscountPct : '') + '"><small>ריק = ללא הגבלה</small></label>' +
-      '<label class="f">עלות התקנה (₪, צוות התקנות)<input type="number" id="instPrice" min="0" value="' + (cfg.agent.install != null ? cfg.agent.install : '') + '"><small>נכנס להצעה כברירת מחדל; לסוכן עם "מחירון קבוע" — לא ניתן לשינוי</small></label></div>' +
-      '<p class="sub" style="margin:8px 0 0">🔒 <b>מחירון קבוע:</b> בדף "סוכנים והרשאות" מסמנים לסוכן "מחירון קבוע · רק הנחה" — המחירים שכאן נכנסים להצעה שלו ואינם ניתנים לשינוי; הוא יכול רק לתת הנחה עד המקסימום שלמעלה.</p></div>' +
-    (function(){ var on = Array.isArray(cfg.agent.archs) && cfg.agent.archs.length ? cfg.agent.archs : ARCH_LIST.map(function(a){ return a[0]; }), def = cfg.agent.archDefault || 'generic';
+  if (cfg.agent.maxDiscountPct == null && !rAgent.md) { rAgent.md = true; cfg.agent.maxDiscountPct = 20; markDirty(); }   // the company rule: up to 20%
+  var ags = (cfg.access.users || []).filter(function(u){ return u.role === 'agent' && u.status !== 'deleted'; }), locked = ags.filter(function(u){ return u.lockPrices; }).length;
+  $('#pane').innerHTML = '<h1>מחירון MSRP · אפליקציית הסוכנים</h1><p class="sub">המחירון הרשמי לכל האביזרים, הכבילה, ההתקנה והמוקד — <b>₪ לפני מע״מ</b> (המע״מ מתווסף בהצעה). מחיר MSRP נכנס אוטומטית להצעת המחיר. סוכן עם "מחירון קבוע" עובד רק לפיו ויכול לתת הנחה עד המקסימום. מחיר מינימום (לא חובה) — אי אפשר לשלוח הצעה מתחתיו. שדה ריק = הסוכן קובע בעצמו.</p>' +
+    '<div class="card ms-top"><div class="grid2"><label class="f">הנחה מקסימלית בהצעה (%)<input type="number" id="maxDisc" min="0" max="100" value="' + (cfg.agent.maxDiscountPct != null ? cfg.agent.maxDiscountPct : '') + '"><small>חלה על סוכנים עם מחירון קבוע · ריק = ללא הגבלה</small></label>' +
+      '<label class="f">עלות התקנה (₪ לפני מע״מ, צוות התקנות)<input type="number" id="instPrice" min="0" value="' + (cfg.agent.install != null ? cfg.agent.install : '') + '"><small>נכנס להצעה כברירת מחדל; לסוכן עם "מחירון קבוע" — לא ניתן לשינוי</small></label></div>' +
+      '<div class="ms-stats"><span id="msCount"></span><span>🔒 מחירון קבוע: <b id="msLocked">' + locked + '</b> מתוך ' + ags.length + ' סוכנים</span>' + (ags.length && locked < ags.length ? '<button type="button" class="btn sm navy" id="msLockAll" data-rw>להחיל מחירון קבוע על כל הסוכנים</button>' : '') + '</div>' +
+      '<div class="ms-tools"><input type="search" id="msQ" placeholder="חיפוש אביזר…" aria-label="חיפוש אביזר במחירון"><label class="sw"><input type="checkbox" id="msMiss"> רק בלי מחיר</label><span class="sp"></span>' +
+        '<button type="button" class="btn sm" id="msExport">⬇ ייצוא לאקסל (CSV)</button><button type="button" class="btn sm" id="msImport" data-rw>⬆ ייבוא מאקסל</button><input type="file" id="msFile" accept=".csv,text/csv" hidden></div>' +
+      '<p class="sub" style="margin:6px 0 0">טיפ: מייצאים, ממלאים את עמודת MSRP באקסל, שומרים כ-CSV ומייבאים — כל המחירים נכנסים בבת אחת. בסוף לוחצים "פרסום".</p></div>' +
+    (function(){ var known = ARCH_LIST.map(function(a){ return a[0]; }), on = Array.isArray(cfg.agent.archs) && cfg.agent.archs.length ? cfg.agent.archs.filter(function(k){ return known.indexOf(k) > -1; }) : known, def = known.indexOf(cfg.agent.archDefault) > -1 ? cfg.agent.archDefault : 'generic';
       return '<div class="card" style="margin-top:14px"><h2>ארכיטקטורות מערכת האזעקה</h2><p class="sub">הסוכן בוחר בהצעת המחיר את המערכת (יצרן ודגם רכזת). הבחירה קובעת את קיבולת האזורים, סוג המרחיבים ושמות הרכזת, לוח המקשים והמרחיבים בהצעה, בסקיצה ובהדמיה.</p>' +
         '<div class="tbl-wrap"><table><thead><tr><th>מוצגת לסוכנים</th><th>ברירת מחדל</th><th>מערכת</th><th>קיבולת ומרחיבים</th></tr></thead><tbody>' +
         ARCH_LIST.map(function(a){ return '<tr><td><input type="checkbox" class="aarch" value="' + a[0] + '"' + (on.indexOf(a[0]) > -1 ? ' checked' : '') + ' aria-label="להציג ' + a[1] + '"></td><td><input type="radio" name="archDef" class="aarchd" value="' + a[0] + '"' + (def === a[0] ? ' checked' : '') + ' aria-label="ברירת מחדל ' + a[1] + '"></td><td><b>' + a[1] + '</b></td><td>' + a[2] + '</td></tr>'; }).join('') +
         '</tbody></table></div></div>'; })() +
-    '<div class="card" style="margin-top:14px"><h2>שירותי מוקד ותשלומים חד-פעמיים</h2><div class="tbl-wrap"><table><thead><tr><th>שירות</th><th>מחיר מחירון (₪, כולל מע״מ)</th></tr></thead><tbody>' +
-      MON_LIST.map(function(m){ return '<tr><td>' + m[1] + '</td><td><input type="number" min="0" class="amon" data-k="' + m[0] + '" value="' + (MP[m[0]] != null ? MP[m[0]] : '') + '" aria-label="' + m[1] + '"></td></tr>'; }).join('') + '</tbody></table></div></div>' +
-    '<div class="card" style="margin-top:14px"><h2>ציוד (ליחידה, ₪ כולל מע״מ)</h2><div class="tbl-wrap"><table><thead><tr><th>פריט</th><th>מחיר מחירון</th><th>מחיר מינימום</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>' +
+    '<div class="card" style="margin-top:14px"><h2>שירותי מוקד ותשלומים חד-פעמיים</h2><div class="tbl-wrap"><table><thead><tr><th>שירות</th><th>MSRP (₪ לפני מע״מ)</th></tr></thead><tbody>' +
+      MON_LIST.map(function(m){ return '<tr data-n="' + esc(m[1]) + '"><td>' + m[1] + '</td><td><input type="number" min="0" class="amon" data-k="' + m[0] + '" value="' + (MP[m[0]] != null ? MP[m[0]] : '') + '" aria-label="' + m[1] + '"></td></tr>'; }).join('') + '</tbody></table></div></div>' +
+    '<div class="card" style="margin-top:14px"><h2>מחירון MSRP — ציוד (₪ ליחידה, לפני מע״מ)</h2><div class="tbl-wrap"><table><thead><tr><th>אביזר</th><th>MSRP</th><th>מחיר מינימום</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>' +
     (function(){ var PR = cfg.agent.products || {}; var list = DEV.filter(function(d){ return !/battery|^zexp|^poe|dialer|repeater|io_module/.test(d.t); });
       return '<div class="card" style="margin-top:14px"><h2>תמונות ודגמים בהדמיית התלת-ממד</h2><p class="sub">הדגם מוצג בכרטיס האביזר ובסימולציית הפריצה. תמונה: קישור ישיר לקובץ (https) של תמונת מוצר שמותר לכם להשתמש בה — בלי קישור, מוצגת הדמיה של האביזר מהמודל עצמו.</p>' +
         '<button type="button" class="btn navy" id="prodFill">מילוי דגמים מוצעים (RISCO) בשדות הריקים</button>' +
@@ -1607,8 +1617,8 @@ function rAgent(){
         list.map(function(d){ var p = PR[d.t] || {}; return '<tr><td>' + esc(d.label) + '</td><td><input type="text" class="apm" data-k="' + d.t + '" data-f="model" maxlength="60" value="' + esc(p.model || '') + '" placeholder="' + esc(RISCO_SUGGEST[d.t] || '') + '" aria-label="דגם ' + esc(d.label) + '"></td>' +
           '<td><input type="url" class="apm mono" data-k="' + d.t + '" data-f="img" value="' + esc(p.img || '') + '" placeholder="https://…" aria-label="קישור לתמונה ' + esc(d.label) + '"></td><td>' + (p.img ? '<img class="apm-prev" alt="" src="' + esc(p.img) + '">' : '') + '</td></tr>'; }).join('') +
         '</tbody></table></div></div>'; })() +
-    '<div class="card" style="margin-top:14px"><h2>כבילה (למטר)</h2><div class="tbl-wrap"><table><thead><tr><th>סוג כבל</th><th>מחיר מחירון</th><th>מחיר מינימום</th></tr></thead><tbody>' +
-      CABLES.map(function(c){ var p = C[c[0]] || {}; return '<tr><td>' + c[1] + '</td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="list" value="' + (p.list != null ? p.list : '') + '"></td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="min" value="' + (p.min != null ? p.min : '') + '"></td></tr>'; }).join('') +
+    '<div class="card" style="margin-top:14px"><h2>מחירון MSRP — כבילה (₪ למטר, לפני מע״מ)</h2><div class="tbl-wrap"><table><thead><tr><th>סוג כבל</th><th>MSRP</th><th>מחיר מינימום</th></tr></thead><tbody>' +
+      CABLES.map(function(c){ var p = C[c[0]] || {}; return '<tr data-n="' + esc(c[1]) + '"><td>' + c[1] + '</td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="list" value="' + (p.list != null ? p.list : '') + '"></td><td><input type="number" min="0" step="0.1" class="ac" data-k="' + c[0] + '" data-f="min" value="' + (p.min != null ? p.min : '') + '"></td></tr>'; }).join('') +
     '</tbody></table></div></div>';
   function bindP(sel, T){ Array.prototype.forEach.call(document.querySelectorAll(sel), function(inp){ inp.oninput = function(){
     var k = inp.dataset.k, f = inp.dataset.f, v = inp.value.trim(); T[k] = T[k] || {}; T[k][f] = v === '' ? null : Number(v);
@@ -1630,7 +1640,41 @@ function rAgent(){
     cfg.agent.archs = on.length === ARCH_LIST.length ? null : on; if (!cfg.agent.archs) delete cfg.agent.archs; cfg.agent.archDefault = d; markDirty(); };
   Array.prototype.forEach.call(document.querySelectorAll('.aarch, .aarchd'), function(c){ c.onchange = archSync; });
   $('#instPrice').oninput = function(){ var v = this.value.trim(); if (v === '') delete cfg.agent.install; else cfg.agent.install = Math.max(0, Number(v)); markDirty(); };
-  $('#maxDisc').oninput = function(){ var v = this.value.trim(); cfg.agent.maxDiscountPct = v === '' ? null : Math.max(0, Math.min(100, Number(v))); markDirty(); };
+  $('#maxDisc').oninput = function(){ var v = this.value.trim(); cfg.agent.maxDiscountPct = v === '' ? null : Math.max(0, Math.min(100, Number(v))); rAgent.md = true; markDirty(); };
+  var msCount = function(){ var n = DEV.filter(function(d){ return P[d.t] && P[d.t].list != null; }).length; $('#msCount').innerHTML = 'מתומחרים <b>' + n + '</b> מתוך ' + DEV.length + ' אביזרים' + (n < DEV.length ? ' · <span style="color:var(--bad)">חסרים ' + (DEV.length - n) + '</span>' : ' ✓'); };
+  var msFilter = function(){ var q = ($('#msQ').value || '').trim(), miss = $('#msMiss').checked;
+    Array.prototype.forEach.call(document.querySelectorAll('#pane tr[data-n]'), function(tr){ var l = tr.querySelector('[data-f=list], .amon'); tr.hidden = !!((q && tr.dataset.n.indexOf(q) < 0) || (miss && l && l.value !== '')); });
+    Array.prototype.forEach.call(document.querySelectorAll('#pane tr.cat-h'), function(h){ var n = h.nextElementSibling, any = false; while (n && !n.classList.contains('cat-h')) { if (!n.hidden) any = true; n = n.nextElementSibling; } h.hidden = !any; }); };
+  msCount(); $('#msQ').oninput = msFilter; $('#msMiss').onchange = msFilter;
+  Array.prototype.forEach.call(document.querySelectorAll('.ap, .ac, .amon'), function(inp){ inp.addEventListener('input', msCount); });
+  var csvCell = function(v){ v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  $('#msExport').onclick = function(){
+    var L = [['קוד', 'קטגוריה', 'אביזר', 'MSRP (₪ לפני מע״מ)', 'מחיר מינימום'].map(csvCell).join(',')];
+    DEV.forEach(function(d){ var p = P[d.t] || {}; L.push([d.t, CAT[d.cat] || d.cat, d.label, p.list, p.min].map(csvCell).join(',')); });
+    CABLES.forEach(function(c){ var p = C[c[0]] || {}; L.push(['cable:' + c[0], 'כבילה (למטר)', c[1], p.list, p.min].map(csvCell).join(',')); });
+    MON_LIST.forEach(function(m){ L.push(['mon:' + m[0], 'מוקד ושירותים', m[1], MP[m[0]], ''].map(csvCell).join(',')); });
+    L.push(['install', 'התקנה', 'עלות התקנה', cfg.agent.install, ''].map(csvCell).join(','));
+    var blob = new Blob(['\ufeff' + L.join('\r\n')], { type:'text/csv;charset=utf-8' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'G1-SiteGuard-MSRP-' + new Date().toISOString().slice(0, 10) + '.csv'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  };
+  var parseCsv = function(t){ var rows = [], row = [], cur = '', q = false; t = t.replace(/^\ufeff/, '');
+    for (var i = 0; i < t.length; i++) { var ch = t[i];
+      if (q) { if (ch === '"') { if (t[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+      else if (ch === '"') q = true; else if (ch === ',' || ch === ';' || ch === '\t') { row.push(cur); cur = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && t[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; } else cur += ch; }
+    if (cur !== '' || row.length) { row.push(cur); rows.push(row); } return rows; };
+  var num = function(v){ v = String(v == null ? '' : v).replace(/[₪,\s]/g, ''); return v === '' || isNaN(Number(v)) ? null : Math.max(0, Number(v)); };
+  $('#msImport').onclick = function(){ $('#msFile').click(); };
+  $('#msFile').onchange = function(){ var f = this.files && this.files[0]; if (!f) return; var rd = new FileReader();
+    rd.onload = function(){ var rows = parseCsv(String(rd.result || '')), n = 0, bad = 0, known = {}; DEV.forEach(function(d){ known[d.t] = 1; });
+      rows.slice(1).forEach(function(r){ var k = String(r[0] || '').trim(), l = num(r[3]), m = num(r[4]); if (!k) return;
+        if (known[k]) { if (l != null || m != null) { P[k] = P[k] || {}; if (l != null) P[k].list = l; if (m != null) P[k].min = m; n++; } }
+        else if (k.indexOf('cable:') === 0) { var ck = k.slice(6); if (l != null || m != null) { C[ck] = C[ck] || {}; if (l != null) C[ck].list = l; if (m != null) C[ck].min = m; n++; } }
+        else if (k.indexOf('mon:') === 0) { if (l != null) { MP[k.slice(4)] = l; n++; } }
+        else if (k === 'install') { if (l != null) { cfg.agent.install = l; n++; } }
+        else bad++; });
+      markDirty(); rAgent(); toast(n ? 'עודכנו ' + n + ' מחירים מהקובץ' + (bad ? ' · ' + bad + ' שורות לא זוהו' : '') + ' — בדקו ולחצו "פרסום"' : 'לא נמצאו מחירים בקובץ — ודאו שהעמודה הראשונה היא "קוד" כמו בקובץ הייצוא'); };
+    rd.readAsText(f, 'utf-8'); this.value = ''; };
+  var la = $('#msLockAll'); if (la) la.onclick = function(){ if (!confirm('לסמן "מחירון קבוע · רק הנחה" לכל ' + ags.length + ' הסוכנים? אפשר לשנות לכל סוכן בנפרד בדף "סוכנים והרשאות".')) return; ags.forEach(function(u){ u.lockPrices = true; }); markDirty(); rAgent(); toast('כל הסוכנים עובדים עכשיו לפי המחירון — לחצו "פרסום"'); };
 }
 
 function rConsumer(){
