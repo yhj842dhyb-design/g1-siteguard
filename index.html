@@ -340,10 +340,17 @@
   /* "1 סידור ואבזור" on a desktop: the palette is already open beside the plan, so the
      button points at it instead of opening a drawer. */
   .palette.attention{ box-shadow:inset 0 0 0 3px var(--accent-2); transition:box-shadow .2s; }
+  /* placing a device: the column fades back so the plan is clear, and sharpens again as soon as the
+     mouse returns to it (desktop); as a drawer it slides aside to a thin edge instead of closing */
+  .palette{ transition:opacity .28s ease, filter .28s ease, transform .22s ease; }
+  @media (hover:hover){ body.pal-fade .palette:not(.mobile-open):not(:hover):not(:focus-within){ opacity:.3; filter:blur(1.2px) saturate(.5); } }
+  .palette.mobile-open.peek{ opacity:.55; cursor:pointer; box-shadow:none; }
+  .palette.mobile-open.peek > *{ pointer-events:none; }
+  @media (hover:hover){ .palette.mobile-open.peek:hover{ opacity:1; transform:none !important; box-shadow:0 0 28px rgba(6,10,16,0.35); } .palette.mobile-open.peek:hover > *{ pointer-events:auto; } }
   .tb-step .btn-sm{ padding:6px 8px; }
   #zoomLabel{ display:inline-block; }
   .floor-tabs .ft-short{ display:none; }
-  @container cvtb (max-width:850px){
+  @container cvtb (max-width:700px){
     .tb-lbl{ display:none; }
   }
   @container cvtb (max-width:700px){
@@ -402,6 +409,18 @@
   }
   @keyframes tbStatusPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
   .tb-status-io{ font-weight:700; }
+  .tb-ceil{ display:inline-flex; align-items:center; gap:4px; padding-inline-start:8px; border-inline-start:1px solid var(--line); cursor:pointer; white-space:nowrap; }
+  .tb-ceil input{ width:46px; padding:2px 4px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:inherit; font:inherit; font-weight:700; text-align:center; }
+  .tb-ceil.is-high{ color:#B4570A; font-weight:700; }
+  .q-disc-req{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:6px 0 4px; }
+  .q-disc-req button{ border:1px dashed #9DB4C8; background:#fff; color:#1F6FA8; border-radius:9px; padding:6px 12px; font:600 12.5px var(--font-body); cursor:pointer; }
+  .q-disc-req .dr-st{ font-size:12px; color:var(--ink-dim); }
+  .q-disc-req .dr-st.ok{ color:#0F7A4F; font-weight:700; }
+  .modal.client-view .q-disc-req, body.pdf-export .q-disc-req{ display:none !important; }
+  .dr-grid{ display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:13px; margin:4px 0 12px; }
+  .dr-grid b{ font-weight:700; }
+  .dr-row{ display:flex; align-items:center; gap:8px; margin-bottom:10px; font:700 13px var(--font-body); }
+  .dr-row input{ width:80px; padding:7px 8px; border:1px solid #C9D6E2; border-radius:9px; font:700 15px var(--font-body); text-align:center; }
   .tb-status-io:empty{ display:none; }
   .floor-tabs{ display:flex; gap:3px; padding:3px; border-radius:10px; background:var(--panel-2); border:1px solid var(--line); }
   .floor-tabs button{
@@ -1565,7 +1584,7 @@
      HEIGHT as it is narrow in portrait, so this also matches on a short landscape viewport,
      not width alone, or landscape silently fell back to the desktop layout on the very
      device class this mode is for. */
-  @media (max-width:680px), (max-height:680px) and (orientation:landscape){
+  @media (max-width:680px), (max-height:680px) and (orientation:landscape) and (hover:none), (max-height:460px) and (orientation:landscape){
     .body{ position:relative; }
     .mobile-only-btn{ display:inline-flex; }
     .mobile-panel-close{ display:inline-flex; }
@@ -1585,6 +1604,7 @@
     .inspector{ left:0; transform:translateX(-100%); border-right:0; }
     .palette.mobile-open{ transform:translateX(0); }
     .inspector.mobile-open{ transform:translateX(0); }
+    .palette.mobile-open.peek{ transform:translateX(calc(100% - 22px)); }
   }
   /* narrow phone: fit the logo, score and the two header buttons on one row (score shows its
      ring only — the full gauge is in the הכוונה panel), so the header takes 2 rows, not 3 */
@@ -1604,7 +1624,7 @@
      here would cost 40–60px of an already-scarce ~380px of height for no reason. Scoped to
      max-height + orientation only (not the width-only breakpoint above), so a narrow PORTRAIT
      phone still gets the 2-row topbar it actually needs. */
-  @media (max-height:680px) and (orientation:landscape){
+  @media (max-height:680px) and (orientation:landscape) and (hover:none), (max-height:460px) and (orientation:landscape){
     /* Rather than fight over exactly how much to shrink the customer-name/address fields
        (guessing wrong makes them too narrow to read, on top of the many actual landscape
        widths phones ship in), give the whole topbar the same horizontally-swipeable-strip
@@ -1698,6 +1718,7 @@
       height:min(56vh, 470px); border-radius:20px 20px 0 0; border:0; padding-top:0; padding-bottom:0;
       transform:translateY(calc(100% + var(--mnav-h) + 40px)); box-shadow:0 -8px 28px rgba(6,10,16,.25); }
     .palette.mobile-open{ transform:translateY(0); }
+    .palette.mobile-open.peek{ transform:translateY(calc(100% - 26px)) !important; }
     .palette .panel-head{ padding:6px 14px 2px; position:relative; }
     .palette .panel-head::before{ content:''; position:absolute; top:6px; left:50%; width:42px; height:5px; margin-left:-21px; border-radius:3px; background:var(--line); }
     .palette .panel-head > span{ padding-top:10px; }
@@ -1924,7 +1945,11 @@
   body.consumer #mMoreSheet [data-mm=inspector], body.consumer #mMoreSheet [data-mm=project], body.consumer #mMoreSheet [data-mm=save], body.consumer #mMoreSheet [data-mm=open], body.consumer #mMoreSheet [data-mm=clear]{ display:none !important; }
   body.consumer #btnUndo[disabled]{ opacity:.4; }
   #btnUndo .tb-lbl{ display:inline !important; }
-  @media (max-width:430px){ #btnMInspector .tb-lbl-m{ display:none; } }
+  @media (max-width:430px){ #btnMInspector .tb-lbl-keep{ display:none; } }
+  .tb-props{ font-weight:700; position:relative; }
+  .tb-props.has-selection{ border-color:var(--accent-2); color:var(--accent-2-text, inherit); }
+  .tb-props.has-selection::after{ content:''; position:absolute; top:3px; left:3px; width:7px; height:7px; border-radius:50%; background:var(--accent-2); }
+  .inspector.attention{ box-shadow:inset 0 0 0 3px var(--accent-2); transition:box-shadow .2s; }
   #btnUndo[disabled]{ opacity:.45; cursor:default; } #btnUndo:not([disabled]){ font-weight:800; }
   body.consumer #btnUndo .tb-lbl{ display:inline !important; }
   body.consumer.c-step1 #btnDrawFence, body.consumer.c-step1 .room-subgroup:has(.room-preset-btn[data-label="בריכת שחייה"]) .room-preset-btn[data-label="בריכת שחייה"]{ display:none; }
@@ -3005,13 +3030,11 @@
             <button type="button" class="btn btn-sm tb-step-main" id="btnMobilePalette" title="חדרים, פתחים ואביזרים — שרטוט המבנה ומיקום האביזרים" aria-label="סידור ואבזור — פתיחת רשימת החדרים והאביזרים">🧰 סידור ואבזור</button>
             <button type="button" class="btn btn-ghost btn-sm mobile-only-btn" id="btnMobileInspector" title="הכוונה, ציון הגנה, כמויות ומאפייני הפריט שנבחר" aria-label="הכוונה ומאפיינים">📋<span class="tb-lbl"> הכוונה</span></button>
             <button class="btn btn-accent3 btn-sm" id="btnRecommendations" title="לאחר שסימנתם את החדרים/פתחים/גדרות כפי שהם במציאות — ניתוח נקודות תורפה וגילוי, והצעת מיקומי אביזרים משלימים ישירות על גבי המפה">🎯 המלצות<span class="tb-lbl"> מיגון</span></button>
-            <button class="btn btn-ghost btn-sm" id="btnLegend" title="מדריך התקנה לכל אביזר — גובה, מיקום וטיפים" aria-label="מדריך התקנה">📘<span class="tb-lbl"> מדריך התקנה</span></button>
           </div>
           <span class="tb-flow-arrow" aria-hidden="true">←</span>
           <div class="tb-step" data-step="2">
             <span class="tb-step-num" aria-hidden="true">2</span>
             <button class="btn btn-primary btn-sm tb-step-main" id="btnSend" title="בניית הצעת מחיר לפי השרטוט ושליחתה ללקוח">💰 הצעת מחיר</button>
-            <button class="btn btn-ghost btn-sm" id="btnQuoteLibrary" title="כל הצעות המחיר שנשלחו/הודפסו ממכשיר זה — איתור, פתיחה לעריכה או הורדת קובץ מחדש" aria-label="הצעות מחיר שנשמרו">🗂️<span class="tb-lbl"> הצעות שמורות</span></button>
           </div>
           <span class="tb-flow-arrow" aria-hidden="true">←</span>
           <div class="tb-step" data-step="3">
@@ -3022,15 +3045,16 @@
         </div>
 
         <div class="tb-row tb-canvas">
+          <button type="button" class="btn btn-ghost btn-sm tb-props" id="btnMInspector" title="מאפייני החדר או האביזר שנבחר — שם, מידות, גובה תקרה, כיוון" aria-label="מאפיינים">📋<span class="tb-lbl-keep"> מאפיינים</span></button>
           <!-- Only shown/populated for a multi-floor house (see buildFloorTabs()) — lets the
                agent switch which floor's rooms/devices are on the canvas right now. -->
           <div class="floor-tabs" id="floorTabs" role="tablist" aria-label="מעבר בין קומות" hidden></div>
           <div class="tb-status" title="קנה מידה: כל משבצת ברשת השרטוט שווה ל-0.5 מטר בשטח">
             <span class="tb-status-dot" aria-hidden="true"></span>
             <span id="floorLabel">משבצת = 0.5 מ׳</span>
+            <label class="tb-ceil" id="tbCeil" title="גובה התקרה בפרויקט — קובע את סוג גלאי התקרה (מעל 3.6 מ׳ נדרש גלאי תקרתי תעשייתי) ואת גובה הקירות בתלת-ממד. אפשר לשנות לחדר מסוים במאפייני החדר">↕ תקרה <input type="number" id="ceilH" min="2" max="15" step="0.1" value="2.7" inputmode="decimal" aria-label="גובה התקרה במטרים"> מ׳</label>
             <span class="tb-status-io" id="projectIOStatus"></span>
           </div>
-          <button type="button" class="btn btn-ghost btn-sm m-only" id="btnMInspector" title="מאפייני הפריט שנבחר, הכוונה וכמויות" aria-label="מאפיינים">📋<span class="tb-lbl-m"> מאפיינים</span></button>
           <button type="button" class="btn btn-ghost btn-sm tb-undo" id="btnUndo" disabled title="חזרה צעד אחורה (Ctrl+Z)" aria-label="חזור — צעד אחורה">↶<span class="tb-lbl"> חזור</span></button>
           <button type="button" class="btn btn-ghost btn-sm tb-undo" id="btnRedo" hidden title="קדימה — ביטול החזרה (Ctrl+Y)" aria-label="קדימה">↷</button>
           <div class="tb-spacer"></div>
@@ -3052,6 +3076,8 @@
           <div class="tb-menu">
             <button type="button" class="btn btn-ghost btn-sm" id="btnMoreMenu" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu" title="שמירה ופתיחה של קובץ פרויקט, דוגמה, עזרה וניקוי">⋯<span class="tb-lbl"> עוד</span></button>
             <div class="tb-menu-pop" id="moreMenu" role="menu" hidden>
+              <button class="btn btn-ghost btn-sm" id="btnQuoteLibrary" role="menuitem" title="כל הצעות המחיר שנשלחו/הודפסו ממכשיר זה — איתור, פתיחה לעריכה או הורדת קובץ מחדש" aria-label="הצעות מחיר שנשמרו">🗂️ הצעות מחיר שמורות</button>
+              <button class="btn btn-ghost btn-sm" id="btnLegend" role="menuitem" title="מדריך התקנה לכל אביזר — גובה, מיקום וטיפים" aria-label="מדריך התקנה">📘 מדריך התקנה לאביזרים</button>
               <button class="btn btn-ghost btn-sm" id="btnImportPlan" role="menuitem" title="ייבוא תוכנית אדריכלית שהלקוח שלח (תמונה או PDF) — כרקע לשרטוט, עם כיול קנה מידה וזיהוי חדרים אוטומטי">📐 ייבוא תוכנית מהלקוח <span class="beta-tag">בהרצה</span></button>
               <button class="btn btn-ghost btn-sm" id="btnSaveProject" role="menuitem" title="שמירת השרטוט, האביזרים ופרטי הלקוח כקובץ במכשיר — לצורך המשך עבודה מאוחר יותר">💾 שמירת פרויקט</button>
               <button class="btn btn-ghost btn-sm" id="btnOpenProject" role="menuitem" title="פתיחת קובץ פרויקט שנשמר בעבר">📂 פתיחת פרויקט</button>
@@ -3059,7 +3085,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 156</div>
+              <div class="app-version" id="appVersion">גרסה 157</div>
             </div>
           </div>
         </div>
@@ -3452,6 +3478,7 @@
         <input type="checkbox" id="qDiscountToggle">
         <label for="qDiscountToggle">מתן הנחה על הצעה זו</label>
       </div>
+      <div class="q-disc-req" id="qDiscReq" data-html2canvas-ignore="true" hidden><button type="button" id="qDiscReqBtn">🙋 בקשת הנחה נוספת מהמנהל</button><span class="dr-st" id="qDiscReqSt"></span></div>
       <div class="rate-row price-line" id="qDiscountInputRow" hidden>
         <span>סכום ההנחה</span>
         <span>
@@ -9688,6 +9715,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (propsTabBtn) propsTabBtn.classList.toggle('has-selection', has);
     var mobileBtn = document.getElementById('btnMobileInspector');
     if (mobileBtn) mobileBtn.classList.toggle('has-selection', has);
+    var mi = document.getElementById('btnMInspector'); if (mi) mi.classList.toggle('has-selection', has);
   }
 
   /* ============================= quick placement in a room =============================
@@ -9893,7 +9921,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     // Add straight from the room box: pick the device, then the position — it is placed,
     // aimed, and its coverage flashes on the plan.
-    var addTypes = [defaultPirType(), defaultPirType() === 'pir_am' ? 'pir' : 'pir_am', 'pir_ceiling'].concat(isLargeSpace(r) ? ['pir_ceiling_ind'] : [], ['curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam']).filter(consumerAllowed);
+    var addTypes = [defaultPirType(), defaultPirType() === 'pir_am' ? 'pir' : 'pir_am'].concat(roomCeil(r) > CEIL_REG_MAX ? [] : ['pir_ceiling'], isLargeSpace(r) ? ['pir_ceiling_ind'] : [], ['curtain_in', 'cam_in', 'cam_in_analytics', 'smart_cam']).filter(consumerAllowed);
     var addType = roomAddType[r.id] && addTypes.indexOf(roomAddType[r.id]) > -1 ? roomAddType[r.id] : addTypes[0];
     var addOpts = quickPlaceOptions(addType, r);
     var addFam = ROOM_FAMILY[addType], addCap = addFam ? typeCapacity(addType, r) : 99;
@@ -9972,7 +10000,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // null when allowed, otherwise the reason to show.
   // ceiling detectors cover a circle: ⌀12 m (~80 m² each with overlap) / industrial ⌀18 m (~180 m²)
   var CEILING_AREA = { pir_ceiling:80, pir_ceiling_ind:180 };
-  function isLargeSpace(r){ return r.w * r.h >= 80; }
+  /* Ceiling height: one value for the project (toolbar, next to the scale), and a room can override
+     it (a tall warehouse in a store). A regular ceiling detector is rated to about 3.6 m; above that
+     the space needs the industrial ceiling detector (2.7–8.6 m), so a high room counts as a "large
+     space" for the recommendations and the checks warn about a regular one installed there. */
+  var CEIL_STD = 2.7, CEIL_REG_MAX = 3.6, CEIL_IND_MAX = 8.6;
+  function projCeil(){ var v = parseFloat(state.ceilH); return v >= 2 && v <= 15 ? v : CEIL_STD; }
+  function roomCeil(r){ var v = r && parseFloat(r.ceil); return v >= 2 && v <= 15 ? v : projCeil(); }
+  function ceilNoteFor(h){
+    if (h > CEIL_IND_MAX) return 'תקרה בגובה ' + h + ' מ׳ — מעל טווח הגלאי התעשייתי (עד ' + CEIL_IND_MAX + ' מ׳): התכנון דורש התאמה מול הספק (גלאי קרן / התקנה מונמכת).';
+    if (h > CEIL_REG_MAX) return 'תקרה גבוהה (' + h + ' מ׳) — גלאי תקרה רגיל מתאים עד ' + CEIL_REG_MAX + ' מ׳; כאן נדרש גלאי תקרתי תעשייתי (עד ' + CEIL_IND_MAX + ' מ׳).';
+    return '';
+  }
+  function isLargeSpace(r){ return r.w * r.h >= 80 || roomCeil(r) > CEIL_REG_MAX; }
   function typeCapacity(type, r){
     if (CEILING_AREA[type]) return Math.min(6, Math.max(1, Math.ceil(r.w * r.h / CEILING_AREA[type])));
     return roomFamilyCapacity(ROOM_FAMILY[type], r);
@@ -9983,6 +10023,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (!fam) return null;
     var r = roomContainingPoint(p);
     if (!r) return null;
+    if (type === 'pir_ceiling' && roomCeil(r) > CEIL_REG_MAX && !freePlace()) return 'ב"' + (r.label || 'חדר') + '" התקרה בגובה ' + roomCeil(r) + ' מ׳ — גלאי תקרה רגיל מתאים עד ' + CEIL_REG_MAX + ' מ׳. הציבו כאן גלאי תקרתי תעשייתי (PIR-CI).';
     if (type === 'pir_ceiling_ind' && !isLargeSpace(r)) return 'גלאי תקרתי תעשייתי מיועד לחללים גדולים בלבד (מ-80 מ״ר — מחסן, אולם, חלל מכירה). ב"' + (r.label || 'חדר') + '" (' + Math.round(r.w * r.h) + ' מ״ר) מתאים גלאי נפח רגיל או גלאי נפח תקרתי.';
     var cap = typeCapacity(type, r), have = devicesOfFamilyInRoom(fam, r, exceptId).length;
     if (have < cap) return null;
@@ -10027,6 +10068,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<div class="field"><label>רוחב (מ׳)</label><input type="number" id="pW" value="' + r.w.toFixed(1) + '" step="0.1" min="0.5"></div>' +
         '<div class="field"><label>עומק (מ׳)</label><input type="number" id="pH" value="' + r.h.toFixed(1) + '" step="0.1" min="0.5"></div>' +
         '</div>' +
+        (r.type === 'yard' || isStairsRoom(r) ? '' : '<div class="field"><label>גובה תקרה (מ׳) <span style="font-weight:400;color:var(--ink-dim)">— ריק = כמו בפרויקט (' + projCeil() + ')</span></label><input type="number" id="pCeil" value="' + (r.ceil ? r.ceil : '') + '" placeholder="' + projCeil() + '" step="0.1" min="2" max="15"></div>' +
+          '<div id="pCeilNote" class="ceil-note" style="font-size:11.5px;line-height:1.5;margin:-4px 0 8px;color:#B4570A"></div>') +
         roomQP.html +
         (isStairsRoom(r) ? '<button class="btn btn-ghost btn-sm" id="pStairsFlip" style="width:100%;justify-content:center;margin-top:10px">⇄ היפוך כיוון העלייה</button>' : '') +
         '<button class="btn btn-danger btn-sm" id="pDelete" style="width:100%;justify-content:center;margin-top:12px">מחק חדר</button>' +
@@ -10039,6 +10082,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       document.getElementById('pH').oninput = function(){ r.h = Math.max(0.5, parseFloat(this.value)||0.5); renderRooms(); };
       document.getElementById('pDelete').onclick = function(){ removeById('room', r.id); render(); };
       var sfb = document.getElementById('pStairsFlip'); if (sfb) sfb.onclick = function(){ stairsFlip(r); render(); };
+      var pc = document.getElementById('pCeil');
+      if (pc) {
+        var pcNote = function(){ var n = document.getElementById('pCeilNote'); if (n) n.textContent = ceilNoteFor(roomCeil(r)); };
+        pc.oninput = function(){ var v = parseFloat(this.value); if (v >= 2 && v <= 15) r.ceil = Math.round(v * 10) / 10; else delete r.ceil; pcNote(); clearTimeout(pc._t); pc._t = setTimeout(function(){ runGuidance(); }, 300); };
+        pc.onchange = function(){ render(); };
+        pcNote();
+      }
     } else if (selected.kind === 'opening') {
       var o = findById('opening', selected.id);
       if (!o){ selected=null; return renderProps(); }
@@ -10143,6 +10193,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function computeChecksAndScore(devicesOverride){
     var checks = [];
     var devices = devicesOverride || state.devices, openings = state.openings, rooms = state.rooms;
+    try { ceilChecks(checks, devices); } catch(e) {}
     // Mirrors computeRecommendations()'s middle-floor-apartment restriction (see there for the
     // rationale) — keeps the score/checks list from permanently penalizing gaps (window/curtain
     // coverage, keypad/camera/intercom near the door, siren, NVR, fence) that the recommendations
@@ -10332,6 +10383,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var score = Math.round(okW/totalW*100);
 
     return { checks: checks, score: score };
+  }
+  function ceilChecks(checks, devices){
+    (state.rooms || []).forEach(function(r){
+      if (r.type === 'yard' || (typeof isStairsRoom === 'function' && isStairsRoom(r))) return;
+      var h = roomCeil(r); if (h <= CEIL_REG_MAX) return;
+      var x1 = r.x, y1 = r.y, x2 = r.x + m2p(r.w), y2 = r.y + m2p(r.h);
+      var inR = devices.filter(function(d){ return (d.floor || 0) === (r.floor || 0) && d.x >= x1 && d.x <= x2 && d.y >= y1 && d.y <= y2; });
+      var reg = inR.filter(function(d){ return d.type === 'pir_ceiling'; }).length, ind = inR.filter(function(d){ return d.type === 'pir_ceiling_ind'; }).length;
+      var lbl = r.label || 'חדר';
+      if (reg) checks.push({ sev:'warning', weight:2, cat:'alarm', text:'ב"' + lbl + '" התקרה בגובה ' + h + ' מ׳ — ' + reg + ' גלאי תקרה רגיל' + (reg > 1 ? 'ים' : '') + ' (מתאים עד ' + CEIL_REG_MAX + ' מ׳)', fix:'החליפו לגלאי תקרתי תעשייתי (PIR-CI, עד ' + CEIL_IND_MAX + ' מ׳)' });
+      else if (ind && h > CEIL_IND_MAX) checks.push({ sev:'warning', weight:1, cat:'alarm', text:'ב"' + lbl + '" התקרה בגובה ' + h + ' מ׳ — מעל טווח הגלאי התעשייתי (' + CEIL_IND_MAX + ' מ׳)', fix:'התאמה מול הספק: גלאי קרן או התקנה מונמכת' });
+      else if (ind) checks.push({ sev:'ok', weight:1, cat:'alarm', text:'"' + lbl + '" (תקרה ' + h + ' מ׳) — גלאי תקרתי תעשייתי מתאים לגובה' });
+    });
   }
 
   var lastScore = 0;
@@ -11332,12 +11396,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // since CSS can't reference a JS constant and vice versa. A short *desktop* browser window
   // isn't landscape-locked the way a phone is, so it isn't caught by this and keeps the
   // desktop layout, which is the intended trade-off.
-  var MOBILE_LAYOUT_QUERY = '(max-width:680px), (max-height:680px) and (orientation:landscape)';
+  var MOBILE_LAYOUT_QUERY = '(max-width:680px), (max-height:680px) and (orientation:landscape) and (hover:none), (max-height:460px) and (orientation:landscape)';
   var mobileBackdrop = document.getElementById('mobilePanelBackdrop');
   var paletteEl = document.querySelector('.palette');
   var inspectorEl = document.querySelector('.inspector');
   function isMobileLayout(){ return window.matchMedia(MOBILE_LAYOUT_QUERY).matches; }
+  // drawer → thin edge while a device is being placed (no dimmed backdrop, the plan stays usable);
+  // hover (mouse) or a tap on the edge brings it back
+  function palPeek(on){
+    paletteEl.classList.toggle('peek', !!on);
+    if (on) mobileBackdrop.hidden = true;
+  }
+  paletteEl.addEventListener('click', function(e){ if (!paletteEl.classList.contains('peek')) return; var hov = window.matchMedia('(hover:hover)').matches && paletteEl.matches(':hover'); palPeek(false); if (!hov) { e.preventDefault(); e.stopPropagation(); } }, true);
   function closeMobilePanels(){
+    paletteEl.classList.remove('peek');
     paletteEl.classList.remove('mobile-open');
     inspectorEl.classList.remove('mobile-open');
     var mm = document.getElementById('mMoreSheet'); if (mm) mm.hidden = true;
@@ -11409,7 +11481,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   new MutationObserver(mSyncNav).observe(document.getElementById('btnRecommendations'), { attributes:true, attributeFilter:['class'] });
   // "⋯" sheet
   var M_MORE = { importPlan:'btnImportPlan', inspector:'btnMobileInspector', library:'btnQuoteLibrary', agent:'btnAgentInfo', save:'btnSaveProject', open:'btnOpenProject', sample:'btnLoadSample', help:'btnGestureHelp', reset:'btnReset', clear:'btnClear' };
-  document.getElementById('btnMInspector').addEventListener('click', function(){ closeMobilePanels(); document.getElementById('btnMobileInspector').click(); });
+  // "מאפיינים": straight to the properties tab — a drawer on a phone / in fullscreen, the side panel on a desktop
+  document.getElementById('btnMInspector').addEventListener('click', function(){
+    closeMobilePanels(); switchTab('props');
+    if (isMobileLayout() || document.getElementById('app').classList.contains('is-fullscreen')) { openMobilePanel('inspector'); return; }
+    inspectorEl.classList.add('attention'); clearTimeout(inspectorEl._attnT);
+    inspectorEl._attnT = setTimeout(function(){ inspectorEl.classList.remove('attention'); }, 1300);
+  });
   document.getElementById('btnMMore').addEventListener('click', function(){
     var sheet = document.getElementById('mMoreSheet');
     if (!sheet.hidden) { closeMobilePanels(); return; }
@@ -11506,7 +11584,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (armedItemEl) armedItemEl.classList.remove('armed', 'repeat');
     var hadType = armedType, placedCount = armedCount;
     armedType = null; armedItemEl = null; armedCount = 0;
-    canvasHint.hidden = true; document.body.classList.remove('p3-armed');
+    canvasHint.hidden = true; document.body.classList.remove('p3-armed', 'pal-fade');
+    if (paletteEl.classList.contains('peek')) closeMobilePanels();
     if (hadType && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (typeof mSyncNav === 'function') mSyncNav();
@@ -11521,7 +11600,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     updateArmHint();
     canvasHint.hidden = false;
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
-    if (isMobileLayout()) closeMobilePanels();
+    if (paletteEl.classList.contains('mobile-open')) palPeek(true); else if (isMobileLayout()) closeMobilePanels();
+    document.body.classList.add('pal-fade');
     if (typeof mSyncNav === 'function') mSyncNav();
     document.body.classList.toggle('p3-armed', !!(typeof P3 !== 'undefined' && P3.on));
   }
@@ -12119,6 +12199,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       // from it is sent/printed, exactly like a brand-new project (see ensureQuoteNumber()).
       quoteNumber: data.state.quoteNumber || null,
       floorConcentration: data.state.floorConcentration !== false,
+      ceilH: parseFloat(data.state.ceilH) || null,
       arch: ARCHS[data.state.arch] ? data.state.arch : 'generic'
     };
     selected = null;
@@ -12373,6 +12454,41 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // "פרויקט חדש" opens a chooser instead of clearing immediately — picking a template
   // both confirms the intent to start over AND seeds a realistic, fully-adjustable room
   // layout for that kind of premises (private house / apartment / store), or a blank canvas.
+  /* The open project is kept on this device while the agent works (every change, debounced, and at
+     once when the tab is hidden or closed), and comes back by itself when the app is opened again —
+     moving to another page, a browser that discards the tab, or an app update no longer loses the
+     plan or the quote. Kept 14 days, per agent; tracing images are not kept. */
+  var WIP_KEY = 'g1sg_wip_v1', wipReady = false, wipT = 0;
+  function wipSave(){
+    if (CONSUMER || !wipReady) return;
+    try {
+      var qOpen = !document.getElementById('modalBackdrop').hidden;
+      if (qOpen && typeof saveQuoteDraft === 'function') saveQuoteDraft();
+      var has = state.rooms.length || state.devices.length;
+      if (!has) { localStorage.removeItem(WIP_KEY); return; }
+      localStorage.setItem(WIP_KEY, JSON.stringify({ t:Date.now(), uid:(typeof g1Auth !== 'undefined' && g1Auth && g1Auth.uid) || '', quote:qOpen, data:serializeProject() }));
+    } catch(e) { try { localStorage.removeItem(WIP_KEY); } catch(x) {} }
+  }
+  function wipSoon(){ if (!wipReady || CONSUMER) return; clearTimeout(wipT); wipT = setTimeout(wipSave, 700); }
+  function wipRestore(){
+    if (CONSUMER) return;
+    var w = null; try { w = JSON.parse(localStorage.getItem(WIP_KEY) || 'null'); } catch(e) {}
+    var me = (typeof g1Auth !== 'undefined' && g1Auth && g1Auth.uid) || '';
+    var ok = w && w.data && w.data.state && Date.now() - w.t < 14 * 864e5 && (w.uid || '') === me && (w.data.state.rooms || []).length + (w.data.state.devices || []).length > 0 && !state.rooms.length && !state.devices.length;
+    if (ok) {
+      try {
+        applyProjectData(w.data);
+        var mins = Math.round((Date.now() - w.t) / 60000), ago = mins < 2 ? 'כרגע' : mins < 60 ? 'לפני ' + mins + ' דק׳' : mins < 1440 ? 'לפני ' + Math.round(mins / 60) + ' שע׳' : 'לפני ' + Math.round(mins / 1440) + ' ימים';
+        var cn = (w.data.customer && w.data.customer.name) || '';
+        setTimeout(function(){ showCanvasToast('המשכנו מאיפה שעצרת' + (cn ? ' — ' + cn : '') + ' (נשמר ' + ago + '). לפרויקט חדש: "פרויקט חדש" למעלה'); }, 400);
+        if (w.quote) setTimeout(function(){ try { openQuoteModal(); } catch(e) {} }, 600);
+      } catch(e) { console.warn('wip restore', e); }
+    }
+    wipReady = true;
+  }
+  window.addEventListener('pagehide', wipSave);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') wipSave(); });
+  ['input', 'change'].forEach(function(n){ document.addEventListener(n, function(e){ if (e.target && e.target.closest && e.target.closest('#msgOv, .g1-sv, #g1Bio, #g1Lock')) return; wipSoon(); }, true); });
   function startNewProject(kind, guidingAnswers){
     if (typeof clearUnderlays === 'function') clearUnderlays();
     if (typeof g1Track === 'function') g1Track('project', { k:kind, t:Date.now().toString(36) });
@@ -12978,6 +13094,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     { key:'gprs',      label:'משדר GPRS' },
     { key:'central',   label:'מוקד צופה' },
     { key:'smart',     label:'שירות סמארט' },
+    { key:'panic',     label:'לחצן מצוקה' },
     { key:'analytics', label:'ערוצי אנליטיקה' },
     { key:'pa',        label:'מוקד כריזה' }
   ];
@@ -13757,6 +13874,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.getElementById('qAddress').textContent = document.getElementById('fAddress').value || '';
     buildQuote(r.bom);
     if (quoteDraft) restoreQuoteInputs(quoteDraft);
+    try { g1DiscReqUi(); } catch(e) {}
     if (!CONSUMER && Object.keys(r.bom.counts).some(function(t){ return /^fire_/.test(t); })) {
       var fq = fireAudit().filter(function(i){ return i.sev !== 'info'; });
       if (fq.length) setTimeout(function(){ firePop('לפני שליחת ההצעה — גילוי אש', 'בהצעה יש מערכת גילוי אש, ובתכנון חסרים פריטים לפי כללי התקן. מומלץ להשלים לפני השליחה:', fq, { quote:true, onFix:function(){ var cq = captureQuoteInputs(); buildQuote(runBom().bom); restoreQuoteInputs(cq); quoteChangedUi(); } }); }, 250);
@@ -14151,7 +14269,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){ var cb = tr.querySelector('.qMonCheck'); if (!cb || !cb.checked) return; var lb = tr.querySelector('.qMonLabel'), q = tr.querySelector('.qMonQty'); mon.push((lb ? lb.textContent.trim() : '') + (q ? ' × ' + (parseInt(q.value, 10) || 1) + ' ערוצים' : '')); });
     return { items:items, mon:mon };
   }
+  // WhatsApp: short — greeting, number, totals, the link, signature. Long Hebrew texts (~4,000
+  // encoded chars) were dropped by WhatsApp on phones; everything else is on the signing page.
+  function quoteWaShort(){
+    var b = function(t){ return '*' + t + '*'; };
+    var customer = document.getElementById('fCustomer').value || 'הלקוח', address = document.getElementById('fAddress').value || '';
+    var L = [hiLine(customer), 'מצורפת הצעת מחיר ' + b('מס׳ ' + state.quoteNumber) + ' ' + brName('from') + ' למערכת מיגון' + (address ? ' ב' + address : '') + '.', ''];
+    L.push('סה״כ התקנה: ' + b(document.getElementById('qTotal').textContent) + ' (כולל מע״מ)');
+    var mt = document.getElementById('qMonTotal').textContent; if (mt && mt !== '₪0') L.push('שירותי מוקד: ' + b(mt) + ' לחודש');
+    if (currentSignLinks) { L.push(''); L.push('לצפייה בהצעה המלאה ולאישור בחתימה:'); L.push(currentSignLinks.wa); }
+    L.push(''); L.push([agentInfo.name, agentInfo.phone].filter(Boolean).join(' · ') || brName('company'));
+    return L;
+  }
   function quoteMessageLines(channel, compact){
+    if (channel === 'wa') return quoteWaShort();
     var wa = channel === 'wa', b = function(t){ return wa ? '*' + t + '*' : t; };
     var customer = document.getElementById('fCustomer').value || 'הלקוח';
     var address = document.getElementById('fAddress').value || '';
@@ -14901,9 +15032,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     function waSection(){
       var box = section('💬 בוואטסאפ');
       if (share) {
-        // the file and the message leave together — a chat-only link used to send the words without the PDF
-        btn(box, 'wa', '📎 שליחת המסמך החתום ל' + escapeHtml(agName), function(b){ sendFile(b, { text:text }); });
-        note(box, 'בחלון שנפתח בחרו WhatsApp ואז את הצ׳אט עם ' + agName + ' — המסמך החתום יישלח כקובץ מצורף.');
+        // the file goes alone (WhatsApp keeps only one of file + text) — then a short message in the agent's chat
+        btn(box, 'wa', '<span class="step">1</span> 📎 שליחת המסמך החתום ל' + escapeHtml(agName), function(b){ sendFile(b); });
+        note(box, 'בחלון שנפתח בחרו WhatsApp ואז את הצ׳אט עם ' + agName + ' — המסמך החתום יישלח כקובץ.');
+        if (agPhone && agPhone.mobile) link(box, 'wa2', '<span class="step">2</span> הודעת אישור בצ׳אט עם ' + escapeHtml(agName), 'https://wa.me/' + agPhone.intl + '?text=' + encodeURIComponent('שלום ' + agName + ', אישרתי וחתמתי על הצעת המחיר מס׳ ' + q.n + ' — שלחתי את המסמך החתום. ' + signer.name));
       } else if (agPhone && agPhone.mobile) {
         var textLink = 'שלום ' + agName + ',\nאני מאשר/ת את הצעת המחיר מס׳ ' + q.n + '. המסמך החתום נשלח בהודעה הבאה.\n' + signer.name + (signer.phone ? ' · ' + signer.phone : '');
         var s1 = link(box, 'wa', '<span class="step">1</span> פתיחת הצ׳אט עם ' + escapeHtml(agName), 'https://wa.me/' + agPhone.intl + '?text=' + encodeURIComponent(textLink));
@@ -15000,7 +15132,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       body.appendChild(sgw);
     }
     // the WhatsApp message (with the whole quote in it) — shortened only if a phone/browser would refuse the length
-    var waText = quoteMessageLines('wa').join('\n'); if (encodeURIComponent(waText).length > 7000) waText = quoteMessageLines('wa', true).join('\n');
+    var waText = quoteWaShort().join('\n');
     var hasPhone = !!(info.phone && info.phone.mobile);
     var waHref = 'https://wa.me/' + (hasPhone ? info.phone.intl : '') + '?text=' + encodeURIComponent(waText);
 
@@ -15010,8 +15142,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     wa.appendChild(linkBtn('wa big', 'שליחה בוואטסאפ ' + escapeHtml(toWhom(customer)), waHref));
     wa.appendChild(el2('p', '', hasPhone ? 'נפתח הצ׳אט של הלקוח עם הודעה מוכנה: פירוט ההצעה, הסכומים והקישור לחתימה. נשאר רק ללחוץ "שלח".' : 'אין מספר נייד ללקוח — WhatsApp יבקש לבחור איש קשר. (אפשר להוסיף נייד בפרטי הלקוח בראש ההצעה.)'));
     var waMore = el2('div', 'share-mini');
-    if (mobile) waMore.appendChild(actBtn('mini', '📎 לשלוח גם את קובץ ה-PDF', async function(b){ var r = await shareFile(pdf.file, { text: waCaption(waText) }); if (r === 'shared') b.classList.add('done'); }));
-    else waMore.appendChild(actBtn('mini', '⬇ הורדת ה-PDF (לגרירה לצ׳אט)', async function(b){ await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }));
+    if (mobile) waMore.appendChild(actBtn('mini', '📎 לשלוח גם את קובץ ה-PDF', async function(b){ var r = await shareFile(pdf.file); if (r === 'shared') b.classList.add('done'); else if (r !== 'cancelled') { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } }));
+    if (mobile && hasPhone) waMore.appendChild(linkBtn('mini', 'לא נפתח? פתיחה ישירה באפליקציה', 'whatsapp://send?phone=' + info.phone.intl + '&text=' + encodeURIComponent(waText)));
+    if (!mobile) waMore.appendChild(actBtn('mini', '⬇ הורדת ה-PDF (לגרירה לצ׳אט)', async function(b){ await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); }));
     wa.appendChild(waMore);
     body.appendChild(wa);
 
@@ -17602,22 +17735,85 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var note = document.getElementById('g1LockNote');
     if (lock) {
       if (!note) { note = document.createElement('div'); note.id = 'g1LockNote'; note.className = 'g1-lock-note'; var host = document.getElementById('qEquipTable'); if (host && host.parentNode) host.parentNode.insertBefore(note, host); }
-      var md = parseFloat(A.maxDiscountPct);
+      var md = g1MaxDisc();
       note.textContent = '🔒 מחירון קבוע — המחירים נקבעו ע״י ההנהלה' + (isNaN(md) ? '; אפשר לתת הנחה' : '; אפשר לתת הנחה עד ' + md + '%') + (missing ? ' · ' + missing + ' פריטים בלי מחיר במחירון — פנו למנהל' : '');
     } else if (note) note.remove();
     try { recalcQuoteInstall(); recalcQuoteMonitor(); } catch(e) {}
     g1CheckQuoteMins();
   }
   // a locked agent's discount is kept within the allowed maximum as it is typed
+  // a discount the manager approved for one quote (admin → "פניות מהסוכנים" → אישור), valid 30 days
+  function g1Grant(){
+    if (CONSUMER || !g1Auth || !g1Auth.uid || !state.quoteNumber) return null;
+    var G = ((G1C.cfg && G1C.cfg.agent) || {}).discountGrants; if (!Array.isArray(G)) return null;
+    var best = null;
+    var dev = ''; try { dev = g1DeviceId(); } catch(e) {}
+    G.forEach(function(g){ if (g && g.uid === g1Auth.uid && String(g.q) === String(state.quoteNumber) && (!g.dev || g.dev === dev) && Date.now() - Date.parse(g.at || 0) < 30 * 864e5 && (!best || +g.pct > +best.pct)) best = g; });
+    return best;
+  }
+  function g1MaxDisc(){ var md = parseFloat(((G1C.cfg && G1C.cfg.agent) || {}).maxDiscountPct), g = g1Grant(); if (g && !isNaN(md) && +g.pct > md) md = +g.pct; return md; }
   function g1ClampDiscount(){
     if (!g1PriceLocked()) return;
-    var md = parseFloat(((G1C.cfg && G1C.cfg.agent) || {}).maxDiscountPct); if (isNaN(md)) return;
+    var md = g1MaxDisc(); if (isNaN(md)) return;
     var dv = document.getElementById('qDiscountValue'), type = document.getElementById('qDiscountType').value, v = parseFloat(dv.value) || 0;
     var sub = 0; document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price').forEach(function(inp){ var tr = inp.closest('tr'); sub += (parseFloat(inp.value) || 0) * (parseFloat(tr.dataset.qty || tr.dataset.meters) || 0); });
     var base = sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + onceAmount(), max = type === 'amount' ? Math.floor(base * md / 100) : md;
     if (v > max) { dv.value = max; try { showCanvasToast('ההנחה המקסימלית היא ' + md + '%', true); } catch(e) {} recalcQuoteInstall(); }
   }
   // returns a list of problems (empty = OK) and marks the offending inputs
+  /* ---- extra discount request: the agent asks, the product manager approves in the admin ("פניות
+     מהסוכנים"); the approval is published with the settings, raises the cap for this quote only and
+     arrives as an inbox message. The request travels as a feedback record (cat "discount"), so the
+     sheet code needs no change. */
+  function g1DiscBase(){
+    var sub = 0; document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price').forEach(function(inp){ var tr = inp.closest('tr'); if (tr.hidden) return; sub += (parseFloat(inp.value) || 0) * (parseFloat(tr.dataset.qty || tr.dataset.meters) || 0); });
+    return sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + (typeof onceAmount === 'function' ? onceAmount() : 0);
+  }
+  function nextQuoteNumberPeek(){ return '—'; }
+  function g1DiscReqKey(){ return 'g1sg_discreq_' + (g1Auth && g1Auth.uid || '') + '_' + state.quoteNumber; }
+  function g1DiscReqUi(){
+    var box = document.getElementById('qDiscReq'); if (!box) return;
+    box.hidden = CONSUMER || isNaN(parseFloat(((G1C.cfg && G1C.cfg.agent) || {}).maxDiscountPct));
+    if (box.hidden) return;
+    var st = document.getElementById('qDiscReqSt'), g = g1Grant(), req = null;
+    try { req = state.quoteNumber ? JSON.parse(localStorage.getItem(g1DiscReqKey()) || 'null') : null; } catch(e) {}
+    st.className = 'dr-st' + (g ? ' ok' : '');
+    var ln = document.getElementById('g1LockNote'), mx = g1MaxDisc(); if (ln && !isNaN(mx)) ln.textContent = ln.textContent.replace(/אפשר לתת הנחה עד [\d.]+%/, 'אפשר לתת הנחה עד ' + mx + '%');
+    st.textContent = g ? '✓ המנהל אישר הנחה עד ' + g.pct + '% להצעה זו' : req ? '⏳ נשלחה בקשה ל-' + req.pct + '% (' + new Date(req.t).toLocaleDateString('he-IL', { day:'numeric', month:'numeric' }) + ') — ממתין לאישור' : '';
+  }
+  function openDiscReq(){
+    if (!g1Auth || !g1Auth.uid) { showCanvasToast('בקשת הנחה זמינה לסוכנים מחוברים — היכנסו עם קוד הסוכן', true); return; }
+    closeMsgUi();
+    var num = state.quoteNumber || nextQuoteNumberPeek(), base = g1DiscBase(), md = g1MaxDisc();
+    var dOn = document.getElementById('qDiscountToggle').checked, dType = document.getElementById('qDiscountType').value, dVal = parseFloat(document.getElementById('qDiscountValue').value) || 0;
+    var curPct = !dOn ? 0 : dType === 'amount' ? (base ? Math.round(dVal / base * 1000) / 10 : 0) : dVal;
+    var cust = document.getElementById('fCustomer').value || '—';
+    var ov = document.createElement('div'); ov.className = 'msg-ov fb-ov'; ov.id = 'msgOv'; ov.setAttribute('data-html2canvas-ignore', 'true');
+    ov.innerHTML = '<div class="msg-panel" role="dialog" aria-modal="true" aria-labelledby="drT"><div class="msg-head"><h2 id="drT">בקשת הנחה נוספת מהמנהל</h2><button type="button" class="msg-x" aria-label="סגירה">✕</button></div>' +
+      '<div class="dr-grid"><span>הצעה</span><b>מס׳ ' + escapeHtml(String(num)) + ' · ' + escapeHtml(cust) + '</b><span>סה״כ לפני הנחה</span><b>' + fmtIls(base) + ' + מע״מ</b><span>הנחה כרגע</span><b>' + curPct + '%</b>' + (isNaN(md) ? '' : '<span>מותר לך עד</span><b>' + md + '%</b>') + '</div>' +
+      '<div class="dr-row"><label for="drPct">הנחה מבוקשת</label><input type="number" id="drPct" min="1" max="60" step="0.5" value="' + Math.min(60, Math.max(1, Math.ceil((isNaN(md) ? curPct : Math.max(md, curPct)) + 5))) + '"> %<span id="drAmt" style="font-weight:400;color:#5B6B7E"></span></div>' +
+      '<label for="drWhy" style="display:block;font:700 13px var(--font-body);margin-bottom:6px">למה? (רשות)</label><textarea id="drWhy" maxlength="600" placeholder="למשל: הלקוח קיבל הצעה מתחרה, לקוח חוזר, עסקה גדולה"></textarea>' +
+      '<div class="msg-meta" style="margin-top:6px">הבקשה מגיעה למנהל המוצר בעמוד הניהול. כשיאשר — ההנחה תיפתח לך בהצעה הזו ותגיע הודעה לתיבת ההודעות.</div>' +
+      '<button type="button" class="fb-send">שליחת הבקשה</button></div>';
+    document.body.appendChild(ov);
+    var pct = ov.querySelector('#drPct'), amt = ov.querySelector('#drAmt'), go = ov.querySelector('.fb-send');
+    var upd = function(){ var p = parseFloat(pct.value) || 0; amt.textContent = p ? ' ≈ ' + fmtIls(base * p / 100) + ' לפני מע״מ' : ''; go.disabled = !(p > 0 && p <= 60); };
+    pct.oninput = upd; upd();
+    ov.querySelector('.msg-x').onclick = closeMsgUi; ov.addEventListener('click', function(e){ if (e.target === ov) closeMsgUi(); });
+    document.addEventListener('keydown', msgEsc);
+    setTimeout(function(){ pct.focus(); pct.select(); }, 60);
+    go.onclick = function(){
+      var p = Math.round((parseFloat(pct.value) || 0) * 10) / 10, why = ov.querySelector('#drWhy').value.trim(); num = ensureQuoteNumber();
+      var text = 'בקשת הנחה נוספת: ' + p + '% להצעה מס׳ ' + num + ' (' + cust + ')\nסה״כ לפני הנחה: ' + fmtIls(base) + ' + מע״מ · הנחה כרגע: ' + curPct + '%' + (isNaN(md) ? '' : ' · מותר: ' + md + '%') + '\nההנחה המבוקשת ≈ ' + fmtIls(base * p / 100) + ' לפני מע״מ' + (why ? '\nסיבה: ' + why : '');
+      var payload = { type:'feedback', id:'d' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), uid:g1Auth.uid, name:g1Auth.name || '', cat:'discount', text:text,
+        context:'discount|q=' + num + '|pct=' + p + '|base=' + Math.round(base) + '|cur=' + curPct + '|dev=' + g1DeviceId(), ts:new Date().toISOString(), deviceId:g1DeviceId(), deviceLabel:g1DeviceLabel(), appVersion:((document.getElementById('appVersion') || {}).textContent || '') };
+      go.disabled = true; go.textContent = 'שולח…';
+      var done = function(msg){ try { localStorage.setItem(g1DiscReqKey(), JSON.stringify({ pct:p, t:Date.now() })); } catch(e) {} closeMsgUi(); g1DiscReqUi(); showCanvasToast(msg); };
+      g1Send(payload).then(function(){ done('הבקשה נשלחה למנהל — תקבל הודעה כשיאשר'); }, function(){ g1Queue(payload); done('אין חיבור כרגע — הבקשה תישלח אוטומטית כשיחזור החיבור'); });
+    };
+  }
+  document.getElementById('qDiscReqBtn').onclick = openDiscReq;
+  g1cOnConfig(function(){ try { g1DiscReqUi(); if (!document.getElementById('modalBackdrop').hidden && g1PriceLocked()) g1ApplyQuotePrices(); } catch(e) {} });
   function g1CheckQuoteMins(){
     var problems = [], minTotal = 0;
     Array.prototype.forEach.call(document.querySelectorAll('#qEquipTable .q-price, #qCableTable .q-price'), function(inp){
@@ -17629,7 +17825,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (bad) problems.push(qRowName(tr) + ' — מינימום ₪' + min);
     });
     // a discount may not take the equipment+cabling below the sum of the minimums
-    var maxDisc = G1C.cfg && G1C.cfg.agent && parseFloat(G1C.cfg.agent.maxDiscountPct);
+    var maxDisc = g1MaxDisc(), grantNow = g1Grant();
     var on = document.getElementById('qDiscountToggle') && document.getElementById('qDiscountToggle').checked;
     if (on) {
       var sub = 0;
@@ -17638,7 +17834,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var base = sub + (parseFloat(document.getElementById('qInstallCost').value) || 0) + onceAmount();   // the same base recalcQuoteInstall discounts
       var disc = type === 'amount' ? val : base * val / 100, pct = base ? disc / base * 100 : 0;
       if (!isNaN(maxDisc) && pct > maxDisc + 0.01) problems.push('הנחה מעל המותר (עד ' + maxDisc + '%)');
-      if (minTotal && sub - disc < minTotal - 0.5) problems.push('ההנחה מורידה את הציוד מתחת לסכום המינימום (₪' + Math.round(minTotal).toLocaleString('he-IL') + ')');
+      if (minTotal && sub - disc < minTotal - 0.5 && !(grantNow && pct <= +grantNow.pct + 0.01)) problems.push('ההנחה מורידה את הציוד מתחת לסכום המינימום (₪' + Math.round(minTotal).toLocaleString('he-IL') + ')');
     }
     // no minimum prices inside the quote itself (the customer may be looking at it, and it goes into the PDF):
     // the agent gets a short notice now, and the details only in the send check
@@ -17994,7 +18190,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dInRoom(M, x, y){ return M.rooms.some(function(q){ return !q.yard && !q.stairs && x > q.x1 && x < q.x2 && y > q.y1 && y < q.y2; }); }
   function v3dMount(M, d){
     var def = DEVICE_DEFS[d.type] || {}, x = d.x, y = d.y - M.off, t = d.type, h, mode;
-    if (V3D_MOUNT.ceil[t] != null) { h = V3D_MOUNT.ceil[t]; mode = 'ceil'; }
+    if (V3D_MOUNT.ceil[t] != null) { h = V3D_MOUNT.ceil[t] + (V3D_H - 2.7); mode = 'ceil'; }
     else if (V3D_MOUNT.low[t] != null) { h = V3D_MOUNT.low[t]; mode = 'low'; }
     else { h = V3D_MOUNT.wall[t] != null ? V3D_MOUNT.wall[t] : 2.0; mode = 'wall'; }
     var aim = (d.rot || 0) * Math.PI / 180, dir = [Math.sin(aim), -Math.cos(aim)], px = x, py = y, onWall = false;
@@ -18897,6 +19093,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function V3D_SHARED_GEO(g){ return V3D.geo && Object.keys(V3D.geo).some(function(k){ return V3D.geo[k] === g; }); }
   function v3dBuild(){
+    V3D_H = Math.max(2.4, Math.min(9, projCeil())); V3D_CAB = V3D_H + 0.04;
     var T = THREE, M = v3dModel(V3D.floor), s = V3D.scene;
     if (V3D.root) { s.remove(V3D.root); v3dDispose(V3D.root); (V3D.flows || []).forEach(function(t){ t.dispose(); }); }
     var root = V3D.root = new T.Group(); s.add(root); V3D.M = M; V3D.flows = []; V3D.devs = []; V3D.sel = -1;
@@ -19129,7 +19326,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var P3 = { on:false, sig:'', q:0, intro:false, drag:null, hinted:false };
   function p3Host(){ var h = document.getElementById('plan3dHost'); if (!h) { h = document.createElement('div'); h.id = 'plan3dHost'; document.querySelector('.canvas-wrap').appendChild(h); } return h; }
   function p3Place(){ var cs = document.getElementById('canvasScroll'), h = p3Host(); if (!cs) return; h.style.top = cs.offsetTop + 'px'; h.style.height = cs.offsetHeight + 'px'; }
-  function p3Sig(){ return JSON.stringify([state.rooms, state.devices, state.openings, state.fences, state.alarmWireless, state.kind, state.activeFloor || 0]); }
+  function p3Sig(){ return JSON.stringify([state.rooms, state.devices, state.openings, state.fences, state.alarmWireless, state.kind, state.activeFloor || 0, state.ceilH || 0]); }
   function p3SyncSeg(){ Array.prototype.forEach.call(document.querySelectorAll('#planViewSeg [data-pv]'), function(b){ b.setAttribute('aria-pressed', String((b.dataset.pv === '3d') === P3.on)); }); }
   function p3Embed(on){
     var v = document.getElementById('v3d'); if (!v) return;
@@ -19230,7 +19427,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function p3DragEnd(){ var dr = P3.drag; P3.drag = null; if (V3D.G) V3D.G.cover.visible = V3D.opts.cover; if (dr) devDragDrop(dr.d, dr.sx, dr.sy); }
   function p3DragCancel(){ var dr = P3.drag; P3.drag = null; if (!dr) return; if (dr.moved) { dr.d.x = dr.sx; dr.d.y = dr.sy; if (V3D.G) V3D.G.cover.visible = V3D.opts.cover; v3dRebuildKeep(); } }
   var __p3Render = render;
-  render = function(){ try { if (state && !state.arch) state.arch = CONSUMER ? 'generic' : archDefault(); archApply(); } catch(e) {} var r = __p3Render.apply(this, arguments); try { p3Sync(); } catch(e) {} return r; };
+  render = function(){ try { if (state && !state.arch) state.arch = CONSUMER ? 'generic' : archDefault(); archApply(); } catch(e) {} var r = __p3Render.apply(this, arguments); try { p3Sync(); } catch(e) {} try { ceilUiSync(); wipSoon(); } catch(e) {} return r; };
+  function ceilUiSync(){
+    var inp = document.getElementById('ceilH'), lb = document.getElementById('tbCeil'); if (!inp) return;
+    if (document.activeElement !== inp) inp.value = projCeil();
+    if (lb) lb.classList.toggle('is-high', projCeil() > CEIL_REG_MAX || state.rooms.some(function(r){ return r.ceil && r.ceil > CEIL_REG_MAX; }));
+  }
+  (function(){
+    var inp = document.getElementById('ceilH'); if (!inp) return;
+    inp.addEventListener('input', function(){ var v = parseFloat(inp.value); if (v >= 2 && v <= 15) { state.ceilH = Math.round(v * 10) / 10; clearTimeout(inp._t); inp._t = setTimeout(function(){ runGuidance(); ceilUiSync(); }, 250); } });
+    inp.addEventListener('change', function(){ var v = parseFloat(inp.value); if (!(v >= 2 && v <= 15)) inp.value = projCeil(); else { var n = ceilNoteFor(projCeil()); if (n) showCanvasToast(n, true); } if (typeof pushHistory === 'function') { try { pushHistory(); } catch(e) {} } render(); });
+  })();
   document.getElementById('planViewSeg').addEventListener('click', function(e){ var b = e.target.closest('[data-pv]'); if (b) setPlanView(b.dataset.pv); });
   // tools that work on the 2D drawing switch back to it first
   document.addEventListener('click', function(e){ if (!P3.on) return; var b = e.target.closest && e.target.closest('#btnDrawRoom, #btnDrawFence, #btnRecommendations, #btnImportPlan, #btnLoadSample, #btnClear'); if (b) setPlanView('2d'); }, true);
@@ -19394,6 +19601,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   render();
   npResetToGrid();
   newProjectBackdrop.hidden = false;
+  try { wipRestore(); } catch(e) { wipReady = true; }
 })();
 </script>
 <script>

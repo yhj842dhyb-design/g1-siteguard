@@ -981,7 +981,24 @@ function dealsCsv(S){
 }
 
 /* ---------- feedback inbox: reports and ideas the agents send from the app (sheet code v4) ---------- */
-var fbView = 'new', FB_CAT = { bug:['תקלה', '#C2362B'], idea:['רעיון', '#0F8A5F'], question:['שאלה', '#0A7FBF'], price:['מחיר / מוצר', '#B4570A'] }, FB_ST = { 'new':'חדשה', doing:'בטיפול', done:'טופלה' };
+var fbView = 'new', FB_CAT = { bug:['תקלה', '#C2362B'], idea:['רעיון', '#0F8A5F'], question:['שאלה', '#0A7FBF'], price:['מחיר / מוצר', '#B4570A'], discount:['בקשת הנחה', '#7A3FC4'] }, FB_ST = { 'new':'חדשה', doing:'בטיפול', done:'טופלה' };
+// an agent's extra-discount request (context "discount|q=1001|pct=25|base=12000|cur=20")
+function drInfo(f){ var o = {}; String(f.context || '').split('|').forEach(function(p){ var i = p.indexOf('='); if (i > 0) o[p.slice(0, i)] = p.slice(i + 1); }); return f.cat === 'discount' && o.q && o.pct ? o : null; }
+function drApprove(f, pct){
+  var d = drInfo(f), u = userById(f.uid); if (!d) return;
+  if (!u) { toast('הסוכן כבר לא ברשימת המשתמשים'); return; }
+  pct = Math.round(parseFloat(pct) * 10) / 10; if (!(pct > 0 && pct <= 90)) { toast('אחוז לא תקין'); return; }
+  var first = String(f.name || '').split(' ')[0];
+  msgCommit(function(){
+    cfg.agent = cfg.agent || {};
+    var G = (Array.isArray(cfg.agent.discountGrants) ? cfg.agent.discountGrants : []).filter(function(g){ return g && Date.now() - Date.parse(g.at || 0) < 45 * 864e5 && !(g.uid === f.uid && String(g.q) === String(d.q)); });
+    G.push({ uid:f.uid, q:String(d.q), pct:pct, dev:d.dev || '', at:new Date().toISOString(), by:me.name });
+    cfg.agent.discountGrants = G;
+    msgList().push({ id:'m' + Date.now().toString(36), v:1, type:'general', pri:'high', title:'✓ אושרה הנחה של ' + pct + '% להצעה ' + d.q,
+      body:'היי ' + first + ', אישרתי הנחה של עד ' + pct + '% להצעת המחיר מס׳ ' + d.q + '. פתח את ההצעה — ההנחה כבר זמינה לך שם (בתוקף 30 יום).', to:[f.uid],
+      from:new Date().toISOString(), until:new Date(Date.now() + 14 * 864e5).toISOString(), at:new Date().toISOString(), by:me.name });
+  }, 'ההנחה אושרה — הסוכן יראה אותה בהצעה ויקבל הודעה', function(){ fbSet(f, 'done', 'אושר ' + pct + '% · ' + new Date().toLocaleDateString('he-IL')); });
+}
 function fbRows(){ return ((REPORT && REPORT.feedback) || []).slice().reverse(); }
 function fbSet(f, status, note){
   var old = [f.status, f.note]; f.status = status; if (note != null) f.note = note; rInbox(); syncNav();
@@ -1001,14 +1018,22 @@ function rInbox(){
     $('#fbB').innerHTML = '<div class="seg msg-seg" role="group" aria-label="סינון" id="fbV">' + [['new', 'חדשות'], ['doing', 'בטיפול'], ['done', 'טופלו'], ['all', 'הכול']].map(function(x){ var n = x[0] === 'all' ? all.length : cnt[x[0]]; return '<button type="button" data-v="' + x[0] + '" aria-pressed="' + (fbView === x[0]) + '">' + x[1] + (n ? '<i class="cnt">' + n + '</i>' : '') + '</button>'; }).join('') + '</div>' +
       '<div class="fb-list">' + (vis.length ? vis.map(function(f){ var c = FB_CAT[f.cat] || ['פנייה', '#5B6B7E'], st = f.status || 'new';
         return '<article class="fbc' + (st === 'new' ? ' new' : '') + '" data-id="' + esc(f.id) + '"><div class="top"><span class="am-tag" style="background:' + c[1] + '">' + c[0] + '</span><b>' + esc(f.name || '?') + '</b><span>' + dt(f.time) + '</span><span class="dst ' + (st === 'done' ? 'won' : st === 'doing' ? 'open' : 'stale') + '" style="margin-inline-start:auto">' + FB_ST[st] + '</span></div>' +
-          '<p class="txt">' + esc(f.text) + '</p><div class="ctx">' + esc([f.appVersion, f.device, f.context].filter(Boolean).join(' · ')) + '</div>' + (f.note ? '<div class="nt">' + esc(f.note) + '</div>' : '') +
-          '<div class="acts" data-rw><button class="btn sm primary" data-f="reply">תשובה לתיבת ההודעות</button>' + (st !== 'doing' && st !== 'done' ? '<button class="btn sm" data-f="doing">בטיפול</button>' : '') + (st !== 'done' ? '<button class="btn sm" data-f="done">✓ טופלה</button>' : '<button class="btn sm" data-f="new">החזרה לחדשות</button>') + '<button class="btn sm" data-f="wa">וואטסאפ</button></div></article>'; }).join('')
+          '<p class="txt">' + esc(f.text) + '</p><div class="ctx">' + esc([f.appVersion, f.device, drInfo(f) ? '' : f.context].filter(Boolean).join(' · ')) + '</div>' + (f.note ? '<div class="nt">' + esc(f.note) + '</div>' : '') +
+          (drInfo(f) && st !== 'done' ? '<div class="acts" data-rw><button class="btn sm primary" data-f="dok">✓ אישור ' + esc(drInfo(f).pct) + '%</button><button class="btn sm" data-f="dother">אישור באחוז אחר…</button><button class="btn sm" data-f="dno">✕ דחייה</button><button class="btn sm" data-f="wa">וואטסאפ</button></div></article>' :
+          '<div class="acts" data-rw><button class="btn sm primary" data-f="reply">תשובה לתיבת ההודעות</button>' + (st !== 'doing' && st !== 'done' ? '<button class="btn sm" data-f="doing">בטיפול</button>' : '') + (st !== 'done' ? '<button class="btn sm" data-f="done">✓ טופלה</button>' : '<button class="btn sm" data-f="new">החזרה לחדשות</button>') + '<button class="btn sm" data-f="wa">וואטסאפ</button></div></article>'); }).join('')
         : '<div class="msg-empty">' + (all.length ? 'אין פניות בסינון הזה.' : 'עוד לא הגיעו פניות. הסוכנים שולחים אותן מהאפליקציה — מתיבת ההודעות (הפעמון) או מפרטי הסוכן.') + '</div>') + '</div>';
     Array.prototype.forEach.call(document.querySelectorAll('#fbV button'), function(b){ b.onclick = function(){ fbView = b.dataset.v; rInbox(); }; });
     $('#fbB').addEventListener('click', function(e){
       var b = e.target.closest('[data-f]'), card = e.target.closest('.fbc'); if (!b || !card) return;
       var f = all.filter(function(x){ return String(x.id) === card.dataset.id; })[0]; if (!f) return;
       var a = b.dataset.f, first = String(f.name || '').split(' ')[0], u = userById(f.uid);
+      if (a === 'dok') { drApprove(f, drInfo(f).pct); return; }
+      if (a === 'dother') { var v = prompt('איזה אחוז הנחה לאשר להצעה ' + drInfo(f).q + '?', drInfo(f).pct); if (v != null && v !== '') drApprove(f, v); return; }
+      if (a === 'dno') {
+        if (!u) { fbSet(f, 'done', 'נדחה'); return; }
+        msgEdit(null, false, { type:'general', pri:'normal', to:[f.uid], title:'בקשת ההנחה להצעה ' + drInfo(f).q, body:'היי ' + first + ', לגבי בקשת ההנחה של ' + drInfo(f).pct + '% להצעה ' + drInfo(f).q + ': לא אוכל לאשר הפעם. ', onSent:function(){ fbSet(f, 'done', 'נדחה · ' + new Date().toLocaleDateString('he-IL')); } });
+        return;
+      }
       if (a === 'reply') {
         if (!u) { toast('הסוכן כבר לא ברשימת המשתמשים'); return; }
         msgEdit(null, false, { type:'general', pri:'normal', to:[f.uid], title:'תשובה לפנייה שלך', body:'היי ' + first + ', לגבי מה שכתבת: "' + String(f.text).slice(0, 80) + (String(f.text).length > 80 ? '…' : '') + '"\n', onSent:function(){ fbSet(f, 'done', 'נענה בתיבת ההודעות · ' + new Date().toLocaleDateString('he-IL')); } });
@@ -1110,11 +1135,12 @@ function rMsgs(){
   }).catch(function(){ Array.prototype.forEach.call(cards, function(el){ el.textContent = 'נתוני הקריאה לא זמינים כרגע'; }); });
 }
 // one tap sends: the message goes into the settings and is published right away
-function msgCommit(fn, note){
+var PUB_OK = null;   // run once after the next successful publish (e.g. mark a discount request as approved)
+function msgCommit(fn, note, onOk){
   var before = dirty(); fn();
   if (!adminEp(cfg) || !sheetKey()) { render(); toast('נשמר כאן — כדי שיגיע לסוכנים צריך לחבר את הגיליון (פרסום וגיבוי)'); return; }
   if (before && !confirm('יש שינויים אחרים שעוד לא פורסמו (למשל מחירים או משתמשים). הם יפורסמו יחד עם ההודעה. להמשיך?')) { render(); toast('נשמר — לחצו "פרסום" כשמוכנים'); return; }
-  PUB_NOTE = note; render(); $('#btnPublish').click();
+  PUB_NOTE = note; PUB_OK = onOk || null; render(); $('#btnPublish').click();
 }
 function msgEdit(m0, dup, preset){
   var isNew = !m0 || dup, live = m0 && !dup && !m0.draft;
@@ -1584,7 +1610,7 @@ var RISCO_SUGGEST = { hub:'RISCO LightSYS Plus', keypad:'RISCO Panda', pir:'RISC
   curtain_in:'RISCO Curtain PIR', curtain_out:'RISCO Beyond DT / WatchOUT', contact:'RISCO Slim Door/Window', glassbreak:'RISCO Glassbreak', smoke:'RISCO Smoke & Heat', flood:'RISCO Flood',
   siren_in:'RISCO Indoor Sounder', siren_out:'RISCO Lumin8', cam_in:'RISCO VUpoint', cam_out:'RISCO VUpoint', nvr:'RISCO VUpoint NVR' };
 var ARCH_LIST = [['generic', 'כללית (ללא יצרן)', 'שמות כלליים · עד 32 אזורים'], ['pima_force', 'PIMA FORCE', 'עד 144 קוויים + 64 אלחוטיים · ZEL508 / ZEX508 / ZEX516'], ['risco_lsp', 'RISCO LightSYS+', 'עד 512 אזורים (256 אלחוטיים) · מרחיבי 8 RP432EZ8']];
-var MON_LIST = [['wired','חיבור קווי (חודשי)'],['wireless','חיבור אלחוטי (חודשי)'],['gprs','משדר GPRS (חודשי)'],['gprsOnce','משדר GPRS — חד-פעמי'],['central','מוקד צופה (חודשי)'],['smart','שירות סמארט (חודשי)'],['analytics','ערוצי אנליטיקה — לערוץ (חודשי)'],['anOnce','חיבור ערוצי אנליטיקה — חד-פעמי'],['pa','מוקד כריזה (חודשי)']];
+var MON_LIST = [['wired','חיבור קווי (חודשי)'],['wireless','חיבור אלחוטי (חודשי)'],['gprs','משדר GPRS (חודשי)'],['gprsOnce','משדר GPRS — חד-פעמי'],['central','מוקד צופה (חודשי)'],['smart','שירות סמארט (חודשי)'],['analytics','ערוצי אנליטיקה — לערוץ (חודשי)'],['anOnce','חיבור ערוצי אנליטיקה — חד-פעמי'],['pa','מוקד כריזה (חודשי)'],['panic','לחצן מצוקה (חודשי)']];
 function rAgent(){
   var P = cfg.agent.prices, C = cfg.agent.cablePrices; cfg.agent.monPrices = cfg.agent.monPrices || {}; var MP = cfg.agent.monPrices;
   var byCat = {}; DEV.forEach(function(d){ (byCat[d.cat] = byCat[d.cat] || []).push(d); });
@@ -2379,8 +2405,8 @@ $('#btnPublish').onclick = function(){
   withKey(function(key){ return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ type:'config', key:key, by:me.name, config:cfg, addKeys:addKeys, addViewKeys:addViewKeys, summary:summary }) }).then(function(r){ return r.json(); }); })
     .then(function(j){ if (j && j.ok) { PENDING_KEYS = []; PENDING_VIEW = []; if (PENDING_SELF) { me.dk = PENDING_SELF; PENDING_SELF = ''; GOOD_KEY = ''; try { sessionStorage.setItem('g1sg_admin_me', JSON.stringify(me)); } catch(e) {} } } return j; })
     .then(function(j){ if (!j || !j.ok) { var e = new Error(j && j.error || 'שגיאה'); e.code = j && j.error; throw e; }
-      SRC = 'sheet'; PUB_FAIL = ''; saved = clone(cfg); markDirty(); toast(PUB_NOTE || 'פורסם! המשתמשים יקבלו את העדכון בפתיחה הבאה (או תוך 20 דקות)'); PUB_NOTE = ''; try { afterPublish(); } catch(e) {} render(); })
-    .catch(function(e){ PUB_NOTE = ''; PUB_FAIL = e.code === 'unauthorized' ? 'הפרסום נכשל — קוד הגיליון צריך עדכון חד-פעמי (פרסום וגיבוי)' : 'הפרסום נכשל — השינויים לא נשמרו. נסו שוב'; if (e.code === 'unauthorized') { goTab('publish'); } toast(e.code === 'unauthorized' ? 'קוד הגיליון צריך עדכון חד-פעמי — ראו "פרסום וגיבוי"' : e.code === 'bad config' ? 'ההגדרות לא תקינות — לא פורסם' : ('הפרסום נכשל: ' + e.message + '. בדקו את החיבור לגיליון')); })
+      SRC = 'sheet'; PUB_FAIL = ''; saved = clone(cfg); markDirty(); toast(PUB_NOTE || 'פורסם! המשתמשים יקבלו את העדכון בפתיחה הבאה (או תוך 20 דקות)'); PUB_NOTE = ''; try { afterPublish(); } catch(e) {} var ok1 = PUB_OK; PUB_OK = null; if (ok1) try { ok1(); } catch(e) {} render(); })
+    .catch(function(e){ PUB_NOTE = ''; PUB_OK = null; PUB_FAIL = e.code === 'unauthorized' ? 'הפרסום נכשל — קוד הגיליון צריך עדכון חד-פעמי (פרסום וגיבוי)' : 'הפרסום נכשל — השינויים לא נשמרו. נסו שוב'; if (e.code === 'unauthorized') { goTab('publish'); } toast(e.code === 'unauthorized' ? 'קוד הגיליון צריך עדכון חד-פעמי — ראו "פרסום וגיבוי"' : e.code === 'bad config' ? 'ההגדרות לא תקינות — לא פורסם' : ('הפרסום נכשל: ' + e.message + '. בדקו את החיבור לגיליון')); })
     .then(function(){ b.textContent = 'פרסום לכל המשתמשים'; markDirty(); });
 };
 })();
