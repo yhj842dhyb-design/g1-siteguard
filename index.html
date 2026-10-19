@@ -3048,7 +3048,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 154</div>
+              <div class="app-version" id="appVersion">גרסה 155</div>
             </div>
           </div>
         </div>
@@ -17945,6 +17945,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       speaker_out:2.4, ap_out:2.6, net_point:0.35, spider_ctrl:1.6, spider_ctrl_2relay:1.6, smart_cam:1.9, contact:2.05, smart_shutter:2.2 },
     low:{ nvr:1.0, switch:1.0, amplifier:1.0, ups:0.15, comm_cabinet:0, flood:0.02, safe_sensor:0.9, fence_sensor:1.0 }
   };
+  function v3dInRoom(M, x, y){ return M.rooms.some(function(q){ return !q.yard && !q.stairs && x > q.x1 && x < q.x2 && y > q.y1 && y < q.y2; }); }
   function v3dMount(M, d){
     var def = DEVICE_DEFS[d.type] || {}, x = d.x, y = d.y - M.off, t = d.type, h, mode;
     if (V3D_MOUNT.ceil[t] != null) { h = V3D_MOUNT.ceil[t]; mode = 'ceil'; }
@@ -17954,15 +17955,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (mode !== 'ceil') {
       // a contact sits on the frame of the nearest door/window
       if (t === 'contact' || t === 'smart_shutter') { var bo = null, bd = 30; state.openings.forEach(function(o){ if ((o.floor || 0) !== M.f) return; var dd = Math.hypot(o.x - x, o.y - M.off - y); if (dd < bd) { bd = dd; bo = o; } }); if (bo) { x = bo.x; y = bo.y - M.off; h = OPENING_DEFS[bo.type] && OPENING_DEFS[bo.type].kind === 'window' ? 2.15 : 2.15; } }
-      var sn = v3dSnap(M, x, y);
-      if (sn && sn.d <= 16) {
+      var sn = v3dSnap(M, x, y), noCov = !(def.fov || def.radius || def.range);
+      if (sn && (sn.d <= 16 || (mode === 'wall' && noCov && sn.d <= m2p(2.6) && (v3dInRoom(M, x, y) || sn.rn.ext)))) {
         var t2 = m2p((sn.rn.ext ? 0.2 : 0.12) / 2 + 0.035), side;
         if (sn.rn.o === 'h') { side = y === sn.y ? (sn.rn.ext ? -sn.rn.n : (dir[1] >= 0 ? 1 : -1)) : (y > sn.y ? 1 : -1); px = x; py = sn.y + side * t2; if (!def.rotatable) dir = [0, side]; }
         else { side = x === sn.x ? (sn.rn.ext ? -sn.rn.n : (dir[0] >= 0 ? 1 : -1)) : (x > sn.x ? 1 : -1); px = sn.x + side * t2; py = y; if (!def.rotatable) dir = [side, 0]; }
-        onWall = true;
+        onWall = true; var mrn = sn.rn, wx = sn.x, wy = sn.y;
       }
     }
-    return { x:px, y:py, h:h, mode:mode, dir:dir, onWall:onWall };
+    return { x:px, y:py, h:h, mode:mode, dir:dir, onWall:onWall, rn:onWall ? mrn : null, wx:wx, wy:wy };
   }
 
   /* ---------- look: materials, procedural textures, studio light (built once per session) ----------
@@ -18241,6 +18242,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       });
       im.instanceMatrix.needsUpdate = true;
     });
+    (V3D.stubs || []).forEach(function(st){ var rn = st.userData.rn; st.visible = !build && v3dIsLow({ p:{ ext:rn.ext, o:rn.o, n:rn.n } }, dx, dz); });
     (V3D.fences || []).forEach(function(f){ var h = V3D.opts.low ? 0.45 : f.userData.h; if (build) h *= Math.max(0.02, Math.min(1, V3D.buildK * 1.4)); f.scale.y = h; f.position.y = h / 2; });
     if (V3D.r && V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
   }
@@ -18405,13 +18407,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return g;
   }
   function v3dDevices(M, G){
-    var T = THREE; V3D.devs = []; V3D.cov = [];
+    var T = THREE; V3D.devs = []; V3D.cov = []; V3D.stubs = [];
     var devs = state.devices.filter(function(d){ return devFloor(d) === V3D.floor && DEVICE_DEFS[d.type] && !DEVICE_DEFS[d.type].derived && !v3dHidden(d.type); });
     devs.forEach(function(d){
       var def = DEVICE_DEFS[d.type], mnt = v3dMount(M, d), w = v3dW(M, mnt.x, mnt.y), g = v3dDevMesh(d.type);
       g.position.set(w[0], mnt.h, w[1]); if (mnt.mode !== 'ceil') g.rotation.y = Math.atan2(mnt.dir[0], mnt.dir[1]);
       g.scale.setScalar(V3D_DS); g.userData.d = d; g.userData.def = def; g.userData.mnt = mnt; g.userData.idx = V3D.devs.length; g.userData.pop = 1;
       G.devs.add(g); V3D.devs.push(g);
+      if (mnt.mode === 'wall' && !mnt.onWall && mnt.h > 0.6 && !v3dInRoom(M, mnt.x, mnt.y)) {
+        var pole = v3dMesh(G.devs, V3D.geo.cyl, v3dMats().grey, w[0] - mnt.dir[0] * 0.05, (mnt.h - 0.08) / 2, w[1] - mnt.dir[1] * 0.05); pole.scale.set(0.035, mnt.h - 0.08, 0.035);
+        var foot = v3dMesh(G.devs, V3D.geo.cyl, v3dMats().grey, w[0] - mnt.dir[0] * 0.05, 0.02, w[1] - mnt.dir[1] * 0.05); foot.scale.set(0.09, 0.04, 0.09); g.userData.pole = [pole, foot];
+      }
+      if (mnt.onWall && mnt.rn && mnt.rn.ext && mnt.h > 1.05) {
+        var Mt0 = v3dMats(), sw = 0.62, th = 0.2, top = Math.min(V3D_H, Math.max(mnt.h + 0.32, 1.6)), hh = top - 1.0, ww = v3dW(M, mnt.wx, mnt.wy), stub = new T.Group();
+        var sb = v3dBox(stub, Mt0.ext, 0, 1.0, 0, mnt.rn.o === 'h' ? sw : th, hh, mnt.rn.o === 'h' ? th : sw, true);
+        v3dBox(stub, Mt0.cap, 0, top - 0.012, 0, mnt.rn.o === 'h' ? sw + 0.01 : th + 0.01, 0.024, mnt.rn.o === 'h' ? th + 0.01 : sw + 0.01, false);
+        stub.position.set(ww[0], 0, ww[1]); stub.visible = false; stub.userData.rn = mnt.rn; G.walls.add(stub); (V3D.stubs = V3D.stubs || []).push(stub); g.userData.stub = stub;
+      }
       var gl = new T.Sprite(new T.SpriteMaterial({ map:v3dGlowTex(), color:g.userData.col, transparent:true, depthWrite:false, blending:T.AdditiveBlending, toneMapped:false })); gl.scale.set(0.8, 0.8, 1); gl.position.set(w[0], mnt.h, w[1]); gl.visible = false; G.devs.add(gl); g.userData.glow = gl;
       if (state.alarmWireless && def.cable === 'alarm') { var ring = new T.Mesh(new T.RingGeometry(0.12, 0.15, 32), new T.MeshBasicMaterial({ color:g.userData.col, transparent:true, opacity:0.6, side:T.DoubleSide, depthWrite:false, toneMapped:false }));
         ring.position.set(w[0], mnt.h, w[1]); ring.lookAt(w[0], mnt.h + 1, w[1]); ring.userData.pulse = true; G.cables.add(ring); }
@@ -18577,8 +18589,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var v = new THREE.Vector3(), items = [], sim = V3D.sim, tS = sim ? sim.t : -1;
     V3D.devs.forEach(function(g, i){
       var pop = g.userData.pop; if (pop < 0.05) return;
-      v.copy(g.position); v.y += (g.userData.mnt.mode === 'ceil' ? 0.25 : 0.45); v.project(V3D.cam); if (v.z > 1 || v.z < -1) return;
-      var px = (v.x + 1) / 2 * W, py = (1 - v.y) / 2 * H; v.copy(g.position).project(V3D.cam); var dx = (v.x + 1) / 2 * W, dy = (1 - v.y) / 2 * H;
+      v.copy(g.position).project(V3D.cam); if (v.z > 1 || v.z < -1) return;
+      var dx = (v.x + 1) / 2 * W, dy = (1 - v.y) / 2 * H, px = dx, py = dy - (g.userData.mnt.mode === 'ceil' ? 20 : 26) * (ST ? ST.big : V3D.rec ? Math.max(1, Math.min(W, H) / 560) : 1);
       items.push({ i:i, g:g, x:px, y:py, dx:dx, dy:dy, z:v.z, pop:Math.min(1, pop) });
     });
     // pins that would overlap become one pin with a "+n" badge (tap it to zoom in); the most important device leads
@@ -18926,6 +18938,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     else if (V3D.focus) { var F = V3D.focus, k = v3dEase(v3dCl((now - F.t0) / F.dur)); V3D.tgt.copy(F.ft).lerp(F.tt, k); V3D.sph.r = F.fr + (F.tr - F.fr) * k; if (k >= 1) V3D.focus = null; }
     else if (V3D.auto && !V3D.embed) V3D.sph.th += dt * 0.1;
     v3dCamUpdate();
+    if (V3D.buildK == null && V3D.fit) { var zk = Math.max(0.64, Math.min(1, V3D.sph.r / (V3D.fit * 0.9))), zs = V3D_DS * zk;
+      if (Math.abs((V3D.zs || 0) - zs) > 0.004) { V3D.zs = zs; V3D.devs.forEach(function(g){ if ((g.userData.pop || 1) >= 0.999) g.scale.setScalar(zs); }); if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true; } }
     V3D.flows.forEach(function(t){ t.offset.x -= dt * 0.9; });
     if (V3D.water) V3D.water.offset.x += dt * 0.01;
     v3dCovSet('uTime', now / 1000);
