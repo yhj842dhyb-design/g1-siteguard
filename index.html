@@ -1094,6 +1094,17 @@
   .modal.client-view .q-custom-row input{ display:none; }
   .modal.client-view .q-custom-row .q-cv{ display:inline; }
   .modal.client-view .q-custom-row.is-empty{ display:none; }
+  .q-custom-add td{ padding:4px 8px 8px !important; border:0 !important; background:none !important; }
+  .q-custom-add button{ border:1px dashed #9DB4C8; background:#fff; color:#1F6FA8; border-radius:8px; padding:5px 12px; font:600 12.5px var(--font-body); cursor:pointer; }
+  .q-custom-add button:hover{ border-style:solid; }
+  .q-custom-add .q-custom-cap{ color:var(--ink-dim); font-size:11.5px; margin-inline-start:8px; }
+  .q-custom-row .q-custom-del{ border:0; background:none; color:#9A5A5A; font-size:15px; line-height:1; cursor:pointer; padding:0 4px; margin-inline-start:4px; vertical-align:middle; }
+  .q-custom-row td:first-child{ white-space:nowrap; }
+  .q-custom-row td:first-child .q-custom-name{ display:inline-block; width:calc(100% - 26px); }
+  .q-custom-row:not(.q-custom-extra) td:first-child .q-custom-name{ width:100%; }
+  .modal.client-view .q-custom-add, body.pdf-export .q-custom-add, .modal.client-view .q-custom-del, body.pdf-export .q-custom-del{ display:none !important; }
+  .modal.client-view .q-custom-row td:first-child{ white-space:normal; }
+  .modal.client-view .q-custom-row input, body.pdf-export .q-custom-row input{ display:none !important; }
   .modal .client-only{ display:none; }
   .modal.client-view .client-only{ display:block; }
   .modal.client-view .agent-hint,
@@ -3048,7 +3059,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 155</div>
+              <div class="app-version" id="appVersion">גרסה 156</div>
             </div>
           </div>
         </div>
@@ -13096,8 +13107,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var priceInput = tr.querySelector('.q-price');
       if (priceInput && priceInput.value) captured.cable[tr.cells[0].textContent] = priceInput.value;
     });
-    var cr = qCustomRow();
-    if (cr) captured.custom = { name: cr.querySelector('.q-custom-name').value, qty: cr.querySelector('.q-custom-qty').value, price: cr.querySelector('.q-price').value };
+    captured.custom = qCustomRows().map(function(cr){ return { name: cr.querySelector('.q-custom-name').value, qty: cr.querySelector('.q-custom-qty').value, price: cr.querySelector('.q-price').value }; });
     var installEl = document.getElementById('qInstallCost');
     if (installEl && installEl.value) captured.install = installEl.value;
     var vatEl = document.getElementById('qVatRate');
@@ -13127,8 +13137,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var v = captured.cable[tr.cells[0].textContent];
       if (v !== undefined) tr.querySelector('.q-price').value = v;
     });
-    var crr = qCustomRow();
-    if (crr && captured.custom) { crr.querySelector('.q-custom-name').value = captured.custom.name || ''; crr.querySelector('.q-custom-qty').value = captured.custom.qty || ''; crr.querySelector('.q-price').value = captured.custom.price || ''; }
+    if (captured.custom && qCustomRow()) {
+      var cl = (Array.isArray(captured.custom) ? captured.custom : [captured.custom]).slice(0, QUOTE_CUSTOM_MAX);
+      qCustomRows().slice(1).forEach(function(tr){ tr.remove(); });
+      cl.forEach(function(c, i){
+        var crr = i === 0 ? qCustomRow() : qCustomAdd(false); if (!crr || !c) return;
+        crr.querySelector('.q-custom-name').value = c.name || ''; crr.querySelector('.q-custom-qty').value = c.qty || ''; crr.querySelector('.q-price').value = c.price || '';
+      });
+      qCustomAddUi();
+    }
     if (captured.install !== null) document.getElementById('qInstallCost').value = captured.install;
     if (captured.vat !== null) document.getElementById('qVatRate').value = captured.vat;
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){
@@ -13156,16 +13173,37 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // a free line for the agent, last in the equipment table: description + quantity + unit price like every
   // other line; left empty it is hidden in the customer's view, so it never reaches the PDF or the signing page
+  var QUOTE_CUSTOM_MAX = 3;
   var QUOTE_CUSTOM_ROW = '<tr data-row="custom" class="q-custom-row is-empty" data-qty="0"><td>' +
     '<input type="text" class="q-custom-name" maxlength="120" placeholder="שורה חופשית — תיאור (ריקה = לא תופיע בהצעה)" aria-label="שורה חופשית: תיאור">' +
     '<span class="q-item-name q-cv"></span></td>' +
     '<td class="num"><input type="number" class="q-custom-qty" min="0" step="any" placeholder="1" aria-label="שורה חופשית: כמות" style="width:58px;text-align:center"><span class="q-cv q-custom-qtyv"></span></td>' +
     '<td class="num price-col"><input type="number" class="q-price" min="0" placeholder="0" aria-label="שורה חופשית: מחיר ליחידה" style="width:76px;text-align:center"></td>' +
     '<td class="num q-linetotal price-col">—</td></tr>';
+  var QUOTE_CUSTOM_ADD = '<tr class="q-custom-add" data-html2canvas-ignore="true"><td colspan="4"><button type="button" class="q-custom-addbtn">+ שורה חופשית נוספת</button><span class="q-custom-cap"></span></td></tr>';
   function qCustomRow(){ return document.querySelector('#qEquipTable tbody tr[data-row="custom"]'); }
-  // sync the free line: its quantity (empty with a price = 1), the text the customer sees, and whether it is empty
-  function qCustomSync(){
-    var tr = qCustomRow(); if (!tr) return null;
+  function qCustomRows(){ return Array.prototype.slice.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="custom"]')); }
+  function qCustomAddUi(){
+    var add = document.querySelector('#qEquipTable tbody tr.q-custom-add'); if (!add) return;
+    var rows = qCustomRows(), n = rows.length, locked = rows[0] && rows[0].hidden;
+    add.hidden = locked || n >= QUOTE_CUSTOM_MAX;
+    add.querySelector('.q-custom-cap').textContent = 'עד ' + QUOTE_CUSTOM_MAX + ' שורות (' + n + '/' + QUOTE_CUSTOM_MAX + ')';
+  }
+  // opens another free line under the last one (max 3); rows 2–3 carry a × to close them again
+  function qCustomAdd(focus){
+    var rows = qCustomRows(); if (!rows.length || rows.length >= QUOTE_CUSTOM_MAX) return null;
+    var tmp = document.createElement('tbody'); tmp.innerHTML = QUOTE_CUSTOM_ROW; var tr = tmp.firstChild;
+    tr.classList.add('q-custom-extra');
+    var del = document.createElement('button'); del.type = 'button'; del.className = 'q-custom-del'; del.title = 'הסרת השורה'; del.setAttribute('aria-label', 'הסרת השורה'); del.textContent = '×';
+    tr.cells[0].insertBefore(del, tr.cells[0].querySelector('.q-item-name'));
+    del.onclick = function(){ tr.remove(); qCustomAddUi(); recalcQuoteInstall(); try { saveQuoteDraft(); quoteChangedUi(); } catch(e) {} };
+    tr.querySelectorAll('.q-price, .q-custom-name, .q-custom-qty').forEach(function(inp){ inp.addEventListener('input', function(){ recalcQuoteInstall(); }); });
+    var last = rows[rows.length - 1]; last.parentNode.insertBefore(tr, last.nextSibling);
+    qCustomAddUi();
+    if (focus) tr.querySelector('.q-custom-name').focus();
+    return tr;
+  }
+  function qCustomOne(tr){
     var name = tr.querySelector('.q-custom-name').value.trim(), qIn = tr.querySelector('.q-custom-qty'), price = parseFloat(tr.querySelector('.q-price').value) || 0;
     var qty = qIn.value === '' ? ((name || price) ? 1 : 0) : Math.max(0, parseFloat(qIn.value) || 0);
     var empty = !name && !price;
@@ -13174,6 +13212,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     tr.querySelector('.q-item-name').textContent = name || 'פריט נוסף';
     tr.querySelector('.q-custom-qtyv').textContent = qty ? String(qty) : '';
     return { name:name, qty:qty, price:price, empty:empty };
+  }
+  // every free line, synced (hidden = fixed price list, those lines don't count)
+  function qCustomAll(){ return qCustomRows().filter(function(tr){ return !tr.hidden; }).map(qCustomOne); }
+  // sync the free line: its quantity (empty with a price = 1), the text the customer sees, and whether it is empty
+  function qCustomSync(){
+    var rows = qCustomRows(); if (!rows.length) return null;
+    var all = rows.map(qCustomOne); return all[0];
   }
   var QUOTE_CABLE_DEFS = [
     ['alarm','כבל פיקוד לאזעקה (רב-גידי)'], ['cat6','כבל CAT7 למצלמות (PoE)'], ['intercom','כבל גידים לאינטרקום (רב-גידי)'],
@@ -13196,7 +13241,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<td class="num">' + bom.counts[t] + '</td>' +
         '<td class="num price-col"><input type="number" class="q-price" min="0" placeholder="0" style="width:76px;text-align:center"></td>' +
         '<td class="num q-linetotal price-col">—</td></tr>';
-    }).join('') : '<tr><td colspan="4" style="color:var(--ink-dim);text-align:center">אין אביזרים בשרטוט עדיין</td></tr>') + QUOTE_CUSTOM_ROW;
+    }).join('') : '<tr><td colspan="4" style="color:var(--ink-dim);text-align:center">אין אביזרים בשרטוט עדיין</td></tr>') + QUOTE_CUSTOM_ROW + QUOTE_CUSTOM_ADD;
+    (function(){ var ab = document.querySelector('#qEquipTable .q-custom-addbtn'); if (ab) ab.onclick = function(){ qCustomAdd(true); }; qCustomAddUi(); })();
 
     var cableDefs = QUOTE_CABLE_DEFS;
     var cableHtml = '';
@@ -14100,7 +14146,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // the quote's lines as the customer sees them: equipment with quantities, services, totals
   function quoteItemsForMessage(){
     var items = Array.prototype.map.call(document.querySelectorAll('#qEquipTable tbody tr[data-row="equip"]'), function(tr){ return [String(tr.cells[1].textContent || '').trim(), qRowName(tr)]; }).filter(function(r){ return r[1]; });
-    var cu = qCustomSync(); if (cu && !cu.empty && cu.name) items.push([String(cu.qty || 1), cu.name]);
+    qCustomAll().forEach(function(cu){ if (!cu.empty && cu.name) items.push([String(cu.qty || 1), cu.name]); });
     var mon = [];
     document.querySelectorAll('#qMonitorTable tbody tr').forEach(function(tr){ var cb = tr.querySelector('.qMonCheck'); if (!cb || !cb.checked) return; var lb = tr.querySelector('.qMonLabel'), q = tr.querySelector('.qMonQty'); mon.push((lb ? lb.textContent.trim() : '') + (q ? ' × ' + (parseInt(q.value, 10) || 1) + ' ערוצים' : '')); });
     return { items:items, mon:mon };
@@ -14426,7 +14472,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (t === 'nvr') { var chm = lbl.match(/(\d+)\s*ערוצים/); if (chm && lbl === DEVICE_DEFS.nvr.label + ' (' + chm[1] + ' ערוצים)') return ['@nvr' + chm[1], qty]; }
       return [(t && DEVICE_DEFS[t] && DEVICE_DEFS[t].label === lbl) ? '@' + t : lbl, qty];
     });
-    var cu = qCustomSync(); if (cu && !cu.empty) items.push([cu.name || 'פריט נוסף', cu.qty]);
+    qCustomAll().forEach(function(cu){ if (!cu.empty) items.push([cu.name || 'פריט נוסף', cu.qty]); });
     var cables = Array.prototype.map.call(document.querySelectorAll('#qCableTable tbody tr[data-row="cable"]'), function(tr){
       var t = tr.dataset.ctype, lbl = tr.cells[0].textContent.trim(), def = QUOTE_CABLE_DEFS.filter(function(d){ return d[0] === t; })[0];
       return [(def && def[1] === lbl) ? '@' + t : lbl, +tr.dataset.meters || num(tr.cells[1].textContent)];
@@ -17552,7 +17598,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var inst = document.getElementById('qInstallCost'), chip = document.getElementById('qInstallRate');
     if (A.install != null && A.install !== '') { if (lock || !inst.value) inst.value = A.install; if (chip) chip.hidden = true; }
     inst.readOnly = lock && A.install != null && A.install !== ''; inst.classList.toggle('q-locked', inst.readOnly);
-    var cr = typeof qCustomRow === 'function' && qCustomRow(); if (cr) cr.hidden = lock;
+    if (typeof qCustomRows === 'function') { qCustomRows().forEach(function(cr){ cr.hidden = lock; }); qCustomAddUi(); }
     var note = document.getElementById('g1LockNote');
     if (lock) {
       if (!note) { note = document.createElement('div'); note.id = 'g1LockNote'; note.className = 'g1-lock-note'; var host = document.getElementById('qEquipTable'); if (host && host.parentNode) host.parentNode.insertBefore(note, host); }
