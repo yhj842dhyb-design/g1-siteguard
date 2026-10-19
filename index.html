@@ -3101,7 +3101,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 159</div>
+              <div class="app-version" id="appVersion">גרסה 160</div>
             </div>
           </div>
         </div>
@@ -10537,18 +10537,32 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
                  labels:{ hub:'רכזת PIMA Hunter-Pro 832', keypad:'לוח מקשים PIMA (LCD)', zexp_int:'כרטיס הרחבה PIMA ZEL508 — 8 אזורים', zexp8:'מרחיב אזורים PIMA ZEX508 — 8 אזורים', zexp16:'מרחיב אזורים PIMA ZEX516 — 16 אזורים' },
                  desc:{ hub:'רכזת היברידית · 8 אזורים מובנים, הרחבה עד 32 (קווי / אלחוטי) · עד 16 חלוקות · חייגן מובנה, סלולר אופציונלי · ספק כוח וסוללת גיבוי',
                         zexp_int:'כרטיס הרחבה מקומי ZEL508 · 8 אזורים (9–16) · בתוך ארגז הרכזת', zexp8:'מרחיב מרוחק ZEX508 · 8 אזורים · חיבור BUS', zexp16:'מרחיב מרוחק ZEX516 · 16 אזורים · חיבור BUS' } },
-    pima_force:{ name:'PIMA FORCE', maker:'PIMA', wired:144, wl:64, intExp:true, exp16:true,
+    pima_force:{ name:'PIMA FORCE', maker:'PIMA', type:'wired', wired:144, wl:64, intExp:true, exp16:true,
                  labels:{ hub:'רכזת PIMA FORCE', keypad:'לוח מקשים PIMA KLT500', zexp_int:'כרטיס הרחבה PIMA ZEL508 — 8 אזורים', zexp8:'מרחיב אזורים PIMA ZEX508 — 8 אזורים', zexp16:'מרחיב אזורים PIMA ZEX516 — 16 אזורים' },
                  desc:{ hub:'רכזת · 8 אזורים מובנים, הרחבה עד 144 קוויים + 64 אלחוטיים · 16 חלוקות אמיתיות · Ethernet מובנה (IP מאובטח) · סלולר GSM אופציונלי · ספק כוח וסוללת גיבוי',
                         keypad:'לוח מקשים LCD (KLT/KLR500) · מקשי מצב בית / לילה / יציאה · חיבור BUS',
                         zexp_int:'כרטיס הרחבה מקומי ZEL508 · 8 אזורים · בתוך ארגז הרכזת', zexp8:'מרחיב מרוחק ZEX508 · 8 אזורים · חיבור BUS', zexp16:'מרחיב מרוחק ZEX516 · 16 אזורים · חיבור BUS' } },
-    risco_lsp: { name:'RISCO LightSYS+', maker:'RISCO', wired:512, wl:256, intExp:false, exp16:false,
+    risco_lsp: { name:'RISCO LightSYS+', maker:'RISCO', type:'wired', wired:512, wl:256, intExp:false, exp16:false,
                  labels:{ hub:'רכזת RISCO LightSYS+', keypad:'לוח מקשים RISCO Panda', zexp8:'מרחיב אזורים RISCO RP432EZ8 — 8 אזורים' },
                  desc:{ hub:'רכזת היברידית · 8 אזורים מובנים, הרחבה עד 512 (עד 256 אלחוטיים) · 32 חלוקות · IP ו-Wi‑Fi מובנים · 2G/4G אופציונלי · שליטה מהאפליקציה',
-                        keypad:'לוח מקשים Panda · תצוגה ומקשי מצב · חיבור BUS', zexp8:'מרחיב 8 אזורים · BUS 4 גידים · עד 300 מ׳ מהרכזת' } }
+                        keypad:'לוח מקשים Panda · תצוגה ומקשי מצב · חיבור BUS', zexp8:'מרחיב 8 אזורים · BUS 4 גידים · עד 300 מ׳ מהרכזת' } },
+    // wireless systems (PowerG): choosing one switches the alarm to wireless — no alarm cabling
+    visonic_pm30:{ name:'Visonic PowerMaster-30 G2', maker:'Visonic', type:'wl', wired:2, wl:64, intExp:false, exp16:false,
+                 labels:{ hub:'רכזת אלחוטית Visonic PowerMaster-30 G2', keypad:'לוח מקשים אלחוטי Visonic KP-250 PG2' },
+                 desc:{ hub:'רכזת אלחוטית PowerG · עד 64 אזורים אלחוטיים · 3 חלוקות · סירנה מובנית · תקשורת IP / סלולר · סוללת גיבוי', keypad:'לוח מקשים אלחוטי PowerG · תצוגה ותג קרבה' } },
+    dsc_neo_wl:{ name:'DSC PowerSeries Neo — אלחוטית', maker:'DSC', type:'wl', wired:8, wl:128, intExp:false, exp16:false,
+                 labels:{ hub:'רכזת DSC PowerSeries Neo + מקלט PowerG', keypad:'לוח מקשים אלחוטי DSC HS2LCDWF' },
+                 desc:{ hub:'רכזת Neo עם מקלט PowerG (HSM2HOST) · עד 128 אביזרים אלחוטיים · 8 חלוקות · תקשורת IP / סלולר אופציונלית · סוללת גיבוי', keypad:'לוח מקשים אלחוטי PowerG · תצוגת LCD' } },
+    // hybrid: wired zones on the panel + PowerG wireless through the keypad's receiver
+    dsc_neo_hyb:{ name:'DSC PowerSeries Neo HS2064 — היברידית', maker:'DSC', type:'hyb', wired:64, wl:64, intExp:false, exp16:false,
+                 labels:{ hub:'רכזת DSC PowerSeries Neo HS2064', keypad:'לוח מקשים DSC HS2LCDRF (כולל מקלט PowerG)', zexp8:'מרחיב אזורים DSC HSM2108 — 8 אזורים' },
+                 desc:{ hub:'רכזת היברידית · 8 אזורים מובנים, הרחבה עד 64 (קווי ואלחוטי PowerG) · 8 חלוקות · Corbus · תקשורת IP / סלולר אופציונלית', keypad:'לוח מקשים LCD עם מקלט אלחוטי PowerG מובנה · חיבור Corbus', zexp8:'מרחיב 8 אזורים HSM2108 · חיבור Corbus' } }
   };
+  var ARCH_GROUPS = [['wired', 'מערכות קוויות'], ['wl', 'מערכות אלחוטיות'], ['hyb', 'מערכת היברידית']];
   function archCfg(){ var Ag = (typeof G1C !== 'undefined' && G1C.cfg && G1C.cfg.agent) || {}, live = function(k){ return ARCHS[k] && !ARCHS[k].retired; };
     var list = Array.isArray(Ag.archs) && Ag.archs.length ? Ag.archs.filter(live) : Object.keys(ARCHS).filter(live); if (!list.length) list = Object.keys(ARCHS).filter(live);
+    // systems added after the admin last chose the list are shown until the admin decides about them
+    if (Array.isArray(Ag.archs) && Ag.archs.length) { var seen = Array.isArray(Ag.archsSeen) ? Ag.archsSeen : ['generic', 'pima_hp', 'pima_force', 'risco_lsp']; Object.keys(ARCHS).filter(live).forEach(function(k){ if (seen.indexOf(k) < 0 && list.indexOf(k) < 0) list.push(k); }); }
     return { list:list, def:live(Ag.archDefault) ? Ag.archDefault : null }; }
   function archDefault(){ var c = archCfg(), v = null; try { v = localStorage.getItem('g1sg_arch'); } catch(e) {} if (v && c.list.indexOf(v) > -1) return v; return c.def && c.list.indexOf(c.def) > -1 ? c.def : c.list[0] || 'generic'; }
   function archCur(){ return (!CONSUMER && state && ARCHS[state.arch]) || ARCHS.generic; }
@@ -10557,13 +10571,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var a = archCur();
     ['hub', 'keypad', 'zexp_int', 'zexp8', 'zexp16'].forEach(function(t){ var d = DEVICE_DEFS[t]; if (!d) return; if (d.label0 == null) d.label0 = d.label; d.label = (a.labels && a.labels[t]) || d.label0; });
     var cur = state && state.arch, L = archCfg().list.slice(); if (cur && ARCHS[cur] && L.indexOf(cur) < 0) L.push(cur);   // an older project keeps its own (e.g. a retired panel) until changed
-    var opts = L.map(function(k){ return '<option value="' + k + '">' + ARCHS[k].name + (ARCHS[k].retired ? ' (לא משווקת עוד)' : '') + '</option>'; }).join('');
+    var opt = function(k){ return '<option value="' + k + '">' + ARCHS[k].name + (ARCHS[k].retired ? ' (לא משווקת עוד)' : '') + '</option>'; };
+    var opts = L.filter(function(k){ return !ARCHS[k].type; }).map(opt).join('') + ARCH_GROUPS.map(function(g){ var ks = L.filter(function(k){ return ARCHS[k].type === g[0]; }); return ks.length ? '<optgroup label="' + g[1] + '">' + ks.map(opt).join('') + '</optgroup>' : ''; }).join('');
     Array.prototype.forEach.call(document.querySelectorAll('.arch-sel'), function(sel){ if (sel.dataset.o !== opts) { sel.innerHTML = opts; sel.dataset.o = opts; } sel.value = cur || 'generic'; });
     var n = archCfg().list.length; Array.prototype.forEach.call(document.querySelectorAll('.arch-row'), function(r){ r.hidden = CONSUMER || (n < 2 && (!cur || cur === archCfg().list[0])); });
   }
   function setArch(v){
     if (!ARCHS[v] || state.arch === v) return;
     state.arch = v; try { localStorage.setItem('g1sg_arch', v); } catch(e) {}
+    // a wireless system means no alarm cabling; a wired one brings it back (hybrid keeps the agent's choice)
+    var ty = ARCHS[v].type; if (ty === 'wl' || ty === 'wired') { state.alarmWireless = ty === 'wl'; ['alarmWirelessToggle', 'qAlarmWirelessToggle'].forEach(function(id){ var t = document.getElementById(id); if (t) t.checked = state.alarmWireless; }); }
     archApply();
     var open = !document.getElementById('modalBackdrop').hidden, cq = open ? captureQuoteInputs() : null;
     render(); var r = runBom();
@@ -10571,6 +10588,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     showCanvasToast('✓ ארכיטקטורה: ' + ARCHS[v].name + ' — הרכזת, המרחיבים והקיבולת עודכנו');
   }
   document.addEventListener('change', function(e){ if (e.target && e.target.classList && e.target.classList.contains('arch-sel')) setArch(e.target.value); });
+  // the "wireless alarm" switch and the system choice stay consistent: switching it moves to a system of that kind
+  function archFollowWireless(){
+    if (CONSUMER) return; var ty = archCur().type; if (!ty || ty === 'hyb') return;
+    if ((state.alarmWireless && ty === 'wired') || (!state.alarmWireless && ty === 'wl')) {
+      var want = state.alarmWireless ? 'wl' : 'wired', k = archCfg().list.filter(function(x){ return ARCHS[x].type === want; })[0];
+      if (k) setArch(k);
+    }
+  }
+  ['alarmWirelessToggle', 'qAlarmWirelessToggle'].forEach(function(id){ var t = document.getElementById(id); if (t) t.addEventListener('change', function(){ setTimeout(archFollowWireless, 0); }); });
   function floorConcentrationOn(){ return usesMultiFloor() && state.floorConcentration !== false; }
   function devFloor(d){ return d.floor != null ? (d.floor || 0) : Math.max(0, Math.floor((d.y || 0) / FLOOR_Y_STRIDE)); }
   function poeSwitchFor(n){ return n <= 4 ? 4 : n <= 8 ? 8 : 16; }

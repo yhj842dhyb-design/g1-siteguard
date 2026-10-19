@@ -1609,7 +1609,7 @@ function modal(html, init){
 var RISCO_SUGGEST = { hub:'RISCO LightSYS Plus', keypad:'RISCO Panda', pir:'RISCO BWare PIR', pir_pet:'RISCO BWare PET', pir_am:'RISCO BWare DT AM', pir_ceiling:'RISCO iWISE 360',
   curtain_in:'RISCO Curtain PIR', curtain_out:'RISCO Beyond DT / WatchOUT', contact:'RISCO Slim Door/Window', glassbreak:'RISCO Glassbreak', smoke:'RISCO Smoke & Heat', flood:'RISCO Flood',
   siren_in:'RISCO Indoor Sounder', siren_out:'RISCO Lumin8', cam_in:'RISCO VUpoint', cam_out:'RISCO VUpoint', nvr:'RISCO VUpoint NVR' };
-var ARCH_LIST = [['generic', 'כללית (ללא יצרן)', 'שמות כלליים · עד 32 אזורים'], ['pima_force', 'PIMA FORCE', 'עד 144 קוויים + 64 אלחוטיים · ZEL508 / ZEX508 / ZEX516'], ['risco_lsp', 'RISCO LightSYS+', 'עד 512 אזורים (256 אלחוטיים) · מרחיבי 8 RP432EZ8']];
+var ARCH_LIST = [['generic', 'כללית (ללא יצרן)', 'שמות כלליים · עד 32 אזורים'], ['pima_force', 'PIMA FORCE', 'קווית · עד 144 קוויים + 64 אלחוטיים · ZEL508 / ZEX508 / ZEX516'], ['risco_lsp', 'RISCO LightSYS+', 'קווית · עד 512 אזורים (256 אלחוטיים) · מרחיבי 8 RP432EZ8'], ['visonic_pm30', 'Visonic PowerMaster-30 G2', 'אלחוטית · PowerG · עד 64 אזורים'], ['dsc_neo_wl', 'DSC PowerSeries Neo — אלחוטית', 'אלחוטית · PowerG · עד 128 אביזרים'], ['dsc_neo_hyb', 'DSC PowerSeries Neo HS2064 — היברידית', 'היברידית · עד 64 אזורים קווי + PowerG · מרחיבי HSM2108']];
 var MON_LIST = [['wired','חיבור קווי (חודשי)'],['wireless','חיבור אלחוטי (חודשי)'],['gprs','משדר GPRS (חודשי)'],['gprsOnce','משדר GPRS — חד-פעמי'],['central','מוקד צופה (חודשי)'],['smart','שירות סמארט (חודשי)'],['analytics','ערוצי אנליטיקה — לערוץ (חודשי)'],['anOnce','חיבור ערוצי אנליטיקה — חד-פעמי'],['pa','מוקד כריזה (חודשי)'],['panic','לחצן מצוקה (חודשי)']];
 function rAgent(){
   var P = cfg.agent.prices, C = cfg.agent.cablePrices; cfg.agent.monPrices = cfg.agent.monPrices || {}; var MP = cfg.agent.monPrices;
@@ -1663,7 +1663,7 @@ function rAgent(){
   var archSync = function(){ var on = Array.prototype.filter.call(document.querySelectorAll('.aarch'), function(c){ return c.checked; }).map(function(c){ return c.value; });
     if (!on.length) { toast('צריך להשאיר לפחות מערכת אחת'); var f = document.querySelector('.aarch'); f.checked = true; on = [f.value]; }
     var dr = document.querySelector('.aarchd:checked'), d = dr ? dr.value : on[0]; if (on.indexOf(d) < 0) { d = on[0]; var r2 = document.querySelector('.aarchd[value="' + d + '"]'); if (r2) r2.checked = true; }
-    cfg.agent.archs = on.length === ARCH_LIST.length ? null : on; if (!cfg.agent.archs) delete cfg.agent.archs; cfg.agent.archDefault = d; markDirty(); };
+    cfg.agent.archs = on.length === ARCH_LIST.length ? null : on; if (!cfg.agent.archs) { delete cfg.agent.archs; delete cfg.agent.archsSeen; } else cfg.agent.archsSeen = ARCH_LIST.map(function(x){ return x[0]; }); cfg.agent.archDefault = d; markDirty(); };
   Array.prototype.forEach.call(document.querySelectorAll('.aarch, .aarchd'), function(c){ c.onchange = archSync; });
   $('#instPrice').oninput = function(){ var v = this.value.trim(); if (v === '') delete cfg.agent.install; else cfg.agent.install = Math.max(0, Number(v)); markDirty(); };
   $('#maxDisc').oninput = function(){ var v = this.value.trim(); cfg.agent.maxDiscountPct = v === '' ? null : Math.max(0, Math.min(100, Number(v))); rAgent.md = true; markDirty(); };
