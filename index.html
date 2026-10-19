@@ -9,8 +9,8 @@
      it's the ONLY source of a correct mobile viewport, since nothing else supplies one. -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>G1 SiteGuard</title>
-<script>(function(){try{var h=location.href;try{h=decodeURIComponent(h)}catch(e){}if(/[?&#]s=[0-9a-z]+/i.test(h)||/#sign=/.test(h)){document.documentElement.className+=' sign-boot';setTimeout(function(){document.documentElement.classList.remove('sign-boot')},20000)}}catch(e){}})();</script>
-<style>html.sign-boot body>*{visibility:hidden!important}html.sign-boot body{background:#eef3f6!important}html.sign-boot body::before{content:'טוען את הצעת המחיר…';visibility:visible;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font:600 17px system-ui,-apple-system,Arial,sans-serif;color:#3a4456;background:#eef3f6;z-index:2147483647}</style>
+<script>(function(){try{var h=location.href;try{h=decodeURIComponent(h)}catch(e){}if(/[?&#]s=[0-9a-z]+/i.test(h)||/[?&]q=[0-9a-z]{8,20}/i.test(h)||/#sign=/.test(h)){document.documentElement.className+=' sign-boot';setTimeout(function(){document.documentElement.classList.remove('sign-boot')},20000)}}catch(e){}})();</script>
+<style>html.sign-boot body>*{visibility:hidden!important}html.sign-boot body{background:#eef3f6!important}html.sign-boot body::before{content:'מעבירים אותך להצעת המחיר לחתימה…';white-space:pre;visibility:visible;position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding-top:70px;font:700 18px system-ui,-apple-system,Arial,sans-serif;color:#1d2a3b;background:#eef3f6;z-index:2147483646}html.sign-boot body::after{content:'';visibility:visible;position:fixed;left:50%;top:calc(50% - 40px);width:38px;height:38px;margin-left:-19px;border-radius:50%;border:4px solid #c9dbe8;border-top-color:#00A3E0;animation:sgSpin .8s linear infinite;z-index:2147483647}@keyframes sgSpin{to{transform:rotate(360deg)}}</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -928,6 +928,14 @@
   .share-sheet-body{ display:flex; flex-direction:column; gap:10px; }
   .share-card.share-warn{ border-color:#f0b35a; background:#fff8ec; }
   .share-card{ border:1px solid var(--paper-line); background:#fff; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .dm-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .dm-row input{ flex:1 1 220px; min-width:0; padding:10px 12px; border:1px solid #C9D6E2; border-radius:10px; font:600 15px var(--font-body); direction:ltr; text-align:left; }
+  .dm-row .share-btn{ flex:0 0 auto; }
+  .dm-st{ font-size:13px; line-height:1.5; }
+  .dm-st.ok{ color:#0F7A4F; font-weight:700; }
+  .dm-st.err{ color:#B3261E; }
+  .wa-pair{ display:flex; gap:8px; flex-wrap:wrap; }
+  .wa-pair .share-btn{ flex:1 1 200px; }
   .share-card h4{ margin:0; font-size:13.5px; display:flex; align-items:center; gap:8px; }
   .share-card p{ margin:0; font-size:11.5px; color:var(--ink-dim); line-height:1.55; }
   .share-steps{ display:flex; flex-direction:column; gap:7px; }
@@ -2648,6 +2656,14 @@
   .v3d-share b{ font-size:18px; } .v3d-share p{ margin:6px 0 14px; color:#4a5568; font-size:14px; }
   .v3d-share .row{ display:flex; gap:8px; flex-wrap:wrap; } .v3d-share button{ flex:1 1 140px; min-height:48px; border-radius:14px; border:1px solid #d5dce4; background:#fff; font:800 15px var(--font-body); cursor:pointer; color:#14202e; }
   .v3d-share button.pri{ background:linear-gradient(135deg,#1FA6E2,#0047A6); color:#fff; border:0; }
+  .v3d-shsend{ display:flex; flex-direction:column; gap:8px; margin:0 0 12px; }
+  .v3d-shsend:empty{ display:none; }
+  .v3d-shsend .st{ font-size:13.5px; color:#4a5568; line-height:1.5; }
+  .v3d-shsend .st.ok{ color:#0F7A4F; font-weight:700; } .v3d-shsend .st.err{ color:#B3261E; }
+  .v3d-shsend .wa2{ display:flex; gap:8px; flex-wrap:wrap; }
+  .v3d-shsend a, .v3d-shsend .b{ flex:1 1 150px; display:flex; align-items:center; justify-content:center; gap:6px; min-height:46px; border-radius:14px; border:1px solid #d5dce4; background:#fff; color:#14202e; font:800 14.5px var(--font-body); text-decoration:none; cursor:pointer; padding:0 10px; text-align:center; }
+  .v3d-shsend a.wa{ background:#25D366; border-color:#25D366; color:#fff; }
+  .v3d-shsend .cr{ display:flex; gap:8px; } .v3d-shsend .cr input{ flex:1; min-width:0; padding:10px 12px; border:1px solid #C9D6E2; border-radius:12px; font:600 15px var(--font-body); }
   @media (max-width:760px){ .v3d-bar{ gap:5px; } .v3d-bar button{ padding:6px 10px; font-size:12.5px; } .v3d-bar .sp{ flex-basis:100%; height:0; } .v3d-bar .v3d-act{ flex:1; } .v3d-legend{ font-size:11px; } }
   body.consumer #btn3D, body.consumer #mm3D, body.consumer #btnSketch3D{ display:none !important; }
   .v3d .v3d-legend{ pointer-events:auto; padding:6px 10px; } .v3d-legend .lg-h{ background:none; border:0; color:#fff; font:800 12.5px var(--font-body); padding:2px 0; cursor:pointer; display:flex; align-items:center; gap:6px; }
@@ -3085,7 +3101,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 157</div>
+              <div class="app-version" id="appVersion">גרסה 159</div>
             </div>
           </div>
         </div>
@@ -13664,7 +13680,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     };
     var library = loadQuoteLibrary();
     var prev = library.filter(function(r){ return r.number === record.number; })[0];
-    if (prev) { if (prev.status) { record.status = prev.status; record.statusAt = prev.statusAt; } if (prev.signed && !record.signed) record.signed = prev.signed; }
+    if (prev) { if (prev.status) { record.status = prev.status; record.statusAt = prev.statusAt; } if (prev.signed && !record.signed) record.signed = prev.signed; if (prev.sid) record.sid = prev.sid; if (prev.sids) record.sids = prev.sids; }
     var idx = -1;
     for (var i = 0; i < library.length; i++) { if (library[i].number === record.number) { idx = i; break; } }
     if (idx >= 0) library[idx] = record; else library.push(record);
@@ -13697,6 +13713,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (record.customerContact) setCustomerContact(record.customerContact);
     else if (record.customerEmail) setCustomerContact({ email: record.customerEmail });
   }
+  var pollSignedAt = 0;
+  async function g1PollSigned(force){
+    if (CONSUMER || g1ScriptVer() < 7 || !g1Auth || !g1Auth.uid || !g1Endpoint()) return;
+    if (!force && Date.now() - pollSignedAt < 120000) return; pollSignedAt = Date.now();
+    var lib = loadQuoteLibrary(), cand = lib.filter(function(r){ return r.sid && !r.signed && Date.now() - Date.parse(r.savedAt || 0) < 60 * 864e5; });
+    if (!cand.length) return;
+    var ids = []; cand.forEach(function(r){ (r.sids || [r.sid]).forEach(function(x){ if (ids.indexOf(x) < 0) ids.push(x); }); });
+    try {
+      var j = await g1cJSON(g1Endpoint() + '?action=qstatus&uid=' + encodeURIComponent(g1Auth.uid) + '&ids=' + ids.slice(-100).join(','), 15000);
+      if (!j || !j.ok || !Array.isArray(j.signed) || !j.signed.length) return;
+      lib = loadQuoteLibrary(); var news = [];
+      j.signed.forEach(function(sg){ var r = lib.filter(function(x){ return x.sid === sg.id || (x.sids || []).indexOf(sg.id) >= 0; })[0]; if (!r || r.signed) return;
+        r.signed = { name:sg.signer || '', at:sg.signedAt, code:sg.code, via:'sheet', mailed:!!sg.mailed }; if (r.status !== 'won') { r.status = 'won'; r.statusAt = new Date().toISOString(); qStatusTrack(r, 'won', 'sign'); } news.push(r); });
+      if (!news.length) return;
+      saveQuoteLibraryRecords(lib);
+      showCanvasToast('✍️ ' + news.map(function(r){ return (r.signed.name || r.customerName) + ' חתם/ה על הצעה ' + r.number; }).join(' · ') + (news.every(function(r){ return r.signed.mailed; }) ? ' — המסמך החתום נשלח למייל שלך' : ''));
+      try { if (!quoteLibBackdrop.hidden) renderQuoteLibrary(); } catch(e) {}
+    } catch(e) {}
+  }
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') g1PollSigned(); });
+  setTimeout(function(){ g1PollSigned(true); }, 6000);
   function qStatusOf(rec){ return rec.status || (rec.signed ? 'won' : 'open'); }
   function qStatusTrack(rec, s, src){ try { if (typeof g1Track === 'function') g1Track('qstat', { q:rec.number, s:s, v:rec.total || '', src:src || '' }); } catch(e) {} }
   function renderQuoteLibrary(){
@@ -13793,7 +13830,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     deliverBlob(blob, 'G1-Quotes-backup-' + fileStamp() + '.json').then(function(){ document.getElementById('quoteLibImportNote').textContent = '✓ נשמר קובץ גיבוי עם ' + lib.length + ' הצעות'; }).catch(function(){});
   });
   var quoteLibBackdrop = document.getElementById('quoteLibBackdrop');
-  document.getElementById('btnQuoteLibrary').onclick = function(){ renderQuoteLibrary(); quoteLibBackdrop.hidden = false; };
+  document.getElementById('btnQuoteLibrary').onclick = function(){ renderQuoteLibrary(); quoteLibBackdrop.hidden = false; try { g1PollSigned(true); } catch(e) {} };
   document.getElementById('quoteLibClose').onclick = function(){ quoteLibBackdrop.hidden = true; };
   quoteLibBackdrop.addEventListener('click', function(ev){ if (ev.target === quoteLibBackdrop) quoteLibBackdrop.hidden = true; });
   document.getElementById('quoteLibTable').addEventListener('change', function(ev){
@@ -14686,13 +14723,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   // the whole quote is kept on the company sheet under a random id; the link carries only the id (short,
   // never cut by Outlook / Safe Links / WhatsApp). Old sheet script or offline → the self-contained link.
+  function g1Tok(){ var t = g1cRead('g1sg_atok'); return t && g1Auth && t.uid === g1Auth.uid ? t.tok : ''; }
+  function g1Enroll(code){
+    if (g1ScriptVer() < 7 || !g1Endpoint() || !g1Auth || !g1Auth.uid) return Promise.reject(new Error('n/a'));
+    var uid = g1Auth.uid;
+    return g1PostJSON({ type:'enroll', uid:uid, code:code }, 120000).then(function(j){ if (!j.tok) throw new Error('no-token'); g1cWrite('g1sg_atok', { uid:uid, tok:j.tok, at:Date.now() }); return j.tok; });
+  }
   function g1ScriptVer(){ var b = G1C.cfg && G1C.cfg.backend; return (b && +b.scriptVer) || 0; }
   async function storeSignPayload(o){
     try {
       var ep = g1Endpoint(); if (!ep || g1ScriptVer() < 6 || !g1Auth || !g1Auth.uid) return null;
       var t = await packSignPayload(o); if (t.length > 6500) return null;
       var a = new Uint8Array(9); crypto.getRandomValues(a); var id = Array.prototype.map.call(a, function(x){ return (x % 36).toString(36); }).join('') + Date.now().toString(36).slice(-3);
-      var j = await g1cJSON(ep + '?action=putq&uid=' + encodeURIComponent(g1Auth.uid) + '&id=' + id + '&n=' + encodeURIComponent(String(state.quoteNumber || '')) + '&d=' + t, 15000);
+      var j = await g1cJSON(ep + '?action=putq&uid=' + encodeURIComponent(g1Auth.uid) + '&id=' + id + '&n=' + encodeURIComponent(String(state.quoteNumber || '')) + (agentInfo.email ? '&ae=' + encodeURIComponent(agentInfo.email) : '') + (g1Tok() ? '&tok=' + g1Tok() : '') + '&d=' + t, 15000);
       return j && j.ok ? id : null;
     } catch(e) { return null; }
   }
@@ -14700,7 +14743,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var out = {};
     var ap0 = parsePhone(agentInfo.phone || ''), pre0 = '?n=' + encodeURIComponent(String(state.quoteNumber || '')) + (ap0 && ap0.valid ? '&p=' + ap0.intl : '');
     var sid = await storeSignPayload(buildSignPayload('wa'));
-    if (sid) { out.wa = signBaseUrl() + pre0 + '&q=' + sid; out.mail = out.wa + '&c=m'; out.id = sid; return out; }
+    if (sid) { out.wa = signBaseUrl() + pre0 + '&q=' + sid + (g1ScriptVer() >= 7 ? '&v=7' : ''); out.mail = out.wa + '&c=m'; out.id = sid; try { var lb = loadQuoteLibrary(), rr = lb.filter(function(r){ return r.number === state.quoteNumber; })[0]; if (rr) { rr.sid = sid; rr.sids = (rr.sids || []).filter(function(x){ return x !== sid; }).concat([sid]).slice(-8); saveQuoteLibraryRecords(lb); } } catch(e) {} return out; }
     // quote number and the agent's phone go first, in the clear: even a link cut short on the way
     // still tells the customer's page which quote it is and whom to ask for a new link
     var ap = parsePhone(agentInfo.phone || ''), pre = '?n=' + encodeURIComponent(String(state.quoteNumber || '')) + (ap && ap.valid ? '&p=' + ap.intl : '');
@@ -14903,7 +14946,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       return j && j.ok && j.d ? String(j.d) : null;
     } catch(e) { return null; }
   }
-  var SIGN_EP = '', SIGN_ID = '';
+  var SIGN_EP = '', SIGN_ID = '', SIGN_V = +((location.search.match(/[?&]v=(\d+)/) || [])[1] || 0);
   async function startSignMode(packed){
     var q;
     var cut = false, netFail = false, viaMail = false;
@@ -14947,7 +14990,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         '<div class="sg-pad-wrap"><div class="sg-pad-head"><b>חתימה</b><button type="button" id="sgClear">ניקוי</button></div><canvas id="sgPad"></canvas><div class="sg-pad-hint">חתמו כאן עם האצבע או העכבר</div></div>' +
         '<div class="sg-err" id="sgErr" hidden></div>' +
         '<button type="button" class="sg-primary" id="sgApprove">✍️ אישור וחתימה</button>' +
-        '<p class="sg-small">מזהה הצעה: ' + qHash + '. החתימה נשמרת רק במסמך שתשלחו ליועץ — אינה נשלחת לשום שרת.</p>' +
+        '<p class="sg-small">מזהה הצעה: ' + qHash + '. ' + (SIGN_V >= 7 && SIGN_ID ? 'עם האישור, המסמך החתום נשלח ישירות ליועץ' + (q.ag && q.ag.n ? ' (' + escapeHtml(q.ag.n) + ')' : '') + ' — ועותק אליכם אם מילאתם מייל.' : 'החתימה נשמרת רק במסמך שתשלחו ליועץ — אינה נשלחת לשום שרת.') + '</p>' +
       '</div></div>';
     document.getElementById('sgQuotePdf').onclick = async function(){
       var b = this, t0 = b.textContent; b.disabled = true; b.textContent = '⏳ מכינים את הקובץ…';
@@ -15004,13 +15047,34 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (!blob) { err.textContent = 'הפקת המסמך נכשלה — נסו שוב.'; err.hidden = false; return; }
       var name2 = brT('G1-Quote-') + q.n + ' - חתום - ' + signer.name.replace(/[\\\/:*?"<>|]+/g, ' ') + '.pdf';
       sgCacheSigned(qHash, blob, name2, signer, when);
-      if (SIGN_EP && SIGN_ID) { try { fetch(SIGN_EP + '?action=signedq&id=' + encodeURIComponent(SIGN_ID) + '&code=' + code + '&n=' + encodeURIComponent(String(q.n || '')), { mode:'no-cors', cache:'no-store' }).catch(function(){}); } catch(e) {} }
-      renderSignReturn(view, q, { blob:blob, file:pdfFileFrom(blob, name2), name:name2 }, signer, when);
+      var pdfObj = { blob:blob, file:pdfFileFrom(blob, name2), name:name2 };
+      if (SIGN_EP && SIGN_ID && SIGN_V >= 7) {
+        btn.disabled = true; btn.textContent = '⏳ שולחים את המסמך החתום ליועץ…';
+        try {
+          var b64s = await new Promise(function(res, rej){ var fr = new FileReader(); fr.onload = function(){ res(String(fr.result).split(',')[1] || ''); }; fr.onerror = rej; fr.readAsDataURL(blob); });
+          var rs = await g1PostJSON({ type:'signq', id:SIGN_ID, n:String(q.n || ''), code:code, name:signer.name, email:signer.email, agentName:(q.ag && q.ag.n) || '', pdf:b64s, filename:name2 }, 60000, SIGN_EP);
+          if (rs && rs.signq && rs.agentMailed) { renderSignDone(view, q, pdfObj, signer, when, rs); return; }
+        } catch(e) { try { console.warn('signq', e); } catch(_) {} }
+        btn.disabled = false; btn.textContent = '✍️ אישור וחתימה';
+      } else if (SIGN_EP && SIGN_ID) { try { fetch(SIGN_EP + '?action=signedq&id=' + encodeURIComponent(SIGN_ID) + '&code=' + code + '&n=' + encodeURIComponent(String(q.n || '')), { mode:'no-cors', cache:'no-store' }).catch(function(){}); } catch(e) {} }
+      renderSignReturn(view, q, pdfObj, signer, when);
     };
   }
   // After signing: send the signed PDF back to the agent. BOTH ways are always offered — the one
   // the quote arrived by first — because the customer may have received it on WhatsApp through
   // a link meant for e-mail (or the other way round), and some in-app browsers can't share files.
+  // signed and already delivered by the sheet: nothing left for the customer to do
+  function renderSignDone(view, q, pdf, signer, when, rs){
+    var agName = (q.ag && q.ag.n) || 'יועץ המיגון';
+    var card = document.createElement('div'); card.className = 'sg-card sg-done';
+    card.innerHTML = '<h1 class="sg-title">✓ תודה! ההצעה נחתמה</h1><p class="sg-sub">נחתם ע״י ' + escapeHtml(signer.name) + ' · ' + escapeHtml(when) + '</p>' +
+      '<p><b>המסמך החתום נשלח ל' + escapeHtml(agName) + '</b>, שיחזור אליכם לתיאום ההתקנה.' + (rs.customerMailed ? ' עותק נשלח גם למייל שלכם (' + escapeHtml(signer.email) + ').' : '') + '</p>' +
+      '<div class="sg-actions"><button type="button" class="sg-btn" id="sgDoneCopy">⬇ שמירת עותק במכשיר</button></div>' +
+      '<p class="sg-small">אפשר לסגור את החלון.</p>';
+    view.innerHTML = ''; view.appendChild(card);
+    document.getElementById('sgDoneCopy').onclick = async function(){ var b = this; if (canShareFile(pdf.file)) { var r = await shareFile(pdf.file); if (r === 'shared') { b.classList.add('done'); return; } if (r === 'cancelled') return; } await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); };
+    try { window.scrollTo(0, 0); } catch(e) {}
+  }
   function renderSignReturn(view, q, pdf, signer, when){
     var share = canShareFile(pdf.file), touch = isTouchDevice() || share;
     var agPhone = parsePhone(q.ag.p || ''), agName = q.ag.n || 'יועץ המיגון', agMail = q.ag.e || '';
@@ -15106,6 +15170,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function waCaption(t){ if (t.length <= 980) return t; var cut = t.slice(0, 980); return cut.slice(0, cut.lastIndexOf('\n')).replace(/\n+$/, ''); }
   function el2(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function shareNote(parent, text, warn){ var n = el2('div', 'share-note' + (warn ? ' warn' : '')); n.textContent = text; parent.appendChild(n); return n; }
+  function blobToB64(blob){ return new Promise(function(res, rej){ var fr = new FileReader(); fr.onload = function(){ res(String(fr.result).split(',')[1] || ''); }; fr.onerror = rej; fr.readAsDataURL(blob); }); }
+  // a POST whose answer is read (no opaque fallback: a mail that may not have left must not look sent)
+  function g1PostJSON(payload, ms, ep){
+    ep = ep || g1Endpoint(); if (!ep) return Promise.reject(new Error('no-endpoint'));
+    var ctl = window.AbortController ? new AbortController() : null, t = setTimeout(function(){ if (ctl) ctl.abort(); }, ms || 30000);
+    return fetch(ep, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload), signal:ctl ? ctl.signal : undefined })
+      .then(function(r){ return r.text(); }).then(function(tx){ clearTimeout(t); var j = null; try { j = JSON.parse(tx); } catch(e) {} if (!j) throw new Error('bad-response'); if (!j.ok) throw new Error(j.error || 'failed'); return j; },
+        function(e){ clearTimeout(t); throw e; });
+  }
   function linkBtn(cls, html, href){ var a = el2('a', 'share-btn ' + cls, html); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.addEventListener('click', function(){ a.classList.add('done'); }); return a; }
   function actBtn(cls, html, fn){ var b = el2('button', 'share-btn ' + cls, html); b.type = 'button'; b.addEventListener('click', function(){ fn(b); }); return b; }
   // "Save to Files / other app" on a phone, a plain download on a computer.
@@ -15139,7 +15212,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     // --- WhatsApp: one tap opens the customer's chat with the full message ready — only "send" is left
     var wa = el2('div', 'share-card share-main');
     wa.appendChild(el2('h4', '', '💬 וואטסאפ' + (hasPhone ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.phone.display) + '</span>' : '')));
-    wa.appendChild(linkBtn('wa big', 'שליחה בוואטסאפ ' + escapeHtml(toWhom(customer)), waHref));
+    if (mobile) wa.appendChild(linkBtn('wa big', 'שליחה בוואטסאפ ' + escapeHtml(toWhom(customer)), waHref));
+    else {
+      // on a computer wa.me goes through a "continue to chat" page; open the right app directly instead
+      var waPh = hasPhone ? info.phone.intl : '', pref = ''; try { pref = localStorage.getItem('g1sg_wa_desk') || ''; } catch(e) {}
+      var bApp = linkBtn('wa big', '💬 WhatsApp במחשב (אפליקציה)', 'whatsapp://send?' + (waPh ? 'phone=' + waPh + '&' : '') + 'text=' + encodeURIComponent(waText));
+      var bWeb = linkBtn('wa big', '🌐 WhatsApp Web (בדפדפן)', 'https://web.whatsapp.com/send?' + (waPh ? 'phone=' + waPh + '&' : '') + 'text=' + encodeURIComponent(waText));
+      bApp.target = '_self'; bApp.addEventListener('click', function(){ try { localStorage.setItem('g1sg_wa_desk', 'app'); } catch(e) {} });
+      bWeb.addEventListener('click', function(){ try { localStorage.setItem('g1sg_wa_desk', 'web'); } catch(e) {} });
+      var pair = el2('div', 'wa-pair'); if (pref === 'web') { pair.appendChild(bWeb); pair.appendChild(bApp); } else { pair.appendChild(bApp); pair.appendChild(bWeb); }
+      wa.appendChild(pair);
+    }
     wa.appendChild(el2('p', '', hasPhone ? 'נפתח הצ׳אט של הלקוח עם הודעה מוכנה: פירוט ההצעה, הסכומים והקישור לחתימה. נשאר רק ללחוץ "שלח".' : 'אין מספר נייד ללקוח — WhatsApp יבקש לבחור איש קשר. (אפשר להוסיף נייד בפרטי הלקוח בראש ההצעה.)'));
     var waMore = el2('div', 'share-mini');
     if (mobile) waMore.appendChild(actBtn('mini', '📎 לשלוח גם את קובץ ה-PDF', async function(b){ var r = await shareFile(pdf.file); if (r === 'shared') b.classList.add('done'); else if (r !== 'cancelled') { await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){}); b.classList.add('done'); } }));
@@ -15148,9 +15231,52 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     wa.appendChild(waMore);
     body.appendChild(wa);
 
+    // --- direct e-mail from the company sheet (v7): one click, the PDF attached, a copy to the agent
+    if (g1ScriptVer() >= 7 && currentSignLinks && currentSignLinks.id && g1Auth && g1Auth.uid) {
+      var dm = el2('div', 'share-card share-main');
+      dm.appendChild(el2('h4', '', '📧 שליחה ישירה ללקוח במייל'));
+      var dmRow = el2('div', 'dm-row'), dmIn = document.createElement('input');
+      dmIn.type = 'email'; dmIn.id = 'dmTo'; dmIn.placeholder = 'כתובת המייל של הלקוח'; dmIn.value = info.emailOk ? info.contact.email : ''; dmIn.setAttribute('aria-label', 'כתובת המייל של הלקוח');
+      var needTok = !g1Tok(), dmCode = null;
+      if (needTok) {
+        var cRow = el2('div', 'dm-row'); dmCode = document.createElement('input'); dmCode.type = 'password'; dmCode.id = 'dmCode'; dmCode.autocomplete = 'one-time-code'; dmCode.placeholder = 'קוד הסוכן שלך (אימות חד-פעמי במכשיר הזה)'; dmCode.setAttribute('aria-label', 'קוד הסוכן לאימות חד-פעמי');
+        cRow.appendChild(dmCode); dm.appendChild(cRow);
+      }
+      var dmSt = el2('div', 'dm-st'), dmBtn = actBtn('mail big', 'שליחה', async function(b){
+        var to = dmIn.value.trim();
+        if (!/^[^\s@<>,;]+@[^\s@<>,;]+\.[a-z]{2,}$/i.test(to)) { dmSt.className = 'dm-st err'; dmSt.textContent = 'כתובת המייל לא תקינה'; dmIn.focus(); return; }
+        if (!g1Tok()) {
+          if (!dmCode || g1cNormCode(dmCode.value).length < 6) { dmSt.className = 'dm-st err'; dmSt.textContent = 'לשליחה ישירה מהמערכת נדרש אימות חד-פעמי — הזינו את קוד הסוכן שלכם'; if (dmCode) dmCode.focus(); return; }
+          b.disabled = true; b.textContent = 'מאמת…'; dmSt.className = 'dm-st'; dmSt.textContent = 'מאמתים את הקוד מול המערכת (עד חצי דקה, פעם אחת בלבד)…';
+          try { await g1Enroll(dmCode.value); } catch(e) { b.disabled = false; b.textContent = 'שליחה'; dmSt.className = 'dm-st err'; dmSt.textContent = String(e && e.message) === 'bad code' ? 'הקוד לא נכון — נסו שוב' : 'האימות לא הצליח (' + (e && e.message || 'אין חיבור') + ')'; return; }
+          // the quote is stored again with the token, so the customer's signature will reach this agent's mail too
+          try { currentSignLinks = await buildSignLinks(); } catch(e) {}
+          b.disabled = false; b.textContent = 'שליחה';
+        }
+        b.disabled = true; b.textContent = 'שולח…'; dmSt.className = 'dm-st'; dmSt.textContent = '';
+        try {
+          var b64 = await blobToB64(pdf.blob);
+          var r = await g1PostJSON({ type:'sendq', uid:g1Auth.uid, tok:g1Tok(), id:currentSignLinks.id, to:to, subject:quoteSubject(), html:quoteEmailHtml(), text:quoteEmailText(), pdf:b64, filename:pdf.name, fromName:(agentInfo.name ? agentInfo.name + ' · ' : '') + brName('company') }, 60000);
+          if (!r || !r.sent) throw new Error((r && r.error) || 'failed');
+          try { var em = document.getElementById('qCustomerEmail'); if (em && !em.value) { em.value = to; em.dispatchEvent(new Event('input', { bubbles:true })); } } catch(e) {}
+          b.classList.add('done'); b.textContent = '✓ נשלח';
+          dmSt.className = 'dm-st ok'; dmSt.textContent = '✓ ההצעה נשלחה ל-' + to + ' עם קובץ ה-PDF' + (r.cc ? ' · עותק אליך (' + r.cc + ')' : '') + '. תשובות הלקוח יגיעו למייל שלך.';
+          try { g1Track('qsend', { q:state.quoteNumber, ch:'mail-direct' }); } catch(e) {}
+        } catch(e) {
+          b.disabled = false; b.textContent = 'שליחה';
+          var m = String(e && e.message || '');
+          dmSt.className = 'dm-st err'; dmSt.textContent = m === 'quota' ? 'מכסת המיילים היומית של המערכת נגמרה — שלחו הפעם מהמייל שלכם (למטה).' : m === 'limit' ? 'ההצעה הזו כבר נשלחה כמה פעמים — אפשר לשלוח שוב מאוחר יותר או מהמייל שלכם.' : m === 'auth' ? (function(){ try { g1cWrite('g1sg_atok', null); } catch(x) {} return 'נדרש אימות מחדש — סגרו ושלחו שוב, והזינו את קוד הסוכן.'; })() : 'השליחה לא הצליחה (' + (m || 'אין חיבור') + ') — נסו שוב, או שלחו מהמייל שלכם (למטה).';
+        }
+      });
+      dmRow.appendChild(dmIn); dmRow.appendChild(dmBtn); dm.appendChild(dmRow);
+      dm.appendChild(el2('p', '', 'המייל יוצא מהמערכת עם ההצעה המעוצבת, קובץ ה-PDF וקישור לחתימה. עותק נשלח אליך, ותשובת הלקוח תגיע ישירות למייל שלך.' + (agentInfo.email ? '' : ' (כדי לקבל עותק ותשובות — הוסיפו מייל בפרטי הסוכן.)')));
+      dm.appendChild(dmSt);
+      body.insertBefore(dm, body.firstChild);
+      dmIn.addEventListener('keydown', function(e){ if (e.key === 'Enter') dmBtn.click(); });
+    }
     // --- e-mail: one tap — recipient, subject and the full body are filled in
     var mail = el2('div', 'share-card share-main');
-    mail.appendChild(el2('h4', '', '📧 מייל' + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
+    mail.appendChild(el2('h4', '', (g1ScriptVer() >= 7 && currentSignLinks && currentSignLinks.id ? '📧 או: מהמייל שלך' : '📧 מייל') + (info.emailOk ? ' <span class="ltr" style="font-weight:500;color:var(--ink-dim)">' + escapeHtml(info.contact.email) + '</span>' : '')));
     var to = info.emailOk ? info.contact.email : '';
     if (mobile) {
       mail.appendChild(linkBtn('mail big', 'שליחה במייל ' + escapeHtml(toWhom(customer)), buildMailto(to, quoteSubject(), quoteEmailText().split('\n'))));
@@ -15174,6 +15300,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       mm2.appendChild(linkBtn('mini', '⚡ מייל מהיר (טקסט קצר, בלי קובץ)', buildMailto(to, quoteSubject(), shortLines)));
       mm2.appendChild(actBtn('mini', '📋 העתקת נוסח המייל', function(b){ copyRichEmail(function(ok){ if (ok) b.classList.add('done'); }); }));
       mail.appendChild(mm2);
+    }
+    if (document.getElementById('dmTo')) {
+      // the sheet sends the e-mail: the agent's own mail app becomes a folded alternative
+      var alt = el2('details', 'share-card share-more'), sm = el2('summary', '', '📧 או: שליחה מהמייל שלך (אאוטלוק / העתקת הנוסח)');
+      alt.appendChild(sm); Array.prototype.slice.call(mail.children).forEach(function(ch){ if (ch.tagName !== 'H4') alt.appendChild(ch); }); mail = alt;
     }
     body.appendChild(mail);
 
@@ -15237,7 +15368,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       try { currentSignLinks = await buildSignLinks(); } catch(e) { currentSignLinks = null; }
       var mobile = prefersShareSheet(pdf.file);
       var autoSaved = false;
-      if (!mobile){
+      if (!mobile && (saveFirst || !(g1ScriptVer() >= 7 && currentSignLinks && currentSignLinks.id))){
         var st = await deliverPdfBlob(pdf.blob, pdf.name).catch(function(){ return null; });
         autoSaved = !!st;
         if (saveFirst){
@@ -17643,6 +17774,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         if (u.status !== 'active') { err.textContent = 'הגישה שלך הושהתה על ידי מנהל המוצר.'; g1Log('login', { event:'blocked', uid:u.id, name:u.name }); return; }
         if (!g1DeviceOk(u)) { err.textContent = 'הפרטים נכונים, אבל המכשיר הזה עוד לא אושר. מנהל המוצר קיבל בקשה לאשר אותו.'; g1Log('login', { event:'device-pending', uid:u.id, name:u.name }); return; }
         g1Auth = { uid:u.id, hash:u.hash, phoneHash:u.phoneHash || '', name:u.name, role:u.role, verifiedAt:Date.now() }; g1cWrite('g1sg_auth', g1Auth);
+        try { if (!g1Tok()) g1Enroll(code).catch(function(){}); } catch(e) {}
         g1cWrite('g1sg_seen', new Date().toISOString().slice(0, 10));
         g1Log('login', { event:'ok', uid:u.id, name:u.name }); g1TrackFlush();
         try { var pf2 = g1cRead('g1sg_ping') || {}; pf2.fails = 0; g1cWrite('g1sg_ping', pf2); setTimeout(function(){ g1Presence('in', true); }, 1500); } catch(e) {} setTimeout(function(){ try { g1RemoteApply(); } catch(e) {} }, 400);
@@ -19249,7 +19381,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       '<div class="v3d-bar" id="v3dBar"><button type="button" data-a="full">⛶ מסך מלא</button><button type="button" data-a="intro">▶ הדגמה</button><button type="button" class="v3d-sim" data-a="sim">🚨 <span class="v3d-long">סימולציית </span>פריצה</button><button type="button" data-o="night">🌙 לילה</button><button type="button" class="v3d-more" data-a="more" aria-expanded="false">⚙ תצוגה</button>' +
         '<span class="v3d-opts"><button type="button" data-o="cover">כיסוי</button><button type="button" data-o="cables">כבילה</button><button type="button" data-o="low">קירות נמוכים</button><button type="button" data-o="furn">ריהוט</button><button type="button" data-o="labels">שמות</button></span>' +
         '<span class="sp"></span><button type="button" class="v3d-act" data-a="shot">📷 תמונה</button><button type="button" class="v3d-act pri" data-a="video">🎬 סרטון ללקוח</button></div>' +
-      '<div class="v3d-share" id="v3dShare" hidden><div class="in"><b id="v3dShT">הסרטון מוכן</b><p id="v3dShP"></p><div class="row"><button type="button" class="pri" id="v3dShGo">שליחה / שיתוף</button><button type="button" id="v3dShDl">שמירה במכשיר</button><button type="button" id="v3dShX">סגירה</button></div></div></div>';
+      '<div class="v3d-share" id="v3dShare" hidden><div class="in"><b id="v3dShT">הסרטון מוכן</b><p id="v3dShP"></p><div id="v3dShSend" class="v3d-shsend"></div><div class="row"><button type="button" class="pri" id="v3dShGo">שליחה / שיתוף</button><button type="button" id="v3dShDl">שמירה במכשיר</button><button type="button" id="v3dShX">סגירה</button></div></div></div>';
     document.body.appendChild(ov);
     if (window.matchMedia && window.matchMedia('(max-width:760px)').matches) document.getElementById('v3dBar').classList.add('opts-off');
     document.getElementById('v3dLegend').addEventListener('click', function(e){ if (e.target.closest('.lg-h')) this.classList.toggle('open'); });
@@ -19582,13 +19714,72 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     go.onclick = function(){ shareFile(file, { title:'הדמיית מיגון', text:'הדמיית תלת-ממד של מערכת המיגון שתוכננה עבורכם' }).catch(function(){}); };
     document.getElementById('v3dShDl').onclick = function(){ deliverBlob(blob, name).catch(function(){}); };
     box.hidden = false;
+    try { v3dSendUi(blob, name, type); } catch(e) { console.warn('v3d send', e); }
     try { g1Track('3d-' + (/video/.test(type) ? 'video' : 'shot'), {}); } catch(e) {}
   }
 
+  /* Sending the video to the customer: a file can't ride on a WhatsApp/e-mail link, and on a computer the
+     share sheet often shows nothing — so the video is put on the company Drive (sheet v7) and the customer
+     gets a link that plays in any browser. Without v7 it still opens the customer's chat, and the file is
+     saved for dragging into it. */
+  function v3dSendUi(blob, name, type){
+    var box = document.getElementById('v3dShSend'); if (!box) return; box.innerHTML = '';
+    var video = /video/.test(type), mobile = isTouchDevice();
+    var ct = getCustomerContact() || {}, ph = parsePhone(ct.phone || ''), phI = ph && ph.mobile ? ph.intl : '';
+    var cust = document.getElementById('fCustomer').value || '';
+    var msg = function(url){ return hiLine(cust) + '\n' + (video ? 'מצורפת הדמיית תלת-ממד של מערכת המיגון שתכננו עבורכם' : 'מצורפת תמונת הדמיה של מערכת המיגון שתכננו עבורכם') + (url ? ':\n' + url : '.') + '\n\n' + ([agentInfo.name, agentInfo.phone].filter(Boolean).join(' · ') || brName('company')); };
+    var st = document.createElement('div'); st.className = 'st';
+    function waLinks(text){
+      var w = document.createElement('div'); w.className = 'wa2';
+      var mk = function(label, href, self){ var a = document.createElement('a'); a.className = 'wa'; a.textContent = label; a.href = href; if (!self) { a.target = '_blank'; a.rel = 'noopener'; } return a; };
+      var q = (phI ? 'phone=' + phI + '&' : '') + 'text=' + encodeURIComponent(text);
+      if (mobile) w.appendChild(mk('💬 שליחה בוואטסאפ' + (cust ? ' ל' + cust : ''), 'https://wa.me/' + phI + '?text=' + encodeURIComponent(text)));
+      else { w.appendChild(mk('💬 WhatsApp במחשב', 'whatsapp://send?' + q, true)); w.appendChild(mk('🌐 WhatsApp Web', 'https://web.whatsapp.com/send?' + q)); }
+      return w;
+    }
+    function linkReady(url){
+      box.innerHTML = ''; st.className = 'st ok'; st.textContent = '✓ קישור לסרטון מוכן — נפתח אצל הלקוח בכל דפדפן' + (phI ? '' : ' (אין נייד ללקוח בהצעה — וואטסאפ יבקש לבחור איש קשר)');
+      box.appendChild(st); box.appendChild(waLinks(msg(url)));
+      var row = document.createElement('div'); row.className = 'wa2';
+      var cp = document.createElement('button'); cp.type = 'button'; cp.className = 'b'; cp.textContent = '📋 העתקת הקישור'; cp.onclick = function(){ copyToClipboard(url, function(ok){ if (ok) cp.textContent = '✓ הועתק'; }); };
+      var ml = document.createElement('a'); ml.className = 'b'; ml.textContent = '📧 במייל'; ml.href = 'mailto:' + encodeURIComponent(ct.email || '') + '?subject=' + encodeURIComponent('הדמיית תלת-ממד — מערכת המיגון שלכם') + '&body=' + encodeURIComponent(msg(url));
+      row.appendChild(cp); row.appendChild(ml); box.appendChild(row);
+    }
+    async function upload(){
+      box.innerHTML = ''; st.className = 'st'; st.textContent = '⏳ מעלים את הסרטון ומכינים קישור ללקוח… (' + Math.max(1, Math.round(blob.size / 1048576)) + ' MB)'; box.appendChild(st);
+      try {
+        var b64 = await blobToB64(blob);
+        var j = await g1PostJSON({ type:'putvid', uid:g1Auth.uid, tok:g1Tok(), video:b64, mime:type.split(';')[0], name:name, n:String(state.quoteNumber || '') }, 180000);
+        if (!j.url) throw new Error('no-url'); linkReady(j.url);
+        try { g1Track('3d-link', {}); } catch(e) {}
+      } catch(e) {
+        var m = String(e && e.message || '');
+        if (m === 'auth') { try { g1cWrite('g1sg_atok', null); } catch(x) {} return needCode(); }
+        fallback(m === 'sharing' ? 'הארגון לא מאפשר שיתוף קבצים בקישור — שלחו את הקובץ עצמו:' : 'יצירת הקישור לא הצליחה (' + (m || 'אין חיבור') + ') — שלחו את הקובץ עצמו:');
+      }
+    }
+    function needCode(){
+      box.innerHTML = ''; st.className = 'st'; st.textContent = 'לשליחת הסרטון כקישור בלחיצה אחת — אימות חד-פעמי עם קוד הסוכן שלכם:'; box.appendChild(st);
+      var cr = document.createElement('div'); cr.className = 'cr'; var inp = document.createElement('input'); inp.type = 'password'; inp.placeholder = 'קוד הסוכן'; inp.autocomplete = 'one-time-code';
+      var go = document.createElement('button'); go.type = 'button'; go.className = 'b'; go.style.flex = '0 0 auto'; go.textContent = 'אימות';
+      go.onclick = async function(){ if (g1cNormCode(inp.value).length < 6) { inp.focus(); return; } go.disabled = true; go.textContent = 'מאמת…'; try { await g1Enroll(inp.value); upload(); } catch(e) { go.disabled = false; go.textContent = 'אימות'; st.className = 'st err'; st.textContent = String(e && e.message) === 'bad code' ? 'הקוד לא נכון — נסו שוב' : 'האימות לא הצליח — נסו שוב, או שלחו את הקובץ עצמו (למטה)'; } };
+      inp.onkeydown = function(e){ if (e.key === 'Enter') go.click(); };
+      cr.appendChild(inp); cr.appendChild(go); box.appendChild(cr);
+      var alt = document.createElement('button'); alt.type = 'button'; alt.className = 'b'; alt.textContent = 'בלי קישור — לשלוח את הקובץ עצמו'; alt.onclick = function(){ fallback(''); }; box.appendChild(alt);
+    }
+    function fallback(note){
+      box.innerHTML = ''; st.className = note ? 'st err' : 'st';
+      st.textContent = (note ? note + ' ' : '') + (mobile ? 'לחצו "שליחה / שיתוף" ובחרו וואטסאפ.' : '1. שמרו את הקובץ (כפתור "שמירה במכשיר"). 2. פתחו את הצ׳אט עם הלקוח וגררו אליו את הקובץ.');
+      box.appendChild(st); if (!mobile) box.appendChild(waLinks(msg('')));
+    }
+    var online = g1ScriptVer() >= 7 && !CONSUMER && g1Auth && g1Auth.uid && g1Endpoint();
+    if (video && online) { if (g1Tok()) upload(); else needCode(); }
+    else if (!mobile) fallback('');
+  }
   document.getElementById('btn3D').onclick = function(){ if (P3.on && V3D.open) { p3Embed(false); return; } open3D(); };
   document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
   ['btnSend', 'btnSketch'].forEach(function(id){ var b = document.getElementById(id); if (b) b.addEventListener('click', v3dPreload); });
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { V:V3D, P3:P3, sig:function(){ return p3Sig(); }, loop:function(t){ v3dLoop(t); cancelAnimationFrame(V3D.raf); }, view:function(m){ setPlanView(m); }, intro:function(){ v3dIntro(); }, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { offer:function(b, n, t){ v3dOffer(b, n, t, 'הסרטון מוכן', ''); }, V:V3D, P3:P3, sig:function(){ return p3Sig(); }, loop:function(t){ v3dLoop(t); cancelAnimationFrame(V3D.raf); }, view:function(m){ setPlanView(m); }, intro:function(){ v3dIntro(); }, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
   if (CONSUMER) initG1Consumer(); else { try { brandApply(); } catch(e) {} initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
 
