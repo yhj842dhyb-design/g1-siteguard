@@ -3107,7 +3107,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 163</div>
+              <div class="app-version" id="appVersion">גרסה 164</div>
             </div>
           </div>
         </div>
@@ -5250,13 +5250,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       if (stairs) {
         // the flight is narrow: its name runs along it, centred
         var lcx = r.x + wpx / 2, lcy = r.y + hpx / 2;
-        label = el('text', { x:lcx, y:lcy + 4, 'text-anchor':'middle', class:'room-label', 'font-size':12, transform:hpx > wpx ? 'rotate(-90 ' + lcx + ' ' + lcy + ')' : '' });
-      } else label = el('text', { x:r.x+wpx-10, y:r.y+fontSize+8, class:'room-label' + (r.label ? '' : ' placeholder'), 'font-size':fontSize });
-      label.textContent = rtlIsolate(r.label || 'לחצו פעמיים לשם החדר');
+        label = el('text', { x:lcx, y:lcy + 4, 'text-anchor':'middle', class:'room-label', 'font-size':12, transform:hpx > wpx ? 'rotate(-90 ' + lcx + ' ' + lcy + ')' : '' }); label.style.fontSize = '12px';
+        label.textContent = rtlIsolate(r.label || 'לחצו פעמיים לשם החדר');
+      } else {
+        var LL = roomLabelLayout(r.label, wpx); fontSize = LL.fs;
+        label = el('text', { x:r.x+wpx-7, y:r.y+LL.fs+7, class:'room-label' + (r.label ? '' : ' placeholder'), 'font-size':LL.fs }); label.style.fontSize = LL.fs + 'px';
+        if (LL.lines.length === 1) label.textContent = rtlIsolate(LL.lines[0]);
+        else LL.lines.forEach(function(t, li){ var ts = el('tspan', { x:r.x+wpx-7, dy:li ? LL.fs * 1.08 : 0 }); ts.textContent = rtlIsolate(t); label.appendChild(ts); });
+      }
       g.appendChild(label);
-      if (hpx > 30 && !stairs) {
-        var dim = el('text', { x:r.x+10, y:r.y+hpx-9, class:'room-dim' });
-        dim.textContent = r.w.toFixed(1) + ' × ' + r.h.toFixed(1) + ' מ׳';
+      // the size caption only where it fits (a small WC / closet keeps just its name)
+      var dimTxt = r.w.toFixed(1) + ' × ' + r.h.toFixed(1) + ' מ׳', dimFs = wpx >= 96 ? 11.5 : 9.5;
+      if (hpx > 44 && !stairs && dimTxt.length * dimFs * 0.6 <= wpx - 14) {
+        var dim = el('text', { x:r.x+8, y:r.y+hpx-8, class:'room-dim', 'font-size':dimFs }); dim.style.fontSize = dimFs + 'px';
+        dim.textContent = dimTxt;
         g.appendChild(dim);
       }
 
@@ -5342,9 +5349,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Rough on-plan width of a room's name (right-anchored at the room's top-right corner — see
   // .room-label), same font-size formula as renderRooms(), so an illustration can stop short
   // of it instead of drawing underneath the text.
-  function estRoomLabelW(label, wpx){
-    var fs = Math.max(13, Math.min(19, Math.round(wpx/9)));
-    return (label ? label.length : 8) * fs * 0.58;
+  // the room name fitted to its room: the font shrinks first, then a long name breaks into two lines
+  // (at " / " or a space), and only a name that still can't fit is shortened with "…"
+  function roomLabelLayout(label, wpx){
+    label = label || 'לחצו פעמיים לשם החדר';
+    var avail = Math.max(24, wpx - 14), K = 0.63, fs = Math.max(13, Math.min(19, Math.round(wpx / 9)));
+    var tw = function(t, f){ return roomTextW(t, f, K); };
+    var fits = function(t, f){ return tw(t, f) <= avail; };
+    for (var f = fs; f >= 10; f--) if (fits(label, f)) return { lines:[label], fs:f, w:tw(label, f) };
+    var parts = label.indexOf(' / ') > 0 ? label.split(' / ') : null;
+    if (!parts) { var sp = label.split(' '); if (sp.length > 1) { var best = null; for (var i = 1; i < sp.length; i++) { var a = sp.slice(0, i).join(' '), b = sp.slice(i).join(' '), m = Math.max(a.length, b.length); if (!best || m < best.m) best = { a:a, b:b, m:m }; } parts = [best.a, best.b]; } }
+    if (parts && parts.length === 2) { for (var g = Math.min(fs, 16); g >= 10; g--) { var lw = Math.max(tw(parts[0], g), tw(parts[1], g)); if (lw <= avail) return { lines:parts, fs:g, w:lw }; } }
+    var n = Math.max(2, Math.floor(avail / (10 * K)) - 1); return { lines:[label.slice(0, n) + '…'], fs:10, w:avail };
+  }
+  function estRoomLabelW(label, wpx){ return roomLabelLayout(label, wpx).w; }
+  // real text width (bold display font) — measured once per string and size
+  var _rtw = {}, _rtc = null, _rtf = '';
+  try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ _rtw = {}; try { renderRooms(); } catch(e) {} }); } catch(e) {}
+  function roomTextW(t, f, K){
+    var k = f + '|' + t; if (_rtw[k] != null) return _rtw[k];
+    try { if (!_rtc) { _rtc = document.createElement('canvas').getContext('2d'); _rtf = (getComputedStyle(document.documentElement).getPropertyValue('--font-display') || 'Heebo, Arial, sans-serif').trim(); }
+      _rtc.font = '700 ' + f + 'px ' + _rtf; var mw = _rtc.measureText(t).width * 1.05 + 4; return Math.max(mw, t.length * f * 0.5); } catch(e) { return t.length * f * K; }
   }
   // Kinds whose illustration is laid out to dodge the name (top-right) and the size caption
   // (bottom-left) directly, so they still draw something in a room too shallow for the
@@ -12485,14 +12510,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
      origin = the front-left corner of the house; 'yards' are drawn on the entrance floor. ---- */
   var HOUSE_LAYOUTS = {
     single:{ name:'חד-קומתי', sub:'כ-170 מ״ר · מבואה וכביסה צמודות לחניה', lot:[-1.5, -2, 22.6, 13.8], side:'r',
-      floors:[{ rooms:[['חדר ילדים',0,0,3.5,3.5],['ממ"ד',3.5,0,3,3.5],['מטבח',6.5,0,4,3.5],['שירותי אורחים',10.5,0,1.5,1.8],['ארון / מחסן',10.5,1.8,1.5,1.7],['מבואת כניסה',12,0,2.5,3.5],['חדר כביסה / שירות',14.5,0,2.5,2],['מזווה / מחסן',14.5,2,2.5,1.5],
+      floors:[{ rooms:[['חדר ילדים',0,0,3.5,3.5],['ממ"ד',3.5,0,3,3.5],['מטבח',6.5,0,4,3.5],['שירותי אורחים',10.5,0,1.5,1.8],['מחסן',10.5,1.8,1.5,1.7],['מבואת כניסה',12,0,2.5,3.5],['חדר שירות',14.5,0,2.5,2],['מזווה',14.5,2,2.5,1.5],
           ['מסדרון',0,3.5,6.5,1.2],['חדר הורים',0,4.7,4,5.3],['חדר רחצה',4,4.7,2.5,2.8],['מקלחת הורים',4,7.5,2.5,2.5],['סלון ופינת אוכל',6.5,3.5,10.5,6.5]],
         ops:[['door_main',13.25,0],['window',1.75,0],['window',5,0],['window',8.5,0],['door_ext',17,1],['window',2,10],['window',5.25,10],['window_lg',9.5,10],['window_lg',14,10],['window',0,7.3],['window',17,6.5],['window',0,1.75],
           ['door_int',1.75,3.5],['door_int',5,3.5],['door_int',8.5,3.5],['door_int',12,0.9],['door_int',12,2.65],['door_int',13.25,3.5],['door_int',14.5,1],['door_int',14.5,2.75],['door_int',6.5,4.1],['door_int',2,4.7],['door_int',5.25,4.7],['door_int',4,8.75]] }],
       yards:[['חניה',17.1,-2,5.5,5.5],['חצר קדמית',-1.5,-2,18.5,2],['חצר צדדית',17,3.5,5.6,6.5],['חצר צדדית',-1.5,0,1.5,10],['גינה אחורית',-1.5,10,24.1,3.8]],
       gates:[[12.7,13.8],[17.1,22.6]] },
     cottage:{ name:'קוטג׳ דו-קומתי', sub:'כ-230 מ״ר · ציבורי למטה, חדרים למעלה', lot:[-1.5, -2, 17.6, 14], side:'r',
-      floors:[{ rooms:[['ממ"ד / חדר אורחים',0,0,3.3,3.5],['מטבח',3.3,0,3.7,3.5],['מבואת כניסה',7,0,3,3.5],['חדר כביסה / שירות',10,0,2,2],['מזווה / מחסן',10,2,2,1.5],['פינת אוכל',0,3.5,7.4,2.5],['גרם מדרגות',7.4,3.5,2.6,2.5],['שירותי אורחים',10,3.5,2,2.5],['סלון',0,6,12,5]],
+      floors:[{ rooms:[['ממ"ד / אורחים',0,0,3.3,3.5],['מטבח',3.3,0,3.7,3.5],['מבואת כניסה',7,0,3,3.5],['חדר שירות',10,0,2,2],['מזווה',10,2,2,1.5],['פינת אוכל',0,3.5,7.4,2.5],['גרם מדרגות',7.4,3.5,2.6,2.5],['שירותי אורחים',10,3.5,2,2.5],['סלון',0,6,12,5]],
         ops:[['door_main',8.5,0],['window',1.65,0],['window',5.15,0],['door_ext',12,1],['window_lg',3,11],['window_lg',8.5,11],['window',0,8.5],['window',12,8.5],['window',0,4.75],
           ['door_int',7,1.75],['door_int',8.7,3.5],['door_int',7.2,3.5],['door_int',5.15,3.5],['door_int',1.65,3.5],['door_int',10,1],['door_int',10,2.75],['door_int',10,4.75],['door_int',3.7,6],['door_int',8.7,6]] },
         { rooms:[['חדר ילדים 1',0,0,3.3,3.5],['חדר ילדים 2',3.3,0,3.3,3.5],['חדר ילדים 3',6.6,0,3.4,3.5],['חדר רחצה',10,0,2,3.5],['גלריה',0,3.5,7.4,2.5],['גרם מדרגות',7.4,3.5,2.6,2.5],['מסדרון',10,3.5,2,2.5],['חדר הורים',0,6,4.5,5],['חדר ארונות',4.5,6,2.5,2],['מקלחת הורים',4.5,8,2.5,3],['חדר משפחה',7,6,5,5]],
@@ -12501,7 +12526,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       yards:[['חניה',12.1,-2,5.5,5.5],['חצר קדמית',-1.5,-2,13.5,2],['חצר צדדית',12,3.5,5.6,7.5],['חצר צדדית',-1.5,0,1.5,11],['גינה אחורית',-1.5,11,19.1,3]],
       gates:[[8,9],[12.1,17.6]] },
     semi:{ name:'דו-משפחתי', sub:'מגרש צר · קיר משותף · כניסה מהחניה', lot:[0, -2, 13.7, 14], side:'r', party:true,
-      floors:[{ rooms:[['ממ"ד',0,0,2.6,3.5],['מטבח',2.6,0,2.5,6],['מבואת כניסה',5.1,0,2.9,3.5],['שירותי אורחים',0,3.5,1.5,2.5],['ארון / מחסן',1.5,3.5,1.1,2.5],['גרם מדרגות',5.1,3.5,2.9,2.5],['סלון ופינת אוכל',0,6,8,5]],
+      floors:[{ rooms:[['ממ"ד',0,0,2.6,3.5],['מטבח',2.6,0,2.5,6],['מבואת כניסה',5.1,0,2.9,3.5],['שירותי אורחים',0,3.5,1.5,2.5],['מחסן',1.5,3.5,1.1,2.5],['גרם מדרגות',5.1,3.5,2.9,2.5],['סלון ופינת אוכל',0,6,8,5]],
         ops:[['door_main',8,1.75],['window',1.3,0],['window',3.85,0],['window',6.55,0],['window_lg',2,11],['window_lg',6,11],['window',8,8.5],
           ['door_int',5.1,1.75],['door_int',6.55,3.5],['door_int',2.6,1.75],['door_int',0.75,6],['door_int',2.05,6],['door_int',3.85,6],['door_int',6.55,6]] },
         { rooms:[['חדר ילדים 1',0,0,3.3,3.5],['חדר ילדים 2',3.3,0,4.7,3.5],['חדר רחצה',0,3.5,2.6,2.5],['מסדרון',2.6,3.5,2.5,2.5],['גרם מדרגות',5.1,3.5,2.9,2.5],['חדר הורים',0,6,4.5,5],['חדר ארונות',4.5,6,3.5,2.2],['מקלחת הורים',4.5,8.2,3.5,2.8]],
@@ -12510,8 +12535,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       yards:[['חניה',8.1,-2,5.5,5.5],['שביל כניסה',0,-2,8,2],['חצר צדדית',8,3.5,5.7,7.5],['גינה אחורית',0,11,13.7,3]],
       gates:[[6,7.2],[8.1,13.6]] },
     villa:{ name:'וילה עם בריכה', sub:'דו-קומתי מרווח · חניה מקורה · בריכה בגינה', lot:[-1.2, -1.5, 21.7, 14.7], side:'r',
-      floors:[{ rooms:[['ממ"ד / חדר אורחים',0,0,3.5,4],['מטבח',3.5,0,4.5,4],['גרם מדרגות',8,0,2.8,4],['שירותי אורחים',10.8,0,1.5,2],['ארון מעילים / מחסן',10.8,2,1.5,2],['מבואת כניסה',12.3,0,3.7,4],
-          ['סלון',0,4,7.5,7],['פינת אוכל',7.5,4,4,7],['חדר משפחה',11.5,4,4.5,4.5],['חדר כביסה / שירות',11.5,8.5,2.5,2.5],['מזווה / מחסן',14,8.5,2,2.5]],
+      floors:[{ rooms:[['ממ"ד / אורחים',0,0,3.5,4],['מטבח',3.5,0,4.5,4],['גרם מדרגות',8,0,2.8,4],['שירותי אורחים',10.8,0,1.5,2],['ארון מעילים',10.8,2,1.5,2],['מבואת כניסה',12.3,0,3.7,4],
+          ['סלון',0,4,7.5,7],['פינת אוכל',7.5,4,4,7],['חדר משפחה',11.5,4,4.5,4.5],['חדר שירות',11.5,8.5,2.5,2.5],['מזווה',14,8.5,2,2.5]],
         ops:[['door_main',16,2],['window',1.75,0],['window',5.75,0],['window',14.15,0],['door_ext',12.75,11],['window_lg',2.5,11],['window_lg',6,11],['window_lg',9.5,11],['window',15,11],['window',0,7.5],['window',16,6.25],
           ['door_int',12.3,1],['door_int',12.3,3],['door_int',14.15,4],['door_int',11.5,6.25],['door_int',9.4,4],['door_int',5.75,4],['door_int',7.5,7.5],['door_int',1.75,4],['door_int',12.75,8.5],['door_int',15,8.5]] },
         { rooms:[['חדר ילדים 1',0,0,4,4],['חדר ילדים 2',4,0,4,4],['גרם מדרגות',8,0,2.8,4],['חדר רחצה',10.8,0,1.5,4],['חדר משחקים',12.3,0,3.7,4],['גלריה',0,4,16,2.5],
