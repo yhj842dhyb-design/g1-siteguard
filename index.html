@@ -35,11 +35,11 @@
     --line-strong:#8290a8;
     --ink-on-dark:#182335;
     --ink-dim:#5e6880;
-    --paper:#f6f3ea;
+    --paper:#f5f6f8;
     --paper-line:rgba(27,36,48,0.14);
     --paper-line-strong:rgba(27,36,48,0.55);
     --ink-on-paper:#20293a;
-    --wall:#4a4433;
+    --wall:#3a4250;
     --furn:rgba(74,68,51,0.4);
     --accent:#c9832f;
     --accent-ink:#241503;
@@ -487,13 +487,13 @@
        since none of those elements is the <svg> root. .room-dim is deliberately left LTR (it
        draws "4.0 × 3.2 מ׳"-style numeric strings) and is unaffected either way. */
   }
-  .room-rect{ stroke:var(--paper-line-strong); stroke-width:1.5; cursor:grab; }
-  .room-rect.yard{ stroke-dasharray:7 5; stroke:#8a9e78; }
+  .room-rect{ stroke:rgba(58,66,80,.22); stroke-width:.75; cursor:grab; }
+  .room-rect.yard{ stroke-dasharray:6 4; stroke:#9fbf8c; stroke-width:1.2; }
   .room-rect.selected{ stroke:var(--accent-2); stroke-width:3; }
   .room-rect.corner-edit{ stroke:var(--accent-3); stroke-width:3; stroke-dasharray:5 3; }
   .room-label{
     font-family:var(--font-display); font-weight:700; font-size:16px; letter-spacing:.1px;
-    fill:var(--ink-on-paper); paint-order:stroke fill; stroke:#ffffff; stroke-width:5px;
+    fill:#1f2733; paint-order:stroke fill; stroke:#ffffff; stroke-width:4px;
     stroke-linejoin:round; pointer-events:none;
     /* direction:rtl alone is unreliable for SVG <text> on mobile Safari/WebKit — without an
        accompanying unicode-bidi value, iOS renders the Hebrew room name with its glyphs in
@@ -505,10 +505,12 @@
   }
   .room-label.placeholder{ fill:#a39d8a; font-weight:600; font-style:italic; }
   .room-dim{
-    font-family:var(--font-mono); font-weight:600; font-size:11.5px; fill:#6b6552;
-    paint-order:stroke fill; stroke:#ffffff; stroke-width:4px; stroke-linejoin:round; pointer-events:none;
+    font-family:var(--font-mono); font-weight:600; font-size:11.5px; fill:#8b95a3;
+    paint-order:stroke fill; stroke:#ffffff; stroke-width:3px; stroke-linejoin:round; pointer-events:none;
     direction:ltr; text-anchor:start;
   }
+  .room-dim .rd-area{ font-family:var(--font-body); font-weight:600; fill:#4f5a68; }
+  .room-dim .rd-side{ font-weight:500; fill:#98a2ae; }
   .resize-handle{ fill:var(--paper); stroke:var(--accent-2); stroke-width:2; }
   .resize-handle.cur-nwse{ cursor:nwse-resize; }
   .resize-handle.cur-nesw{ cursor:nesw-resize; }
@@ -629,14 +631,17 @@
   .rec-popover b{ display:block; font-size:12.5px; margin-bottom:3px; color:var(--ink-on-dark); }
   .rec-popover span{ display:block; color:var(--ink-dim); font-size:11.5px; line-height:1.5; margin-bottom:9px; }
   .rec-popover .rec-popover-actions{ display:flex; gap:7px; justify-content:flex-end; }
-  .opening-jamb{ stroke:var(--ink-on-paper); stroke-width:3; pointer-events:none; }
-  .door-leaf{ stroke:var(--ink-on-paper); stroke-width:1.6; pointer-events:none; }
-  .door-leaf.door_int{ stroke:#8a8471; stroke-dasharray:3 2; }
-  .door-swing{ fill:none; stroke:var(--ink-on-paper); stroke-width:1.1; stroke-dasharray:3 2; pointer-events:none; opacity:.7; }
-  .door-swing.door_int{ stroke:#8a8471; opacity:.55; }
-  .window-sill{ stroke:#3a6ea5; stroke-width:3; pointer-events:none; }
-  .window-sill.window_lg{ stroke-width:4.5; }
-  .window-jamb{ stroke:#3a6ea5; stroke-width:2; pointer-events:none; }
+  .opening-jamb{ stroke:var(--wall); stroke-width:1; pointer-events:none; }
+  .door-leaf{ stroke:var(--wall); stroke-width:2.2; stroke-linecap:round; pointer-events:none; }
+  .door-leaf.door_int{ stroke:#5d6775; stroke-width:1.6; }
+  .door-swing{ fill:rgba(58,66,80,.045); stroke:rgba(58,66,80,.55); stroke-width:.8; pointer-events:none; }
+  .door-swing.door_int{ stroke:rgba(58,66,80,.4); fill:rgba(58,66,80,.03); }
+  .door-entry{ fill:#e5484d; stroke:#fff; stroke-width:1.2; stroke-linejoin:round; pointer-events:none; }
+  .window-sill{ stroke:#4a8fd0; stroke-width:1.4; pointer-events:none; }
+  .window-sill.window_lg{ stroke-width:1.2; }
+  .window-frame{ stroke:var(--wall); stroke-width:.8; pointer-events:none; }
+  .window-jamb{ stroke:var(--wall); stroke-width:1; pointer-events:none; }
+  #furnitureLayer{ filter:saturate(.8); opacity:.92; }
   .cable-line{ stroke-width:1.4; fill:none; pointer-events:none; opacity:.7; }
   .cable-line.alarm{ stroke:var(--accent); stroke-dasharray:4 3; }
   .cable-line.cat6{ stroke:var(--accent-2); stroke-dasharray:7 3; }
@@ -3107,7 +3112,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 165</div>
+              <div class="app-version" id="appVersion">גרסה 166</div>
             </div>
           </div>
         </div>
@@ -3129,8 +3134,9 @@
         <div class="canvas-stage">
           <svg id="plan" width="1000" height="680" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--paper-line)" stroke-width="1"/>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 20 L 0 20 M 20 0 L 20 40" fill="none" stroke="rgba(27,36,48,0.045)" stroke-width="1"/>
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(27,36,48,0.085)" stroke-width="1"/>
               </pattern>
 
               <!-- Realistic surface textures for the floor fill, styled after developer-style
@@ -3149,22 +3155,21 @@
                 <line x1="34" y1="4.5" x2="56" y2="4.5" stroke="#d9bd8b" stroke-width="0.6" opacity="0.7"/>
                 <line x1="7" y1="11.5" x2="34" y2="11.5" stroke="#d9bd8b" stroke-width="0.6" opacity="0.7"/>
               </pattern>
-              <pattern id="pTile" width="17" height="17" patternUnits="userSpaceOnUse">
-                <rect width="17" height="17" fill="#eef4f5"/>
-                <rect x="0.6" y="0.6" width="15.8" height="15.8" fill="none" stroke="#d5e3e5" stroke-width="1"/>
+              <pattern id="pTile" width="12" height="12" patternUnits="userSpaceOnUse">
+                <rect width="12" height="12" fill="#e3f0f4"/>
+                <path d="M 12 0 L 0 0 0 12" fill="none" stroke="#d0e3e9" stroke-width="0.75"/>
               </pattern>
-              <pattern id="pKitchenTile" width="23" height="23" patternUnits="userSpaceOnUse">
-                <rect width="23" height="23" fill="#f1ece0"/>
-                <rect x="0.6" y="0.6" width="21.8" height="21.8" fill="none" stroke="#ddd2ba" stroke-width="1"/>
+              <pattern id="pKitchenTile" width="24" height="24" patternUnits="userSpaceOnUse">
+                <rect width="24" height="24" fill="#eef3e8"/>
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#dfe7d6" stroke-width="0.75"/>
               </pattern>
-              <pattern id="pDeck" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <rect width="16" height="16" fill="#c6884e"/>
-                <rect x="0" y="0" width="16" height="13" fill="#d2985c"/>
-                <line x1="0" y1="0" x2="16" y2="0" stroke="#a06a38" stroke-width="1"/>
+              <pattern id="pDeck" width="10" height="10" patternUnits="userSpaceOnUse">
+                <rect width="10" height="10" fill="#eadfcb"/>
+                <line x1="0" y1="0" x2="10" y2="0" stroke="#dccfb4" stroke-width="0.8"/>
               </pattern>
-              <pattern id="pPavement" width="42" height="42" patternUnits="userSpaceOnUse">
-                <rect width="42" height="42" fill="#d0d3d2"/>
-                <rect x="0.7" y="0.7" width="40.6" height="40.6" fill="none" stroke="#b7bcba" stroke-width="1.3"/>
+              <pattern id="pPavement" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#d6dbe1"/>
+                <rect x="0.5" y="0.5" width="39" height="39" fill="none" stroke="#c8ced5" stroke-width="1"/>
               </pattern>
               <!-- Pool surround: pale-aqua stone tiles (the light-blue ground the pool sits in),
                    plus the water itself for the basin drawn on top of it. -->
@@ -3221,7 +3226,10 @@
               </pattern>
 
               <filter id="softShadow" x="-60%" y="-60%" width="220%" height="220%">
-                <feDropShadow dx="0" dy="1.4" stdDeviation="1.5" flood-color="#2a2415" flood-opacity="0.28"/>
+                <feDropShadow dx="0" dy="1.4" stdDeviation="1.5" flood-color="#1b2430" flood-opacity="0.16"/>
+              </filter>
+              <filter id="wallShadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="0" dy="1.5" stdDeviation="1.6" flood-color="#1b2430" flood-opacity="0.2"/>
               </filter>
             </defs>
             <rect x="0" y="0" width="1000" height="680" fill="url(#grid)"/>
@@ -3239,20 +3247,19 @@
             <g id="dragTooltipLayer" style="pointer-events:none"></g>
             <g id="recsLayer"></g>
             <g id="compassRose" transform="translate(922,606)" pointer-events="none" aria-label="מצפן כיווני עולם">
-              <circle r="34" fill="var(--paper)" stroke="var(--paper-line-strong)" stroke-width="1.5" opacity="0.94"/>
-              <circle r="27" fill="none" stroke="var(--paper-line)" stroke-width="1"/>
-              <path d="M0,-21 L4.5,4 L0,-3 L-4.5,4 Z" fill="var(--accent)"/>
-              <path d="M0,21 L4.5,-4 L0,3 L-4.5,-4 Z" fill="#b8b19c"/>
-              <text y="-24" text-anchor="middle" font-family="var(--font-body)" font-weight="700" font-size="9.5" fill="var(--ink-on-paper)">צפון</text>
-              <text y="31" text-anchor="middle" font-family="var(--font-body)" font-size="8" fill="#8a8471">דרום</text>
-              <text x="27" y="3" text-anchor="middle" font-family="var(--font-body)" font-size="8" fill="#8a8471">מזרח</text>
-              <text x="-27" y="3" text-anchor="middle" font-family="var(--font-body)" font-size="8" fill="#8a8471">מערב</text>
+              <circle r="22" fill="#ffffff" stroke="rgba(58,66,80,.35)" stroke-width="0.9"/>
+              <path d="M0,-17 L5,3 L0,0 Z" fill="#3a4250"/>
+              <path d="M0,-17 L-5,3 L0,0 Z" fill="#ffffff" stroke="#3a4250" stroke-width="0.9" stroke-linejoin="round"/>
+              <path d="M0,17 L5,-3 L0,0 L-5,-3 Z" fill="#c9ced6"/>
+              <text y="-27" text-anchor="middle" font-family="var(--font-body)" font-weight="700" font-size="10" fill="#3a4250">צפון</text>
             </g>
-            <g id="scaleBar" transform="translate(830,660)" pointer-events="none" aria-label="קנה מידה">
-              <line x1="0" y1="0" x2="40" y2="0" stroke="var(--ink-on-paper)" stroke-width="2"/>
-              <line x1="0" y1="-4" x2="0" y2="4" stroke="var(--ink-on-paper)" stroke-width="2"/>
-              <line x1="40" y1="-4" x2="40" y2="4" stroke="var(--ink-on-paper)" stroke-width="2"/>
-              <text x="20" y="-8" text-anchor="middle" font-family="var(--font-mono)" font-size="9.5" font-weight="600" fill="var(--ink-on-paper)">1 מ׳</text>
+            <g id="scaleBar" transform="translate(800,660)" pointer-events="none" aria-label="קנה מידה">
+              <rect x="0" y="-2" width="80" height="4" fill="#ffffff" stroke="#3a4250" stroke-width="0.8"/>
+              <rect x="0" y="-2" width="20" height="4" fill="#3a4250"/>
+              <rect x="40" y="-2" width="20" height="4" fill="#3a4250"/>
+              <text x="0" y="-7" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="#3a4250">0</text>
+              <text x="40" y="-7" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="#3a4250">1</text>
+              <text x="80" y="-7" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="#3a4250">2 מ׳</text>
             </g>
           </svg>
         </div>
@@ -5183,21 +5190,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // Real textured surfaces instead of flat tints — wood planks for living spaces,
   // fine tile for wet rooms, warm stone tile for the kitchen, angled decking outdoors,
   // and paving slabs for a driveway/parking area.
-  var FLOOR_PATTERN = {
-    stairs:'#ebe7e0',
-    kitchen:'url(#pKitchenTile)', bath:'url(#pTile)', clinic:'url(#pTile)', bedroom:'url(#pWood)', living:'url(#pWood)',
-    hall:'url(#pWood)', dining:'url(#pWood)', yard:'url(#pDeck)', parking:'url(#pPavement)', street:'url(#pPavement)', generic:'url(#pWood)',
-    pool:'url(#pPoolDeck)', balcony:'url(#pDeck)', wc:'url(#pTile)', safe:'url(#pWood)', lab:'url(#pTile)',
-    checkout:'url(#pRetail)', sales:'url(#pRetail)', storage:'url(#pConcrete)', office:'url(#pWood)',
-    reception:'url(#pWood)', general:'url(#pWood)'
+  // clean presentation palette — flat pastels by room use (the layout-picker colours), a whisper of
+  // texture only where the material tells something (tiles in wet rooms / kitchen, deck, paving)
+  var ROOM_TINT = {
+    living:'#fdfaf3', dining:'#fdfaf3', generic:'#ffffff', general:'#ffffff', bedroom:'#f5efe6', office:'#eef1f6',
+    kitchen:'#eef3e8', bath:'#e3f0f4', wc:'#e3f0f4', lab:'#e9eef3', safe:'#ffe0b8', hall:'#d9ecff', reception:'#d9ecff',
+    stairs:'#e7e2f5', storage:'#e6e8eb', clinic:'#e3f4ec', sales:'#fff3c4', checkout:'#ffeeb3', balcony:'#eadfcb',
+    yard:'#d4e8c8', parking:'#d6dbe1', street:'#d6dbe1', pool:'#e2f2f8'
   };
+  var FLOOR_PATTERN = {};
+  Object.keys(ROOM_TINT).forEach(function(k){ FLOOR_PATTERN[k] = ROOM_TINT[k]; });
+  FLOOR_PATTERN.kitchen = 'url(#pKitchenTile)'; FLOOR_PATTERN.bath = FLOOR_PATTERN.wc = 'url(#pTile)'; FLOOR_PATTERN.balcony = 'url(#pDeck)';
+  FLOOR_PATTERN.parking = FLOOR_PATTERN.street = 'url(#pPavement)'; FLOOR_PATTERN.pool = 'url(#pPoolDeck)';
 
   function renderRooms(){
     roomsLayer.innerHTML = '';
     var __ts = planEffScale(); // computed once for the whole pass — see the note on touchHitTransform
     visibleRooms().slice().sort(function(a, b){
-      var sa = (a.type === 'yard' ? 0 : isStairsRoom(a) ? 1.5 : 1) + (selected && selected.kind === 'room' && selected.id === a.id ? 2 : 0);
-      var sb = (b.type === 'yard' ? 0 : isStairsRoom(b) ? 1.5 : 1) + (selected && selected.kind === 'room' && selected.id === b.id ? 2 : 0);
+      var sa = (a.type === 'yard' ? 0 : isStairsRoom(a) ? 1.5 : roomKind(a) === 'safe' ? 1.2 : 1) + (selected && selected.kind === 'room' && selected.id === a.id ? 2 : 0);
+      var sb = (b.type === 'yard' ? 0 : isStairsRoom(b) ? 1.5 : roomKind(b) === 'safe' ? 1.2 : 1) + (selected && selected.kind === 'room' && selected.id === b.id ? 2 : 0);
       return sa - sb;
     }).forEach(function(r){
       var isSel = selected && selected.kind==='room' && selected.id===r.id;
@@ -5205,19 +5216,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var kind = roomKind(r);
       var g = el('g', {});
 
-      var stairs = isStairsRoom(r);
-      if (r.type !== 'yard' && !stairs) {
-        // architectural wall band: a thicker outer band in wall color, with the
-        // tinted floor rect inset on top of it — reads as real wall thickness
-        // rather than a thin outline, and adjoining rooms' bands merge naturally.
+      var stairs = isStairsRoom(r), bld = r.type !== 'yard' && !stairs, wb = kind === 'safe' ? 5 : 2, wi = bld ? (kind === 'safe' ? 3 : 2) : 0;
+      if (bld) {
+        // walls: every room adds a 4 px band around itself (interior walls, where two rooms meet the
+        // two floors stop 2 px short of the shared edge), the exterior gets 8 px from the building-wide
+        // band drawn underneath all rooms (below), and a ממ"ד gets its thick concrete walls.
+        g.setAttribute('data-bld', '1');
         g.appendChild(el('rect', {
-          x:r.x-4, y:r.y-4, width:wpx+8, height:hpx+8, rx:3,
+          x:r.x-wb, y:r.y-wb, width:wpx+2*wb, height:hpx+2*wb,
           fill:'var(--wall)', stroke:'none', 'pointer-events':'none'
         }));
       }
 
       var rect = el('rect', {
-        x:r.x, y:r.y, width:wpx, height:hpx, rx:2,
+        x:r.x+wi, y:r.y+wi, width:Math.max(1, wpx-2*wi), height:Math.max(1, hpx-2*wi), rx:bld ? 1 : 2,
         style:'fill:' + (FLOOR_PATTERN[kind] || FLOOR_PATTERN.generic),
         class:'room-rect' + (r.type === 'yard' ? ' yard' : '') + (isSel ? ' selected' : '') + (roomEditId === r.id ? ' corner-edit' : '')
       });
@@ -5256,15 +5268,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       } else {
         var LL = roomLabelLayout(r.label, wpx); fontSize = LL.fs;
         label = el('text', { x:r.x+wpx-7, y:r.y+LL.fs+7, class:'room-label' + (r.label ? '' : ' placeholder'), 'font-size':LL.fs }); label.style.fontSize = LL.fs + 'px';
+        label.style.stroke = ROOM_TINT[kind] || '#ffffff';
         if (LL.lines.length === 1) label.textContent = rtlIsolate(LL.lines[0]);
         else LL.lines.forEach(function(t, li){ var ts = el('tspan', { x:r.x+wpx-7, dy:li ? LL.fs * 1.08 : 0 }); ts.textContent = rtlIsolate(t); label.appendChild(ts); });
       }
       g.appendChild(label);
       // the size caption only where it fits (a small WC / closet keeps just its name)
-      var dimTxt = r.w.toFixed(1) + ' × ' + r.h.toFixed(1) + ' מ׳', dimFs = wpx >= 96 ? 11.5 : 9.5;
-      if (hpx > 44 && !stairs && dimTxt.length * dimFs * 0.6 <= wpx - 14) {
-        var dim = el('text', { x:r.x+8, y:r.y+hpx-8, class:'room-dim', 'font-size':dimFs }); dim.style.fontSize = dimFs + 'px';
-        dim.textContent = dimTxt;
+      var areaTxt = (r.w * r.h).toFixed(1), sideTxt = r.w.toFixed(1) + '×' + r.h.toFixed(1), dimFs = wpx >= 96 ? 11 : 9.5;
+      var fullLen = (areaTxt.length + 4 + sideTxt.length + 2) * dimFs * 0.6, areaLen = (areaTxt.length + 4) * dimFs * 0.62;
+      if (hpx > 44 && !stairs && areaLen <= wpx - 14) {
+        var dim = el('text', { x:r.x+9, y:r.y+hpx-9, class:'room-dim', 'font-size':dimFs }); dim.style.fontSize = dimFs + 'px';
+        dim.style.stroke = ROOM_TINT[kind] || '#ffffff';
+        var ta = el('tspan', { class:'rd-area' }); ta.textContent = rtlIsolate('מ"ר') + ' ' + areaTxt; dim.appendChild(ta);
+        if (fullLen <= wpx - 14) { var tsd = el('tspan', { class:'rd-side', dx:6 }); tsd.textContent = sideTxt; dim.appendChild(tsd); }
         g.appendChild(dim);
       }
 
@@ -5339,6 +5355,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
       roomsLayer.appendChild(g);
     });
+    // the building's outer walls: one band per room, all under every floor, with a soft shadow
+    var wallG = el('g', { class:'walls-ext', filter:'url(#wallShadow)', 'pointer-events':'none' });
+    visibleRooms().forEach(function(r){ if (r.type === 'yard' || isStairsRoom(r)) return; wallG.appendChild(el('rect', { x:r.x - 6, y:r.y - 6, width:m2p(r.w) + 12, height:m2p(r.h) + 12, rx:1.5, fill:'var(--wall)' })); });
+    roomsLayer.insertBefore(wallG, roomsLayer.querySelector('g[data-bld]') || null);
   }
 
   /* Realistic, colored furniture per room kind — styled after a developer's marketing
@@ -5844,13 +5864,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var isSel = selected && selected.kind==='opening' && selected.id===o.id;
       var g = el('g', { class:'item-g' + (isSel ? ' selected' : '') });
 
-      // cut a gap through the wall band so the opening reads as a real breach in the wall
-      var cutT = 13;
-      if (wo.orient === 'h') {
-        g.appendChild(el('rect', { x:o.x-wpx/2-1, y:o.y-cutT/2, width:wpx+2, height:cutT, style:'fill:var(--paper)', 'pointer-events':'none' }));
-      } else {
-        g.appendChild(el('rect', { x:o.x-cutT/2, y:o.y-wpx/2-1, width:cutT, height:wpx+2, style:'fill:var(--paper)', 'pointer-events':'none' }));
-      }
+      // which side of the wall is inside the building decides how deep the cut is (8 px exterior wall,
+      // 4 px partition) and where a door swings / the entrance arrow points
+      var H_ = wo.orient === 'h', bldR = visibleRooms().filter(function(q){ return q.type !== 'yard' && !isStairsRoom(q); });
+      var inB = function(dx, dy){ var px = o.x + dx, py = o.y + dy; return bldR.some(function(q){ return px > q.x && px < q.x + m2p(q.w) && py > q.y && py < q.y + m2p(q.h); }); };
+      var plusIn = H_ ? inB(0, 5) : inB(5, 0), minusIn = H_ ? inB(0, -5) : inB(-5, 0);
+      var inSide = plusIn && !minusIn ? 1 : minusIn && !plusIn ? -1 : 0, cutP, cutM;   // depth on the + / − side of the wall line
+      if (inSide === 1) { cutP = 2.5; cutM = 6.5; } else if (inSide === -1) { cutP = 6.5; cutM = 2.5; } else { cutP = cutM = 2.5; }
+      if (def.kind === 'door' && inSide && def.exterior) wo = { orient:wo.orient, inSign:inSide };
+      var cutRect = function(fill, cls){ return H_ ? el('rect', { x:o.x - wpx/2, y:o.y - cutM, width:wpx, height:cutP + cutM, style:'fill:' + fill, 'class':cls || '', 'pointer-events':'none' })
+                                                  : el('rect', { x:o.x - cutM, y:o.y - wpx/2, width:cutP + cutM, height:wpx, style:'fill:' + fill, 'class':cls || '', 'pointer-events':'none' }); };
+      g.appendChild(cutRect('#ffffff'));
+      var lineAt = function(off, cls, a0, a1){ a0 = a0 == null ? -wpx/2 : a0; a1 = a1 == null ? wpx/2 : a1; return H_ ? el('line', { x1:o.x + a0, y1:o.y + off, x2:o.x + a1, y2:o.y + off, 'class':cls }) : el('line', { x1:o.x + off, y1:o.y + a0, x2:o.x + off, y2:o.y + a1, 'class':cls }); };
 
       if (def.kind === 'door') {
         var hinge, leafEnd, farJamb;
@@ -5861,21 +5886,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           hinge = { x:o.x, y:o.y-wpx/2 }; farJamb = { x:o.x, y:o.y+wpx/2 };
           leafEnd = { x:hinge.x + wo.inSign*wpx, y:hinge.y };
         }
-        g.appendChild(el('line', { x1:hinge.x, y1:hinge.y, x2:farJamb.x, y2:farJamb.y, class:'opening-jamb' }));
-        g.appendChild(el('line', { x1:hinge.x, y1:hinge.y, x2:leafEnd.x, y2:leafEnd.y, class:'door-leaf ' + o.type }));
         var sweepFlag = ((wo.orient==='h' && wo.inSign===1) || (wo.orient==='v' && wo.inSign===-1)) ? 1 : 0;
         g.appendChild(el('path', {
-          d:'M ' + leafEnd.x.toFixed(1) + ',' + leafEnd.y.toFixed(1) + ' A ' + wpx.toFixed(1) + ',' + wpx.toFixed(1) + ' 0 0 ' + sweepFlag + ' ' + farJamb.x.toFixed(1) + ',' + farJamb.y.toFixed(1),
+          d:'M ' + hinge.x.toFixed(1) + ',' + hinge.y.toFixed(1) + ' L ' + leafEnd.x.toFixed(1) + ',' + leafEnd.y.toFixed(1) + ' A ' + wpx.toFixed(1) + ',' + wpx.toFixed(1) + ' 0 0 ' + sweepFlag + ' ' + farJamb.x.toFixed(1) + ',' + farJamb.y.toFixed(1) + ' Z',
           class:'door-swing ' + o.type
         }));
-      } else {
-        if (wo.orient === 'h') {
-          g.appendChild(el('line', { x1:o.x-wpx/2, y1:o.y, x2:o.x+wpx/2, y2:o.y, class:'window-sill ' + o.type }));
-          [-1,1].forEach(function(s){ g.appendChild(el('line', { x1:o.x+s*wpx/2, y1:o.y-cutT/2, x2:o.x+s*wpx/2, y2:o.y+cutT/2, class:'window-jamb' })); });
-        } else {
-          g.appendChild(el('line', { x1:o.x, y1:o.y-wpx/2, x2:o.x, y2:o.y+wpx/2, class:'window-sill ' + o.type }));
-          [-1,1].forEach(function(s){ g.appendChild(el('line', { x1:o.x-cutT/2, y1:o.y+s*wpx/2, x2:o.x+cutT/2, y2:o.y+s*wpx/2, class:'window-jamb' })); });
+        g.appendChild(el('line', { x1:hinge.x, y1:hinge.y, x2:leafEnd.x, y2:leafEnd.y, class:'door-leaf ' + o.type }));
+        if (o.type === 'door_main') {   // the entrance: a red arrow outside the door, pointing in (the picker's red dot)
+          var sgn = -(inSide || wo.inSign), d0 = (inSide ? 6.5 : 2.5) + 4, d1 = d0 + 9, aw = 6;
+          var tip = H_ ? [o.x, o.y + sgn * d0] : [o.x + sgn * d0, o.y], b1 = H_ ? [o.x - aw, o.y + sgn * d1] : [o.x + sgn * d1, o.y - aw], b2 = H_ ? [o.x + aw, o.y + sgn * d1] : [o.x + sgn * d1, o.y + aw];
+          g.appendChild(el('path', { d:'M' + tip.join(' ') + ' L' + b1.join(' ') + ' L' + b2.join(' ') + ' Z', class:'door-entry' }));
         }
+      } else {
+        // a window: frame lines on both wall faces, the glass in the middle (two panes for a large one)
+        g.appendChild(lineAt(-cutM + 0.4, 'window-frame')); g.appendChild(lineAt(cutP - 0.4, 'window-frame'));
+        var mid = (cutP - cutM) / 2;
+        if (o.type === 'window_lg') { g.appendChild(lineAt(mid - 1.1, 'window-sill window_lg', -wpx/2, wpx * 0.06)); g.appendChild(lineAt(mid + 1.1, 'window-sill window_lg', -wpx * 0.06, wpx/2)); }
+        else g.appendChild(lineAt(mid, 'window-sill ' + o.type));
+        [-1, 1].forEach(function(sd){ g.appendChild(H_ ? el('line', { x1:o.x + sd*wpx/2, y1:o.y - cutM, x2:o.x + sd*wpx/2, y2:o.y + cutP, 'class':'window-jamb' }) : el('line', { x1:o.x - cutM, y1:o.y + sd*wpx/2, x2:o.x + cutP, y2:o.y + sd*wpx/2, 'class':'window-jamb' })); });
       }
 
       var hit = el('circle', { cx:o.x, cy:o.y, r:12, fill:'transparent' });
@@ -5890,7 +5918,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   // Badge shape by category — circle/square/diamond — so equipment stays distinguishable
   // on a printed black & white sketch, not just by color.
-  function deviceBadgeShape(cat){
+  function deviceBadgeShape(cat, col){
+    var b = deviceBadgeShape0(cat); if (col && CAT_SHAPE[cat] !== 'fire') { b.style.stroke = col; b.style.strokeWidth = '1.6px'; } return b;
+  }
+  function deviceBadgeShape0(cat){
     var shape = CAT_SHAPE[cat] || 'circle';
     if (shape === 'square') return el('rect', { x:-10, y:-10, width:20, height:20, rx:4, fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1 });
     if (shape === 'diamond') return el('rect', { x:-8.5, y:-8.5, width:17, height:17, rx:2.5, fill:'#ffffff', stroke:'var(--paper-line-strong)', 'stroke-width':1, transform:'rotate(45)' });
@@ -5939,7 +5970,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var ring = el('circle', { cx:0, cy:0, r:15, fill:'none', class:'item-ring' });
       g.appendChild(ring);
       if (flashState.id === d.id && Date.now() < flashState.until && !g.querySelector('.dev-flash-ring')) g.appendChild(el('circle', { cx:0, cy:0, r:15, class:'dev-flash-ring' }));
-      g.appendChild(deviceBadgeShape(def.cat));
+      g.appendChild(deviceBadgeShape(def.cat, def.color));
       var icon = el('g', { color:def.color, transform:'translate(-7,-7) scale(0.58)' });
       icon.innerHTML = deviceIconSvg(d.type);
       g.appendChild(icon);
@@ -15727,6 +15758,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var liveSvg = document.getElementById('plan');
     var clone = liveSvg.cloneNode(true);
     clone.removeAttribute('id');
+    Array.prototype.forEach.call(clone.querySelectorAll('rect[fill="url(#grid)"]'), function(n){ n.parentNode.removeChild(n); });   // a clean sheet for the customer
     // Detection-coverage visuals (camera/alarm/intercom field-of-view cones, glass-break
     // radius circles) are a planning aid for positioning equipment correctly while sketching —
     // once the layout is finalized they add no value to the sketch handed off to the client
@@ -19248,6 +19280,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dOvSize(){
     var S = V3D.still, ov = S ? S.cv : document.getElementById('v3dOv'), st = document.getElementById('v3dStage'); if (!ov || (!st && !S)) return;
     var w = S ? S.W : V3D.rec ? V3D.recW : st.clientWidth, h = S ? S.H : V3D.rec ? V3D.recH : st.clientHeight, k = (S || V3D.rec) ? 1 : Math.min(2, window.devicePixelRatio || 1);
+    if (!S && !V3D.rec && V3D.sz && V3D.sz !== w + 'x' + h) v3dResize();   // the stage changed height (topic chips / floor tabs wrapped) — keep the GL canvas and the overlay in step
     if (ov.width !== Math.round(w * k) || ov.height !== Math.round(h * k)) { ov.width = Math.round(w * k); ov.height = Math.round(h * k); }
     V3D.ovK = k; V3D.ovW = w; V3D.ovH = h;
   }
@@ -19308,88 +19341,115 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (sim) v3dSimOverlay(x, W, H, big, now);
     if (V3D.endCard) v3dEndCard(x, W, H, big, V3D.endCard);
   }
+  /* intrusion-simulation HUD — three calm zones instead of five competing boxes:
+     top centre: one status pill that tells the story (approach → detected → alarm) with a progress line;
+     side column: the detections, newest highlighted, older ones folded into a count;
+     bottom centre: the response chain (siren → owner's phone → monitoring centre) lighting up in order.
+     Drawn on the overlay canvas, so the video shows exactly the same. */
   function v3dSimOverlay(x, W, H, big, now){
-    var S = V3D.sim, t = S.t, P = S.plan, top = V3D.rec ? 72 * big : 12;
+    var S = V3D.sim, t = S.t, P = S.plan, top = V3D.rec ? 72 * big : 14 * big, alarmOn = P.alarmAt != null && t >= P.alarmAt, narrow = W < 560;
     x.save(); x.direction = 'rtl'; x.textBaseline = 'middle';
-    if (P.alarmAt != null && t >= P.alarmAt) {
-      var k = 0.5 + 0.5 * Math.sin(now / 140), g = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
-      g.addColorStop(0, 'rgba(255,0,0,0)'); g.addColorStop(1, 'rgba(255,20,10,' + (0.18 + 0.22 * k) + ')'); x.fillStyle = g; x.fillRect(0, 0, W, H);
-      var bw = Math.min(W - 24, 520 * big), bx = (W - bw) / 2, bh = 46 * big;
-      x.fillStyle = 'rgba(214,32,24,.95)'; v3dRR(x, bx, top, bw, bh, 14 * big); x.fill();
-      x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 ' + Math.round(17 * big) + 'px Heebo, Rubik, Arial, sans-serif';
-      x.fillText('🚨 אזעקה! ' + P.alarmLabel, W / 2, top + bh / 2);
-      // the push notification the owner gets on the phone
-      var nt = Math.min(1, Math.max(0, (t - P.alarmAt - 0.6) / 0.35));
-      if (nt > 0) { var nw = Math.min(W - 24, 360 * big), nh = 70 * big, nx = W - nw - 12, ny = top + bh + 10 * big - (1 - nt) * 30;
-        x.globalAlpha = nt; x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 16 * big; x.fillStyle = 'rgba(255,255,255,.97)'; v3dRR(x, nx, ny, nw, nh, 16 * big); x.fill(); x.shadowColor = 'transparent';
-        x.fillStyle = v3dCatCol('siren'); v3dRR(x, nx + nw - 44 * big, ny + 13 * big, 32 * big, 32 * big, 8 * big); x.fill();
-        x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 ' + Math.round(16 * big) + 'px Heebo, Arial, sans-serif'; x.fillText('!', nx + nw - 28 * big, ny + 29 * big);
-        x.textAlign = 'right'; x.fillStyle = '#5a6270'; x.font = '600 ' + Math.round(11.5 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(brName('name') + ' · עכשיו', nx + nw - 54 * big, ny + 18 * big);
-        x.fillStyle = '#14202e'; x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Arial, sans-serif'; x.fillText('התראת פריצה — ' + P.alarmDev, nx + nw - 54 * big, ny + 38 * big);
-        x.fillStyle = '#4a5568'; x.font = '500 ' + Math.round(12 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(P.alarmRoom + ' · הסירנה הופעלה', nx + nw - 54 * big, ny + 56 * big); x.globalAlpha = 1; }
+    if (alarmOn) {   // a soft red edge glow, no full-screen flashing
+      var k = 0.5 + 0.5 * Math.sin(now / 260), g = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.42, W / 2, H / 2, Math.max(W, H) * 0.78);
+      g.addColorStop(0, 'rgba(255,0,0,0)'); g.addColorStop(1, 'rgba(255,30,20,' + (0.08 + 0.1 * k) + ')'); x.fillStyle = g; x.fillRect(0, 0, W, H);
     }
-    v3dSimLog(x, W, H, big, now, top);
-    var cap = t < 0 ? 'הדגמה: פורץ מתקרב ל' + P.entryLabel : (P.alarmAt == null || t < P.alarmAt) ? (t < P.inAt ? 'הפורץ ניגש ל' + P.entryLabel : 'הפורץ בתוך הבית…') : v3dDetTxt(P);
-    if (P.alarmAt == null && t > P.inAt) cap = 'אין כיסוי במסלול הזה — כדאי להוסיף גלאי';
-    x.font = '700 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.textAlign = 'center'; var cw = x.measureText(cap).width + 28 * big, cy = H - (V3D.rec ? 70 : 54) * big;
-    x.fillStyle = 'rgba(10,16,28,.78)'; v3dRR(x, (W - cw) / 2, cy - 17 * big, cw, 34 * big, 17 * big); x.fill(); x.fillStyle = '#fff'; x.fillText(cap, W / 2, cy);
+    // ---- 1. status pill
+    var dets = Object.keys(P.trig).filter(function(k){ return t >= P.trig[k].t && V3D.devs[+k]; }).map(function(k){ return { i:+k, t:P.trig[k].t, kind:P.trig[k].kind }; }).sort(function(a, b){ return a.t - b.t; });
+    var title, sub = '', tone;
+    if (alarmOn) { tone = 'alarm'; title = 'אזעקה · ' + P.alarmLabel; sub = v3dDetTxt(P); }
+    else if (P.alarmAt == null && t > P.inAt) { tone = 'warn'; title = 'אין כיסוי במסלול הזה'; sub = 'כדאי להוסיף גלאי בדרך של הפורץ'; }
+    else if (dets.length) { var fd = V3D.devs[dets[dets.length - 1].i]; tone = 'det'; title = (fd ? fd.userData.def.label : 'אביזר') + (dets[dets.length - 1].kind === 'rec' ? ' מקליטה' : ' זיהה'); sub = t < P.inAt ? 'הפורץ עדיין בחוץ' : 'הפורץ בתוך הנכס'; }
+    else { tone = 'idle'; title = t < P.inAt ? 'הפורץ ניגש ל' + P.entryLabel : 'הפורץ בתוך הנכס…'; sub = 'הדגמת פריצה'; }
+    var fs1 = Math.round((narrow ? 14 : 16) * big), fs2 = Math.round(11.5 * big);
+    x.font = '800 ' + fs1 + 'px Heebo, Rubik, Arial, sans-serif'; var w1 = x.measureText(title).width;
+    x.font = '600 ' + fs2 + 'px Heebo, Rubik, Arial, sans-serif'; var w2 = x.measureText(sub).width;
+    var pw = Math.min(W - 24 * big, Math.max(w1, w2) + 70 * big), ph = (sub ? 50 : 38) * big, px = (W - pw) / 2;
+    var bg = tone === 'alarm' ? 'rgba(206,32,26,.96)' : tone === 'warn' ? 'rgba(122,78,8,.92)' : 'rgba(10,16,28,.82)';
+    x.shadowColor = tone === 'alarm' ? 'rgba(255,40,30,' + (0.45 + 0.25 * Math.sin(now / 200)) + ')' : 'rgba(0,0,0,.35)'; x.shadowBlur = (tone === 'alarm' ? 26 : 16) * big;
+    x.fillStyle = bg; v3dRR(x, px, top, pw, ph, ph / 2); x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+    // status dot / icon on the right
+    var dcx = px + pw - 24 * big, dcy = top + ph / 2;
+    if (tone === 'alarm') v3dIcon(x, 'siren', dcx, dcy, 22 * big, '#fff');
+    else { var dc = tone === 'det' ? '#ffb020' : tone === 'warn' ? '#ffd27a' : '#8fa3ba', pr = (4.5 + (tone === 'det' ? 1.5 * Math.sin(now / 160) : 0)) * big; x.fillStyle = dc; x.beginPath(); x.arc(dcx, dcy, pr, 0, 7); x.fill(); }
+    var fit = function(str, mw){ if (x.measureText(str).width <= mw) return str; while (str.length > 4 && x.measureText(str + '…').width > mw) str = str.slice(0, -1); return str + '…'; };
+    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 ' + fs1 + 'px Heebo, Rubik, Arial, sans-serif'; var tx = px + pw - 44 * big, mw = pw - 60 * big;
+    x.fillText(fit(title, mw), tx, sub ? top + 18 * big : dcy);
+    if (sub) { x.fillStyle = tone === 'alarm' ? 'rgba(255,255,255,.88)' : '#b9c7d8'; x.font = '600 ' + fs2 + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(fit(sub, mw), tx, top + 35 * big); }
+    // progress of the run, under the pill
+    var prog = v3dCl((t + 0) / (P.dur || 15)), lw = pw - 2 * ph / 2, lx = px + ph / 2, ly = top + ph + 6 * big;
+    x.fillStyle = 'rgba(255,255,255,.18)'; v3dRR(x, lx, ly, lw, 3 * big, 1.5 * big); x.fill();
+    x.fillStyle = tone === 'alarm' ? '#ff6b5e' : '#7fc4ff'; v3dRR(x, lx + lw * (1 - prog), ly, lw * prog, 3 * big, 1.5 * big); x.fill();
+    if (P.alarmAt != null) { var ax = lx + lw * (1 - v3dCl(P.alarmAt / (P.dur || 15))); x.fillStyle = '#ff3b30'; x.beginPath(); x.arc(ax, ly + 1.5 * big, 3.5 * big, 0, 7); x.fill(); }
+    // ---- 3. response chain (drawn before the list so the list can sit above it on phones)
+    var chainH = 0;
+    if (alarmOn) chainH = v3dSimChain(x, W, H, big, now, t, P, S, narrow);
+    // ---- 2. detections
+    v3dSimLog(x, W, H, big, now, top + ph + 18 * big, dets, narrow, chainH);
     x.restore();
   }
-  // every detector/camera that picks the intruder up, in order, with its picture, room and the moment it
-  // reacted — then the siren, the owner's phone and the monitoring centre. Drawn on the overlay, so it is
-  // in the video as well. Wide screens: a column on the left; phones: the last rows above the caption.
-  function v3dSimLog(x, W, H, big, now, top){
-    var S = V3D.sim, P = S.plan, t = S.t, ev = [];
-    Object.keys(P.trig).forEach(function(k){ var tr = P.trig[k]; if (t >= tr.t && V3D.devs[+k]) ev.push({ i:+k, t:tr.t, kind:tr.kind }); });
-    if (P.alarmAt != null) {
-      if (S.sirens && S.sirens.length && t >= P.alarmAt + 0.3) ev.push({ sys:'siren', t:P.alarmAt + 0.3 });
-      if (t >= P.alarmAt + 0.6) ev.push({ sys:'push', t:P.alarmAt + 0.6 });
-      if (t >= P.alarmAt + 1.5) ev.push({ sys:'moked', t:P.alarmAt + 1.5 });
-    }
-    ev.sort(function(a, b){ return a.t - b.t; });
-    var narrow = W < 560, PW = narrow ? W - 24 : Math.min(340 * big, W * 0.36), RH = (narrow ? 44 : 54) * big, HH = 34 * big;
-    var bw = Math.min(W - 24, 520 * big), bannerL = (W - bw) / 2, alarmOn = P.alarmAt != null && t >= P.alarmAt;
-    var y0, maxRows;
-    if (narrow) { maxRows = 3; var yb = H - (V3D.rec ? 70 : 54) * big - 36 * big; y0 = yb - HH - Math.max(1, Math.min(maxRows, ev.length)) * RH; }
-    else { y0 = (alarmOn && 12 + PW > bannerL) ? top + 56 * big : top; maxRows = Math.max(3, Math.floor((H - y0 - 90 * big - HH) / RH)); }
-    var rows = ev.slice(-maxRows), n = rows.length, x0 = 12, ph = HH + Math.max(1, n) * RH + 8 * big;
+  // how much of the overlay's bottom is hidden behind the action bar (it floats over the stage on wide screens)
+  function v3dBotInset(big){
+    if (V3D.rec || V3D.still) return 62 * big;
+    try { var st = document.getElementById('v3dStage').getBoundingClientRect(), bar = document.getElementById('v3dBar').getBoundingClientRect(); return Math.max(0, st.bottom - bar.top) + (st.width < 560 ? 34 : 16) * big; } catch(e) { return 60 * big; }
+  }
+  function v3dSimChain(x, W, H, big, now, t, P, S, narrow){
+    var steps = [];
+    if (S.sirens && S.sirens.length) steps.push({ at:P.alarmAt + 0.3, col:'#e5484d', ic:'siren', t1:narrow ? 'סירנה' : (S.sirens.length > 1 ? S.sirens.length + ' סירנות' : 'סירנה') + ' הופעלה', t2:'הפורץ מורתע' });
+    steps.push({ at:P.alarmAt + 0.6, col:'#2f80ed', ch:'!', t1:narrow ? 'לטלפון' : 'התראה לטלפון', t2:brName('name') + ' · ' + (P.alarmRoom || 'עכשיו') });
+    steps.push({ at:P.alarmAt + 1.5, col:'#00a37a', ch:'24', t1:narrow ? 'מוקד' : 'מוקד 24/7', t2:'מתחיל טיפול באירוע' });
+    var n = steps.length, sw = narrow ? (W - 24 * big) / n : Math.min(200 * big, (W - 40 * big) / n), sh = (narrow ? 46 : 52) * big, gap = narrow ? 0 : 10 * big;
+    var tw = sw * n + gap * (n - 1), x0 = (W - tw) / 2, y0 = H - sh - v3dBotInset(big), appear = v3dCl((t - P.alarmAt - 0.15) / 0.35);
+    x.save(); x.globalAlpha = appear; x.translate(0, (1 - v3dEase(appear)) * 16 * big);
+    x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 16 * big; x.fillStyle = 'rgba(10,16,28,.84)'; v3dRR(x, x0 - 8 * big, y0 - 8 * big, tw + 16 * big, sh + 16 * big, 18 * big); x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+    // RTL: the first step on the right
+    steps.forEach(function(s, j){
+      var on = t >= s.at, k = v3dCl((t - s.at) / 0.3), bx = x0 + tw - (j + 1) * sw - j * gap, cx = bx + sw - 20 * big, cy = y0 + sh / 2, r = (narrow ? 13 : 15) * big;
+      if (j < n - 1) { var lx2 = bx - gap, lx1 = bx + 6 * big; }
+      if (on && t - s.at < 1.2) { x.fillStyle = 'rgba(255,255,255,' + (0.07 + 0.06 * Math.sin(now / 120)) + ')'; v3dRR(x, bx + 2 * big, y0 + 2 * big, sw - 4 * big, sh - 4 * big, 12 * big); x.fill(); }
+      x.globalAlpha = appear * (on ? 1 : 0.35);
+      x.fillStyle = on ? s.col : '#3a4658'; x.beginPath(); x.arc(cx, cy, r * (on ? 1 + 0.12 * (1 - k) : 1), 0, 7); x.fill();
+      if (s.ic) v3dIcon(x, s.ic, cx, cy, r * 1.25, '#fff');
+      else { x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 ' + Math.round(r * 0.95) + 'px Heebo, Arial, sans-serif'; x.fillText(s.ch, cx, cy + 1); }
+      if (on) { x.fillStyle = '#34d399'; x.beginPath(); x.arc(cx - r * 0.75, cy + r * 0.75, 5.5 * big, 0, 7); x.fill(); x.strokeStyle = '#0a101c'; x.lineWidth = 1.5 * big; x.stroke();
+        x.strokeStyle = '#fff'; x.lineWidth = 1.6 * big; x.beginPath(); x.moveTo(cx - r * 0.75 - 2.5 * big, cy + r * 0.75); x.lineTo(cx - r * 0.75 - 0.5 * big, cy + r * 0.75 + 2 * big); x.lineTo(cx - r * 0.75 + 2.8 * big, cy + r * 0.75 - 2 * big); x.stroke(); }
+      var tx = cx - r - 8 * big, mw = tx - bx - 6 * big;
+      var fit = function(str){ if (x.measureText(str).width <= mw) return str; while (str.length > 3 && x.measureText(str + '…').width > mw) str = str.slice(0, -1); return str + '…'; };
+      x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '700 ' + Math.round((narrow ? 11.5 : 13) * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(fit(s.t1), tx, narrow ? cy : cy - 8 * big);
+      if (!narrow) { x.fillStyle = '#9fb3c8'; x.font = '500 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(fit(s.t2), tx, cy + 9 * big); }
+      x.globalAlpha = appear;
+      if (j < n - 1 && !narrow) { x.strokeStyle = t >= steps[j + 1].at ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.15)'; x.lineWidth = 2 * big; x.beginPath(); x.moveTo(bx + 1, cy); x.lineTo(bx - gap - 1 + 0, cy); x.stroke(); }
+    });
+    x.restore();
+    return sh + 16 * big + v3dBotInset(big);
+  }
+  // detections only — newest at the bottom and highlighted, older rows fold into "+N קודמים"
+  function v3dSimLog(x, W, H, big, now, y0, ev, narrow, chainH){
+    var S = V3D.sim, P = S.plan, t = S.t;
+    if (!ev.length) return;
+    var PW = narrow ? W - 24 * big : Math.min(300 * big, W * 0.34), RH = (narrow ? 40 : 46) * big, HH = 30 * big;
+    var maxRows = narrow ? 2 : Math.max(2, Math.min(4, Math.floor((H - y0 - chainH - 24 * big - HH) / RH)));
+    var rows = ev.slice(-maxRows), older = ev.length - rows.length, n = rows.length, ph = HH + n * RH + 6 * big;
+    var x0 = narrow ? 12 * big : 14 * big, yy = narrow ? H - (chainH || 60 * big) - ph - 10 * big : y0;
     x.save(); x.direction = 'rtl'; x.textBaseline = 'middle';
-    x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 18 * big; x.fillStyle = 'rgba(10,16,28,.84)'; v3dRR(x, x0, y0, PW, ph, 16 * big); x.fill(); x.shadowColor = 'transparent';
-    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif';
-    x.fillText('זיהויים בזמן אמת', x0 + PW - 14 * big, y0 + HH / 2 + 1);
-    var dets = ev.filter(function(e){ return !e.sys; }).length;
-    x.textAlign = 'left'; x.font = '700 ' + Math.round(12 * big) + 'px Heebo, Arial, sans-serif'; x.fillStyle = dets ? '#ff8a80' : '#9fb3c8';
-    x.fillText(dets ? dets + ' אביזרים הגיבו' : 'ממתין לתנועה…', x0 + 14 * big, y0 + HH / 2 + 1);
-    if (!n) { x.restore(); return; }
-    var verb = function(d, kind){ var ty = d.type; return kind === 'rec' ? 'מצלמה מקליטה' : /contact|shutter/.test(ty) ? 'זיהה פתיחה' : /glassbreak/.test(ty) ? 'זיהה שבירת זכוכית' : /curtain/.test(ty) ? 'זיהה חציית קו' : 'זיהה תנועה'; };
-    var tm = function(e){ var d = e.t - P.inAt; return d < -0.05 ? 'לפני הכניסה' : '+' + Math.max(0, d).toFixed(1) + ' ש׳'; };
+    x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 14 * big; x.fillStyle = 'rgba(10,16,28,.8)'; v3dRR(x, x0, yy, PW, ph, 14 * big); x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 ' + Math.round(12.5 * big) + 'px Heebo, Rubik, Arial, sans-serif';
+    x.fillText('זיהויים · ' + ev.length, x0 + PW - 14 * big, yy + HH / 2 + 1);
+    if (older) { x.textAlign = 'left'; x.fillStyle = '#8fa3ba'; x.font = '600 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; x.fillText('+' + older + ' קודמים', x0 + 14 * big, yy + HH / 2 + 1); }
+    var verb = function(d, kind){ var ty = d.type; return kind === 'rec' ? 'מקליטה' : /contact|shutter/.test(ty) ? 'זיהה פתיחה' : /glassbreak/.test(ty) ? 'שבירת זכוכית' : /curtain/.test(ty) ? 'חציית קו' : 'זיהה תנועה'; };
+    var tm = function(e){ var d = e.t - P.inAt; return d < -0.05 ? 'לפני כניסה' : '+' + Math.max(0, d).toFixed(1) + ' ש׳'; };
     rows.forEach(function(e, j){
-      var age = t - e.t, k = v3dCl(age / 0.35), ry = y0 + HH + j * RH, cx = x0 + PW - 14 * big - 17 * big, cy = ry + RH / 2, fresh = age < 1.2;
-      x.globalAlpha = k; var slide = (1 - v3dEase(k)) * 26 * big;
-      if (fresh) { x.fillStyle = 'rgba(255,59,48,' + (0.18 + 0.16 * Math.sin(now / 110)) + ')'; v3dRR(x, x0 + 6 * big, ry + 3 * big, PW - 12 * big, RH - 6 * big, 11 * big); x.fill(); }
-      if (j) { x.fillStyle = 'rgba(255,255,255,.08)'; x.fillRect(x0 + 12 * big, ry, PW - 24 * big, 1); }
-      var title, sub, ring;
-      if (e.sys) {
-        var syc = e.sys === 'siren' ? '#e5484d' : e.sys === 'push' ? '#2f80ed' : '#00a37a';
-        x.fillStyle = syc; x.beginPath(); x.arc(cx + slide, cy, 17 * big, 0, 7); x.fill();
-        if (e.sys === 'siren') v3dIcon(x, 'siren', cx + slide, cy, 20 * big, '#fff');
-        else { x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = '800 ' + Math.round(15 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(e.sys === 'push' ? '!' : '24', cx + slide, cy + 1); }
-        title = e.sys === 'siren' ? 'הסירנה הופעלה' : e.sys === 'push' ? 'התראה נשלחה לטלפון' : 'האירוע הועבר למוקד';
-        sub = e.sys === 'siren' ? (S.sirens.length > 1 ? S.sirens.length + ' סירנות' : 'סירנה') + ' · הפורץ מורתע' : e.sys === 'push' ? 'לבעלי הנכס · ' + P.alarmRoom : 'מוקד 24/7 · מתחיל טיפול';
-      } else {
-        var g = V3D.devs[e.i], d = g.userData.d, room = (typeof roomOfDevice === 'function' && roomOfDevice(d)) || null, mdl = v3dProd(d.type).model;
-        ring = e.kind === 'rec' ? '#ffffff' : '#ff3b30';
-        v3dRoundImg(x, v3dThumb(d.type), cx + slide, cy, 17 * big, ring);
-        title = g.userData.def.label; if (title.length > 26) title = title.slice(0, 25) + '…';
-        sub = (room && room.label ? room.label + ' · ' : '') + verb(d, e.kind) + (mdl && !narrow ? ' · ' + mdl : '');
-      }
-      var tx = x0 + PW - 14 * big - 40 * big + slide, tms = e.sys ? '' : tm(e);
-      x.font = '700 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; var tw = tms ? x.measureText(tms).width + 10 * big : 0, mx = tx - (x0 + 14 * big + tw);
-      var fit = function(str){ if (x.measureText(str).width <= mx) return str; while (str.length > 4 && x.measureText(str + '…').width > mx) str = str.slice(0, -1); return str + '…'; };
-      x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '700 ' + Math.round((narrow ? 12.5 : 13.5) * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(fit(title), tx, cy - 9 * big);
-      x.fillStyle = e.sys ? '#cfe0f2' : (e.kind === 'rec' ? '#cfe0f2' : '#ffb4ad'); x.font = '500 ' + Math.round(11.5 * big) + 'px Heebo, Arial, sans-serif';
-      x.fillText(fit(sub), tx, cy + 9 * big);
-      x.textAlign = 'left'; x.fillStyle = '#9fb3c8'; x.font = '700 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; if (tms) x.fillText(tms, x0 + 14 * big, cy);
+      var age = t - e.t, k = v3dCl(age / 0.35), ry = yy + HH + j * RH, r = (narrow ? 14 : 15) * big, cx = x0 + PW - 12 * big - r, cy = ry + RH / 2, fresh = age < 1.4;
+      var g = V3D.devs[e.i]; if (!g) return; var d = g.userData.d, room = (typeof roomOfDevice === 'function' && roomOfDevice(d)) || null;
+      x.globalAlpha = k; var slide = (1 - v3dEase(k)) * 20 * big;
+      if (fresh) { x.fillStyle = e.kind === 'rec' ? 'rgba(127,196,255,.14)' : 'rgba(255,59,48,' + (0.16 + 0.1 * Math.sin(now / 130)) + ')'; v3dRR(x, x0 + 5 * big, ry + 2 * big, PW - 10 * big, RH - 4 * big, 10 * big); x.fill(); }
+      else if (j) { x.fillStyle = 'rgba(255,255,255,.07)'; x.fillRect(x0 + 12 * big, ry, PW - 24 * big, 1); }
+      v3dRoundImg(x, v3dThumb(d.type), cx + slide, cy, r, e.kind === 'rec' ? '#ffffff' : '#ff3b30');
+      var tms = tm(e); x.font = '700 ' + Math.round(10.5 * big) + 'px Heebo, Arial, sans-serif'; var tmw = x.measureText(tms).width + 10 * big;
+      var tx = cx - r - 9 * big + slide, mw = tx - (x0 + 12 * big + tmw);
+      var fit = function(str){ if (x.measureText(str).width <= mw) return str; while (str.length > 3 && x.measureText(str + '…').width > mw) str = str.slice(0, -1); return str + '…'; };
+      x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '700 ' + Math.round((narrow ? 12 : 12.5) * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(fit(g.userData.def.label), tx, cy - 8 * big);
+      x.fillStyle = e.kind === 'rec' ? '#bcd7f2' : '#ffb4ad'; x.font = '500 ' + Math.round(11 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(fit((room && room.label ? room.label + ' · ' : '') + verb(d, e.kind)), tx, cy + 8.5 * big);
+      x.textAlign = 'left'; x.fillStyle = '#8fa3ba'; x.font = '700 ' + Math.round(10.5 * big) + 'px Heebo, Arial, sans-serif'; x.fillText(tms, x0 + 12 * big, cy);
       x.globalAlpha = 1;
     });
     x.restore();
@@ -19483,6 +19543,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dSimStart(fromVideo){
     if (!V3D.M) return false; var P = v3dSimPlan(V3D.M);
     if (!P) { if (!fromVideo) v3dToast('לסימולציה צריך דלת כניסה (או חלון) על קיר חיצוני בשרטוט'); return false; }
+    if (V3D.buildK != null) { try { v3dBuildStep(99, V3D.sph.th); } catch(e) {} }   // started mid-intro: finish building the house first
     v3dSimStop(true); v3dSelect(-1);
     var S = V3D.sim = { plan:P, t:-0.8, hot:{}, prevNight:V3D.opts.night, intr:v3dIntruder(), sirens:V3D.devs.filter(function(g){ return g.userData.strobe; }), last:null };
     V3D.G.sim.add(S.intr); V3D.opts.night = true; v3dApplyOpts(); V3D.auto = false; V3D.focus = null; document.getElementById('v3d').classList.add('simming');
