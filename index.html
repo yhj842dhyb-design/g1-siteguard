@@ -1270,6 +1270,12 @@
   @media (max-width:680px){ .np-grid{ grid-template-columns:1fr; } }
   /* new-project guiding questions (safe-on-property / apartment floor) */
   .np-question{ margin:0 0 18px; }
+  .np-layouts{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; margin-top:10px; }
+  .np-layout{ display:flex; flex-direction:column; gap:4px; padding:8px; border:1.5px solid var(--paper-line); border-radius:12px; background:#fff; cursor:pointer; text-align:right; font:inherit; color:var(--ink-on-paper); }
+  .np-layout svg{ width:100%; height:104px; display:block; border-radius:8px; background:#f4f6f3; }
+  .np-layout b{ font-size:13px; } .np-layout span{ font-size:11.5px; color:#6b6455; line-height:1.4; }
+  .np-layout.active{ border-color:var(--accent-2, #1FA6E2); box-shadow:0 0 0 3px rgba(31,166,226,.18); }
+  .np-layout.custom svg{ display:none; } .np-layout.custom{ justify-content:center; min-height:90px; }
   .np-question > b{ display:block; font-family:var(--font-display); font-size:13.5px; margin-bottom:9px; color:var(--ink-on-paper); }
   .np-choice-row{ display:flex; flex-wrap:wrap; gap:8px; }
   .np-choice{
@@ -3101,7 +3107,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 162</div>
+              <div class="app-version" id="appVersion">גרסה 163</div>
             </div>
           </div>
         </div>
@@ -3709,6 +3715,16 @@
     </div>
     <div class="modal-body" id="npQuestionsStep" hidden>
       <p style="font-size:12.5px;color:#6b6455;margin:0 0 18px;line-height:1.6">עוד כמה שאלות מנחות לפני פתיחת הסקיצה — כדי להתאים את מבנה החדרים, הציוד הזמין ואת המלצות המיגון לנכס בפועל.</p>
+      <div class="np-question" id="npLayoutQuestion" hidden>
+        <b>איזו פריסה הכי דומה לבית?</b>
+        <span style="font-size:11.5px;color:#6b6455;line-height:1.5;display:block;margin-top:4px">פריסות נפוצות בבתים פרטיים בישראל — הכניסה, הסלון והמטבח צמודים לחניה, ממ"ד, שירותי אורחים ליד הכניסה, ויטרינה לגינה. בוחרים את הקרובה ומתקנים בשרטוט.</span>
+        <div class="np-layouts" id="npLayouts"></div>
+        <div class="np-choice-row" id="npLayoutSideRow" style="margin-top:10px;align-items:center">
+          <span style="font-size:12.5px;font-weight:600">החניה בצד:</span>
+          <button type="button" class="np-choice" data-q="layoutSide" data-val="r">ימין השרטוט</button>
+          <button type="button" class="np-choice" data-q="layoutSide" data-val="l">שמאל השרטוט</button>
+        </div>
+      </div>
       <div class="np-question" id="npHouseFloorsQuestion" hidden>
         <b>כמה קומות יש בבית?</b>
         <div class="np-choice-row">
@@ -11352,6 +11368,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function addAutoStairs(){
     var n = state.floorCount || 1; if (state.kind !== 'house' || n < 2) return;
+    if (state.rooms.some(function(r){ return isStairsRoom(r); })) return;   // the layout already has its staircase
     var all = []; for (var f = 0; f < n; f++) all.push(f);
     var add = function(f, b, f0){ addRoom(withFloor(f, { x:b.x, y:b.y - f0 * FLOOR_Y_STRIDE, w:Math.round(p2m(b.w) * 10) / 10, h:Math.round(p2m(b.h) * 10) / 10, label:'גרם מדרגות', type:'room' })); };
     var b = stairsSpot(all, 1.1, 3.0);
@@ -12462,6 +12479,78 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     addOpening(withFloor(2, { x:centralX + 120, y:220, type:'window_lg' })); // central space exterior window
   }
 
+  /* ---- typical Israeli private-house layouts (researched: ממ"ד ≥9 m², 2 parking spaces in front with
+     the entrance hall next to them, guest WC off the hall, laundry/service door by the kitchen, living +
+     dining at the back with sliding doors to the garden, stairs from the hall). Metres, street at the top,
+     origin = the front-left corner of the house; 'yards' are drawn on the entrance floor. ---- */
+  var HOUSE_LAYOUTS = {
+    single:{ name:'חד-קומתי', sub:'כ-170 מ״ר · מבואה וכביסה צמודות לחניה', lot:[-1.5, -2, 22.6, 13.8], side:'r',
+      floors:[{ rooms:[['חדר ילדים',0,0,3.5,3.5],['ממ"ד',3.5,0,3,3.5],['מטבח',6.5,0,4,3.5],['שירותי אורחים',10.5,0,1.5,1.8],['ארון / מחסן',10.5,1.8,1.5,1.7],['מבואת כניסה',12,0,2.5,3.5],['חדר כביסה / שירות',14.5,0,2.5,2],['מזווה / מחסן',14.5,2,2.5,1.5],
+          ['מסדרון',0,3.5,6.5,1.2],['חדר הורים',0,4.7,4,5.3],['חדר רחצה',4,4.7,2.5,2.8],['מקלחת הורים',4,7.5,2.5,2.5],['סלון ופינת אוכל',6.5,3.5,10.5,6.5]],
+        ops:[['door_main',13.25,0],['window',1.75,0],['window',5,0],['window',8.5,0],['door_ext',17,1],['window',2,10],['window',5.25,10],['window_lg',9.5,10],['window_lg',14,10],['window',0,7.3],['window',17,6.5],['window',0,1.75],
+          ['door_int',1.75,3.5],['door_int',5,3.5],['door_int',8.5,3.5],['door_int',12,0.9],['door_int',12,2.65],['door_int',13.25,3.5],['door_int',14.5,1],['door_int',14.5,2.75],['door_int',6.5,4.1],['door_int',2,4.7],['door_int',5.25,4.7],['door_int',4,8.75]] }],
+      yards:[['חניה',17.1,-2,5.5,5.5],['חצר קדמית',-1.5,-2,18.5,2],['חצר צדדית',17,3.5,5.6,6.5],['חצר צדדית',-1.5,0,1.5,10],['גינה אחורית',-1.5,10,24.1,3.8]],
+      gates:[[12.7,13.8],[17.1,22.6]] },
+    cottage:{ name:'קוטג׳ דו-קומתי', sub:'כ-230 מ״ר · ציבורי למטה, חדרים למעלה', lot:[-1.5, -2, 17.6, 14], side:'r',
+      floors:[{ rooms:[['ממ"ד / חדר אורחים',0,0,3.3,3.5],['מטבח',3.3,0,3.7,3.5],['מבואת כניסה',7,0,3,3.5],['חדר כביסה / שירות',10,0,2,2],['מזווה / מחסן',10,2,2,1.5],['פינת אוכל',0,3.5,7.4,2.5],['גרם מדרגות',7.4,3.5,2.6,2.5],['שירותי אורחים',10,3.5,2,2.5],['סלון',0,6,12,5]],
+        ops:[['door_main',8.5,0],['window',1.65,0],['window',5.15,0],['door_ext',12,1],['window_lg',3,11],['window_lg',8.5,11],['window',0,8.5],['window',12,8.5],['window',0,4.75],
+          ['door_int',7,1.75],['door_int',8.7,3.5],['door_int',7.2,3.5],['door_int',5.15,3.5],['door_int',1.65,3.5],['door_int',10,1],['door_int',10,2.75],['door_int',10,4.75],['door_int',3.7,6],['door_int',8.7,6]] },
+        { rooms:[['חדר ילדים 1',0,0,3.3,3.5],['חדר ילדים 2',3.3,0,3.3,3.5],['חדר ילדים 3',6.6,0,3.4,3.5],['חדר רחצה',10,0,2,3.5],['גלריה',0,3.5,7.4,2.5],['גרם מדרגות',7.4,3.5,2.6,2.5],['מסדרון',10,3.5,2,2.5],['חדר הורים',0,6,4.5,5],['חדר ארונות',4.5,6,2.5,2],['מקלחת הורים',4.5,8,2.5,3],['חדר משפחה',7,6,5,5]],
+        ops:[['window',1.65,0],['window',4.95,0],['window',8.3,0],['window',11,0],['window',2.25,11],['window',5.75,11],['window',9.5,11],['window',12,8.5],['window',0,8.5],
+          ['door_int',1.65,3.5],['door_int',4.95,3.5],['door_int',7,3.5],['door_int',11,3.5],['door_int',7.4,4.75],['door_int',10,4.75],['door_int',2.25,6],['door_int',5.75,6],['door_int',11,6],['door_int',4.5,7],['door_int',4.5,9.5]] }],
+      yards:[['חניה',12.1,-2,5.5,5.5],['חצר קדמית',-1.5,-2,13.5,2],['חצר צדדית',12,3.5,5.6,7.5],['חצר צדדית',-1.5,0,1.5,11],['גינה אחורית',-1.5,11,19.1,3]],
+      gates:[[8,9],[12.1,17.6]] },
+    semi:{ name:'דו-משפחתי', sub:'מגרש צר · קיר משותף · כניסה מהחניה', lot:[0, -2, 13.7, 14], side:'r', party:true,
+      floors:[{ rooms:[['ממ"ד',0,0,2.6,3.5],['מטבח',2.6,0,2.5,6],['מבואת כניסה',5.1,0,2.9,3.5],['שירותי אורחים',0,3.5,1.5,2.5],['ארון / מחסן',1.5,3.5,1.1,2.5],['גרם מדרגות',5.1,3.5,2.9,2.5],['סלון ופינת אוכל',0,6,8,5]],
+        ops:[['door_main',8,1.75],['window',1.3,0],['window',3.85,0],['window',6.55,0],['window_lg',2,11],['window_lg',6,11],['window',8,8.5],
+          ['door_int',5.1,1.75],['door_int',6.55,3.5],['door_int',2.6,1.75],['door_int',0.75,6],['door_int',2.05,6],['door_int',3.85,6],['door_int',6.55,6]] },
+        { rooms:[['חדר ילדים 1',0,0,3.3,3.5],['חדר ילדים 2',3.3,0,4.7,3.5],['חדר רחצה',0,3.5,2.6,2.5],['מסדרון',2.6,3.5,2.5,2.5],['גרם מדרגות',5.1,3.5,2.9,2.5],['חדר הורים',0,6,4.5,5],['חדר ארונות',4.5,6,3.5,2.2],['מקלחת הורים',4.5,8.2,3.5,2.8]],
+        ops:[['window',1.65,0],['window',5.65,0],['window',8,1.75],['window',2.25,11],['window',6.25,11],
+          ['door_int',2.95,3.5],['door_int',4.2,3.5],['door_int',2.6,4.75],['door_int',5.1,4.75],['door_int',3.5,6],['door_int',6,6],['door_int',4.5,7.1],['door_int',4.5,9.6]] }],
+      yards:[['חניה',8.1,-2,5.5,5.5],['שביל כניסה',0,-2,8,2],['חצר צדדית',8,3.5,5.7,7.5],['גינה אחורית',0,11,13.7,3]],
+      gates:[[6,7.2],[8.1,13.6]] },
+    villa:{ name:'וילה עם בריכה', sub:'דו-קומתי מרווח · חניה מקורה · בריכה בגינה', lot:[-1.2, -1.5, 21.7, 14.7], side:'r',
+      floors:[{ rooms:[['ממ"ד / חדר אורחים',0,0,3.5,4],['מטבח',3.5,0,4.5,4],['גרם מדרגות',8,0,2.8,4],['שירותי אורחים',10.8,0,1.5,2],['ארון מעילים / מחסן',10.8,2,1.5,2],['מבואת כניסה',12.3,0,3.7,4],
+          ['סלון',0,4,7.5,7],['פינת אוכל',7.5,4,4,7],['חדר משפחה',11.5,4,4.5,4.5],['חדר כביסה / שירות',11.5,8.5,2.5,2.5],['מזווה / מחסן',14,8.5,2,2.5]],
+        ops:[['door_main',16,2],['window',1.75,0],['window',5.75,0],['window',14.15,0],['door_ext',12.75,11],['window_lg',2.5,11],['window_lg',6,11],['window_lg',9.5,11],['window',15,11],['window',0,7.5],['window',16,6.25],
+          ['door_int',12.3,1],['door_int',12.3,3],['door_int',14.15,4],['door_int',11.5,6.25],['door_int',9.4,4],['door_int',5.75,4],['door_int',7.5,7.5],['door_int',1.75,4],['door_int',12.75,8.5],['door_int',15,8.5]] },
+        { rooms:[['חדר ילדים 1',0,0,4,4],['חדר ילדים 2',4,0,4,4],['גרם מדרגות',8,0,2.8,4],['חדר רחצה',10.8,0,1.5,4],['חדר משחקים',12.3,0,3.7,4],['גלריה',0,4,16,2.5],
+          ['חדר הורים',0,6.5,5,4.5],['חדר ארונות',5,6.5,3,2],['מקלחת הורים',5,8.5,3,2.5],['חדר ילדים 3',8,6.5,4,4.5],['חדר עבודה',12,6.5,4,4.5]],
+        ops:[['window',2,0],['window',6,0],['window',14.15,0],['window',2.5,11],['window',6.5,11],['window',10,11],['window',14,11],['window',0,5.25],['window',16,5.25],
+          ['door_int',2,4],['door_int',6,4],['door_int',9.4,4],['door_int',11.55,4],['door_int',14.15,4],['door_int',2.5,6.5],['door_int',6.5,6.5],['door_int',10,6.5],['door_int',14,6.5],['door_int',5,7.5],['door_int',5,9.75]] }],
+      yards:[['חניה מקורה',16.1,-1.5,5.5,5.5],['חצר קדמית',-1.2,-1.5,17.2,1.5],['חצר צדדית',16,4,5.7,7],['חצר צדדית',-1.2,0,1.2,11],['גינה אחורית',-1.2,11,22.9,3.7],['בריכה',2,11.4,8,2.8]],
+      gates:[[13.6,14.7],[16.1,21.6]] }
+  };
+  function buildHouseLayout(id, side){
+    var L = HOUSE_LAYOUTS[id]; if (!L) return false;
+    var x0 = L.lot[0], y0 = L.lot[1], x1 = L.lot[2], y1 = L.lot[3], flip = (side || L.side) !== L.side;
+    var X = function(x, w){ var v = flip ? (x0 + x1) - x - (w || 0) : x; return 20 + m2p(v - x0); }, Y = function(y){ return 20 + m2p(y - y0); };
+    L.floors.forEach(function(F, f){
+      F.rooms.forEach(function(r){ addRoom(withFloor(f, { x:X(r[1], r[3]), y:Y(r[2]), w:r[3], h:r[4], label:r[0], type:'room' })); });
+      F.ops.forEach(function(o){ addOpening(withFloor(f, { x:X(o[1]), y:Y(o[2]), type:o[0] })); });
+    });
+    L.yards.forEach(function(r){ addRoom(withFloor(0, { x:X(r[1], r[3]), y:Y(r[2]), w:r[3], h:r[4], label:r[0], type:'yard' })); });
+    // the lot fence: front with the vehicle and pedestrian gates, sides and back (a semi-detached house shares its party wall)
+    var o = 0.1, fx0 = x0 - o, fx1 = x1 + o, fy0 = y0 - o, fy1 = y1 + o, fence = function(ax, ay, bx, by, t){ addFence(withFloor(0, { x1:X(ax), y1:Y(ay), x2:X(bx), y2:Y(by), type:t || 'fence' })); };
+    var cuts = L.gates.slice().sort(function(a, b){ return a[0] - b[0]; }), cur = fx0;
+    cuts.forEach(function(g){ if (g[0] > cur + 0.05) fence(cur, fy0, g[0], fy0); fence(Math.max(cur, g[0]), fy0, g[1], fy0, 'gate'); cur = g[1]; });
+    if (cur < fx1 - 0.05) fence(cur, fy0, fx1, fy0);
+    fence(fx1, fy0, fx1, fy1); fence(fx1, fy1, fx0, fy1);
+    if (L.party) { var hd = L.floors[0].rooms.reduce(function(m, r){ return Math.max(m, r[2] + r[4]); }, 0); fence(fx0, fy1, fx0, hd); fence(fx0, 0, fx0, fy0); }
+    else fence(fx0, fy1, fx0, fy0);
+    return true;
+  }
+  // a small drawing of the layout's entrance floor for the picker
+  function houseLayoutSvg(id){
+    var L = HOUSE_LAYOUTS[id], W = L.lot[2] - L.lot[0], H = L.lot[3] - L.lot[1], k = 150 / Math.max(W, H * 1.25), ox = -L.lot[0], oy = -L.lot[1];
+    var rect = function(r, fill, st){ return '<rect x="' + ((r[1] + ox) * k).toFixed(1) + '" y="' + ((r[2] + oy) * k).toFixed(1) + '" width="' + (r[3] * k).toFixed(1) + '" height="' + (r[4] * k).toFixed(1) + '" fill="' + fill + '" stroke="' + (st || '#7d8a99') + '" stroke-width="0.8"/>'; };
+    var h = '<svg viewBox="0 0 ' + (W * k).toFixed(1) + ' ' + (H * k).toFixed(1) + '" role="img" aria-label="' + L.name + '">';
+    L.yards.forEach(function(r){ var pool = /בריכ/.test(r[0]), park = /חניה/.test(r[0]); h += rect(r, pool ? '#8fd3f0' : park ? '#d6dbe1' : '#d4e8c8', pool ? '#4aa9d4' : park ? '#a9b2bc' : '#b9d3a9'); });
+    L.floors[0].rooms.forEach(function(r){ var safe = /ממ"ד/.test(r[0]), hall = /מבואת/.test(r[0]), stair = /מדרג/.test(r[0]); h += rect(r, safe ? '#ffe0b8' : hall ? '#d9ecff' : stair ? '#e7e2f5' : '#ffffff'); });
+    var dm = L.floors[0].ops.filter(function(o){ return o[0] === 'door_main'; })[0]; if (dm) h += '<circle cx="' + ((dm[1] + ox) * k).toFixed(1) + '" cy="' + ((dm[2] + oy) * k).toFixed(1) + '" r="3.2" fill="#e5484d" stroke="#fff" stroke-width="1"/>';
+    if (L.floors.length > 1) h += '<g><rect x="4" y="4" width="44" height="15" rx="7" fill="#1d2a3b"/><text x="26" y="15" font-size="9" font-family="Arial" fill="#fff" text-anchor="middle">' + L.floors.length + ' קומות</text></g>';
+    return h + '</svg>';
+  }
   function buildMultiFloorHouse(floorCount, roomCounts){
     roomCounts = roomCounts || {};
     buildEntryFloor(typeof roomCounts[0] === 'number' ? roomCounts[0] : 1);
@@ -12568,7 +12657,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     resetRecommendationsView();
     setCustomerContact({});
 
-    if (kind === 'house' && aboveGroundFloorCount > 1) {
+    if (kind === 'house' && guidingAnswers.layout && HOUSE_LAYOUTS[guidingAnswers.layout]) {
+      buildHouseLayout(guidingAnswers.layout, guidingAnswers.layoutSide);
+    } else if (kind === 'house' && aboveGroundFloorCount > 1) {
       buildMultiFloorHouse(aboveGroundFloorCount, guidingAnswers.floorRoomCounts || {});
     } else if (kind === 'house') {
       // bedroom wing — parametric on the agent's answered bedroom count (master + N
@@ -12783,6 +12874,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   var npContinueBtn = document.getElementById('npContinue');
   var npPendingKind = null;
   var npAnswers = { hasSafe:null, floorType:null, hasPet:null, houseFloors:null, hasBasement:null };
+  var npLayout = 'single', npLayoutSide = null;
+  function npLayoutUi(){
+    var box = document.getElementById('npLayouts'); if (!box) return;
+    if (!box.dataset.built) {
+      box.innerHTML = Object.keys(HOUSE_LAYOUTS).map(function(k){ var L = HOUSE_LAYOUTS[k]; return '<button type="button" class="np-layout" data-layout="' + k + '">' + houseLayoutSvg(k) + '<b>' + L.name + '</b><span>' + L.sub + '</span></button>'; }).join('') +
+        '<button type="button" class="np-layout custom" data-layout="custom"><b>פריסה לפי מספר חדרים</b><span>בונים לפי קומות וחדרי שינה (כמו קודם)</span></button>';
+      box.dataset.built = '1';
+      box.addEventListener('click', function(e){ var b = e.target.closest('.np-layout'); if (!b) return; npLayout = b.dataset.layout; npLayoutSide = null; npLayoutUi(); });
+    }
+    Array.prototype.forEach.call(box.querySelectorAll('.np-layout'), function(b){ b.classList.toggle('active', b.dataset.layout === npLayout); });
+    var L = HOUSE_LAYOUTS[npLayout], custom = !L, side = npLayoutSide || (L && L.side) || 'r';
+    document.getElementById('npLayoutSideRow').hidden = custom;
+    document.querySelectorAll('.np-choice[data-q="layoutSide"]').forEach(function(b){ b.classList.toggle('active', b.dataset.val === side); });
+    // a chosen layout fixes the floors and rooms — the floor / bedroom questions only serve the flexible build
+    npHouseFloorsQuestion.hidden = !custom;
+    if (!custom) { npAnswers.houseFloors = String(L.floors.length); npHouseFloorRoomsQuestion.hidden = true; npRoomCountQuestion.hidden = true; }
+    else { npAnswers.houseFloors = npAnswers.houseFloors || '1'; npRoomCountQuestion.hidden = !npRoomCountApplies(); var hfa = npHouseFloorRoomsApplies(); npHouseFloorRoomsQuestion.hidden = !hfa; if (hfa) buildNpHouseFloorRoomsRows(Math.max(1, Math.min(3, parseInt(npAnswers.houseFloors, 10) || 1))); }
+    npUpdateContinueState();
+  }
   // The single bedroom-count question only applies to the single-floor house/apartment
   // templates — a multi-floor house instead gets one bedroom-count question per floor (below).
   function npRoomCountApplies(){
@@ -12835,6 +12945,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.querySelectorAll('.np-choice').forEach(function(btn){
     btn.addEventListener('click', function(){
       var q = btn.dataset.q;
+      if (q === 'layoutSide') { npLayoutSide = btn.dataset.val; npLayoutUi(); return; }
       npAnswers[q] = btn.dataset.val;
       document.querySelectorAll('.np-choice[data-q="' + q + '"]').forEach(function(b){ b.classList.toggle('active', b === btn); });
       if (q === 'houseFloors') {
@@ -12872,7 +12983,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         floorRoomCounts[idx] = val;
       });
     }
+    var layoutId = npPendingKind === 'house' && HOUSE_LAYOUTS[npLayout] ? npLayout : null;
+    if (layoutId) { houseFloorCount = HOUSE_LAYOUTS[layoutId].floors.length; bedroomTotal = null; floorRoomCounts = null; }
     startNewProject(npPendingKind, {
+      layout: layoutId, layoutSide: layoutId ? (npLayoutSide || HOUSE_LAYOUTS[layoutId].side) : null,
       hasSafe: npAnswers.hasSafe === 'yes',
       floorType: npPendingKind === 'apartment' ? npAnswers.floorType : null,
       hasPet: npAnswers.hasPet === 'yes',
@@ -12894,6 +13008,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       npFloorQuestion.hidden = (npPendingKind !== 'apartment');
       npHouseFloorsQuestion.hidden = (npPendingKind !== 'house');
       npBasementQuestion.hidden = (npPendingKind !== 'house');
+      document.getElementById('npLayoutQuestion').hidden = (npPendingKind !== 'house');
       if (npPendingKind === 'house') {
         // Default to "1 floor" / "no basement" pre-selected — a plain single-floor house
         // still opens in one click, exactly as before; the agent only has to act here to ask
@@ -12911,6 +13026,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         npRoomCountInput.max = roomCfg.max;
         npRoomCountInput.value = roomCfg.def;
       }
+      if (npPendingKind === 'house') { npLayout = 'single'; npLayoutSide = null; npLayoutUi(); }
       npUpdateContinueState();
       npGridStep.hidden = true;
       npQuestionsStep.hidden = false;
@@ -14341,7 +14457,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     L.push('סה״כ התקנה: ' + b(document.getElementById('qTotal').textContent) + ' (כולל מע״מ)');
     var mt = document.getElementById('qMonTotal').textContent; if (mt && mt !== '₪0') L.push('שירותי מוקד: ' + b(mt) + ' לחודש');
     if (currentSignLinks) { L.push(''); L.push('לצפייה בהצעה המלאה ולאישור בחתימה:'); L.push(currentSignLinks.wa); }
-    L.push(''); L.push([agentInfo.name, agentInfo.phone].filter(Boolean).join(' · ') || brName('company'));
+    L.push(''); L.push([agentInfo.name, agentInfo.phone ? '\u2066' + String(agentInfo.phone).replace(/[^\d+\- ]/g, '') + '\u2069' : ''].filter(Boolean).join(' · ') || brName('company'));
     return L;
   }
   function quoteMessageLines(channel, compact){
@@ -14755,7 +14871,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var uid = g1Auth.uid;
     return g1PostJSON({ type:'enroll', uid:uid, code:code }, 120000).then(function(j){ if (!j.tok) throw new Error('no-token'); g1cWrite('g1sg_atok', { uid:uid, tok:j.tok, at:Date.now() }); return j.tok; });
   }
-  function g1ScriptVer(){ var b = G1C.cfg && G1C.cfg.backend; return (b && +b.scriptVer) || 0; }
+  function g1ScriptVer(){ var b = G1C.cfg && G1C.cfg.backend; return Math.max((b && +b.scriptVer) || 0, G1C.liveVer || 0); }
+  function g1PingVer(ms){
+    var ep = g1Endpoint(); if (!ep || CONSUMER) return Promise.resolve(g1ScriptVer());
+    if (G1C.pingAt && Date.now() - G1C.pingAt < 300000) return Promise.resolve(g1ScriptVer());
+    return g1cJSON(ep + '?action=ping&t=' + Date.now(), ms || 6000).then(function(j){ G1C.pingAt = Date.now(); if (j && j.ver) G1C.liveVer = +j.ver; return g1ScriptVer(); }, function(){ return g1ScriptVer(); });
+  }
+  setTimeout(function(){ try { g1PingVer(); } catch(e) {} }, 4000);
   async function storeSignPayload(o){
     try {
       var ep = g1Endpoint(); if (!ep || g1ScriptVer() < 6 || !g1Auth || !g1Auth.uid) return null;
@@ -19901,7 +20023,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var video = /video/.test(type), mobile = isTouchDevice();
     var ct = getCustomerContact() || {}, ph = parsePhone(ct.phone || ''), phI = ph && ph.mobile ? ph.intl : '';
     var cust = document.getElementById('fCustomer').value || '';
-    var msg = function(url){ return hiLine(cust) + '\n' + (video ? 'מצורפת הדמיית תלת-ממד של מערכת המיגון שתכננו עבורכם' : 'מצורפת תמונת הדמיה של מערכת המיגון שתכננו עבורכם') + (url ? ':\n' + url : '.') + '\n\n' + ([agentInfo.name, agentInfo.phone].filter(Boolean).join(' · ') || brName('company')); };
+    var sig = [agentInfo.name, agentInfo.phone ? '\u2066' + String(agentInfo.phone).replace(/[^\d+\- ]/g, '') + '\u2069' : ''].filter(Boolean).join(' · ') || brName('company');
+    var msg = function(url){ return hiLine(cust) + '\n' + (url ? (video ? 'הנה הדמיית תלת-ממד של מערכת המיגון שתכננו עבורכם — לצפייה:' : 'הנה תמונת הדמיה של מערכת המיגון שתכננו עבורכם:') + '\n' + url : (video ? 'שולח/ת לכם הדמיית תלת-ממד של מערכת המיגון שתכננו עבורכם — הסרטון בהודעה הבאה.' : 'שולח/ת לכם תמונת הדמיה של מערכת המיגון — בהודעה הבאה.')) + '\n\n' + sig; };
     var st = document.createElement('div'); st.className = 'st';
     function waLinks(text){
       var w = document.createElement('div'); w.className = 'wa2';
@@ -19943,12 +20066,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     }
     function fallback(note){
       box.innerHTML = ''; st.className = note ? 'st err' : 'st';
-      st.textContent = (note ? note + ' ' : '') + (mobile ? 'לחצו "שליחה / שיתוף" ובחרו וואטסאפ.' : '1. שמרו את הקובץ (כפתור "שמירה במכשיר"). 2. פתחו את הצ׳אט עם הלקוח וגררו אליו את הקובץ.');
+      if (!mobile && !fallback.saved) { fallback.saved = true; deliverBlob(blob, name).catch(function(){}); }
+      st.textContent = (note ? note + ' ' : '') + (mobile ? 'לחצו "שליחה / שיתוף" ובחרו וואטסאפ.' : 'הסרטון נשמר בהורדות. 1. פתחו את הצ׳אט עם הלקוח (כפתור ירוק). 2. גררו לצ׳אט את קובץ הסרטון מההורדות (או 📎 ← מסמך). אם לא נשמר — "שמירה במכשיר". גררו אליו את הקובץ.');
       box.appendChild(st); if (!mobile) box.appendChild(waLinks(msg('')));
     }
-    var online = g1ScriptVer() >= 7 && !CONSUMER && g1Auth && g1Auth.uid && g1Endpoint();
-    if (video && online) { if (g1Tok()) upload(); else needCode(); }
-    else if (!mobile) fallback('');
+    var go = function(){ var on = g1ScriptVer() >= 7 && !CONSUMER && g1Auth && g1Auth.uid && g1Endpoint();
+      if (video && on) { if (g1Tok()) upload(); else needCode(); }
+      else if (!mobile) fallback(video && !CONSUMER && g1Endpoint() ? 'שליחת הסרטון כקישור תיפתח אחרי עדכון קוד הגיליון לגרסה 7 (מנהל המוצר).' : '');
+    };
+    if (video && !CONSUMER && g1ScriptVer() < 7 && g1Endpoint()) { box.innerHTML = ''; st.className = 'st'; st.textContent = '⏳ בודקים אפשרות שליחה כקישור…'; box.appendChild(st); g1PingVer(5000).then(go, go); }
+    else go();
   }
   document.getElementById('btn3D').onclick = function(){ if (P3.on && V3D.open) { p3Embed(false); return; } open3D(); };
   document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
