@@ -1407,6 +1407,11 @@
     display:flex; align-items:center; gap:8px; text-align:center;
   }
   .canvas-hint[hidden]{ display:none; }
+  /* placing: after a while with no activity the bar fades and a line runs out, then it closes by itself */
+  .canvas-hint{ position:relative; transition:opacity .4s; }
+  .canvas-hint.idle-out{ opacity:.6; }
+  .canvas-hint.idle-out::after{ content:''; position:absolute; left:18px; right:18px; bottom:3px; height:2px; border-radius:2px; background:rgba(255,255,255,.85); transform-origin:center; animation:armOut 4s linear forwards; }
+  @keyframes armOut{ from{ transform:scaleX(1); } to{ transform:scaleX(0); } }
   .app-version{ font-size:10.5px; color:var(--ink-dim); text-align:center; padding:6px 4px 2px; border-top:1px dashed var(--line); margin-top:4px; font-family:var(--font-mono); }
   .update-banner{ position:fixed; z-index:10400; left:50%; transform:translateX(-50%); top:calc(10px + env(safe-area-inset-top,0px));
     display:flex; align-items:center; gap:10px; background:#00AAE7; color:#fff; padding:10px 14px; border-radius:999px; font:600 13px var(--font-body); box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:calc(100% - 24px); }
@@ -2569,6 +2574,16 @@
   .v3d-title{ flex:1; min-width:0; } .v3d-title b{ display:block; font-size:17px; } .v3d-title small{ display:block; color:#9fb1c6; font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .v3d-floors{ display:flex; gap:4px; } .v3d-floors button{ border:1px solid rgba(255,255,255,.2); background:transparent; color:#cfe0f2; border-radius:99px; padding:6px 11px; font:700 13px var(--font-body); cursor:pointer; min-height:36px; }
   .v3d-floors button[aria-pressed=true]{ background:#fff; color:#0f1b2b; }
+  .v3d-floors{ min-width:0; overflow-x:auto; scrollbar-width:none; } .v3d-floors::-webkit-scrollbar{ display:none; } .v3d-floors button{ flex:0 0 auto; white-space:nowrap; }
+  .v3d-floors .fl-all{ border-color:rgba(127,214,255,.55); color:#bfe9ff; }
+  @media (max-width:560px){ .v3d-title b{ font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .v3d-floors{ max-width:68%; } .v3d-floors button{ padding:6px 9px; font-size:12px; } }
+  .v3d-logo{ display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; height:38px; padding:5px 11px; box-sizing:border-box; background:#fff; border-radius:11px; box-shadow:0 2px 10px rgba(0,0,0,.25); }
+  .v3d-logo:empty{ display:none; }
+  .v3d-logo img{ display:block; height:100%; width:auto; }
+  .v3d-logo img.lw{ height:58%; }
+  .v3d-logo.emun{ padding:3px 8px; }
+  .v3d-logo.emun{ height:44px; }
+  @media (max-width:560px){ .v3d-logo{ height:32px; padding:4px 7px; } .v3d-logo.emun{ height:38px; } .v3d-logo img.lw{ display:none; } .v3d-logo:not(:empty) ~ .v3d-title b{ display:none; } }
   .v3d-x{ width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; font-size:18px; cursor:pointer; flex:none; }
   .v3d-stage{ position:relative; flex:1; min-height:0; overflow:hidden; }
   .v3d-topics{ display:flex; align-items:center; gap:6px; padding:6px 12px 8px; background:rgba(9,17,29,.92); overflow-x:auto; scrollbar-width:none; flex:0 0 auto; }
@@ -2692,7 +2707,7 @@
   .v3d-legend i.dot{ width:10px; height:10px; border-radius:50%; }
   .v3d-toast{ position:absolute; z-index:4; left:50%; transform:translateX(-50%); top:12px; max-width:calc(100% - 24px); background:rgba(10,16,28,.88); color:#fff; border-radius:14px; padding:9px 14px; font-weight:700; font-size:13.5px; text-align:center; }
   .v3d-bar .v3d-sim{ border-color:rgba(255,90,80,.5); color:#ffd2cf; }
-  .v3d.rec .v3d-tip, .v3d.rec .v3d-legend, .v3d.rec .v3d-toast, .v3d.simming .v3d-legend, .v3d.simming .v3d-tip{ display:none !important; }
+  .v3d.rec .v3d-tip, .v3d.rec .v3d-legend, .v3d.rec .v3d-toast, .v3d.simming .v3d-legend, .v3d.simming .v3d-tip, .v3d.stacking .v3d-legend, .v3d.stacking .v3d-tip{ display:none !important; }
 
   .g1-bio-face{ width:76px; height:76px; margin:0 auto 6px; border-radius:22px; display:grid; place-items:center; color:#0A63C2; background:#EAF5FC; }
   .g1-bio-alt{ border:0; background:none; color:#0A7FBF; font:700 14px 'Heebo',sans-serif; padding:8px; cursor:pointer; min-height:40px; }
@@ -3112,7 +3127,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 166</div>
+              <div class="app-version" id="appVersion">גרסה 168</div>
             </div>
           </div>
         </div>
@@ -11700,7 +11715,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (armedItemEl) armedItemEl.classList.remove('armed', 'repeat');
     var hadType = armedType, placedCount = armedCount;
     armedType = null; armedItemEl = null; armedCount = 0;
-    canvasHint.hidden = true; document.body.classList.remove('p3-armed', 'pal-fade');
+    canvasHint.hidden = true; canvasHint.classList.remove('idle-out'); document.body.classList.remove('p3-armed', 'pal-fade');
     if (paletteEl.classList.contains('peek')) closeMobilePanels();
     if (hadType && placedCount > 1) showCanvasToast('✓ הוצבו ' + placedCount + ' × ' + paletteItemLabel(hadType));
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
@@ -11714,13 +11729,32 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     itemEl.classList.add('armed');
     setDrawMode(false); setFenceDrawMode(false);
     updateArmHint();
-    canvasHint.hidden = false;
+    canvasHint.hidden = false; canvasHint.classList.remove('idle-out'); armLast = Date.now();
     if (typeof updateCanvasQuick === 'function') updateCanvasQuick();
     if (paletteEl.classList.contains('mobile-open')) palPeek(true); else if (isMobileLayout()) closeMobilePanels();
     document.body.classList.add('pal-fade');
     if (typeof mSyncNav === 'function') mSyncNav();
     document.body.classList.toggle('p3-armed', !!(typeof P3 !== 'undefined' && P3.on));
   }
+  // The placing bar closes by itself when the agent does anything that is not placing — another
+  // menu, a step button, the inspector, a dialog — and after a pause with no activity on the plan.
+  var ARM_IDLE_MS = 12000, ARM_FADE_MS = 4000, armLast = 0;
+  var ARM_KEEP = '#canvasScroll, #plan3dHost, .palette, #canvasHint, .zoom-group, #planViewSeg, #btnFullscreen, .dev-tip';
+  function armTouch(){ if (!armedType) return; armLast = Date.now(); if (canvasHint.classList.contains('idle-out')) canvasHint.classList.remove('idle-out'); }
+  document.addEventListener('pointerdown', function(e){
+    if (!armedType) return;
+    var t = e.target; if (t && t.closest && t.closest(ARM_KEEP)) { armTouch(); return; }
+    disarmPalette();
+  }, true);
+  ['pointermove', 'wheel'].forEach(function(evn){ document.addEventListener(evn, function(e){ if (armedType && e.target && e.target.closest && e.target.closest(ARM_KEEP)) armTouch(); }, { capture:true, passive:true }); });
+  document.addEventListener('keydown', function(e){ if (armedType && /^(Tab|Enter)$/.test(e.key) && !(document.activeElement && document.activeElement.closest && document.activeElement.closest(ARM_KEEP))) disarmPalette(); }, true);
+  setInterval(function(){
+    if (!armedType) return;
+    if (document.hidden) { armLast = Date.now(); return; }
+    var idle = Date.now() - armLast;
+    if (idle > ARM_IDLE_MS) { var n = armedCount; disarmPalette(); if (!n) showCanvasToast('ההצבה נסגרה — לא הייתה פעילות. בחרו אביזר שוב כדי להציב'); }
+    else if (idle > ARM_IDLE_MS - ARM_FADE_MS) { if (!canvasHint.classList.contains('idle-out')) canvasHint.classList.add('idle-out'); }
+  }, 250);
   // Default rotation for a newly-placed interior detector/camera: aim it from its drop point
   // toward the far corner of the room it landed in — the same "corner-mounted, diagonal
   // across the room" convention the recommendations engine already uses for PIR placement
@@ -18783,9 +18817,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var a = v3dW(M, q.x1, q.y1), b = v3dW(M, q.x2, q.y2), w = b[0] - a[0], d = b[1] - a[1], cx = (a[0] + b[0]) / 2, cz = (a[1] + b[1]) / 2;
       if (q.stairs) { v3dStairs(G.rooms, cx, cz, w, d, stairsDir(q.r)); return; }
       if (q.yard) {
-        var yy = yRank[q.x1 + ':' + q.y1 + ':' + q.x2 + ':' + q.y2] || -0.012;
+        var yy = yRank[q.x1 + ':' + q.y1 + ':' + q.x2 + ':' + q.y2] || -0.012, nY = G.rooms.children.length;
         var fm = v3dMesh(G.rooms, v3dFloorGeo(a[0], a[1], b[0], b[1], yy, 0), v3dFloorMat(q.kind), 0, 0, 0, false);
         if (q.kind === 'pool') v3dPool(G.rooms, cx, cz, w, d, yy);
+        for (var yi = nY; yi < G.rooms.children.length; yi++) G.rooms.children[yi].userData.yard = true;   // the lot, hidden while a basement is shown in the exploded view
         if ((q.kind === 'yard' || q.kind === 'generic') && w * d > 14) v3dGarden(G.env, q, a, b);
         return;
       }
@@ -19024,7 +19059,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     });
   }
   function v3dFurniture(M, G){
-    M.rooms.forEach(function(q){
+    // furniture per room; what stands on the lot (car, garden set) is tagged so the exploded view can lift the house off it
+    M.rooms.forEach(function(q){ var n0 = G.children.length; try { v3dFurnRoom(M, G, q); } finally { if (q.yard) for (var i = n0; i < G.children.length; i++) G.children[i].userData.yard = true; } });
+  }
+  function v3dFurnRoom(M, G, q){
+    (function(){
       var a = v3dW(M, q.x1, q.y1), b = v3dW(M, q.x2, q.y2), w = b[0] - a[0], d = b[1] - a[1], area = w * d, k = q.kind;
       if (q.stairs) return;
       if (k === 'parking' && q.yard && area > 9) { v3dCar(G, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, w >= d); return; }
@@ -19055,7 +19094,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       else if (k === 'storage' || k === 'lab') { if (len < 1.2) return; place(s0, V3D_ITEMS.shelf, len); }
       else if (k === 'checkout' || k === 'reception') { if (len < 2) return; place(s0, V3D_ITEMS.counter, len, 0); }
       else if (k === 'sales') { if (len < 2) return; place(s0, V3D_ITEMS.gondola, len); if (oppFree) place(opp, V3D_ITEMS.gondola, len); v3dAisles(G, cx, cz, w, d); }
-    });
+    })();
   }
   // free-standing shelving rows down the middle of a sales floor
   function v3dAisles(G, cx, cz, w, d){
@@ -19338,6 +19377,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       V3D.pinHits.push({ i:it.i, x:it.x, y:it.y, more:it.more.map(function(m){ return m.i; }) });
     });
     zq.forEach(function(f){ x.globalAlpha = 1; f(); });
+    if (V3D.stack) v3dStackOverlay(x, W, H, big, now);
     if (sim) v3dSimOverlay(x, W, H, big, now);
     if (V3D.endCard) v3dEndCard(x, W, H, big, V3D.endCard);
   }
@@ -19543,6 +19583,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dSimStart(fromVideo){
     if (!V3D.M) return false; var P = v3dSimPlan(V3D.M);
     if (!P) { if (!fromVideo) v3dToast('לסימולציה צריך דלת כניסה (או חלון) על קיר חיצוני בשרטוט'); return false; }
+    if (V3D.stack) v3dStackFinish();
     if (V3D.buildK != null) { try { v3dBuildStep(99, V3D.sph.th); } catch(e) {} }   // started mid-intro: finish building the house first
     v3dSimStop(true); v3dSelect(-1);
     var S = V3D.sim = { plan:P, t:-0.8, hot:{}, prevNight:V3D.opts.night, intr:v3dIntruder(), sirens:V3D.devs.filter(function(g){ return g.userData.strobe; }), last:null };
@@ -19586,6 +19627,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function V3D_SHARED_GEO(g){ return V3D.geo && Object.keys(V3D.geo).some(function(k){ return V3D.geo[k] === g; }); }
   function v3dBuild(){
+    if (V3D.stack) v3dStackKill();
     V3D_H = Math.max(2.4, Math.min(9, projCeil())); V3D_CAB = V3D_H + 0.04; V3D.facadeFx = [];
     var T = THREE, M = v3dModel(V3D.floor), s = V3D.scene;
     if (V3D.root) { s.remove(V3D.root); v3dDispose(V3D.root); (V3D.flows || []).forEach(function(t){ t.dispose(); }); }
@@ -19691,6 +19733,201 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     return true;
   }
   function G_FURN(t){ var f = V3D.G.furn, k = v3dCl((t - 0.9) / 0.7); f.position.y = (1 - v3dEase(k)) * 1.6; f.visible = V3D.opts.furn && t > 0.9; }
+  /* ---------- multi-floor presentation: the whole house stacked → the floors separate (exploded view) →
+     the camera dives into the working floor and the regular floor-by-floor view takes over.
+     The working floor is the regular full build (V3D.root); the other floors are light copies
+     (rooms, walls, furniture) built with the same builders and kept only for the overview. ---------- */
+  var V3D_FK = ['floor', 'M', 'G', 'walls', 'wallMesh', 'lightRooms', 'waterMats', 'poolAt', 'facadeFx', 'quad', 'fences', 'bollards'];
+  function v3dLevel(f){ return isBasementFloor(f) ? -1 : f; }
+  function v3dFitFor(R){ var c = V3D.cam, vf = c.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * (c.aspect || 1)), f = Math.min(vf, hf); return Math.max(7, R / Math.sin(f / 2) * ((c.aspect || 1) < 1 ? 0.8 : 0.84)); }
+  function v3dStackOn(){ var fl = v3dFloors(); return fl.length > 1 && !V3D.embed && !V3D.still && !V3D.rec && !V3D.noStack && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  function v3dLiteFloor(f, M0){
+    var T = THREE, keep = {}, grp = new T.Group(), rec = { f:f, grp:grp, level:v3dLevel(f) };
+    V3D_FK.forEach(function(k){ keep[k] = V3D[k]; });
+    try {
+      var M = v3dModel(f), G = { env:new T.Group(), rooms:new T.Group(), walls:new T.Group(), furn:new T.Group(), cover:new T.Group(), cables:new T.Group(), devs:new T.Group(), sim:new T.Group() };
+      Object.keys(G).forEach(function(k){ grp.add(G[k]); });
+      V3D.floor = f; V3D.M = M; V3D.G = G; V3D.facadeFx = []; V3D.waterMats = []; V3D.lightRooms = [];
+      v3dRooms(M, G); v3dWalls(M, G); if (!isTouchDevice()) v3dFurniture(M, G.furn);
+      var low = V3D.opts.low; V3D.opts.low = false; V3D.quad = null; v3dWallsUpdate(true); V3D.opts.low = low;
+      rec.M = M; rec.wallMesh = V3D.wallMesh;
+      grp.position.set((M.cx - M0.cx) / PPM, 0, (M.cy - M0.cy) / PPM);
+      grp.traverse(function(o){ if (o.isMesh) o.castShadow = false; });
+    } finally { V3D_FK.forEach(function(k){ V3D[k] = keep[k]; }); }
+    return rec;
+  }
+  // a floor slab under the rooms (the stairwell stays open) and a glowing outline along the outside walls
+  function v3dSlab(M, rec){
+    var T = THREE, S = V3D.stack, g = new T.Group(); g.name = 'stackSlab';
+    M.rooms.forEach(function(q){ if (q.yard || q.stairs) return; var a = v3dW(M, q.x1, q.y1), b = v3dW(M, q.x2, q.y2);
+      var m = new T.Mesh(V3D.geo.box, S.slabMat); m.scale.set(b[0] - a[0] + 0.02, 0.24, b[1] - a[1] + 0.02); m.position.set((a[0] + b[0]) / 2, -0.13, (a[1] + b[1]) / 2); m.receiveShadow = true; g.add(m); });
+    var pts = [];
+    (M.runs || []).forEach(function(rn){ if (!rn.ext) return; var a = rn.o === 'h' ? v3dW(M, rn.a, rn.c) : v3dW(M, rn.c, rn.a), b = rn.o === 'h' ? v3dW(M, rn.b, rn.c) : v3dW(M, rn.c, rn.b);
+      [-0.25, 0.01].forEach(function(y){ pts.push(a[0], y, a[1], b[0], y, b[1]); }); });
+    if (pts.length) { var lg = new T.BufferGeometry(); lg.setAttribute('position', new T.Float32BufferAttribute(pts, 3)); g.add(new T.LineSegments(lg, S.lineMat)); }
+    rec.grp.add(g); rec.slab = g;
+  }
+  function v3dStackStart(){
+    if (!v3dStackOn() || !V3D.root || !V3D.M) return false;
+    v3dStackKill(); v3dSimStop(true); v3dSelect(-1);
+    var T = THREE, fl = v3dFloors(), M0 = V3D.M, Hs = V3D_H + 0.32, gap = Math.max(3.2, V3D_H * 1.25);
+    var S = V3D.stack = { floors:[], Hs:Hs, gap:gap, th0:V3D.sph.th, low0:V3D.opts.low, active:V3D.floor,
+      slabMat:v3dStd({ color:'#cfd6df', roughness:0.85 }, 0.8), lineMat:new T.LineBasicMaterial({ color:'#7fd6ff', transparent:true, opacity:0.0, toneMapped:false, depthWrite:false }) };
+    var act = { f:V3D.floor, grp:V3D.root, level:v3dLevel(V3D.floor), M:M0, active:true };
+    fl.forEach(function(f){ if (f === V3D.floor) S.floors.push(act); else { var r = v3dLiteFloor(f, M0); V3D.scene.add(r.grp); S.floors.push(r); } });
+    S.floors.forEach(function(r){
+      v3dSlab(r.M, r);
+      r.n = state.devices.filter(function(d){ return devFloor(d) === r.f && !v3dHidden(d.type); }).length;
+      r.cams = state.devices.filter(function(d){ return devFloor(d) === r.f && !v3dHidden(d.type) && v3dCatOf(d.type) === 'camera'; }).length;
+      r.y0 = r.level * Hs; r.grp.position.y = r.y0;
+    });
+    S.floors.sort(function(a, b){ return a.level - b.level; });
+    var lv = S.floors.map(function(r){ return r.level; }), lo = Math.min.apply(null, lv), hi = Math.max.apply(null, lv);
+    var x1 = Infinity, x2 = -Infinity, z1 = Infinity, z2 = -Infinity;
+    S.floors.forEach(function(r){ var M = r.M, a = v3dW(M, M.bb.x1, M.bb.y1), b = v3dW(M, M.bb.x2, M.bb.y2), ox = r.active ? 0 : r.grp.position.x, oz = r.active ? 0 : r.grp.position.z;
+      r.bb = [a[0] + ox, a[1] + oz, b[0] + ox, b[1] + oz]; x1 = Math.min(x1, r.bb[0]); z1 = Math.min(z1, r.bb[1]); x2 = Math.max(x2, r.bb[2]); z2 = Math.max(z2, r.bb[3]); });
+    var hC = (hi - lo + 1) * Hs, hX = hC + (hi - lo) * gap;
+    S.midC = (lo * Hs + (hi + 1) * Hs) / 2; S.midX = (lo * (Hs + gap) + hi * (Hs + gap) + Hs) / 2;
+    S.fitC = v3dFitFor(Math.hypot(x2 - x1, z2 - z1, hC) / 2 + 1); S.fitX = v3dFitFor(Math.hypot(x2 - x1, z2 - z1, hX) / 2 + 1);
+    S.cx = (x1 + x2) / 2; S.cz = (z1 + z2) / 2;
+    var sc = Math.max(V3D.fitR, hX) + 4, cam = V3D.sun.shadow.camera; cam.left = -sc; cam.right = sc; cam.top = sc; cam.bottom = -sc; cam.updateProjectionMatrix();
+    // the working floor starts hidden like the regular intro; its devices stay hidden until the dive
+    V3D.devs.forEach(function(g){ g.scale.setScalar(0.0001); g.userData.pop = 0; }); v3dCovSet('uFade', 0); if (V3D.covLine) V3D.covLine.material.opacity = 0; if (V3D.G) V3D.G.cables.visible = false;
+    var gm = V3D.matx && V3D.matx.ground; if (gm) { S.gOp = gm.opacity; }
+    // with a basement the house floats as a model above it — the lot (ground, garden, yards, fences) comes back on the dive
+    S.hasB = S.floors.some(function(r){ return r.level < 0; }); S.hid = [];
+    if (V3D.G) S.hid.push(V3D.G.devs);   // devices (and their poles) appear after the dive
+    if (S.hasB && V3D.G) { S.hid.push(V3D.G.env); [V3D.G.rooms, V3D.G.furn].forEach(function(gr){ gr.children.forEach(function(o){ if (o.userData.yard) S.hid.push(o); }); }); (V3D.fences || []).forEach(function(o){ if (o && o.isObject3D) S.hid.push(o); }); (V3D.facadeFx || []).forEach(function(o){ if (o && o.isObject3D && o.userData && o.userData.ground) S.hid.push(o); }); }
+    S.hid.forEach(function(o){ o.visible = false; });
+    V3D.opts.low = false; V3D.quad = null;
+    V3D.auto = false; V3D.focus = null; V3D.buildK = 0;
+    var vv = document.getElementById('v3d'); if (vv) vv.classList.add('stacking');
+    V3D.seq = { t0:performance.now(), step:v3dStackStep, done:function(){ V3D.auto = true; } };
+    return true;
+  }
+  function v3dStackWalls(low){
+    var S = V3D.stack; if (!S) return;
+    V3D.opts.low = low; V3D.quad = null; v3dWallsUpdate(true);
+    S.floors.forEach(function(r){ if (r.active || !r.wallMesh) return; var keep = V3D.wallMesh, kq = V3D.quad; V3D.wallMesh = r.wallMesh; V3D.quad = null; try { v3dWallsUpdate(true); } finally { V3D.wallMesh = keep; V3D.quad = kq; } });
+  }
+  function v3dStackStep(t, dt, now){
+    var S = V3D.stack; if (!S) return false;
+    if (t >= 90) { v3dStackFinish(); return false; }
+    // its own clock, advancing at most 0.1 s per frame — a slow first frame (shaders compiling) must not skip the show
+    if (S.last == null) S.last = now; S.t = (S.t || 0) + Math.min(0.1, Math.max(0, (now - S.last) / 1000)); S.last = now; t = S.t;
+    var E = v3dEase, C = v3dCl, sp = V3D.sph, n = S.floors.length;
+    var T1 = 2.6, T2 = 3.5, T3 = 5.6, T4 = 7.6, T5 = 9.0, T6 = 10.2;
+    // 1. assemble: the working floor's walls rise, the other floors drop into place one after another
+    if (t < 1.6) { V3D.buildK = t / 1.5; G_FURN(t * 1.4); } else if (V3D.buildK != null) { V3D.buildK = null; G_FURN(99); v3dStackWalls(false); }
+    var ex = C((t - T2) / (T3 - T2)), exE = ex > 0 ? 1 + 1.6 * Math.pow(ex - 1, 3) + 0.6 * Math.pow(ex - 1, 2) : 0;   // a soft back-ease
+    var dive = C((t - T4) / (T5 - T4)), dvE = dive * dive * dive;
+    S.floors.forEach(function(r, i){
+      var y = r.level * S.Hs + r.level * S.gap * exE;
+      if (!r.active) { var k = C((t - 0.35 - i * 0.32) / 0.9); y += (1 - (k > 0 ? v3dBack(k) : 0)) * 9; r.grp.visible = k > 0; }
+      if (!r.active && dive > 0) { var lvA = v3dLevel(S.active); y += (r.level > lvA ? 1 : -1) * 16 * dvE; }
+      r.grp.position.y = y; r.yNow = y;
+    });
+    if (t >= T2 && !S.lowDone) { S.lowDone = true; v3dStackWalls(S.low0); }
+    S.lineMat.opacity = t < T2 ? 0.25 * C(t / T1) : t < T4 ? 0.35 + 0.65 * Math.max(0, Math.sin(C((t - T2) / 1.4) * Math.PI)) * (t < T3 ? 1 : 0) + (t >= T3 ? 0.45 : 0) : 0.45 * (1 - dive);
+    var gm = V3D.matx && V3D.matx.ground;
+    if (t >= T4 && !S.shown) { S.shown = true; S.hid.forEach(function(o){ o.visible = true; }); }
+    if (S.hasB && t >= T4 && gm) gm.opacity = S.gOp * E(dive);
+    // camera: frame the stack, open it up while it explodes, then dive into the working floor
+    var act = S.floors.filter(function(r){ return r.active; })[0], ay = act ? act.yNow : 0;
+    var midNow = S.midC + (S.midX - S.midC) * exE;
+    if (t < T4) {
+      var a = E(C(t / T1));
+      var rC = S.fitC * (1.3 - 0.22 * a), rX = S.fitX * 1.02;
+      sp.r = rC + (rX - rC) * E(ex); sp.ph = 0.55 + 0.27 * a + (S.hasB ? 0.3 : 0.18) * E(ex); sp.th = S.th0 - 0.85 + 0.45 * a + 0.3 * E(ex) + Math.max(0, t - T1) * 0.05;
+      V3D.tgt.set(S.cx * 0.6, midNow * 0.92, S.cz * 0.6);
+      S.thD = sp.th; S.rD = sp.r; S.phD = sp.ph; S.tD = V3D.tgt.clone();
+    } else {
+      var d = E(dive);
+      sp.r = S.rD + (V3D.fit - S.rD) * d; sp.ph = S.phD + (0.95 - S.phD) * d; sp.th = S.thD + 0.15 * d;
+      V3D.tgt.set(S.tD.x * (1 - d), S.tD.y + (ay + 0.5 - S.tD.y) * d, S.tD.z * (1 - d));
+    }
+    if (V3D.scene.fog) V3D.scene.fog.density = 0.9 / (Math.max(V3D.fit, sp.r) * 3.2);
+    if (V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+    if (t >= T5 && V3D.stack) v3dStackKill();
+    // 5. reveal the working floor's devices, coverage and cables — the same build-up as the regular intro
+    if (t >= T5) {
+      var tr = t - T5, nd = V3D.devs.length;
+      V3D.devs.forEach(function(g, i){ var k = C((tr - (nd > 1 ? i / (nd - 1) * 0.6 : 0)) / 0.4), e = k > 0 ? v3dBack(k) : 0; g.scale.setScalar(Math.max(0.0001, e) * V3D_DS); g.userData.pop = e; });
+      v3dCovSet('uFade', C((tr - 0.4) / 0.7)); if (V3D.covLine) V3D.covLine.material.opacity = 0.45 * C((tr - 0.4) / 0.7);
+      if (V3D.G) V3D.G.cables.visible = V3D.opts.cables && tr > 0.5;
+      if (t >= T6) { v3dStackReveal(); return false; }
+    }
+    return true;
+  }
+  function v3dStackReveal(){
+    V3D.devs.forEach(function(g){ g.scale.setScalar(V3D_DS); g.userData.pop = 1; }); v3dCovSet('uFade', 1); if (V3D.covLine) V3D.covLine.material.opacity = 0.45;
+    if (V3D.G) V3D.G.cables.visible = V3D.opts.cables; V3D.zs = 0; V3D.auto = true;
+  }
+  // tap / simulation / video during the overview: jump straight to the end state
+  function v3dStackFinish(){
+    if (!V3D.stack) return;
+    V3D.sph.r = V3D.fit; V3D.sph.ph = 0.95; V3D.tgt.set(0, 0.5, 0);
+    v3dStackKill(); V3D.buildK = null; G_FURN(99); v3dStackReveal(); V3D.quad = null; v3dWallsUpdate(true);
+    if (V3D.seq && V3D.seq.step === v3dStackStep) V3D.seq = null;
+  }
+  function v3dStackKill(){
+    var S = V3D.stack; if (!S) return; V3D.stack = null;
+    S.floors.forEach(function(r){
+      if (r.slab) { r.grp.remove(r.slab); r.slab.traverse(function(o){ if (o.geometry && o.geometry !== V3D.geo.box) o.geometry.dispose(); }); }
+      if (r.active) { if (r.grp.position.y && V3D.tgt) V3D.tgt.y -= r.grp.position.y; r.grp.position.y = 0; }
+      else { V3D.scene.remove(r.grp); v3dDispose(r.grp); }
+    });
+    try { S.slabMat.dispose(); S.lineMat.dispose(); } catch(e) {}
+    var gm = V3D.matx && V3D.matx.ground; if (gm && S.gOp != null) gm.opacity = S.gOp;
+    (S.hid || []).forEach(function(o){ o.visible = true; });
+    V3D.opts.low = S.low0; V3D.quad = null; if (V3D.buildK != null && V3D.buildK >= 1) V3D.buildK = null;
+    var sc = V3D.fitR + 3, cam = V3D.sun.shadow.camera; cam.left = -sc; cam.right = sc; cam.top = sc; cam.bottom = -sc; cam.updateProjectionMatrix();
+    if (V3D.scene.fog && V3D.fit) V3D.scene.fog.density = 0.9 / (V3D.fit * 3.2);
+    var vv = document.getElementById('v3d'); if (vv) vv.classList.remove('stacking');
+    if (V3D.r && V3D.r.shadowMap.enabled) V3D.r.shadowMap.needsUpdate = true;
+  }
+  // overlay: the house title while stacked, then a name chip beside every floor once they separate
+  function v3dStackOverlay(x, W, H, big, now){
+    var S = V3D.stack; if (!S) return;
+    var t = S.t || 0, total = state.devices.length, n = S.floors.length;
+    x.save(); x.direction = 'rtl'; x.textBaseline = 'middle';
+    var titleA = v3dCl((t - 1.2) / 0.5) * (1 - v3dCl((t - 7.3) / 0.5));
+    if (titleA > 0) {
+      var title = 'הבית שלכם · ' + n + ' קומות', sub = total + ' אביזרים במערכת';
+      x.globalAlpha = titleA; x.font = '800 ' + Math.round(17 * big) + 'px Heebo, Rubik, Arial, sans-serif'; var tw = Math.max(x.measureText(title).width, 120 * big) + 56 * big, th = 52 * big, tx = (W - tw) / 2, ty = 14 * big;
+      x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 16 * big; x.fillStyle = 'rgba(10,16,28,.82)'; v3dRR(x, tx, ty, tw, th, th / 2); x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+      x.textAlign = 'center'; x.fillStyle = '#fff'; x.fillText(title, W / 2, ty + 19 * big);
+      x.fillStyle = '#9fc6ea'; x.font = '600 ' + Math.round(11.5 * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(sub, W / 2, ty + 37 * big);
+    }
+    var chipA = v3dCl((t - 4.3) / 0.6) * (1 - v3dCl((t - 7.7) / 0.5));
+    if (chipA > 0 && V3D.cam) {
+      var v = new THREE.Vector3(), items = [];
+      S.floors.forEach(function(r, i){
+        var best = null; [[r.bb[0], r.bb[1]], [r.bb[0], r.bb[3]], [r.bb[2], r.bb[1]], [r.bb[2], r.bb[3]]].forEach(function(c){ v.set(c[0], (r.yNow || 0) + 0.2, c[1]).project(V3D.cam); var sx = (v.x + 1) / 2 * W, sy = (1 - v.y) / 2 * H; if (!best || sx < best.x) best = { x:sx, y:sy }; });
+        if (best) items.push({ r:r, i:i, ax:best.x, ay:best.y });
+      });
+      items.sort(function(a, b){ return a.ay - b.ay; });
+      var ch = 46 * big, minGap = ch + 8 * big, lastY = -1e9;
+      items.forEach(function(it){ it.cy = Math.max(it.ay, lastY + minGap); lastY = it.cy; });
+      items.forEach(function(it, j){
+        var r = it.r, a = chipA * v3dCl((t - 4.3 - j * 0.15) / 0.4), sl = (1 - v3dEase(v3dCl((t - 4.3 - j * 0.15) / 0.45))) * 18 * big;
+        if (a <= 0) return; x.globalAlpha = a;
+        var name = floorLabelFor(r.f), sub = r.n ? r.n + ' אביזרים' + (r.cams ? ' · ' + r.cams + ' מצלמות' : '') : 'ללא אביזרים';
+        x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif'; var w1 = x.measureText(name).width;
+        x.font = '600 ' + Math.round(11 * big) + 'px Heebo, Rubik, Arial, sans-serif'; var w2 = x.measureText(sub).width;
+        var cw = Math.max(w1, w2) + 34 * big, cx2 = Math.max(10 * big, Math.min(it.ax - 26 * big, W * 0.4)) - sl, cx1 = cx2 - cw;
+        if (cx1 < 10 * big) { cx1 = 10 * big; cx2 = cx1 + cw; }
+        var cy = it.cy;
+        x.strokeStyle = r.active ? 'rgba(127,214,255,.9)' : 'rgba(255,255,255,.55)'; x.lineWidth = 1.4 * big; x.beginPath(); x.moveTo(cx2, cy); x.lineTo(it.ax, it.ay); x.stroke();
+        x.fillStyle = '#7fd6ff'; x.beginPath(); x.arc(it.ax, it.ay, 3.2 * big, 0, 7); x.fill();
+        x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 12 * big; x.fillStyle = r.active ? 'rgba(14,64,96,.92)' : 'rgba(10,16,28,.84)'; v3dRR(x, cx1, cy - ch / 2, cw, ch, 14 * big); x.fill(); x.shadowColor = 'transparent'; x.shadowBlur = 0;
+        if (r.active) { x.strokeStyle = '#7fd6ff'; x.lineWidth = 1.6 * big; v3dRR(x, cx1, cy - ch / 2, cw, ch, 14 * big); x.stroke(); }
+        x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 ' + Math.round(14 * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(name, cx2 - 14 * big, cy - 8 * big);
+        x.fillStyle = r.active ? '#bfe9ff' : '#9fb3c8'; x.font = '600 ' + Math.round(11 * big) + 'px Heebo, Rubik, Arial, sans-serif'; x.fillText(sub, cx2 - 14 * big, cy + 9 * big);
+      });
+    }
+    x.restore(); x.globalAlpha = 1;
+  }
   function v3dIntro(){
     var th0 = V3D.sph.th; v3dSimStop(true); V3D.focus = null; V3D.auto = true;
     V3D.seq = { t0:performance.now(), step:function(t){ return v3dBuildStep(t, th0); } };
@@ -19774,7 +20011,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   function v3dEnsureUi(){
     if (document.getElementById('v3d')) return;
     var ov = document.createElement('div'); ov.id = 'v3d'; ov.className = 'v3d'; ov.hidden = true; ov.setAttribute('dir', 'rtl'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'הדמיית תלת-ממד'); ov.setAttribute('data-html2canvas-ignore', 'true');
-    ov.innerHTML = '<div class="v3d-top"><div class="v3d-title"><b>הדמיית תלת-ממד</b><small id="v3dSub"></small></div><div class="v3d-floors" id="v3dFloors"></div><button type="button" class="v3d-x" id="v3dClose" aria-label="סגירה">✕</button></div>' +
+    ov.innerHTML = '<div class="v3d-top"><span class="v3d-logo" id="v3dLogoEl" role="img"></span><div class="v3d-title"><b>הדמיית תלת-ממד</b><small id="v3dSub"></small></div><div class="v3d-floors" id="v3dFloors"></div><button type="button" class="v3d-x" id="v3dClose" aria-label="סגירה">✕</button></div>' +
       '<div class="v3d-topics" id="v3dTopics" role="group" aria-label="מה להציג"></div>' +
       '<div class="v3d-stage" id="v3dStage"><canvas class="v3d-ov" id="v3dOv" aria-hidden="true"></canvas><div class="v3d-load" id="v3dLoad"><span class="v3d-spin"></span>בונה את ההדמיה…</div><div class="v3d-tip" id="v3dTip" hidden></div><div class="v3d-legend" id="v3dLegend"></div><div class="v3d-toast" id="v3dToast" hidden></div><div class="v3d-note">הדמיה להמחשה · מסלולי הכבילה משוערים</div></div>' +
       '<div class="v3d-bar" id="v3dBar"><button type="button" data-a="full">⛶ מסך מלא</button><button type="button" data-a="intro">▶ הדגמה</button><button type="button" class="v3d-sim" data-a="sim">🚨 <span class="v3d-long">סימולציית </span>פריצה</button><button type="button" class="v3d-more" data-a="more" aria-expanded="false">⚙ תצוגה</button>' +
@@ -19803,8 +20040,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   }
   function v3dFloorTabs(){
     var fl = v3dFloors(), el = document.getElementById('v3dFloors');
-    el.innerHTML = fl.length > 1 ? fl.map(function(f){ return '<button type="button" data-f="' + f + '" aria-pressed="' + (f === V3D.floor) + '">' + escapeHtml(floorLabelFor(f)) + '</button>'; }).join('') : '';
-    Array.prototype.forEach.call(el.querySelectorAll('button'), function(b){ b.onclick = function(){ if (V3D.rec) return; v3dSimStop(true); V3D.seq = null; V3D.floor = +b.dataset.f; v3dFloorTabs(); v3dBuild(); v3dSelect(-1); v3dIntro(); }; });
+    el.innerHTML = fl.length > 1 ? (V3D.embed ? '' : '<button type="button" class="fl-all" data-f="all" title="כל הקומות יחד, ואז פירוק לקומות">כל הבית</button>') + fl.map(function(f){ return '<button type="button" data-f="' + f + '" aria-pressed="' + (f === V3D.floor) + '">' + escapeHtml(floorLabelFor(f)) + '</button>'; }).join('') : '';
+    Array.prototype.forEach.call(el.querySelectorAll('button'), function(b){ b.onclick = function(){ if (V3D.rec) return; v3dSimStop(true);
+      if (b.dataset.f === 'all') { v3dStackFinish(); V3D.seq = null; if (!v3dStackStart()) v3dIntro(); return; }
+      V3D.seq = null; V3D.floor = +b.dataset.f; v3dFloorTabs(); v3dBuild(); v3dSelect(-1); v3dIntro(); }; });
   }
   function open3D(){
     if (CONSUMER) return;
@@ -19823,7 +20062,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       V3D.sz = ''; v3dResize(); v3dFloorTabs(); v3dTopicsUi(); v3dLogo();
       V3D.sph = { r:20, th:0.62, ph:0.95 }; v3dBuild(); V3D.sph.r = V3D.fit; V3D.sph.th = v3dTh0();
       V3D.open = true; V3D.last = 0; V3D.frames = 0; V3D.ftime = 0; V3D.sel = -1;
-      load.hidden = true; if (!V3D.embed) v3dIntro(); else if (!P3.intro) { P3.intro = true; v3dIntro(); } if (V3D.embed) { P3.sig = p3Sig(); p3Highlight(); p3Hint(); }
+      load.hidden = true; if (!V3D.embed) { if (!v3dStackStart()) v3dIntro(); } else if (!P3.intro) { P3.intro = true; v3dIntro(); } if (V3D.embed) { P3.sig = p3Sig(); p3Highlight(); p3Hint(); }
       cancelAnimationFrame(V3D.raf); V3D.raf = requestAnimationFrame(v3dLoop);
       try { g1Track('3d', { k:state.kind, n:state.devices.length }); } catch(e) {}
     }).catch(function(e){ try { console.error('3d', e); } catch(x) {} load.innerHTML = 'לא ניתן לטעון את מנוע התלת-ממד — נדרש חיבור לאינטרנט בפתיחה הראשונה. נסו שוב בעוד רגע.'; });
@@ -20090,6 +20329,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     v3dCamUpdate(); return ext;
   }
   function v3dClose(){
+    try { v3dStackKill(); } catch(e) {}
     if (V3D.rec) return;
     if (P3.on && V3D.open && !V3D.embed) { p3Embed(true); return; }
     if (P3.on && V3D.embed) { setPlanView('2d'); return; }
@@ -20103,17 +20343,35 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var b = curBrand(), s = Math.max(1, Math.min(W, H) / 720);
     ctx.save(); ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     var bar = 62 * s; ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fillRect(0, 0, W, bar);
-    if (b.id !== 'g1' && V3D.logoImg && V3D.logoImg.complete) { var lh = bar * 0.8, lw = lh * V3D.logoImg.width / V3D.logoImg.height; ctx.drawImage(V3D.logoImg, W - lw - 14 * s, bar * 0.1, lw, lh); }
+    var logoW = 0;
+    if (b.id !== 'g1' && V3D.logoImg && V3D.logoImg.complete && V3D.logoImg.naturalWidth) { var lh = bar * 0.8, lw = lh * V3D.logoImg.width / V3D.logoImg.height; ctx.drawImage(V3D.logoImg, W - lw - 14 * s, bar * 0.1, lw, lh); logoW = lw + 14 * s; }
+    else if (b.id === 'g1' && V3D.g1Mark && V3D.g1Mark.complete && V3D.g1Mark.naturalWidth) {
+      var mh = bar * 0.62, mw = mh * V3D.g1Mark.naturalWidth / V3D.g1Mark.naturalHeight, x0 = W - 16 * s - mw; ctx.drawImage(V3D.g1Mark, x0, (bar - mh) / 2, mw, mh); logoW = mw + 16 * s;
+      if (V3D.g1Word && V3D.g1Word.complete && V3D.g1Word.naturalWidth) { var wh = bar * 0.36, ww = wh * V3D.g1Word.naturalWidth / V3D.g1Word.naturalHeight; ctx.drawImage(V3D.g1Word, x0 - 8 * s - ww, (bar - wh) / 2, ww, wh); logoW += ww + 8 * s; }
+      ctx.fillStyle = 'rgba(29,42,59,.18)'; ctx.fillRect(W - logoW - 14 * s, bar * 0.22, Math.max(1, 1.2 * s), bar * 0.56); logoW += 14 * s;
+    }
     ctx.fillStyle = '#1d2430'; ctx.font = '800 ' + Math.round(23 * s) + 'px Heebo, Rubik, Arial, sans-serif';
     var title = 'הדמיית המיגון' + (document.getElementById('fCustomer').value ? ' · ' + document.getElementById('fCustomer').value : '');
-    ctx.fillText(title, W - (b.id !== 'g1' && V3D.logoImg ? bar * 1.2 + 20 * s : 18 * s), bar / 2);
+    ctx.fillText(title, W - (logoW ? logoW + 16 * s : 18 * s), bar / 2);
     ctx.textAlign = 'left'; ctx.font = '700 ' + Math.round(16 * s) + 'px Heebo, Rubik, Arial, sans-serif'; ctx.fillStyle = '#4a5568';
-    ctx.fillText(b.id === 'g1' ? 'G1 SiteGuard' : b.name, 16 * s, bar / 2);
+    if (!(b.id === 'g1' && logoW)) ctx.fillText(b.id === 'g1' ? 'G1 SiteGuard' : b.name, 16 * s, bar / 2);
     ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, H - 32 * s, W, 32 * s); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = '600 ' + Math.round(14 * s) + 'px Heebo, Rubik, Arial, sans-serif';
     ctx.fillText('הדמיה להמחשה בלבד · מיקומי האביזרים ומסלולי הכבילה סופיים לפי ההתקנה בשטח', W / 2, H - 16 * s);
     ctx.restore();
   }
-  function v3dLogo(){ var b = curBrand(); if (b.id !== 'g1' && b.logo && (!V3D.logoImg || V3D.logoImg.src !== b.logo)) { V3D.logoImg = new Image(); V3D.logoImg.src = b.logo; } }
+  // the company logo: the white chip at the top right of the 3D view, and the logo in the video / picture header
+  function v3dG1Srcs(){ var a = document.querySelector('.brand .mark img'), w = document.querySelector('.brand img.brand-word'); return { mark:a ? a.getAttribute('src') : '', word:w ? w.getAttribute('src') : '' }; }
+  function v3dLogo(){
+    var b = curBrand();
+    if (b.id !== 'g1' && b.logo && (!V3D.logoImg || V3D.logoImg.src !== b.logo)) { V3D.logoImg = new Image(); V3D.logoImg.src = b.logo; }
+    if (b.id === 'g1' && !V3D.g1Mark) { var g = v3dG1Srcs(); if (g.mark) { V3D.g1Mark = new Image(); V3D.g1Mark.src = g.mark; } if (g.word) { V3D.g1Word = new Image(); V3D.g1Word.src = g.word; } }
+    var el = document.getElementById('v3dLogoEl'); if (!el) return;
+    var key = b.id + '|' + (b.logo ? b.logo.length : 0); if (el.dataset.k === key) return; el.dataset.k = key;
+    el.className = 'v3d-logo' + (b.id !== 'g1' ? ' ' + b.id : '');
+    if (b.id === 'g1') { var s2 = v3dG1Srcs(); el.setAttribute('aria-label', 'G1 SiteGuard'); el.innerHTML = (s2.mark ? '<img alt="" src="' + s2.mark + '">' : '') + (s2.word ? '<img class="lw" alt="G1 SiteGuard" src="' + s2.word + '">' : '<b style="color:#1d2a3b">G1 SiteGuard</b>'); }
+    else if (b.logo) { el.setAttribute('aria-label', b.name); el.innerHTML = '<img alt="' + escapeHtml(b.name) + '" src="' + b.logo + '">'; }
+    else { el.setAttribute('aria-label', b.name); el.innerHTML = '<b style="color:#1d2a3b;font-size:13px">' + escapeHtml(b.name) + '</b>'; }
+  }
   function v3dShot(){
     v3dLogo(); var cv = V3D.r.domElement, W = Math.min(2048, cv.width), H = Math.round(W * cv.height / cv.width);
     v3dRender(); v3dOverlay(performance.now());
@@ -20123,7 +20381,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // the film: the house builds itself, a slow orbit, the intrusion demo (when the plan allows it), an end card
   function v3dRecord(){
     if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { v3dToast('המכשיר לא תומך בהקלטת סרטון — אפשר לשלוח תמונה'); return; }
-    v3dLogo(); v3dSimStop(true); v3dSelect(-1); V3D.seq = null; V3D.focus = null; v3dThumbsAll();
+    v3dLogo(); v3dStackFinish(); v3dSimStop(true); v3dSelect(-1); V3D.seq = null; V3D.focus = null; v3dThumbsAll();
     var types = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'], mime = types.filter(function(t){ try { return MediaRecorder.isTypeSupported(t); } catch(e) { return false; } })[0] || '';
     var st = document.getElementById('v3dStage'), portrait = st.clientHeight > st.clientWidth, W = portrait ? 720 : 1280, H = portrait ? 1280 : 720;
     V3D.r.setPixelRatio(1); V3D.r.setSize(W, H, false); V3D.cam.aspect = W / H; V3D.cam.updateProjectionMatrix(); v3dFit();
@@ -20225,7 +20483,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   document.getElementById('btn3D').onclick = function(){ if (P3.on && V3D.open) { p3Embed(false); return; } open3D(); };
   document.getElementById('btnSketch3D').onclick = function(){ open3D(); };
   ['btnSend', 'btnSketch'].forEach(function(id){ var b = document.getElementById(id); if (b) b.addEventListener('click', v3dPreload); });
-  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { offer:function(b, n, t){ v3dOffer(b, n, t, 'הסרטון מוכן', ''); }, V:V3D, P3:P3, sig:function(){ return p3Sig(); }, loop:function(t){ v3dLoop(t); cancelAnimationFrame(V3D.raf); }, view:function(m){ setPlanView(m); }, intro:function(){ v3dIntro(); }, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) window.__v3d = { offer:function(b, n, t){ v3dOffer(b, n, t, 'הסרטון מוכן', ''); }, V:V3D, P3:P3, sig:function(){ return p3Sig(); }, loop:function(t){ v3dLoop(t); cancelAnimationFrame(V3D.raf); }, view:function(m){ setPlanView(m); }, intro:function(){ v3dIntro(); }, mark:function(x, W, H){ v3dLogo(); v3dMark(x, W, H); }, stack:function(){ var S = V3D.stack; return S && { n:S.floors.length, ys:S.floors.map(function(r){ return +(r.yNow || 0).toFixed(2); }), levels:S.floors.map(function(r){ return r.level; }) }; }, open:open3D, close:v3dClose, still:v3dStill, model:function(f){ return v3dModel(f || 0); }, route:function(f, a, b){ return v3dRoute(v3dModel(f || 0), a, b); } };
   if (CONSUMER) initG1Consumer(); else { try { brandApply(); } catch(e) {} initG1AgentPrices(); initG1AgentAccess(); initG1Surveys(); }
 
 
