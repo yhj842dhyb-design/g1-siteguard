@@ -1097,6 +1097,8 @@
   .quote-lib-tools{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 6px; }
   .quote-lib-tools label.btn{ cursor:pointer; }
   .quote-lib-note{ font-size:12px; color:var(--accent-2-text); font-weight:600; }
+  .signed-badge.prev{ background:#8a96a8; }
+  .dup-badge{ display:inline-block; font-size:10.5px; font-weight:700; color:#3b5a7a; background:#e6eef7; border-radius:999px; padding:1px 8px; margin-inline-start:4px; }
   .signed-badge{ display:inline-block; font-size:10.5px; font-weight:700; color:#fff; background:#1f9d55; border-radius:999px; padding:1px 8px; margin-inline-start:4px; }
   .quote-lib-row-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
   .quote-lib-row-actions .btn{ padding:4px 9px; font-size:11px; }
@@ -3127,7 +3129,7 @@
               <button class="btn btn-ghost btn-sm" id="btnLoadSample" role="menuitem">📄 טען דוגמה</button>
               <button class="btn btn-ghost btn-sm" id="btnGestureHelp" role="menuitem" title="איך לנווט, להגדיל ולערוך בשרטוט">🖐️ עזרה בניווט</button>
               <button class="btn btn-warn-subtle btn-sm" id="btnClear" role="menuitem">🗑️ נקה שרטוט</button>
-              <div class="app-version" id="appVersion">גרסה 168</div>
+              <div class="app-version" id="appVersion">גרסה 169</div>
             </div>
           </div>
         </div>
@@ -13953,7 +13955,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   // quote doesn't spam a fresh download on every click. Any later copy of the file is a
   // deliberate "הורדת קובץ" click in the library instead.
   function recordQuoteSend(){
-    var isNewNumber = !state.quoteNumber;
+    var isNewNumber = !state.quoteNumber, dupOfNumber = state.quoteDupOf || null;
     ensureQuoteNumber();
     var customerName = document.getElementById('fCustomer').value || 'לקוח';
     var record = {
@@ -13971,7 +13973,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     };
     var library = loadQuoteLibrary();
     var prev = library.filter(function(r){ return r.number === record.number; })[0];
-    if (prev) { if (prev.status) { record.status = prev.status; record.statusAt = prev.statusAt; } if (prev.signed && !record.signed) record.signed = prev.signed; if (prev.sid) record.sid = prev.sid; if (prev.sids) record.sids = prev.sids; }
+    if (prev) { if (prev.status) { record.status = prev.status; record.statusAt = prev.statusAt; } 
+      var prevSig = prev.project && prev.project.quoteSentSig, newSig = record.project && record.project.quoteSentSig;
+      if (prev.signed && prevSig && newSig && prevSig !== newSig) {
+        // the customer signed an earlier version: keep that signature as history, ask for a new one (new signing link)
+        record.prevSigned = (prev.prevSigned || []).concat([prev.signed]).slice(-5); record.revisedAt = new Date().toISOString();
+        if (record.status === 'won') { record.status = 'open'; record.statusAt = record.revisedAt; }
+      } else { if (prev.signed && !record.signed) record.signed = prev.signed; if (prev.sid) record.sid = prev.sid; if (prev.sids) record.sids = prev.sids; }
+      if (prev.prevSigned && !record.prevSigned) record.prevSigned = prev.prevSigned;
+      if (prev.dupOf && !record.dupOf) record.dupOf = prev.dupOf; }
+    else if (dupOfNumber) record.dupOf = dupOfNumber;
     var idx = -1;
     for (var i = 0; i < library.length; i++) { if (library[i].number === record.number) { idx = i; break; } }
     if (idx >= 0) library[idx] = record; else library.push(record);
@@ -14003,6 +14014,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     if (record.quoteInputs) restoreQuoteInputs(record.quoteInputs);
     if (record.customerContact) setCustomerContact(record.customerContact);
     else if (record.customerEmail) setCustomerContact({ email: record.customerEmail });
+  }
+  // a copy of a saved quote as a NEW quote: same plan, prices and customer, no number yet (a new one is
+  // given on sending), not linked to the original's signature — the original stays exactly as it is
+  function duplicateQuoteFromLibrary(record){
+    try { applyProjectData(record.project); } catch(e) { showProjectIOStatus('לא ניתן לשכפל את ההצעה — הנתונים פגומים', true); return; }
+    state.quoteNumber = null; state.quoteDupOf = record.number; quoteSentSig = null;
+    if (record.quoteInputs) quoteDraft = record.quoteInputs;
+    if (record.customerContact) setCustomerContact(record.customerContact);
+    else if (record.customerEmail) setCustomerContact({ email: record.customerEmail });
+    quoteLibBackdrop.hidden = true;
+    updateQuoteNumberBadge(); try { render(); } catch(e) {} try { wipSave(); } catch(e) {}
+    showCanvasToast('⧉ עותק של הצעה ' + record.number + ' — מתקנים את הסקיצה ושולחים; מספר הצעה חדש יוקצה בשליחה');
   }
   var pollSignedAt = 0;
   async function g1PollSigned(force){
@@ -14043,13 +14066,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       var dateStr = isNaN(d.getTime()) ? '' : (d.toLocaleDateString('he-IL') + ', ' + d.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'}));
       return '<tr data-number="' + rec.number + '">' +
         '<td class="num">' + rec.number + '</td>' +
-        '<td>' + escapeHtml(rec.customerName || '—') + (rec.signed ? ' <span class="signed-badge" title="' + escapeHtml('נחתם ע״י ' + (rec.signed.name || '') + (rec.signed.id ? ' (' + rec.signed.id + ')' : '')) + '">✓ נחתם ' + escapeHtml(new Date(rec.signed.at).toLocaleDateString('he-IL')) + '</span>' : '') + '</td>' +
+        '<td>' + escapeHtml(rec.customerName || '—') + (rec.signed ? ' <span class="signed-badge" title="' + escapeHtml('נחתם ע״י ' + (rec.signed.name || '') + (rec.signed.id ? ' (' + rec.signed.id + ')' : '')) + '">✓ נחתם ' + escapeHtml(new Date(rec.signed.at).toLocaleDateString('he-IL')) + '</span>' : (rec.prevSigned && rec.prevSigned.length ? ' <span class="signed-badge prev" title="הלקוח חתם על גרסה קודמת — הגרסה המעודכנת נשלחה לחתימה מחדש">נחתמה גרסה קודמת</span>' : '')) + (rec.dupOf ? ' <span class="dup-badge">עותק של ' + rec.dupOf + '</span>' : '') + '</td>' +
         '<td>' + escapeHtml(rec.address || '—') + '</td>' +
         '<td>' + dateStr + '</td>' +
         '<td>' + escapeHtml(rec.agentName || '—') + '</td>' +
         '<td><div class="quote-lib-row-actions">' +
           '<select class="q-stat q-stat-' + qStatusOf(rec) + '" data-act="status" aria-label="סטטוס ההצעה">' + [['open','פתוחה'],['won','נחתמה ✓'],['lost','לא רלוונטית']].map(function(o){ return '<option value="' + o[0] + '"' + (qStatusOf(rec) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
           '<button type="button" class="btn btn-primary btn-sm" data-act="open">✎ פתיחה לעריכה</button>' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-act="dup" title="עותק של ההצעה עם מספר חדש — ההצעה המקורית נשארת כמו שהיא">⧉ שכפול כהצעה חדשה</button>' +
           '<button type="button" class="btn btn-ghost btn-sm" data-act="download">⬇ הורדת PDF</button>' +
           '<button type="button" class="btn btn-danger btn-sm" data-act="delete">🗑️ מחיקה</button>' +
         '</div></td></tr>';
@@ -14147,6 +14171,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var act = btn.getAttribute('data-act');
     if (act === 'open') {
       openQuoteFromLibrary(record);
+    } else if (act === 'dup') {
+      duplicateQuoteFromLibrary(record);
     } else if (act === 'download') {
       // Reopen the saved quote exactly as it was and save / share its customer-facing PDF.
       openQuoteFromLibrary(record);
@@ -14184,6 +14210,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     var changed = !!(state.quoteNumber && quoteSentSig && quoteSig() !== quoteSentSig);
     el.hidden = !changed;
     if (changed) el.innerHTML = '<b>⚠️ ההצעה עודכנה מאז שנשלחה ללקוח</b>הכמויות והמחירים כאן מעודכנים לפי השינויים, אבל הלקוח עדיין רואה את הגרסה הקודמת. כדי שיקבל את העדכון — שולחים שוב (אותו מספר הצעה, קישור חתימה חדש).';
+    if (changed) { var sr = null; try { sr = loadQuoteLibrary().filter(function(r){ return r.number === state.quoteNumber && r.signed; })[0]; } catch(e) {}
+      if (sr) el.innerHTML += '<br><b style="display:inline">✍️ הלקוח כבר חתם על הגרסה הקודמת.</b> שליחה מחדש תבטל את סימון החתימה, והלקוח יתבקש לחתום על הגרסה המעודכנת. כדי להשאיר את ההצעה החתומה כמו שהיא — שכפלו אותה כהצעה חדשה מ״הצעות מחיר שמורות״.'; }
   }
   function saveQuoteDraft(){ if (!document.getElementById('qEquipTable').querySelector('tbody tr')) return; try { quoteDraft = captureQuoteInputs(); } catch(e) {} }
   ['input', 'change'].forEach(function(n){ document.getElementById('modalBackdrop').addEventListener(n, function(){ clearTimeout(qDraftT); qDraftT = setTimeout(function(){ saveQuoteDraft(); quoteChangedUi(); }, 250); }, true); });
